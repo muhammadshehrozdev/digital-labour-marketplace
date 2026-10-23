@@ -25,11 +25,13 @@ export default function Register() {
 
       if (data.role === 'worker') {
         navigate('/worker-profile');
-      } else {
+      } else if (data.role === 'customer') {
         navigate('/customer-dashboard');
+      } else {
+        navigate('/admin-dashboard');
       }
     } catch (err) {
-  setError(err.response?.data?.message || err.message || 'Registration failed');
+      setError(err.response?.data?.message || err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -40,7 +42,7 @@ export default function Register() {
       <div className="auth-card">
         <div className="auth-header">
           <h2>Create Account</h2>
-          <p>Get started with Digital Labour Marketplace</p>
+          <p>Module 1: Digital Labour Marketplace Identity</p>
         </div>
 
         {error && <div className="alert-message error">{error}</div>}
@@ -51,14 +53,21 @@ export default function Register() {
             className={`role-toggle-btn ${formData.role === 'worker' ? 'active' : ''}`}
             onClick={() => setFormData({ ...formData, role: 'worker' })}
           >
-            Worker (Skilled Labour)
+            Worker
           </button>
           <button
             type="button"
             className={`role-toggle-btn ${formData.role === 'customer' ? 'active' : ''}`}
             onClick={() => setFormData({ ...formData, role: 'customer' })}
           >
-            Customer (Hire Talent)
+            Customer
+          </button>
+          <button
+            type="button"
+            className={`role-toggle-btn ${formData.role === 'admin' ? 'active' : ''}`}
+            onClick={() => setFormData({ ...formData, role: 'admin' })}
+          >
+            Admin
           </button>
         </div>
 
@@ -67,7 +76,7 @@ export default function Register() {
             <label className="input-label">Full Name</label>
             <input
               type="text"
-              placeholder="e.g. Shahzaib Khan"
+              placeholder="e.g. Muhammad Ali"
               className="input-control"
               required
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -97,7 +106,7 @@ export default function Register() {
           </div>
 
           <div className="input-group">
-            <label className="input-label">Phone Contact</label>
+            <label className="input-label">Phone Number</label>
             <input
               type="text"
               placeholder="0300 1234567"
@@ -108,7 +117,7 @@ export default function Register() {
           </div>
 
           <button type="submit" className="btn-action-primary" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Register'}
+            {loading ? 'Creating Account...' : `Register as ${formData.role.toUpperCase()}`}
           </button>
         </form>
 

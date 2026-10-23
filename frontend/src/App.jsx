@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-do
 import Register from './pages/Register';
 import Login from './pages/Login';
 import WorkerProfilePage from './pages/WorkerProfilePage';
+import CustomerDashboard from './pages/CustomerDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function NavigationBar() {
@@ -44,7 +46,12 @@ function NavigationBar() {
           )}
           {user.role === 'customer' && (
             <Link to="/customer-dashboard" style={{ textDecoration: 'none', color: '#2563eb', fontWeight: '700', fontSize: '0.88rem' }}>
-              Job Postings
+              Find Verified Workers
+            </Link>
+          )}
+          {user.role === 'admin' && (
+            <Link to="/admin-dashboard" style={{ textDecoration: 'none', color: '#2563eb', fontWeight: '700', fontSize: '0.88rem' }}>
+              Admin Verification Panel
             </Link>
           )}
 
@@ -86,10 +93,16 @@ export default function App() {
           path="/customer-dashboard"
           element={
             <ProtectedRoute allowedRole="customer">
-              <div style={{ maxWidth: '800px', margin: '40px auto', padding: '30px 16px', background: 'white', borderRadius: '20px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                <h2 style={{ fontSize: '1.6rem', fontWeight: '800', marginBottom: '8px' }}>Customer Portal</h2>
-                <p style={{ color: '#64748b' }}>Post projects and review explainable worker matches.</p>
-              </div>
+              <CustomerDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute allowedRole="admin">
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />

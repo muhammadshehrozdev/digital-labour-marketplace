@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const isLocalhost =
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
 const API = axios.create({
-  baseURL: 'https://digital-labour-marketplace-1qhz.vercel.app/', // Local testing ke liye direct 5000 port
+  baseURL: isLocalhost
+    ? 'http://localhost:5000/api'
+    : 'https://digital-labour-marketplace-1qhz.vercel.app/api',
 });
 
 API.interceptors.request.use((req) => {
