@@ -128,6 +128,13 @@ export const updateWorkerProfile = async (req, res) => {
   }
 };
 
+// Security (M1-2): the directory sends ONLY these fields. Never CNIC, address,
+// emergency contact, WhatsApp, or the user's email.
+export const PUBLIC_WORKER_FIELDS =
+  'user workerIdCode occupation category skills experienceYears hourlyRate dailyRate city availability verificationStatus bio profileCompletion';
+// From the linked user: name, and phone (team decision: customers need it to contact the worker).
+export const PUBLIC_USER_FIELDS = 'name phone';
+
 // 3. GET: /api/worker/all (Customer aur Admin ke liye tamam workers ki directory + filters)
 export const getAllWorkers = async (req, res) => {
   try {
@@ -146,7 +153,8 @@ export const getAllWorkers = async (req, res) => {
     }
 
     const workers = await WorkerProfile.find(filter)
-      .populate('user', 'name email phone role')
+      .select(PUBLIC_WORKER_FIELDS)
+      .populate('user', PUBLIC_USER_FIELDS)
       .sort({ updatedAt: -1 });
 
     res.json(workers);

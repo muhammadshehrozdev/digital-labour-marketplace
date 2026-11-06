@@ -79,7 +79,6 @@ export default function AdminDashboard() {
                   <th style={{ padding: '12px 8px' }}>Worker ID</th>
                   <th style={{ padding: '12px 8px' }}>Name & Phone</th>
                   <th style={{ padding: '12px 8px' }}>Trade & Category</th>
-                  <th style={{ padding: '12px 8px' }}>CNIC</th>
                   <th style={{ padding: '12px 8px' }}>Completion</th>
                   <th style={{ padding: '12px 8px' }}>Status</th>
                   <th style={{ padding: '12px 8px' }}>Action</th>
@@ -97,7 +96,6 @@ export default function AdminDashboard() {
                       <div>{w.occupation}</div>
                       <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{w.category}</div>
                     </td>
-                    <td style={{ padding: '12px 8px' }}>{w.cnicNumber || 'Not Provided'}</td>
                     <td style={{ padding: '12px 8px', fontWeight: '700' }}>{w.profileCompletion || 25}%</td>
                     <td style={{ padding: '12px 8px' }}>
                       <span

@@ -62,13 +62,6 @@ export default function Register() {
           >
             Customer
           </button>
-          <button
-            type="button"
-            className={`role-toggle-btn ${formData.role === 'admin' ? 'active' : ''}`}
-            onClick={() => setFormData({ ...formData, role: 'admin' })}
-          >
-            Admin
-          </button>
         </div>
 
         <form onSubmit={handleSubmit}>

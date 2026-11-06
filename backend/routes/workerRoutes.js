@@ -15,7 +15,8 @@ router.get('/profile', protect, authorizeRoles('worker'), getWorkerProfile);
 router.post('/profile', protect, authorizeRoles('worker'), updateWorkerProfile);
 
 // Customer aur Admin ke liye tamam workers dekhne ka route
-router.get('/all', protect, authorizeRoles('customer', 'admin', 'worker'), getAllWorkers);
+// M1-2: workers may not browse other workers' profiles.
+router.get('/all', protect, authorizeRoles('customer', 'admin'), getAllWorkers);
 
 // Sirf Admin ke routes (Identity verification & User management)
 router.put('/verify/:id', protect, authorizeRoles('admin'), verifyWorkerIdentity);
