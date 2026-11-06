@@ -15,10 +15,12 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Yeh email pehle se registered hai' });
     }
 
-    // Security: Agar pehla admin banana ho to email mein 'admin@' ho ya role worker/customer rahe
-    let assignedRole = 'worker';
-    if (role === 'customer') assignedRole = 'customer';
-    if (role === 'admin') assignedRole = 'admin';
+    // Security (M1-1): public registration may create only workers or customers.
+    // Admins are never created here. No role sent -> worker (old default).
+    if (role !== undefined && role !== 'worker' && role !== 'customer') {
+      return res.status(400).json({ message: 'Role must be worker or customer' });
+    }
+    const assignedRole = role === 'customer' ? 'customer' : 'worker';
 
     const user = await User.create({
       name: name.trim(),
