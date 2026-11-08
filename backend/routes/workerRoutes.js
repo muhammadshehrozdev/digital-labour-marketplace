@@ -2,6 +2,9 @@ import express from 'express';
 import {
   getWorkerProfile,
   updateWorkerProfile,
+  analyzeWorkerSkills,
+  resetAiSkillProfile,
+  addRecommendedSkill,
   getAllWorkers,
   verifyWorkerIdentity,
   getAllUsersForAdmin,
@@ -10,14 +13,17 @@ import { protect, authorizeRoles } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Worker ke apne routes
+// Module 1 routes
 router.get('/profile', protect, authorizeRoles('worker'), getWorkerProfile);
 router.post('/profile', protect, authorizeRoles('worker'), updateWorkerProfile);
 
-// Customer aur Admin ke liye tamam workers dekhne ka route
-router.get('/all', protect, authorizeRoles('customer', 'admin', 'worker'), getAllWorkers);
+// Module 2 routes
+router.post('/ai-skill-profiler', protect, authorizeRoles('worker'), analyzeWorkerSkills);
+router.delete('/ai-skill-profiler/reset', protect, authorizeRoles('worker'), resetAiSkillProfile);
+router.post('/add-recommended-skill', protect, authorizeRoles('worker'), addRecommendedSkill);
 
-// Sirf Admin ke routes (Identity verification & User management)
+// Customer & Admin routes
+router.get('/all', protect, authorizeRoles('customer', 'admin', 'worker'), getAllWorkers);
 router.put('/verify/:id', protect, authorizeRoles('admin'), verifyWorkerIdentity);
 router.get('/admin/users', protect, authorizeRoles('admin'), getAllUsersForAdmin);
 

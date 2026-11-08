@@ -27,52 +27,51 @@ export default function CustomerDashboard() {
 
   return (
     <div className="profile-dashboard">
-      <div style={{ marginBottom: '24px' }}>
-        <h1 className="profile-header-title">Customer Portal — Verified Worker Directory</h1>
-        <p className="profile-header-subtitle">
-          Browse structured digital worker identities, verified skills, past work experience, and transparent wage rates.
-        </p>
+      <div className="page-top-row">
+        <div>
+          <h1 className="profile-header-title">Find Skilled Workers</h1>
+          <p className="profile-header-subtitle">Browse verified worker profiles and rates</p>
+        </div>
       </div>
 
-      {/* Search & Category Filter Bar */}
       <div
         style={{
           background: 'white',
-          padding: '18px',
-          borderRadius: '16px',
+          padding: '14px',
+          borderRadius: '14px',
           border: '1px solid #e2e8f0',
-          marginBottom: '24px',
+          marginBottom: '20px',
           display: 'grid',
-          gridTemplateColumns: '1fr 240px auto',
-          gap: '12px',
+          gridTemplateColumns: '1fr 220px auto',
+          gap: '10px',
         }}
       >
         <input
           type="text"
-          placeholder="Search by occupation or skill (e.g. Electrician, Solar, Plumber)..."
+          placeholder="Search electrician, plumber, solar..."
           className="input-control"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <select className="input-control" value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="All">All Categories</option>
-          <option value="Home Maintenance">Home Maintenance</option>
           <option value="Electrical & Solar">Electrical & Solar</option>
           <option value="Plumbing & Sanitary">Plumbing & Sanitary</option>
           <option value="Construction & Masonry">Construction & Masonry</option>
           <option value="Carpentry & Woodwork">Carpentry & Woodwork</option>
-          <option value="Painting & Renovation">Painting & Renovation</option>
           <option value="AC & Appliance Repair">AC & Appliance Repair</option>
+          <option value="Painting & Renovation">Painting & Renovation</option>
+          <option value="Home Maintenance">Home Maintenance</option>
           <option value="Cleaning & Shifting">Cleaning & Shifting</option>
         </select>
         <button
           onClick={fetchWorkers}
           style={{
-            background: '#2563eb',
+            background: '#4f46e5',
             color: 'white',
             border: 'none',
             borderRadius: '10px',
-            padding: '0 22px',
+            padding: '0 20px',
             fontWeight: '700',
             cursor: 'pointer',
           }}
@@ -82,23 +81,22 @@ export default function CustomerDashboard() {
       </div>
 
       {loading ? (
-        <p style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Loading Worker Digital Identities...</p>
+        <p style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Loading workers...</p>
       ) : workers.length === 0 ? (
-        <div style={{ background: 'white', padding: '40px', borderRadius: '16px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
-          <h3>No Worker Profiles Found</h3>
-          <p style={{ color: '#64748b', marginTop: '6px' }}>Try clearing the search filter or register a worker account first.</p>
+        <div style={{ background: 'white', padding: '36px', borderRadius: '16px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+          <h3>No Workers Found</h3>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))', gap: '18px' }}>
           {workers.map((w) => (
             <div
               key={w._id}
               style={{
                 background: 'white',
-                borderRadius: '18px',
-                padding: '22px',
+                borderRadius: '16px',
+                padding: '20px',
                 border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
+                boxShadow: 'var(--shadow-sm)',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
@@ -107,28 +105,26 @@ export default function CustomerDashboard() {
                 </span>
                 <span
                   style={{
-                    fontSize: '0.72rem',
+                    fontSize: '0.7rem',
                     fontWeight: '700',
                     padding: '3px 8px',
-                    borderRadius: '8px',
+                    borderRadius: '99px',
                     background: w.verificationStatus === 'Verified' ? '#dcfce7' : '#f1f5f9',
-                    color: w.verificationStatus === 'Verified' ? '#15803d' : '#475569',
+                    color: w.verificationStatus === 'Verified' ? '#15803d' : '#64748b',
                   }}
                 >
-                  {w.verificationStatus === 'Verified' ? '✓ Verified Worker' : 'Pending Verification'}
+                  {w.verificationStatus === 'Verified' ? '✓ Verified' : 'Pending'}
                 </span>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-                <div className="id-avatar" style={{ width: '48px', height: '48px', fontSize: '1.2rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <div className="id-avatar" style={{ width: '44px', height: '44px', fontSize: '1.1rem' }}>
                   {w.user?.name ? w.user.name[0].toUpperCase() : 'W'}
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: '700' }}>{w.user?.name || 'Worker'}</h3>
-                  <p style={{ fontSize: '0.85rem', color: '#2563eb', fontWeight: '600' }}>{w.occupation}</p>
-                  <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                    {w.category} • {w.city}
-                  </p>
+                  <h3 style={{ fontSize: '1rem', fontWeight: '700' }}>{w.user?.name || 'Worker'}</h3>
+                  <p style={{ fontSize: '0.84rem', color: '#4f46e5', fontWeight: '600' }}>{w.occupation}</p>
+                  <p style={{ fontSize: '0.75rem', color: '#64748b' }}>{w.city}</p>
                 </div>
               </div>
 
@@ -137,28 +133,28 @@ export default function CustomerDashboard() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   background: '#f8fafc',
-                  padding: '10px 12px',
+                  padding: '9px 12px',
                   borderRadius: '10px',
                   marginBottom: '12px',
-                  fontSize: '0.82rem',
+                  fontSize: '0.8rem',
                 }}
               >
                 <span><strong>Exp:</strong> {w.experienceYears} Yrs</span>
-                <span><strong>Hourly:</strong> Rs.{w.hourlyRate}</span>
-                <span><strong>Daily:</strong> Rs.{w.dailyRate || 0}</span>
+                <span><strong>Hr:</strong> Rs.{w.hourlyRate}</span>
+                <span><strong>Day:</strong> Rs.{w.dailyRate || 0}</span>
               </div>
 
               {w.skills && w.skills.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
-                  {w.skills.map((s, idx) => (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+                  {w.skills.slice(0, 4).map((s, idx) => (
                     <span
                       key={idx}
                       style={{
-                        background: '#eff6ff',
-                        color: '#1d4ed8',
+                        background: '#eef2ff',
+                        color: '#4f46e5',
                         padding: '3px 8px',
                         borderRadius: '6px',
-                        fontSize: '0.73rem',
+                        fontSize: '0.72rem',
                         fontWeight: '600',
                       }}
                     >
@@ -168,13 +164,9 @@ export default function CustomerDashboard() {
                 </div>
               )}
 
-              {w.bio && (
-                <p style={{ fontSize: '0.82rem', color: '#475569', marginBottom: '12px' }}>{w.bio}</p>
-              )}
-
-              <div style={{ fontSize: '0.8rem', color: '#334155', borderTop: '1px solid #f1f5f9', paddingTop: '10px' }}>
-                <div><strong>Contact:</strong> {w.user?.phone || w.whatsappNumber || 'N/A'}</div>
-                <div><strong>Status:</strong> {w.availability}</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#475569', borderTop: '1px solid #f1f5f9', paddingTop: '10px' }}>
+                <span><strong>Phone:</strong> {w.user?.phone || 'N/A'}</span>
+                <span>{w.availability}</span>
               </div>
             </div>
           ))}

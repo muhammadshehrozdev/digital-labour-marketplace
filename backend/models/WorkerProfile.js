@@ -4,14 +4,50 @@ const workHistorySchema = new mongoose.Schema(
   {
     jobTitle: { type: String, required: true },
     clientOrEmployer: { type: String, default: '' },
-    duration: { type: String, default: '' }, // e.g. "6 Months" ya "2023 - 2025"
+    duration: { type: String, default: '' },
     description: { type: String, default: '' },
   },
   { _id: true }
 );
 
+// Module 2: Category-wise organized skill item
+const categorizedSkillSchema = new mongoose.Schema(
+  {
+    skillName: { type: String, required: true },
+    category: { type: String, required: true },
+    level: {
+      type: String,
+      enum: ['Beginner', 'Intermediate', 'Expert'],
+      default: 'Intermediate',
+    },
+    confidenceScore: { type: Number, default: 85 },
+    source: {
+      type: String,
+      enum: ['AI-Extracted', 'Manual', 'Recommended-Added'],
+      default: 'AI-Extracted',
+    },
+  },
+  { _id: false }
+);
+
+// Module 2: Potential / Recommended skill item
+const recommendedSkillSchema = new mongoose.Schema(
+  {
+    skillName: { type: String, required: true },
+    category: { type: String, required: true },
+    reason: { type: String, default: '' },
+    demandLevel: {
+      type: String,
+      enum: ['High Demand', 'Growing', 'Core Trade Skill'],
+      default: 'High Demand',
+    },
+  },
+  { _id: false }
+);
+
 const workerProfileSchema = new mongoose.Schema(
   {
+    // ================= MODULE 1 FIELDS =================
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -96,11 +132,43 @@ const workerProfileSchema = new mongoose.Schema(
       type: Number,
       default: 20,
     },
+
+    // ================= MODULE 2: AI EXPERIENCE & SKILL PROFILER FIELDS =================
+    rawExperienceText: {
+      type: String,
+      default: '',
+    },
+    experienceTierBadge: {
+      type: String,
+      default: 'Skilled Worker',
+    },
+    aiSkillSummary: {
+      type: String,
+      default: '',
+    },
+    categorizedSkills: {
+      type: [categorizedSkillSchema],
+      default: [],
+    },
+    recommendedSkills: {
+      type: [recommendedSkillSchema],
+      default: [],
+    },
+    toolsAndEquipment: {
+      type: [String],
+      default: [],
+    },
+    skillStrengthScore: {
+      type: Number,
+      default: 0,
+    },
+    lastAiProfiledAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
-// Worker ID Code auto-generate karna (e.g., DLM-2026-4821)
 workerProfileSchema.pre('save', function () {
   if (!this.workerIdCode) {
     const randomDigits = Math.floor(1000 + Math.random() * 9000);

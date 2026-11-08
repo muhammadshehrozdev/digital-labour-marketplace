@@ -42,7 +42,7 @@ export default function Register() {
       <div className="auth-card">
         <div className="auth-header">
           <h2>Create Account</h2>
-          <p>Module 1: Digital Labour Marketplace Identity</p>
+          <p>Select your role to get started</p>
         </div>
 
         {error && <div className="alert-message error">{error}</div>}
@@ -76,7 +76,7 @@ export default function Register() {
             <label className="input-label">Full Name</label>
             <input
               type="text"
-              placeholder="e.g. Muhammad Ali"
+              placeholder="Muhammad Ali"
               className="input-control"
               required
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -84,24 +84,13 @@ export default function Register() {
           </div>
 
           <div className="input-group">
-            <label className="input-label">Email Address</label>
+            <label className="input-label">Email</label>
             <input
               type="email"
               placeholder="name@example.com"
               className="input-control"
               required
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            />
-          </div>
-
-          <div className="input-group">
-            <label className="input-label">Password</label>
-            <input
-              type="password"
-              placeholder="At least 6 characters"
-              className="input-control"
-              required
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
           </div>
 
@@ -116,14 +105,25 @@ export default function Register() {
             />
           </div>
 
+          <div className="input-group">
+            <label className="input-label">Password</label>
+            <input
+              type="password"
+              placeholder="At least 6 characters"
+              className="input-control"
+              required
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            />
+          </div>
+
           <button type="submit" className="btn-action-primary" disabled={loading}>
-            {loading ? 'Creating Account...' : `Register as ${formData.role.toUpperCase()}`}
+            {loading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.88rem', color: '#64748b' }}>
+        <p style={{ textAlign: 'center', marginTop: '18px', fontSize: '0.85rem', color: '#64748b' }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>
+          <Link to="/login" style={{ color: '#4f46e5', fontWeight: '700', textDecoration: 'none' }}>
             Sign In
           </Link>
         </p>

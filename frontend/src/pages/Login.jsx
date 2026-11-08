@@ -36,14 +36,14 @@ export default function Login() {
       <div className="auth-card">
         <div className="auth-header">
           <h2>Welcome Back</h2>
-          <p>Sign in to your digital marketplace profile</p>
+          <p>Sign in to your account</p>
         </div>
 
         {error && <div className="alert-message error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label className="input-label">Email Address</label>
+            <label className="input-label">Email</label>
             <input
               type="email"
               placeholder="name@example.com"
@@ -69,10 +69,10 @@ export default function Login() {
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.88rem', color: '#64748b' }}>
+        <p style={{ textAlign: 'center', marginTop: '18px', fontSize: '0.85rem', color: '#64748b' }}>
           Don't have an account?{' '}
-          <Link to="/register" style={{ color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>
-            Register Now
+          <Link to="/register" style={{ color: '#4f46e5', fontWeight: '700', textDecoration: 'none' }}>
+            Create Account
           </Link>
         </p>
       </div>
