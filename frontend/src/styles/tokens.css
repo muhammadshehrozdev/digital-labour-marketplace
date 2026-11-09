@@ -1,0 +1,88 @@
+/* Design tokens — Digital Labour Marketplace (docs/design/03-design-system.md).
+   Primitive scales first, then semantic roles. Components use ONLY the semantic roles, so a
+   dark theme can later redefine just the role block. Light theme only in Batch 1.
+   Contrast of every text pair is checked by src/styles/contrast.test.js. */
+:root {
+  /* Primary — Trust Green */
+  --green-50: #ECF7F3; --green-100: #D2EDE4; --green-200: #A6DAC9; --green-300: #6FC0A8; --green-400: #3BA285;
+  --green-500: #1B8468; --green-600: #0F6B54; --green-700: #0B5544; --green-800: #0A4437; --green-900: #08372D;
+  /* Accent — Saffron (never for text) */
+  --saffron-100: #FDF0D5; --saffron-300: #F8C66B; --saffron-500: #F2A93B; --saffron-700: #B86E0E;
+  /* Neutral — warm stone */
+  --stone-0: #FFFFFF; --stone-25: #FCFCFB; --stone-50: #F7F6F4; --stone-100: #EFEDEA; --stone-200: #E3E0DB;
+  --stone-300: #CFCAC3; --stone-400: #A8A29A; --stone-500: #7A746C; --stone-600: #57524B; --stone-700: #3D3934;
+  --stone-800: #282521; --stone-900: #1A1815;
+  /* Semantic primitives (text / soft background) */
+  --success-700: #15803D; --success-50: #EAF6EE;
+  --warning-700: #B45309; --warning-50: #FEF4E6;
+  --danger-700: #B42318; --danger-50: #FDECEA;
+  --info-700: #1D5FD1; --info-50: #EAF1FD;
+
+  /* ---------- Semantic roles ---------- */
+  --color-bg: var(--stone-50);
+  --color-surface: var(--stone-0);
+  --color-surface-subtle: var(--stone-25);
+  --color-surface-muted: var(--stone-100);
+  --color-text: var(--stone-900);
+  --color-text-secondary: var(--stone-600);
+  --color-text-disabled: var(--stone-400);
+  --color-border: var(--stone-200);
+  --color-border-strong: var(--stone-300);
+  --color-border-input: var(--stone-500);
+  --color-primary: var(--green-600);
+  --color-primary-hover: var(--green-700);
+  --color-primary-pressed: var(--green-800);
+  --color-on-primary: var(--stone-0);
+  --color-primary-soft: var(--green-50);
+  --color-primary-soft-strong: var(--green-100);
+  --color-primary-text: var(--green-700);
+  --color-accent: var(--saffron-500);
+  --color-accent-soft: var(--saffron-100);
+  --color-success: var(--success-700); --color-success-soft: var(--success-50);
+  --color-warning: var(--warning-700); --color-warning-soft: var(--warning-50);
+  --color-danger: var(--danger-700); --color-danger-soft: var(--danger-50);
+  --color-info: var(--info-700); --color-info-soft: var(--info-50);
+  --color-focus: var(--green-600);
+  --color-focus-halo: var(--green-300);
+  --color-overlay: rgb(26 24 21 / 0.45);
+
+  /* Typography */
+  --font-sans: 'Manrope Variable', Manrope, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-urdu: 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Jameel Noori Nastaleeq', serif;
+  --text-display: 2.5rem; --leading-display: 3rem;
+  --text-h1: 2rem; --leading-h1: 2.5rem;
+  --text-h2: 1.5rem; --leading-h2: 2rem;
+  --text-h3: 1.25rem; --leading-h3: 1.75rem;
+  --text-body: 1rem; --leading-body: 1.5rem;
+  --text-small: 0.875rem; --leading-small: 1.25rem;
+  --text-caption: 0.75rem; --leading-caption: 1rem;
+
+  /* Space (4 px grid) */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px;
+  --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px; --space-16: 64px;
+
+  /* Shape */
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; --radius-xl: 20px; --radius-full: 999px;
+
+  /* Depth (warm, low opacity, layered) */
+  --shadow-xs: 0 1px 2px rgb(26 24 21 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(26 24 21 / 0.05), 0 1px 3px rgb(26 24 21 / 0.06);
+  --shadow-md: 0 2px 4px rgb(26 24 21 / 0.05), 0 6px 16px rgb(26 24 21 / 0.08);
+  --shadow-lg: 0 4px 8px rgb(26 24 21 / 0.06), 0 16px 40px rgb(26 24 21 / 0.12);
+
+  /* Motion */
+  --duration-fast: 150ms; --duration-base: 200ms; --duration-slow: 250ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Layout */
+  --content-max: 1200px;
+  --header-height: 64px;
+  --touch-target: 44px;
+}
+
+@media (max-width: 639px) {
+  :root {
+    --text-display: 2rem; --leading-display: 2.5rem;
+    --text-h1: 1.75rem; --leading-h1: 2.25rem;
+  }
+}

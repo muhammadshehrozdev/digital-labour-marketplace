@@ -1,185 +1,86 @@
-import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import WorkerProfilePage from './pages/WorkerProfilePage';
-import SkillProfilerPage from './pages/SkillProfilerPage';
-import CustomerDashboard from './pages/CustomerDashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import ProtectedRoute from './components/ProtectedRoute';
-import NotFound from './pages/NotFound';
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { useAuth } from './context/auth';
-import { homePathFor } from './utils/roles';
+import { ToastProvider } from './components/ui';
+import AppShell from './components/layout/AppShell';
+import AdminLayout from './components/layout/AdminLayout';
+import ErrorBoundary from './components/layout/ErrorBoundary';
+import { GuestOnly, PageLoading, RequireOnboarding, RequireRole } from './routes/guards';
+import Landing from './pages/public/Landing';
+import Login from './pages/public/Login';
+import Register from './pages/public/Register';
+import NotFound from './pages/public/NotFound';
+import Onboarding from './pages/onboarding/Onboarding';
+import WorkerDashboard from './pages/worker/WorkerDashboard';
+import WorkerProfileEdit from './pages/worker/WorkerProfileEdit';
+import WorkerSkills from './pages/worker/WorkerSkills';
+import FindWorkers from './pages/customer/FindWorkers';
+import WorkerPublicProfile from './pages/customer/WorkerPublicProfile';
+import AdminOverview from './pages/admin/AdminOverview';
+import AdminIdentity from './pages/admin/AdminIdentity';
+import AdminAudit from './pages/admin/AdminAudit';
 
-function NavigationBar() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user, logout } = useAuth();
+// Style guide only in development builds (not shipped in production).
+const StyleGuide = import.meta.env.DEV ? lazy(() => import('./pages/dev/StyleGuide')) : null;
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
-
+export function AppRoutes() {
   return (
-    <nav className="navbar">
-      <Link to="/" className="nav-brand">
-        <span className="brand-dot">DL</span>
-        <span>Digital Labour</span>
-      </Link>
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route element={<GuestOnly />}>
+          <Route index element={<Landing />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
 
-      {!user ? (
-        <div className="nav-links-wrap">
-          <Link to="/login" className={`nav-link-item ${location.pathname === '/login' ? 'active' : ''}`}>
-            Sign In
-          </Link>
-          <Link
-            to="/register"
-            style={{
-              textDecoration: 'none',
-              background: '#4f46e5',
-              color: 'white',
-              fontWeight: '600',
-              padding: '8px 16px',
-              borderRadius: '10px',
-              fontSize: '0.86rem',
-            }}
-          >
-            Create Account
-          </Link>
-        </div>
-      ) : (
-        <div className="nav-links-wrap">
-          {user.role === 'worker' && (
-            <>
-              <Link
-                to="/worker-profile"
-                className={`nav-link-item ${location.pathname === '/worker-profile' ? 'active' : ''}`}
-              >
-                My Profile
-              </Link>
-              <Link
-                to="/skill-profiler"
-                className={`nav-link-item ${location.pathname === '/skill-profiler' ? 'active' : ''}`}
-              >
-                AI Skill Profiler
-              </Link>
-            </>
-          )}
-          {user.role === 'customer' && (
-            <Link
-              to="/customer-dashboard"
-              className={`nav-link-item ${location.pathname === '/customer-dashboard' ? 'active' : ''}`}
-            >
-              Find Workers
-            </Link>
-          )}
-          {user.role === 'admin' && (
-            <Link
-              to="/admin-dashboard"
-              className={`nav-link-item ${location.pathname === '/admin-dashboard' ? 'active' : ''}`}
-            >
-              Admin Panel
-            </Link>
-          )}
+        <Route element={<RequireRole role="worker" />}>
+          <Route path="onboarding" element={<Navigate to="/onboarding/about" replace />} />
+          <Route path="onboarding/:step" element={<Onboarding />} />
+          <Route element={<RequireOnboarding />}>
+            <Route path="worker" element={<WorkerDashboard />} />
+            <Route path="worker/profile" element={<WorkerProfileEdit />} />
+            <Route path="worker/skills" element={<WorkerSkills />} />
+          </Route>
+        </Route>
 
-          <span
-            style={{
-              fontSize: '0.8rem',
-              background: '#f1f5f9',
-              padding: '5px 12px',
-              borderRadius: '99px',
-              color: '#334155',
-              fontWeight: '600',
-            }}
-          >
-            {user.name} ({user.role})
-          </span>
+        <Route element={<RequireRole role="customer" />}>
+          <Route path="find" element={<FindWorkers />} />
+          <Route path="workers/:workerId" element={<WorkerPublicProfile />} />
+        </Route>
 
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: '6px 12px',
-              background: '#fef2f2',
-              color: '#dc2626',
-              border: '1px solid #fee2e2',
-              borderRadius: '8px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      )}
-    </nav>
+        <Route element={<RequireRole role="admin" />}>
+          <Route path="admin" element={<AdminLayout />}>
+            <Route index element={<AdminOverview />} />
+            <Route path="identity" element={<AdminIdentity />} />
+            <Route path="audit" element={<AdminAudit />} />
+          </Route>
+        </Route>
+
+        {StyleGuide && (
+          <Route path="dev/styleguide" element={<Suspense fallback={<PageLoading />}><StyleGuide /></Suspense>} />
+        )}
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   );
 }
 
-// "/" sends a logged-in user to their own dashboard; others see the Register page.
-function Home() {
-  const { user, loading } = useAuth();
-  if (loading) return <p style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</p>;
-  return user ? <Navigate to={homePathFor(user.role)} replace /> : <Register />;
+export function Providers({ children }) {
+  return (
+    <ToastProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </ToastProvider>
+  );
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
-    </BrowserRouter>
-  );
-}
-
-export function AppRoutes() {
-  return (
-    <>
-      <NavigationBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-
-        <Route
-          path="/worker-profile"
-          element={
-            <ProtectedRoute allowedRole="worker">
-              <WorkerProfilePage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/skill-profiler"
-          element={
-            <ProtectedRoute allowedRole="worker">
-              <SkillProfilerPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/customer-dashboard"
-          element={
-            <ProtectedRoute allowedRole="customer">
-              <CustomerDashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin-dashboard"
-          element={
-            <ProtectedRoute allowedRole="admin">
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Providers>
+          <AppRoutes />
+        </Providers>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }

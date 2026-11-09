@@ -1,0 +1,14 @@
+.wrap { position: relative; }
+.list {
+  position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px);
+  max-height: 280px; overflow-y: auto; margin: 0; padding: var(--space-1); list-style: none;
+  background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-md);
+}
+.option {
+  display: flex; justify-content: space-between; gap: var(--space-3); align-items: center;
+  min-height: var(--touch-target); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); cursor: pointer;
+}
+.active { background: var(--color-primary-soft); color: var(--color-primary-text); }
+.group { font-size: var(--text-caption); color: var(--color-text-secondary); text-align: right; }
+.active .group { color: var(--color-primary-text); }
+.empty { padding: var(--space-3); color: var(--color-text-secondary); }

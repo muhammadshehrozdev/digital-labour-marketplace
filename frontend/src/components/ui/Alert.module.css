@@ -1,0 +1,9 @@
+.alert { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid transparent; font-size: var(--text-small); line-height: var(--leading-small); }
+.icon { flex: none; margin-top: 1px; }
+.text { flex: 1; display: grid; gap: 2px; min-width: 0; }
+.title { font-weight: 700; }
+.action { flex: none; }
+.success { background: var(--color-success-soft); color: var(--color-success); border-color: color-mix(in srgb, var(--color-success) 25%, transparent); }
+.danger { background: var(--color-danger-soft); color: var(--color-danger); border-color: color-mix(in srgb, var(--color-danger) 25%, transparent); }
+.warning { background: var(--color-warning-soft); color: var(--color-warning); border-color: color-mix(in srgb, var(--color-warning) 25%, transparent); }
+.info { background: var(--color-info-soft); color: var(--color-info); border-color: color-mix(in srgb, var(--color-info) 25%, transparent); }

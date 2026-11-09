@@ -1,0 +1,8 @@
+.list { display: flex; gap: var(--space-1); border-bottom: 1px solid var(--color-border); overflow-x: auto; }
+.tab {
+  min-height: var(--touch-target); padding: 0 var(--space-4); border: 0; border-bottom: 3px solid transparent;
+  background: none; color: var(--color-text-secondary); font-weight: 700; white-space: nowrap;
+}
+.tab[aria-selected='true'] { color: var(--color-primary-text); border-bottom-color: var(--color-primary); }
+.tab:hover { color: var(--color-text); }
+.panel { padding-top: var(--space-4); }

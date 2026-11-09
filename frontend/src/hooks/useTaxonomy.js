@@ -1,5 +1,5 @@
-// Trade categories come from the backend (GET /api/meta/taxonomy), the one source of truth
-// (audit M1-16). Fetched once and shared by every page.
+// Categories and skills come from the backend (GET /api/meta/taxonomy), the one source of
+// truth (audit M1-16). Fetched once and shared by every page.
 import { useEffect, useState } from 'react';
 import API from '../api';
 
@@ -28,11 +28,22 @@ export function useTaxonomy() {
   const [error, setError] = useState('');
   useEffect(() => {
     if (cache) return;
+    let active = true;
     loadTaxonomy()
-      .then(setTaxonomy)
-      .catch(() => setError('Could not load the trade categories. Please reload the page.'));
+      .then((t) => active && setTaxonomy(t))
+      .catch(() => active && setError('Could not load the list of trades. Please reload the page.'));
+    return () => {
+      active = false;
+    };
   }, []);
   const categories = taxonomy?.categories || [];
-  const labelFor = (id) => categories.find((c) => c.id === id)?.label || id || '';
-  return { categories, labelFor, error };
+  const skills = taxonomy?.skills || [];
+  return {
+    loaded: Boolean(taxonomy),
+    categories,
+    skills,
+    error,
+    categoryLabel: (id) => categories.find((c) => c.id === id)?.label || '',
+    categoryOccupation: (id) => categories.find((c) => c.id === id)?.occupation || '',
+  };
 }

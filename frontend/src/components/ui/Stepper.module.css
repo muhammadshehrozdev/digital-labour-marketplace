@@ -1,0 +1,19 @@
+.nav { display: grid; gap: var(--space-3); }
+.compact { font-size: var(--text-small); color: var(--color-text-secondary); }
+.compact strong { color: var(--color-text); }
+.list { display: flex; gap: var(--space-2); list-style: none; padding: 0; margin: 0; }
+.item { flex: 1; display: flex; align-items: center; gap: var(--space-2); min-width: 0; color: var(--color-text-secondary); }
+.item:not(:last-child)::after { content: ''; flex: 1; height: 2px; min-width: var(--space-2); background: var(--color-border); border-radius: 2px; }
+.done:not(:last-child)::after { background: var(--color-primary); }
+.marker {
+  display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-input); background: var(--color-surface); font-size: var(--text-small); font-weight: 700;
+}
+.done .marker { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+.current .marker { border-color: var(--color-primary); color: var(--color-primary-text); background: var(--color-primary-soft); }
+.current { color: var(--color-text); font-weight: 700; }
+.label { font-size: var(--text-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: none; }
+@media (min-width: 768px) {
+  .compact { display: none; }
+  .label { display: inline; }
+}

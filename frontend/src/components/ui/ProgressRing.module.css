@@ -1,0 +1,5 @@
+.ring { position: relative; display: inline-grid; place-items: center; flex: none; }
+.ring svg { position: absolute; inset: 0; }
+.track { stroke: var(--color-surface-muted); }
+.value { stroke: var(--color-primary); transition: stroke-dashoffset var(--duration-slow) var(--ease-out); }
+.number { position: relative; font-weight: 800; font-size: var(--text-h3); }

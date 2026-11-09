@@ -1,0 +1,22 @@
+.page { display: grid; }
+.narrow { max-width: 820px; margin: 0 auto; }
+.grid { display: grid; gap: var(--space-4); }
+@media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; gap: var(--space-5); } .wideCard { grid-column: 1 / -1; } }
+@media (min-width: 1024px) { .wideCard { grid-column: auto; } }
+.completion { display: flex; align-items: center; gap: var(--space-5); }
+.cardTitle { font-size: var(--text-h3); line-height: var(--leading-h3); margin-bottom: var(--space-3); }
+.cardHead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--space-3); }
+.muted { color: var(--color-text-secondary); font-size: var(--text-small); line-height: var(--leading-small); }
+.stack { display: grid; gap: var(--space-3); justify-items: start; }
+.skillList, .checklist, .chips { list-style: none; margin: 0; padding: 0; }
+.skillList { display: grid; gap: var(--space-2); }
+.skillRow { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; border-bottom: 1px solid var(--color-border); }
+.skillName { font-weight: 600; }
+.checklist { display: grid; gap: var(--space-1); }
+.checkItem { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); min-height: var(--touch-target); }
+.checkItem > span:first-of-type { flex: 1; }
+.doneIcon { color: var(--color-success); flex: none; }
+.todoIcon { color: var(--color-text-secondary); flex: none; }
+.doneText { color: var(--color-text-secondary); text-decoration: line-through; }
+.sections { display: grid; gap: var(--space-5); }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }

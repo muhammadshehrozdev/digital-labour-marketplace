@@ -1,0 +1,6 @@
+.page { display: grid; gap: var(--space-8); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.stack { display: grid; gap: var(--space-4); }
+.grid { display: grid; gap: var(--space-4); }
+@media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } .full { grid-column: 1 / -1; } }
+.grow { flex: 1 1 200px; }
