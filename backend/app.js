@@ -5,13 +5,14 @@ import helmet from 'helmet';
 
 import { getEnv } from './config/env.js';
 import { configureMongoose, requireDb, dbState } from './config/db.js';
-import { createAuthLimiter } from './middleware/rateLimit.js';
+import { createAuthLimiter, createUploadLimiter } from './middleware/rateLimit.js';
 import { requireTrustedOrigin } from './middleware/csrf.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import metaRoutes from './routes/meta.js';
 import workersRoutes from './routes/workers.js';
 import adminRoutes from './routes/admin.js';
+import evidenceRoutes from './routes/evidence.js';
 
 export function createApp() {
   const env = getEnv();
@@ -44,11 +45,14 @@ export function createApp() {
 
   const authLimiter = createAuthLimiter({ limit: env.AUTH_RATE_LIMIT });
   app.use(['/api/auth/login', '/api/auth/register'], authLimiter);
+  const uploadLimiter = createUploadLimiter({ limit: env.UPLOAD_RATE_LIMIT });
+  app.use('/api/evidence', (req, res, next) => (req.method === 'POST' ? uploadLimiter(req, res, next) : next()));
 
   // Each route group is mounted once, under /api only (audit M1-13).
   app.use('/api/auth', authRoutes);
   app.use('/api/workers', workersRoutes);
   app.use('/api/admin', adminRoutes);
+  app.use('/api/evidence', evidenceRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

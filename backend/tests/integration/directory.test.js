@@ -83,7 +83,11 @@ describe('GET /api/workers (directory)', () => {
     const ali = res.body.workers.find((w) => w.workerIdCode === workerCode);
     expect(ali.user).toEqual({ name: 'Ali Worker' });
     expect(ali.occupation).toBe('C++ Electrician');
-    expect(ali.skills).toEqual([{ skillId: 'elec_wiring', name: 'House wiring', category: 'electrical_solar', custom: false }]);
+    // Module 3: only the chip state, approved count and strength label (no numbers, no files).
+    expect(ali.skills).toEqual([{
+      skillId: 'elec_wiring', name: 'House wiring', category: 'electrical_solar', custom: false,
+      evidenceSummary: { status: 'self_declared', approved: 0, strength: 'none' },
+    }]);
   });
 
   test('search finds a worker by a skill name ("house wiring")', async () => {

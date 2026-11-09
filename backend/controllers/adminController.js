@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import WorkerProfile from '../models/WorkerProfile.js';
 import AuditLog from '../models/AuditLog.js';
+import Evidence from '../models/Evidence.js';
 import User from '../models/User.js';
 import { httpError } from '../utils/httpError.js';
 import { writeAudit } from '../services/audit.js';
@@ -120,9 +121,10 @@ export const listUsersForAdmin = async (req, res) => {
 
 // GET /api/admin/stats — counts for the admin overview (real counts from the database).
 export const getStats = async (req, res) => {
-  const [byStatus, byRole] = await Promise.all([
+  const [byStatus, byRole, byEvidence] = await Promise.all([
     WorkerProfile.aggregate([{ $group: { _id: '$verificationStatus', n: { $sum: 1 } } }]),
     User.aggregate([{ $group: { _id: '$role', n: { $sum: 1 } } }]),
+    Evidence.aggregate([{ $group: { _id: '$status', n: { $sum: 1 } } }]),
   ]);
   const workers = { total: 0, Unverified: 0, Pending: 0, Verified: 0, Rejected: 0 };
   for (const row of byStatus) {
@@ -131,7 +133,12 @@ export const getStats = async (req, res) => {
   }
   const users = { worker: 0, customer: 0, admin: 0 };
   for (const row of byRole) if (row._id in users) users[row._id] = row.n;
-  res.json({ workers, users });
+  const evidence = { total: 0, pending: 0, approved: 0, rejected: 0, suspected_fake: 0, revoked: 0 };
+  for (const row of byEvidence) {
+    if (row._id in evidence) evidence[row._id] = row.n;
+    evidence.total += row.n;
+  }
+  res.json({ workers, users, evidence });
 };
 
 // GET /api/admin/audit — read-only audit log viewer (newest first). Entries never contain a CNIC.

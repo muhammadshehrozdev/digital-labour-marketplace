@@ -49,6 +49,8 @@ const envSchema = z.object({
   TRUST_PROXY: z.coerce.number().int().min(0).max(5).default(0),
   // Failed login/register attempts allowed per IP address per 15 minutes.
   AUTH_RATE_LIMIT: z.coerce.number().int().min(1).max(100000).default(10),
+  // Evidence uploads allowed per IP address per 15 minutes.
+  UPLOAD_RATE_LIMIT: z.coerce.number().int().min(1).max(100000).default(30),
   DB_TIMEOUT_MS: z.coerce.number().int().min(100).max(60000).default(5000),
 });
 

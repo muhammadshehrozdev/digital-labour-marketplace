@@ -51,6 +51,7 @@ export const directoryQuerySchema = z
     category: z.enum(['All', ...CATEGORY_IDS], { error: 'Unknown category' }).optional(),
     availability: z.enum(['All', ...AVAILABILITY], { error: 'Unknown availability' }).optional(),
     identity: z.enum(['all', 'verified'], { error: 'identity must be all or verified' }).optional(),
+    skills: z.enum(['all', 'verified'], { error: 'skills must be all or verified' }).optional(),
     page: queryInt(1, 1000).optional(),
     limit: queryInt(1, 50).optional(),
   })

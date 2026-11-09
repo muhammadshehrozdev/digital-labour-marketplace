@@ -16,7 +16,8 @@
     "migrate:categories": "node scripts/migrateCategories.js",
     "migrate:skills": "node scripts/migrateSkills.js",
     "evaluate:skills": "node evaluation/skill-extraction/evaluate.js",
-    "agreement:skills": "node evaluation/skill-extraction/agreement.js"
+    "agreement:skills": "node evaluation/skill-extraction/agreement.js",
+    "confidence:sensitivity": "node scripts/confidenceSensitivity.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

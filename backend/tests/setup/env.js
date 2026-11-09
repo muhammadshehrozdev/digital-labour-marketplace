@@ -10,6 +10,7 @@ const testEnv = {
   CNIC_ENC_KEY: Buffer.alloc(32, 1).toString('base64'),
   CNIC_HASH_KEY: Buffer.alloc(32, 2).toString('base64'),
   AUTH_RATE_LIMIT: '100000',
+  UPLOAD_RATE_LIMIT: '100000',
   DB_TIMEOUT_MS: '500',
 };
 for (const [key, value] of Object.entries(testEnv)) {

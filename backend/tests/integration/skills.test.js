@@ -103,7 +103,8 @@ describe('confirmed skills: POST/GET/DELETE /api/workers/me/skills', () => {
 
     const raw = await WorkerProfile.collection.findOne({ user: new mongoose.Types.ObjectId(user._id) });
     const text = JSON.stringify(raw).toLowerCase();
-    for (const word of ['confidence', 'strength', 'score', 'level', 'categorizedskills', 'recommendedskills']) {
+    // Old invented numbers are gone. (Module 3 stores a plain-language "strength" label per skill; no numbers.)
+    for (const word of ['confidence', 'skillstrengthscore', 'score', 'level', 'categorizedskills', 'recommendedskills']) {
       expect(text).not.toContain(word);
     }
   });

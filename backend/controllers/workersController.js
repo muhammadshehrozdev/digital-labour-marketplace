@@ -13,6 +13,8 @@ import { refreshOnboarding } from '../services/onboarding.js';
 // Never: CNIC data, address, emergency contact, WhatsApp, phone, email, raw experience text.
 export const PUBLIC_WORKER_FIELDS = [
   'workerIdCode', 'occupation', 'category', 'skills.skillId', 'skills.name', 'skills.category', 'skills.custom',
+  // Module 3: chip state, approved count and strength label only — never images, files or numbers.
+  'skills.evidenceSummary.status', 'skills.evidenceSummary.approved', 'skills.evidenceSummary.strength',
   'experienceYears', 'hourlyRate', 'dailyRate', 'city', 'availability', 'verificationStatus', 'bio', 'languages',
   'profileCompletion', 'user',
 ].join(' ');
@@ -96,7 +98,7 @@ export const updateMyProfile = async (req, res) => {
 
 // GET /api/workers  (customer, admin) — public directory, paginated, safe fields only.
 export const listDirectory = async (req, res) => {
-  const { search, city, category, availability, identity, page = 1, limit = 20 } = req.validated.query;
+  const { search, city, category, availability, identity, skills, page = 1, limit = 20 } = req.validated.query;
 
   // Only workers who finished the "Your work" step are listed (a card needs a trade).
   const filter = {
@@ -106,6 +108,7 @@ export const listDirectory = async (req, res) => {
   if (category && category !== 'All') filter.category = category;
   if (availability && availability !== 'All') filter.availability = availability;
   if (identity === 'verified') filter.verificationStatus = 'Verified';
+  if (skills === 'verified') filter['skills.evidenceSummary.status'] = 'verified'; // at least one skill backed by approved proof
   if (city) filter.city = new RegExp(escapeRegex(city), 'i');
   if (search) {
     const pattern = new RegExp(escapeRegex(search), 'i');

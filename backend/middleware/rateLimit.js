@@ -16,3 +16,14 @@ export function createAuthLimiter({ limit }) {
     message: { message: 'Too many failed attempts from this network. Please wait 15 minutes and try again.' },
   });
 }
+
+// Evidence uploads: at most `limit` uploads per IP address per 15 minutes (all attempts count).
+export function createUploadLimiter({ limit }) {
+  return rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { message: 'Too many uploads from this network. Please wait 15 minutes and try again.' },
+  });
+}

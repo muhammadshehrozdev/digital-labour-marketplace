@@ -14,9 +14,21 @@ const workHistorySchema = new mongoose.Schema(
   { _id: true }
 );
 
+// Module 3: what users may see about a skill's evidence (no numbers; b, d, u, E are admin-only and
+// computed on demand). Recomputed after every upload, review decision and deletion.
+const evidenceSummarySchema = new mongoose.Schema(
+  {
+    status: { type: String, enum: ['self_declared', 'evidence_pending', 'verified', 'disputed'], default: 'self_declared' },
+    approved: { type: Number, min: 0, default: 0 },
+    pending: { type: Number, min: 0, default: 0 },
+    strength: { type: String, enum: ['none', 'weak', 'moderate', 'strong'], default: 'none' },
+    updatedAt: { type: Date, default: null },
+  },
+  { _id: false }
+);
+
 // Module 2: ONE skills array (fixes M2-10). A skill is a taxonomy id, or a clearly marked
 // custom skill. No confidence, level or score is stored (fixes M2-8, M2-9).
-// Module 3 will add evidenceSummary per skill.
 const skillSchema = new mongoose.Schema(
   {
     skillId: { type: String, required: true, maxlength: 80 },
@@ -25,6 +37,7 @@ const skillSchema = new mongoose.Schema(
     addedVia: { type: String, required: true, enum: ['extractor', 'manual'] },
     custom: { type: Boolean, default: false },
     addedAt: { type: Date, default: () => new Date() },
+    evidenceSummary: { type: evidenceSummarySchema, default: () => ({}) },
   },
   { _id: false }
 );

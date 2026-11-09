@@ -1,6 +1,8 @@
 // 404 for unknown routes and one central error handler (audit M1-7, M1-13).
 // Rule: a 500 never sends error.message to the browser. Details go to the server log only.
 import mongoose from 'mongoose';
+import multer from 'multer';
+import { MSG_TOO_LARGE } from './upload.js';
 
 export const GENERIC_500 = 'Something went wrong on the server. Please try again later.';
 
@@ -18,6 +20,18 @@ export function errorHandler(err, req, res, next) {
   }
   if (err.type === 'entity.too.large') {
     return res.status(413).json({ message: 'Request body is too large' });
+  }
+
+  // Upload problems from multer (Module 3)
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') return res.status(413).json({ message: MSG_TOO_LARGE });
+    if (err.code === 'LIMIT_UNEXPECTED_FILE' || err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({ message: 'Send one photo in the "image" field.' });
+    }
+    return res.status(400).json({ message: 'The upload form is not valid.' });
+  }
+  if (/Unexpected end of form|Malformed part header|Multipart: Boundary not found/i.test(String(err.message))) {
+    return res.status(400).json({ message: 'The upload was not complete. Please try again.' });
   }
 
   // Our own HttpError (status + safe message)
