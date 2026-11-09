@@ -1,73 +1,91 @@
-import User from '../models/User.js';
-import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
+import User, { BCRYPT_COST } from '../models/User.js';
+import { httpError } from '../utils/httpError.js';
+import {
+  SESSION_COOKIE, signSession, verifySession, readCookie, setSessionCookie, clearSessionCookie,
+} from '../services/session.js';
 
-const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+// The only fields of a user that the API ever sends back (to that user or an admin).
+const ownUser = (u) => ({ _id: u._id, name: u.name, email: u.email, phone: u.phone, role: u.role });
+
+export const LOGIN_FAILED =
+  'Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes.';
+export const MAX_FAILED_LOGINS = 5;
+export const LOCK_MINUTES = 15;
+
+// A real bcrypt hash of a random value, made once. Used when the email does not exist,
+// so a wrong email and a wrong password take about the same time (no account guessing).
+let dummyHashPromise;
+const dummyHash = () => {
+  dummyHashPromise ??= bcrypt.hash(`dummy-${Math.random()}`, BCRYPT_COST);
+  return dummyHashPromise;
 };
 
-// POST: /api/auth/register
+// POST /api/auth/register  (worker or customer only — admins come from the create-admin script)
 export const registerUser = async (req, res) => {
-  try {
-    const { name, email, password, phone, role } = req.body;
+  const { name, email, password, phone, role } = req.validated.body;
 
-    const userExists = await User.findOne({ email: email.toLowerCase().trim() });
-    if (userExists) {
-      return res.status(400).json({ message: 'Yeh email pehle se registered hai' });
-    }
-
-    // Security (M1-1): public registration may create only workers or customers.
-    // Admins are never created here. No role sent -> worker (old default).
-    if (role !== undefined && role !== 'worker' && role !== 'customer') {
-      return res.status(400).json({ message: 'Role must be worker or customer' });
-    }
-    const assignedRole = role === 'customer' ? 'customer' : 'worker';
-
-    const user = await User.create({
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      password,
-      phone: phone.trim(),
-      role: assignedRole,
-    });
-
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      phone: user.phone,
-      token: generateToken(user._id, user.role),
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (await User.exists({ email })) {
+    throw httpError(409, 'This email is already registered. Please log in instead.');
   }
+  const user = await User.create({ name, email, password, phone, role });
+
+  setSessionCookie(res, signSession(user));
+  res.status(201).json(ownUser(user));
 };
 
-// POST: /api/auth/login
+// POST /api/auth/login
 export const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const { email, password } = req.validated.body;
+  const user = await User.findOne({ email }).select('+password');
 
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
-
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        token: generateToken(user._id, user.role),
-      });
-    } else {
-      res.status(401).json({ message: 'Email ya password ghalat hai' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (!user) {
+    await bcrypt.compare(password, await dummyHash());
+    throw httpError(401, LOGIN_FAILED);
   }
+
+  const passwordOk = await bcrypt.compare(password, user.password);
+  const locked = user.lockUntil && user.lockUntil > new Date();
+
+  if (locked) throw httpError(401, LOGIN_FAILED); // even a correct password waits out the lock
+
+  if (!passwordOk) {
+    // Atomic +1, so parallel guesses are all counted.
+    const updated = await User.findOneAndUpdate(
+      { _id: user._id },
+      { $inc: { failedLoginCount: 1 } },
+      { returnDocument: 'after', projection: { failedLoginCount: 1 } }
+    );
+    if (updated && updated.failedLoginCount >= MAX_FAILED_LOGINS) {
+      await User.updateOne(
+        { _id: user._id },
+        { $set: { lockUntil: new Date(Date.now() + LOCK_MINUTES * 60 * 1000), failedLoginCount: 0 } }
+      );
+    }
+    throw httpError(401, LOGIN_FAILED);
+  }
+
+  if (user.failedLoginCount !== 0 || user.lockUntil) {
+    await User.updateOne({ _id: user._id }, { $set: { failedLoginCount: 0, lockUntil: null } });
+  }
+
+  setSessionCookie(res, signSession(user));
+  res.json(ownUser(user));
 };
 
-// GET: /api/auth/me (Logged-in user ki details)
+// GET /api/auth/me
 export const getMe = async (req, res) => {
-  res.json(req.user);
+  res.json(ownUser(req.user));
+};
+
+// POST /api/auth/logout — works even if the session already expired.
+// Increasing tokenVersion makes every older token of this user invalid (all devices).
+export const logoutUser = async (req, res) => {
+  const payload = verifySession(readCookie(req, SESSION_COOKIE));
+  if (payload && mongoose.isValidObjectId(payload.sub)) {
+    await User.updateOne({ _id: payload.sub, tokenVersion: payload.tv }, { $inc: { tokenVersion: 1 } });
+  }
+  clearSessionCookie(res);
+  res.json({ message: 'You are logged out.' });
 };

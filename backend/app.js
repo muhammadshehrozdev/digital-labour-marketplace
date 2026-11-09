@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import { getEnv } from './config/env.js';
 import { configureMongoose, requireDb, dbState } from './config/db.js';
 import { createAuthLimiter } from './middleware/rateLimit.js';
+import { requireTrustedOrigin } from './middleware/csrf.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import workerRoutes from './routes/workerRoutes.js';
@@ -27,6 +28,9 @@ export function createApp() {
   app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));
 
   app.use(express.json({ limit: '100kb' }));
+
+  // CSRF check for POST/PUT/PATCH/DELETE (decision D-006).
+  app.use('/api', requireTrustedOrigin(env.CLIENT_ORIGIN));
 
   app.get('/', (req, res) => res.json({ message: 'Digital Labour Marketplace API' }));
 
