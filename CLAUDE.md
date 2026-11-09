@@ -56,7 +56,7 @@ If a script does not exist yet, say so instead of pretending it ran.
 
 Security
 - Admin accounts are created only by the `create-admin` script. Public registration accepts only `worker` or `customer`.
-- Never send `password`, CNIC data, home address, emergency contact or email to anyone except the owner or an admin. Use explicit field lists (projections) for every public response. Never write a CNIC number into logs or the audit log.
+- Never send `password`, CNIC data, home address, emergency contact or email to anyone except the owner or an admin. A worker's phone and WhatsApp number never appear in the directory or search results; a customer sees them only after a booking between them is accepted (no booking module yet, so no customer sees them). Use explicit field lists (projections) for every public response. Never write a CNIC number into logs or the audit log.
 - Validate every request body, query and URL parameter on the server with the shared validation schemas. Reject bad input with 400 and a clear message.
 - Never build a `RegExp` from user text without escaping it. Never pass user objects straight into a MongoDB filter.
 - Never return raw `error.message` from a 500 error. Log it on the server; send a generic message.
