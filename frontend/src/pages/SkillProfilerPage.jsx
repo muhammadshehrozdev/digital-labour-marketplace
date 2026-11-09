@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import API from '../api';
+import { useTaxonomy } from '../hooks/useTaxonomy';
 
 export default function SkillProfilerPage() {
+  const { labelFor } = useTaxonomy();
   const [profile, setProfile] = useState(null);
   const [voiceText, setVoiceText] = useState('');
   const [voiceLang, setVoiceLang] = useState('ur-PK');
@@ -15,7 +17,7 @@ export default function SkillProfilerPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data } = await API.get('/worker/profile');
+        const { data } = await API.get('/workers/me');
         if (data) {
           setProfile(data);
           setVoiceText(data.rawExperienceText || '');
@@ -213,7 +215,7 @@ export default function SkillProfilerPage() {
             {hasValidAiProfile ? profile.occupation : 'No Trade Detected'}
           </h3>
           <p style={{ fontSize: '0.84rem', color: '#4f46e5', fontWeight: '600', marginBottom: '12px' }}>
-            {hasValidAiProfile ? `${profile.category} • ${profile.experienceYears} Yrs` : 'Speak or type on the right'}
+            {hasValidAiProfile ? `${labelFor(profile.category)} • ${profile.experienceYears} Yrs` : 'Speak or type on the right'}
           </p>
 
           <div

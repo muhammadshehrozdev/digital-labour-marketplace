@@ -1,15 +1,26 @@
 import { useState, useEffect } from 'react';
 import API from '../api';
+import { useAuth } from '../context/auth';
+import { buildProfilePayload } from '../utils/profilePayload';
+import { useTaxonomy } from '../hooks/useTaxonomy';
+
+const IDENTITY_TEXT = {
+  Unverified: 'Not verified yet. Save your CNIC so an admin can check it.',
+  Pending: 'Waiting for an admin to check your CNIC (in person or by video call).',
+  Verified: 'Identity verified by an admin.',
+  Rejected: 'Identity check was not successful. Please contact the admin.',
+};
 
 export default function WorkerProfilePage() {
-  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const { user: storedUser, updateUser } = useAuth();
+  const { categories, labelFor, error: taxonomyError } = useTaxonomy();
 
   const [profile, setProfile] = useState({
-    name: storedUser.name || '',
-    phone: storedUser.phone || '',
-    workerIdCode: 'DLM-2026-NEW',
+    name: storedUser?.name || '',
+    phone: storedUser?.phone || '',
+    workerIdCode: '',
     occupation: '',
-    category: 'Home Maintenance',
+    category: 'home_maintenance',
     skillsInput: '',
     skills: [],
     experienceYears: 0,
@@ -20,9 +31,10 @@ export default function WorkerProfilePage() {
     whatsappNumber: '',
     emergencyContact: '',
     cnicNumber: '',
-    languagesInput: 'Urdu, Punjabi',
+    cnicOnFile: false,
+    languagesInput: 'Urdu',
     availability: 'Available',
-    verificationStatus: 'Pending',
+    verificationStatus: 'Unverified',
     bio: '',
     workHistory: [],
     profileCompletion: 25,
@@ -42,22 +54,24 @@ export default function WorkerProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data } = await API.get('/worker/profile');
+        const { data } = await API.get('/workers/me');
         if (data) {
           setProfile({
             ...data,
-            name: data.user?.name || storedUser.name || '',
-            phone: data.user?.phone || storedUser.phone || '',
+            cnicNumber: '',
+            name: data.user?.name || storedUser?.name || '',
+            phone: data.user?.phone || storedUser?.phone || '',
             skillsInput: (data.skills || []).join(', '),
             languagesInput: (data.languages || ['Urdu']).join(', '),
             workHistory: data.workHistory || [],
           });
         }
       } catch (err) {
-        console.log('New profile');
+        if (err.response?.status !== 404) setError(err.response?.data?.message || 'Could not load your profile');
       }
     };
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
@@ -84,30 +98,14 @@ export default function WorkerProfilePage() {
     setMessage('');
     setError('');
     try {
-      const payload = {
-        ...profile,
-        skills: profile.skillsInput
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean),
-        languages: profile.languagesInput
-          .split(',')
-          .map((l) => l.trim())
-          .filter(Boolean),
-      };
-
-      const { data } = await API.post('/worker/profile', payload);
+      const { data } = await API.put('/workers/me', buildProfilePayload(profile));
       const saved = data.profile;
 
-      const updatedUser = {
-        ...storedUser,
-        name: saved.user?.name || profile.name,
-        phone: saved.user?.phone || profile.phone,
-      };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      updateUser({ name: saved.user?.name || profile.name, phone: saved.user?.phone || profile.phone });
 
       setProfile({
         ...saved,
+        cnicNumber: '',
         name: saved.user?.name || profile.name,
         phone: saved.user?.phone || profile.phone,
         skillsInput: (saved.skills || []).join(', '),
@@ -141,13 +139,14 @@ export default function WorkerProfilePage() {
 
       {message && <div className="alert-message success">{message}</div>}
       {error && <div className="alert-message error">{error}</div>}
+      {taxonomyError && <div className="alert-message error">{taxonomyError}</div>}
 
       <div className="profile-grid">
         {/* Left: Soft Light Digital ID Card */}
         <div className="digital-id-card">
           <div className="card-top-bar">
             <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#4f46e5' }}>
-              {profile.workerIdCode || 'DLM-2026-NEW'}
+              {profile.workerIdCode || 'New profile'}
             </span>
             <span
               style={{
@@ -172,7 +171,7 @@ export default function WorkerProfilePage() {
               <p style={{ fontSize: '0.85rem', color: '#4f46e5', fontWeight: '600' }}>
                 {profile.occupation || 'Trade Not Added'}
               </p>
-              <p style={{ fontSize: '0.76rem', color: '#64748b' }}>{profile.category}</p>
+              <p style={{ fontSize: '0.76rem', color: '#64748b' }}>{labelFor(profile.category)}</p>
             </div>
           </div>
 
@@ -232,7 +231,8 @@ export default function WorkerProfilePage() {
           <div style={{ fontSize: '0.8rem', color: '#475569', lineHeight: '1.7', borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
             <div><strong>Phone:</strong> {profile.phone || 'N/A'}</div>
             <div><strong>Location:</strong> {profile.address ? `${profile.address}, ` : ''}{profile.city}</div>
-            <div><strong>Status:</strong> {profile.verificationStatus}</div>
+            <div><strong>Identity:</strong> {profile.verificationStatus}</div>
+            <div style={{ fontSize: '0.74rem', color: '#64748b' }}>{IDENTITY_TEXT[profile.verificationStatus]}</div>
           </div>
         </div>
 
@@ -259,8 +259,49 @@ export default function WorkerProfilePage() {
                 <input type="text" name="whatsappNumber" placeholder="0300 1234567" className="input-control" value={profile.whatsappNumber} onChange={handleChange} />
               </div>
               <div className="input-group">
-                <label className="input-label">CNIC Number</label>
-                <input type="text" name="cnicNumber" placeholder="37405-1234567-1" className="input-control" value={profile.cnicNumber} onChange={handleChange} />
+                <label className="input-label" htmlFor="cnicNumber">CNIC Number</label>
+                <input
+                  id="cnicNumber"
+                  type="text"
+                  name="cnicNumber"
+                  placeholder={profile.cnicOnFile ? 'Saved (hidden). Type only to change it' : '12345-1234567-1'}
+                  className="input-control"
+                  value={profile.cnicNumber}
+                  autoComplete="off"
+                  onChange={handleChange}
+                />
+                <p style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
+                  {profile.cnicOnFile
+                    ? 'Your CNIC is saved in encrypted form and is never shown. Only an admin can see it.'
+                    : 'Stored encrypted. Only an admin can see it, to check your identity.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="form-row-2">
+              <div className="input-group">
+                <label className="input-label" htmlFor="emergencyContact">Emergency Contact</label>
+                <input
+                  id="emergencyContact"
+                  type="text"
+                  name="emergencyContact"
+                  placeholder="Name and phone, e.g. Brother Ahmed 0300 1234567"
+                  className="input-control"
+                  value={profile.emergencyContact}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="input-group">
+                <label className="input-label" htmlFor="languagesInput">Languages (comma separated)</label>
+                <input
+                  id="languagesInput"
+                  type="text"
+                  name="languagesInput"
+                  placeholder="Urdu, Punjabi, Pashto"
+                  className="input-control"
+                  value={profile.languagesInput}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
@@ -286,16 +327,11 @@ export default function WorkerProfilePage() {
                 <input type="text" name="occupation" placeholder="e.g. Electrician, Plumber" className="input-control" value={profile.occupation} required onChange={handleChange} />
               </div>
               <div className="input-group">
-                <label className="input-label">Category</label>
-                <select name="category" className="input-control" value={profile.category} onChange={handleChange}>
-                  <option value="Home Maintenance">Home Maintenance</option>
-                  <option value="Electrical & Solar">Electrical & Solar</option>
-                  <option value="Plumbing & Sanitary">Plumbing & Sanitary</option>
-                  <option value="Construction & Masonry">Construction & Masonry</option>
-                  <option value="Carpentry & Woodwork">Carpentry & Woodwork</option>
-                  <option value="Painting & Renovation">Painting & Renovation</option>
-                  <option value="AC & Appliance Repair">AC & Appliance Repair</option>
-                  <option value="Cleaning & Shifting">Cleaning & Shifting</option>
+                <label className="input-label" htmlFor="category">Category</label>
+                <select id="category" name="category" className="input-control" value={profile.category} onChange={handleChange}>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.label}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -308,7 +344,7 @@ export default function WorkerProfilePage() {
             <div className="form-row-2">
               <div className="input-group">
                 <label className="input-label">Experience (Years)</label>
-                <input type="number" name="experienceYears" className="input-control" value={profile.experienceYears} required onChange={handleChange} />
+                <input type="number" min="0" max="60" step="1" name="experienceYears" className="input-control" value={profile.experienceYears} required onChange={handleChange} />
               </div>
               <div className="input-group">
                 <label className="input-label">Availability</label>
@@ -323,11 +359,11 @@ export default function WorkerProfilePage() {
             <div className="form-row-2">
               <div className="input-group">
                 <label className="input-label">Hourly Rate (PKR)</label>
-                <input type="number" name="hourlyRate" className="input-control" value={profile.hourlyRate} required onChange={handleChange} />
+                <input type="number" min="0" name="hourlyRate" className="input-control" value={profile.hourlyRate} required onChange={handleChange} />
               </div>
               <div className="input-group">
                 <label className="input-label">Daily Rate (PKR)</label>
-                <input type="number" name="dailyRate" className="input-control" value={profile.dailyRate} onChange={handleChange} />
+                <input type="number" min="0" name="dailyRate" className="input-control" value={profile.dailyRate} onChange={handleChange} />
               </div>
             </div>
 
@@ -358,7 +394,8 @@ export default function WorkerProfilePage() {
                     }}
                   >
                     <div style={{ fontSize: '0.86rem' }}>
-                      <strong>{item.jobTitle}</strong> {item.clientOrEmployer && `• ${item.clientOrEmployer}`} ({item.duration})
+                      <strong>{item.jobTitle}</strong> {item.clientOrEmployer && `• ${item.clientOrEmployer}`} {item.duration && `(${item.duration})`}
+                      {item.description && <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{item.description}</div>}
                     </div>
                     <button
                       type="button"
@@ -375,10 +412,18 @@ export default function WorkerProfilePage() {
             <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '18px' }}>
               <div className="form-row-2">
                 <div className="input-group">
-                  <input type="text" placeholder="Job Title (e.g. House Wiring)" className="input-control" value={newJob.jobTitle} onChange={(e) => setNewJob({ ...newJob, jobTitle: e.target.value })} />
+                  <input type="text" aria-label="Job title" placeholder="Job Title (e.g. House Wiring)" className="input-control" value={newJob.jobTitle} onChange={(e) => setNewJob({ ...newJob, jobTitle: e.target.value })} />
                 </div>
                 <div className="input-group">
                   <input type="text" placeholder="Location / Client" className="input-control" value={newJob.clientOrEmployer} onChange={(e) => setNewJob({ ...newJob, clientOrEmployer: e.target.value })} />
+                </div>
+              </div>
+              <div className="form-row-2">
+                <div className="input-group">
+                  <input type="text" aria-label="Job duration" placeholder="Duration (e.g. 2 weeks, 3 months)" className="input-control" value={newJob.duration} onChange={(e) => setNewJob({ ...newJob, duration: e.target.value })} />
+                </div>
+                <div className="input-group">
+                  <input type="text" aria-label="Job description" placeholder="What did you do?" className="input-control" value={newJob.description} onChange={(e) => setNewJob({ ...newJob, description: e.target.value })} />
                 </div>
               </div>
               <button

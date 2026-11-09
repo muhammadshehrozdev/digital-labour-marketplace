@@ -1,20 +1,32 @@
 import axios from 'axios';
 
-const isLocalhost =
-  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
+// The API address. Locally this is "/api" on the same origin as the page: Vite forwards
+// it to the backend (vite.config.js), so the login cookie is first-party.
+// The same-origin Vercel rewrite is set up in Phase 8 (do not deploy this branch before that).
 const API = axios.create({
-  baseURL: isLocalhost
-    ? 'http://localhost:5000/api'
-    : 'https://digital-labour-marketplace-1qhz.vercel.app/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+  withCredentials: true, // send the HttpOnly login cookie (JavaScript cannot read it)
+  timeout: 20000,
 });
 
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
+// Called when the server says "not logged in" (401). AuthContext sets it.
+let onUnauthorized = null;
+export function setUnauthorizedHandler(handler) {
+  onUnauthorized = handler;
+}
+
+// A 401 from these is a normal answer (not logged in yet / wrong password), not an expired session.
+const NO_REDIRECT = ['/auth/me', '/auth/login', '/auth/register', '/auth/logout'];
+
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const url = error.config?.url || '';
+    if (error.response?.status === 401 && !NO_REDIRECT.some((path) => url.endsWith(path)) && onUnauthorized) {
+      onUnauthorized();
+    }
+    return Promise.reject(error);
   }
-  return req;
-});
+);
 
 export default API;

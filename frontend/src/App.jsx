@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import WorkerProfilePage from './pages/WorkerProfilePage';
@@ -6,15 +6,18 @@ import SkillProfilerPage from './pages/SkillProfilerPage';
 import CustomerDashboard from './pages/CustomerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import NotFound from './pages/NotFound';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/auth';
+import { homePathFor } from './utils/roles';
 
 function NavigationBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.clear();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -25,7 +28,7 @@ function NavigationBar() {
         <span>Digital Labour</span>
       </Link>
 
-      {!token ? (
+      {!user ? (
         <div className="nav-links-wrap">
           <Link to="/login" className={`nav-link-item ${location.pathname === '/login' ? 'active' : ''}`}>
             Sign In
@@ -114,12 +117,29 @@ function NavigationBar() {
   );
 }
 
+// "/" sends a logged-in user to their own dashboard; others see the Register page.
+function Home() {
+  const { user, loading } = useAuth();
+  if (loading) return <p style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</p>;
+  return user ? <Navigate to={homePathFor(user.role)} replace /> : <Register />;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
+export function AppRoutes() {
+  return (
+    <>
       <NavigationBar />
       <Routes>
-        <Route path="/" element={<Register />} />
+        <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
 
@@ -158,7 +178,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }

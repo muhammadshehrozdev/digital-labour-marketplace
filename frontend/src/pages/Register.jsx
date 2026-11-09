@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import API from '../api';
+import { useAuth } from '../context/auth';
+import { homePathFor } from '../utils/roles';
+import { passwordProblem } from '../utils/password';
+
 
 export default function Register() {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,19 +21,15 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    const problem = passwordProblem(formData.password);
+    if (problem) {
+      setError(problem);
+      return;
+    }
     setLoading(true);
     try {
-      const { data } = await API.post('/auth/register', formData);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data));
-
-      if (data.role === 'worker') {
-        navigate('/worker-profile');
-      } else if (data.role === 'customer') {
-        navigate('/customer-dashboard');
-      } else {
-        navigate('/admin-dashboard');
-      }
+      const user = await register(formData);
+      navigate(homePathFor(user.role));
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Registration failed');
     } finally {
@@ -99,14 +99,20 @@ export default function Register() {
           </div>
 
           <div className="input-group">
-            <label className="input-label">Password</label>
+            <label className="input-label" htmlFor="register-password">Password</label>
             <input
+              id="register-password"
               type="password"
-              placeholder="At least 6 characters"
+              placeholder="At least 15 characters"
               className="input-control"
+              aria-describedby="password-help"
               required
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
+            <p id="password-help" style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '6px' }}>
+              At least 15 characters. Easy to remember: use 4 or more words with spaces, in Roman Urdu or English.
+              No symbols needed.
+            </p>
           </div>
 
           <button type="submit" className="btn-action-primary" disabled={loading}>

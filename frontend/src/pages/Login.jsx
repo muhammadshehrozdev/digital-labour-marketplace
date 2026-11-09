@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import API from '../api';
+import { useAuth } from '../context/auth';
+import { homePathFor } from '../utils/roles';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login, notice } = useAuth();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,17 +15,8 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const { data } = await API.post('/auth/login', formData);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data));
-
-      if (data.role === 'worker') {
-        navigate('/worker-profile');
-      } else if (data.role === 'customer') {
-        navigate('/customer-dashboard');
-      } else {
-        navigate('/admin-dashboard');
-      }
+      const user = await login(formData.email, formData.password);
+      navigate(homePathFor(user.role));
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {
@@ -39,6 +32,7 @@ export default function Login() {
           <p>Sign in to your account</p>
         </div>
 
+        {notice && !error && <div className="alert-message error">{notice}</div>}
         {error && <div className="alert-message error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
