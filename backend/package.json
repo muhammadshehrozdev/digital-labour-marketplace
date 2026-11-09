@@ -11,7 +11,9 @@
     "seed:local": "node scripts/seedLocalDemo.js",
     "create-admin": "node scripts/createAdmin.js",
     "list-admins": "node scripts/listAdmins.js",
-    "audit:verify": "node scripts/verifyAudit.js"
+    "audit:verify": "node scripts/verifyAudit.js",
+    "migrate:cnic": "node scripts/migrateCnic.js",
+    "migrate:categories": "node scripts/migrateCategories.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

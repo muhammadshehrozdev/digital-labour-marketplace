@@ -34,7 +34,7 @@ for (const data of demoUsers) {
     await WorkerProfile.create({
       user: user._id,
       occupation: 'Electrician',
-      category: 'Electrical & Solar',
+      category: 'electrical_solar',
       skills: ['House Wiring'],
       experienceYears: 3,
       hourlyRate: 500,
