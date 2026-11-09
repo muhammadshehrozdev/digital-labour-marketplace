@@ -1,57 +1,32 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
+// Entry point.
+// - On your computer: checks the settings, connects to MongoDB, then listens on HOST:PORT.
+// - On Vercel: only builds and exports the app (Vercel calls it for each request).
+import 'dotenv/config';
+import { getEnv } from './config/env.js';
+import { connectDB } from './config/db.js';
+import { createApp } from './app.js';
 
-import authRoutes from './routes/authRoutes.js';
-import workerRoutes from './routes/workerRoutes.js';
+let env;
+try {
+  env = getEnv();
+} catch (err) {
+  console.error(err.message);
+  if (process.env.VERCEL) throw err;
+  process.exit(1);
+}
 
-dotenv.config();
+const app = createApp();
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-// Database connection logic for both Local and Cloud
-let isConnected = false;
-const connectDB = async () => {
-  if (isConnected || mongoose.connection.readyState >= 1) {
-    isConnected = true;
-    return;
-  }
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    isConnected = true;
-    console.log('MongoDB Connected Successfully');
-  } catch (err) {
-    console.error('Database connection error:', err.message);
-  }
-};
-
-// Har request aane par DB connection ensure karein
-app.use(async (req, res, next) => {
-  await connectDB();
-  next();
-});
-
-// Test route
-app.get('/', (req, res) => {
-  res.send('Digital Labour Marketplace API is Running Live!');
-});
-
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/auth', authRoutes);
-
-app.use('/api/worker', workerRoutes);
-app.use('/worker', workerRoutes);
-
-// Agar laptop par chal raha ho to port listen karein, Vercel par auto-handle hoga
 if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Backend server active on http://localhost:${PORT}`);
+  try {
+    await connectDB(env.MONGO_URI, { timeoutMs: env.DB_TIMEOUT_MS });
+    console.log('MongoDB connected');
+  } catch (err) {
+    console.error('Could not connect to MongoDB. Is it running? Details:', err.message);
+    process.exit(1);
+  }
+  app.listen(env.PORT, env.HOST, () => {
+    console.log(`Backend API running on http://${env.HOST}:${env.PORT}`);
   });
 }
 
