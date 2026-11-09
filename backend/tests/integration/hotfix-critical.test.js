@@ -1,20 +1,20 @@
 // Phase 0B regression tests for the two Critical holes (M1-1, M1-2).
-// Runner: Node's built-in `node:test` (no extra packages). Run in .\backend:  node --test
+// Runner: Vitest (moved from node:test in Phase 1). Run in .\backend:  npm test
 //
 // The real Express routes, middleware and controllers run on a temporary port.
 // The database is replaced by fakes (no MongoDB, never Atlas), so these tests
 // prove the controller and route logic, not real database behaviour.
 // Real-database tests come in Phase 3 (mongodb-memory-server).
 
-import { describe, test, before, after, afterEach, mock } from 'node:test';
+import { describe, test, beforeAll as before, afterAll as after, afterEach, vi } from 'vitest';
 import assert from 'node:assert/strict';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 
-import authRoutes from '../routes/authRoutes.js';
-import workerRoutes from '../routes/workerRoutes.js';
-import User from '../models/User.js';
-import WorkerProfile from '../models/WorkerProfile.js';
+import authRoutes from '../../routes/authRoutes.js';
+import workerRoutes from '../../routes/workerRoutes.js';
+import User from '../../models/User.js';
+import WorkerProfile from '../../models/WorkerProfile.js';
 
 process.env.JWT_SECRET = 'test-only-secret-0123456789-abcdefghijklmnop';
 
@@ -34,7 +34,10 @@ before(async () => {
 
 after(() => new Promise((resolve) => server.close(resolve)));
 
-afterEach(() => mock.restoreAll());
+// Replace one method of a model with a fake for a single test.
+const mockMethod = (obj, name, impl) => vi.spyOn(obj, name).mockImplementation(impl);
+
+afterEach(() => vi.restoreAllMocks());
 
 const postJson = (path, body) =>
   fetch(baseUrl + path, {
@@ -53,20 +56,20 @@ describe('M1-1: public registration cannot create an admin', () => {
   };
 
   test('role "admin" -> 400 and no user is created', async () => {
-    mock.method(User, 'findOne', async () => null);
-    const create = mock.method(User, 'create', async (doc) => ({ _id: 'u1', ...doc }));
+    mockMethod(User, 'findOne', async () => null);
+    const create = mockMethod(User, 'create', async (doc) => ({ _id: 'u1', ...doc }));
 
     const res = await postJson('/api/auth/register', { ...newUser, role: 'admin' });
     const body = await res.json();
 
     assert.equal(res.status, 400);
     assert.equal(body.message, 'Role must be worker or customer');
-    assert.equal(create.mock.callCount(), 0, 'User.create must not be called');
+    assert.equal(create.mock.calls.length, 0, 'User.create must not be called');
   });
 
   test('worker, customer and "no role" still register (no regression)', async () => {
-    mock.method(User, 'findOne', async () => null);
-    mock.method(User, 'create', async (doc) => ({ _id: 'u2', ...doc }));
+    mockMethod(User, 'findOne', async () => null);
+    mockMethod(User, 'create', async (doc) => ({ _id: 'u2', ...doc }));
 
     const cases = [
       { sent: 'worker', expected: 'worker' },
@@ -146,7 +149,7 @@ function fakeWorkerQuery(docs) {
 
 // Log in as a fake user with the given role (protect() looks the user up by id).
 function authHeaderFor(role) {
-  mock.method(User, 'findById', () => ({
+  mockMethod(User, 'findById', () => ({
     select: async () => ({ _id: `id-${role}`, name: `A ${role}`, role }),
   }));
   const token = jwt.sign({ id: `id-${role}`, role }, process.env.JWT_SECRET);
@@ -155,16 +158,16 @@ function authHeaderFor(role) {
 
 describe('M1-2: worker directory sends only safe fields', () => {
   test('a worker calling GET /api/worker/all -> 403', async () => {
-    const find = mock.method(WorkerProfile, 'find', () => fakeWorkerQuery([storedProfile]));
+    const find = mockMethod(WorkerProfile, 'find', () => fakeWorkerQuery([storedProfile]));
     const res = await fetch(`${baseUrl}/api/worker/all`, { headers: authHeaderFor('worker') });
 
     assert.equal(res.status, 403);
-    assert.equal(find.mock.callCount(), 0, 'the database must not be queried');
+    assert.equal(find.mock.calls.length, 0, 'the database must not be queried');
   });
 
   for (const role of ['customer', 'admin']) {
     test(`a ${role} gets no CNIC, address, emergency contact, WhatsApp or email`, async () => {
-      mock.method(WorkerProfile, 'find', () => fakeWorkerQuery([storedProfile]));
+      mockMethod(WorkerProfile, 'find', () => fakeWorkerQuery([storedProfile]));
       const res = await fetch(`${baseUrl}/api/worker/all`, { headers: authHeaderFor(role) });
       const workers = await res.json();
 
@@ -176,7 +179,7 @@ describe('M1-2: worker directory sends only safe fields', () => {
       }
       assert.equal(w.user.email, undefined, 'email must not be sent');
       assert.equal(w.user.password, undefined, 'password must not be sent');
-      // Still useful: what the customer page shows (team decision: phone stays).
+      // Still useful: what the customer page shows. Phone is removed in Phase 3 (decision D-002).
       assert.equal(w.user.name, 'Ali Worker');
       assert.equal(w.user.phone, '03001112222');
       assert.equal(w.occupation, 'Electrician');

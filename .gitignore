@@ -4,3 +4,6 @@ frontend/node_modules/
 .env
 backend/.env
 dist/
+
+# Local-only data: MongoDB program + local preview database (never commit)
+.local/
