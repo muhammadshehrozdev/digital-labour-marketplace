@@ -1,8 +1,76 @@
-.list { display: flex; gap: var(--space-1); border-bottom: 1px solid var(--color-border); overflow-x: auto; }
-.tab {
-  min-height: var(--touch-target); padding: 0 var(--space-4); border: 0; border-bottom: 3px solid transparent;
-  background: none; color: var(--color-text-secondary); font-weight: 700; white-space: nowrap;
+.tabs {
+  display: grid;
+  gap: var(--space-5);
 }
-.tab[aria-selected='true'] { color: var(--color-primary-text); border-bottom-color: var(--color-primary); }
-.tab:hover { color: var(--color-text); }
-.panel { padding-top: var(--space-4); }
+
+.list {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: var(--space-1);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-lg);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--touch-target);
+  padding-inline: var(--space-4);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+
+  &:hover { color: var(--color-text); }
+
+  &[aria-selected='true'] {
+    background: var(--color-surface);
+    color: var(--color-primary-text);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.panel {
+  min-inline-size: 0;
+  animation: panel-in var(--duration-base) var(--ease-out);
+}
+
+/* Side navigation on wide screens (profile editor). */
+@media (min-width: 960px) {
+  .side {
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: start;
+
+    & .list {
+      flex-direction: column;
+      position: sticky;
+      inset-block-start: calc(var(--header-height) + var(--space-6));
+      padding: var(--space-2);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    & .tab {
+      justify-content: flex-start;
+      white-space: normal;
+      text-align: start;
+
+      &[aria-selected='true'] {
+        background: var(--color-primary-soft);
+        box-shadow: inset 3px 0 0 var(--color-primary);
+        :root[dir='rtl'] & { box-shadow: inset -3px 0 0 var(--color-primary); }
+      }
+    }
+  }
+}
+
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(6px); }
+}

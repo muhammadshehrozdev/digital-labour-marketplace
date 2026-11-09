@@ -1,76 +1,80 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Briefcase, Hammer } from 'lucide-react';
-import { Alert, Button, Card, PasswordField, RadioCardGroup, TextField } from '../../components/ui';
+import { Alert, Button, PasswordField, RadioCardGroup, TextField } from '../../components/ui';
+import { WorkerArt, CustomerArt } from '../../components/brand/RoleArt';
 import { useAuth } from '../../context/auth';
+import { useDocumentTitle, useLanguage } from '../../i18n';
 import { passwordProblem } from '../../utils/password';
-import { apiFieldErrors, apiMessage } from '../../utils/apiErrors';
+import { apiError, apiFieldErrors } from '../../utils/apiErrors';
+import AuthLayout from './AuthLayout';
 import styles from './AuthCard.module.css';
-
-// There is no admin option anywhere: admins are created only with `npm run create-admin` (M1-1).
-const ROLES = [
-  { value: 'worker', title: 'I want to find work', description: 'Make a profile so customers can find you.', icon: Hammer },
-  { value: 'customer', title: 'I want to hire a worker', description: 'Search for workers and compare them.', icon: Briefcase },
-];
 
 export default function Register() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const { register } = useAuth();
+  const { t, te, lang, chosen } = useLanguage();
+  useDocumentTitle(t('titles.register'));
   const initialRole = ['worker', 'customer'].includes(params.get('role')) ? params.get('role') : '';
   const [role, setRole] = useState(initialRole);
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
   const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState(null);
   const [loading, setLoading] = useState(false);
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+
+  // There is no admin option anywhere: admins are created only with `npm run create-admin` (M1-1).
+  const roles = [
+    { value: 'worker', title: t('auth.register.workerTitle'), description: t('auth.register.workerText'), art: <WorkerArt /> },
+    { value: 'customer', title: t('auth.register.customerTitle'), description: t('auth.register.customerText'), art: <CustomerArt /> },
+  ];
 
   const submit = async (e) => {
     e.preventDefault();
     const found = {};
-    if (form.name.trim().length < 2) found.name = 'Please write your full name.';
-    if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) found.email = 'Please write a valid email address.';
-    if (!/^(\+92|0092|0)3\d{9}$/.test(form.phone.replace(/[\s-]/g, ''))) found.phone = 'Phone must be a Pakistani mobile number like 0300 1234567.';
+    if (form.name.trim().length < 2) found.name = 'validation.name';
+    if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) found.email = 'validation.email';
+    if (!/^(\+92|0092|0)3\d{9}$/.test(form.phone.replace(/[\s-]/g, ''))) found.phone = 'validation.phone';
     const pw = passwordProblem(form.password);
     if (pw) found.password = pw;
     setErrors(found);
-    setFormError('');
+    setFormError(null);
     if (Object.keys(found).length) return;
     setLoading(true);
     try {
-      const user = await register({ ...form, name: form.name.trim(), email: form.email.trim(), role });
+      const body = { ...form, name: form.name.trim(), email: form.email.trim(), role };
+      if (chosen) body.preferredLanguage = lang; // the language chosen before registering is saved from the start
+      const user = await register(body);
       navigate(user.role === 'worker' ? '/onboarding/about' : '/find');
     } catch (err) {
       const fields = apiFieldErrors(err);
-      if (err.response?.status === 409) fields.email = apiMessage(err);
+      if (err.response?.status === 409) fields.email = apiError(err);
       setErrors(fields);
-      setFormError(Object.keys(fields).length ? '' : apiMessage(err, 'Could not create the account.'));
+      setFormError(Object.keys(fields).length ? null : apiError(err, 'auth.register.failed'));
       setLoading(false);
     }
   };
 
   return (
-    <div className={styles.wrap}>
-      <Card className={styles.card} padding="lg">
-        <div className={styles.head}>
-          <h1>Create your account</h1>
-          <p>First, tell us what you want to do.</p>
-        </div>
-        <RadioCardGroup legend="I am here because…" name="role" value={role} onChange={setRole} options={ROLES} />
-        {role && (
-          <form onSubmit={submit} noValidate className={styles.form}>
-            {formError && <Alert tone="danger">{formError}</Alert>}
-            <TextField label="Full name" required autoComplete="name" value={form.name} onChange={set('name')} error={errors.name} urdu />
-            <TextField label="Email" required type="email" autoComplete="email" value={form.email} onChange={set('email')} error={errors.email} />
-            <TextField label="Mobile number" required type="tel" inputMode="tel" autoComplete="tel" placeholder="0300 1234567" value={form.phone} onChange={set('phone')} error={errors.phone} hint={role === 'worker' ? 'Not shown in search results.' : undefined} />
-            <PasswordField required autoComplete="new-password" value={form.password} onChange={set('password')} error={errors.password} />
-            <Button type="submit" fullWidth loading={loading}>Create account</Button>
-          </form>
-        )}
-        <p className={styles.foot}>
-          Already have an account? <Link to="/login">Log in</Link>
-        </p>
-      </Card>
-    </div>
+    <AuthLayout>
+      <div className={styles.head}>
+        <h1>{t('auth.register.title')}</h1>
+        <p>{t('auth.register.lead')}</p>
+      </div>
+      <RadioCardGroup legend={t('auth.register.legend')} name="role" value={role} onChange={setRole} options={roles} columns={2} />
+      {role && (
+        <form onSubmit={submit} noValidate className={styles.form}>
+          {formError && <Alert tone="danger">{te(formError)}</Alert>}
+          <TextField label={t('auth.register.fullName')} required autoComplete="name" value={form.name} onChange={set('name')} error={errors.name} urdu />
+          <TextField label={t('auth.register.email')} required type="email" autoComplete="email" dir="ltr" value={form.email} onChange={set('email')} error={errors.email} />
+          <TextField label={t('auth.register.mobile')} required type="tel" inputMode="tel" autoComplete="tel" dir="ltr" placeholder="0300 1234567" value={form.phone} onChange={set('phone')} error={errors.phone} hint={role === 'worker' ? t('auth.register.phoneHintWorker') : undefined} />
+          <PasswordField required autoComplete="new-password" value={form.password} onChange={set('password')} error={errors.password} />
+          <Button type="submit" fullWidth loading={loading}>{t('auth.register.submit')}</Button>
+        </form>
+      )}
+      <p className={styles.foot}>
+        {t('auth.register.haveAccount')} <Link to="/login">{t('auth.register.login')}</Link>
+      </p>
+    </AuthLayout>
   );
 }

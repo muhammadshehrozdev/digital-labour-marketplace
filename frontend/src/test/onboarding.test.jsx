@@ -2,7 +2,7 @@
 import { describe, test, expect } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mockApi, me, onboarding, PROFILE } from './mockApi';
+import { mockApi, me, onboarding, PROFILE, full } from './mockApi';
 import { renderAt, pathname } from './renderApp';
 
 const EMPTY = { about: false, work: false, skills: false };
@@ -136,7 +136,8 @@ describe('skills step (Module 2)', () => {
     expect(screen.getByText('wiring', { selector: 'span' })).toBeInTheDocument();
     // No % and no "confidence" anywhere (M2-8)
     expect(document.body.textContent).not.toMatch(/confidence|\d+\s*%/i);
-    const writes = calls.filter((c) => c.key !== 'POST /workers/me/skills/extract' && c.key.split(' ')[0] !== 'GET');
+    // Writes to the profile or skills (the language setting PATCH /users/me/preferences is not profile data).
+    const writes = calls.filter((c) => c.key !== 'POST /workers/me/skills/extract' && c.key.split(' ')[0] !== 'GET' && c.key !== 'PATCH /users/me/preferences');
     expect(writes).toEqual([]);
     expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled();
   });
@@ -237,8 +238,8 @@ describe('voice input notice (M2-13)', () => {
   test('when the browser has speech recognition, the notice is shown next to the voice button', async () => {
     window.webkitSpeechRecognition = function FakeRecognition() {};
     try {
-      mockApi({ 'GET /auth/me': me('worker'), 'GET /workers/me/onboarding': onboarding({ about: true, work: true, skills: true }), 'GET /workers/me': { status: 200, data: PROFILE }, 'GET /workers/me/skills': { status: 200, data: { skills: PROFILE.skills } } });
-      renderAt('/worker/skills');
+      mockApi({ 'GET /auth/me': me('worker'), 'GET /workers/me/onboarding': onboarding({ about: true, work: true, skills: true }), 'GET /workers/me/full': full(PROFILE), 'GET /workers/me/skills': { status: 200, data: { skills: PROFILE.skills } } });
+      renderAt('/worker/profile/edit?section=skills');
       expect(await screen.findByRole('button', { name: 'Use voice typing' })).toBeInTheDocument();
       expect(screen.getByText(/may send your audio to an online service\. Use the text box if you prefer\./)).toBeInTheDocument();
     } finally {
@@ -247,8 +248,8 @@ describe('voice input notice (M2-13)', () => {
   });
 
   test('without speech recognition there is no voice button (text is the main input)', async () => {
-    mockApi({ 'GET /auth/me': me('worker'), 'GET /workers/me/onboarding': onboarding({ about: true, work: true, skills: true }), 'GET /workers/me': { status: 200, data: PROFILE }, 'GET /workers/me/skills': { status: 200, data: { skills: PROFILE.skills } } });
-    renderAt('/worker/skills');
+    mockApi({ 'GET /auth/me': me('worker'), 'GET /workers/me/onboarding': onboarding({ about: true, work: true, skills: true }), 'GET /workers/me/full': full(PROFILE), 'GET /workers/me/skills': { status: 200, data: { skills: PROFILE.skills } } });
+    renderAt('/worker/profile/edit?section=skills');
     expect(await screen.findByRole('button', { name: 'Find my skills' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Use voice typing' })).toBeNull();
   });

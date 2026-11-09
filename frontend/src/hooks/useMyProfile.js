@@ -9,6 +9,6 @@ export function useMyProfile() {
   let profile;
   if (!query.loading) profile = query.status === 404 ? null : query.data;
   if (saved) profile = saved;
-  const error = !query.loading && query.status !== 404 && query.error ? query.error : '';
+  const error = !query.loading && query.status !== 404 && query.error ? query.error : null;
   return { profile, setProfile: setSaved, error, reload: query.reload };
 }

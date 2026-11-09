@@ -1,12 +1,14 @@
 import { useEffect, useId, useRef } from 'react';
 import { X } from 'lucide-react';
 import IconButton from './IconButton';
+import { useT } from '../../i18n/context';
 import styles from './Dialog.module.css';
 
 // Modal dialog on the native <dialog> element: showModal() gives the focus trap and makes the
 // rest of the page inert; Esc closes; focus returns to the element that opened it.
 // variant "drawer" slides in from the right (bottom sheet on phones).
 export default function Dialog({ open, onClose, title, description, children, footer, variant = 'dialog', size = 'md' }) {
+  const { t } = useT();
   const ref = useRef(null);
   const opener = useRef(null);
   const titleId = `d${useId().replace(/:/g, '')}`;
@@ -48,7 +50,7 @@ export default function Dialog({ open, onClose, title, description, children, fo
               <h2 id={titleId} className={styles.title}>{title}</h2>
               {description && <p className={styles.description}>{description}</p>}
             </div>
-            <IconButton label="Close" icon={X} onClick={onClose} />
+            <IconButton label={t('common.close')} icon={X} onClick={onClose} />
           </div>
           <div className={styles.body}>{children}</div>
           {footer && <div className={styles.footer}>{footer}</div>}

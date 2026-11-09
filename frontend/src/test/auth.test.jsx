@@ -2,7 +2,7 @@
 import { describe, test, expect } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mockApi, me, onboarding, PROFILE } from './mockApi';
+import { mockApi, me, onboarding, PROFILE, full } from './mockApi';
 import { renderAt, pathname } from './renderApp';
 import { passwordProblem } from '../utils/password';
 
@@ -61,9 +61,11 @@ describe('Register', () => {
   });
 
   test('password rule matches the server: 15+ characters, at most 72 bytes', () => {
-    expect(passwordProblem('a'.repeat(14))).toMatch(/at least 15/);
-    expect(passwordProblem('mera ghar pyara')).toBe('');
-    expect(passwordProblem('ب'.repeat(37))).toMatch(/too long/);
+    // Batch 3: the check returns a dictionary key (translated where it is shown), not English text.
+    expect(passwordProblem('a'.repeat(14))).toEqual({ key: 'validation.passwordShort', params: { min: 15 } });
+    expect(passwordProblem('mera ghar pyara')).toBeNull();
+    expect(passwordProblem('ب'.repeat(37))).toEqual({ key: 'validation.passwordLong' });
+    expect(passwordProblem(' '.repeat(16))).toEqual({ key: 'validation.passwordSpaces' });
   });
 });
 
@@ -107,7 +109,7 @@ describe('where a worker lands after login (D-011)', () => {
       ...NOT_LOGGED_IN,
       'POST /auth/login': me('worker'),
       'GET /workers/me/onboarding': onboarding({ about: true, work: true, skills: true }, '2026-11-09T10:00:00Z'),
-      'GET /workers/me': { status: 200, data: PROFILE },
+      'GET /workers/me/full': full(PROFILE), // the dashboard loads everything in one request (D-020)
     });
     renderAt('/login');
     await login();
@@ -177,8 +179,11 @@ describe('landing page', () => {
     mockApi(NOT_LOGGED_IN);
     const { container } = renderAt('/');
     expect(await screen.findByRole('heading', { level: 1, name: 'Skilled work, verified.' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Find a worker' })).toHaveAttribute('href', '/register?role=customer');
-    expect(screen.getByRole('link', { name: /Join as a worker/ })).toHaveAttribute('href', '/register?role=worker');
+    // Hero and the call-to-action band (Batch 3 landing v2) both offer the two actions.
+    const find = screen.getAllByRole('link', { name: 'Find a worker' });
+    expect(find.length).toBeGreaterThanOrEqual(1);
+    for (const link of find) expect(link).toHaveAttribute('href', '/register?role=customer');
+    for (const link of screen.getAllByRole('link', { name: /Join as a worker/ })) expect(link).toHaveAttribute('href', '/register?role=worker');
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('contentinfo')).toHaveTextContent('Final Year Project, BS Software Engineering, SZABIST Islamabad');

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { CircleCheck, CircleAlert, Info, X } from 'lucide-react';
 import { ToastContext } from './toastContext';
+import { useT } from '../../i18n/context';
 import styles from './Toast.module.css';
 
 const ICONS = { success: CircleCheck, danger: CircleAlert, info: Info };
@@ -9,6 +10,7 @@ const DURATION = 4000;
 // Toasts appear in one aria-live="polite" region, so screen readers announce them.
 // They close by themselves after 4 s (paused while the mouse is over them).
 export function ToastProvider({ children }) {
+  const { t: tr } = useT();
   const [toasts, setToasts] = useState([]);
   const timers = useRef(new Map());
 
@@ -49,7 +51,7 @@ export function ToastProvider({ children }) {
                 <p className={styles.title}>{t.title}</p>
                 {t.message && <p className={styles.message}>{t.message}</p>}
               </div>
-              <button type="button" className={styles.close} aria-label="Dismiss message" onClick={() => dismiss(t.id)}>
+              <button type="button" className={styles.close} aria-label={tr('common.dismiss')} onClick={() => dismiss(t.id)}>
                 <X size={18} aria-hidden="true" />
               </button>
             </div>

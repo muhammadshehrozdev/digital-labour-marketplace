@@ -6,6 +6,7 @@ import {
   PageHeader, Pagination, PasswordField, ProgressBar, ProgressRing, RadioCardGroup, Section, Select, Skeleton, StatusChip,
   Stepper, Switch, Tabs, TextArea, TextField, useToast, STATUS,
 } from '../../components/ui';
+import ThemePicker from './ThemePicker';
 import styles from './StyleGuide.module.css';
 
 // Development only (/dev/styleguide): every component and state, for the team and the viva.
@@ -23,6 +24,7 @@ export default function StyleGuide() {
   return (
     <div className={styles.page}>
       <PageHeader eyebrow="Development only" title="Style guide" description="Tokens and components of the Digital Labour Marketplace design system (docs/design/03-design-system.md)." />
+      <ThemePicker />
 
       <Section title="Brand">
         <Card className={styles.row}><Logo size={40} /><LogoMark size={16} title="Mark at 16 px" /><LogoMark size={32} title="Mark at 32 px" /><LogoMark size={64} title="Mark at 64 px" /></Card>

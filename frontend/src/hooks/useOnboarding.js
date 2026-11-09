@@ -3,14 +3,8 @@
 import { useState } from 'react';
 import { useApiQuery } from './useApiQuery';
 
-export const ONBOARDING_STEPS = [
-  { id: 'about', label: 'About you' },
-  { id: 'work', label: 'Your work' },
-  { id: 'skills', label: 'Your skills' },
-  { id: 'proof', label: 'Proof of skills' },
-  { id: 'done', label: 'All set' },
-];
-export const STEP_IDS = ONBOARDING_STEPS.map((s) => s.id);
+// Step names are in the dictionaries: onboarding.steps.<id>.
+export const STEP_IDS = ['about', 'work', 'skills', 'proof', 'done'];
 export const DATA_STEPS = ['about', 'work', 'skills'];
 
 // Which step may be shown, given the server's progress: completed steps can be revisited,
@@ -32,6 +26,6 @@ export function useOnboarding() {
   return {
     state: fresh ?? query.data,
     setState,
-    error: query.error ? 'Could not load your progress. Please reload the page.' : '',
+    error: query.error ? 'onboarding.progressError' : null,
   };
 }

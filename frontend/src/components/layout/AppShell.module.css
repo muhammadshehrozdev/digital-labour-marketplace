@@ -1,4 +1,17 @@
-.main { max-width: var(--content-max); margin: 0 auto; padding: var(--space-6) var(--space-4) 0; min-height: calc(100vh - var(--header-height) - 200px); }
-.main:focus { outline: none; }
-.wide { max-width: none; padding: 0; }
-@media (min-width: 768px) { .main { padding-top: var(--space-10); } }
+.main {
+  max-inline-size: var(--content-max);
+  margin-inline: auto;
+  padding: var(--space-6) var(--gutter) 0;
+  min-block-size: calc(100vh - var(--header-height) - 240px);
+
+  &:focus { outline: none; }
+
+  @media (min-width: 768px) {
+    padding-block-start: var(--space-10);
+  }
+}
+
+.wide {
+  max-inline-size: none;
+  padding: 0;
+}

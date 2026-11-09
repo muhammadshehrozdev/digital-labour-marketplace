@@ -2,11 +2,13 @@ import { useId, useMemo, useRef, useState } from 'react';
 import Field from './Field';
 import fieldStyles from './Field.module.css';
 import styles from './Combobox.module.css';
+import { useT } from '../../i18n/context';
 
 // Searchable select (WAI-ARIA combobox pattern with a listbox popup).
 // options: [{ value, label, group? }]. onSelect(option) is called on Enter or click; the input then clears.
 // Keys: ArrowDown/ArrowUp move, Enter selects, Escape closes.
-export default function Combobox({ id, label, hint, options, onSelect, placeholder, emptyText = 'No match', maxResults = 50 }) {
+export default function Combobox({ id, label, hint, options, onSelect, placeholder, emptyText, maxResults = 50 }) {
+  const { t } = useT();
   const listId = `l${useId().replace(/:/g, '')}`;
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
@@ -74,7 +76,7 @@ export default function Combobox({ id, label, hint, options, onSelect, placehold
             onKeyDown={onKeyDown}
           />
           <ul id={listId} role="listbox" aria-label={label} className={styles.list} hidden={!open}>
-            {results.length === 0 && <li className={styles.empty} role="presentation">{emptyText}</li>}
+            {results.length === 0 && <li className={styles.empty} role="presentation">{emptyText ?? t('ui.combobox.noMatch')}</li>}
             {results.map((o, i) => (
               <li
                 key={o.value}

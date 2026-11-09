@@ -2,7 +2,7 @@
 import { describe, test, expect, vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mockApi, me, onboarding, PROFILE } from './mockApi';
+import { mockApi, me, onboarding, PROFILE, full } from './mockApi';
 import { renderAt, pathname } from './renderApp';
 
 const COMPLETE = onboarding({ about: true, work: true, skills: true }, '2026-11-09T10:00:00Z');
@@ -10,6 +10,7 @@ const workerRoutes = (extra = {}) => ({
   'GET /auth/me': me('worker'),
   'GET /workers/me/onboarding': COMPLETE,
   'GET /workers/me': { status: 200, data: PROFILE },
+  'GET /workers/me/full': full(PROFILE),
   'GET /evidence/mine': { status: 200, data: { evidence: [] } },
   ...extra,
 });
@@ -25,83 +26,150 @@ const LEAKY_WORKER = {
   workHistory: [{ jobTitle: 'House wiring', duration: '2 weeks', description: 'Full house', clientOrEmployer: 'Satellite Town client' }],
 };
 
-describe('worker navigation (D-011)', () => {
-  test('the top menu has Dashboard and Profile only: no Module 2 / skills link, no "AI"', async () => {
+describe('worker navigation and the profile view/edit split (D-011, D-020)', () => {
+  test('the top menu has Dashboard and My profile only: no Module 2 / skills link, no "AI"', async () => {
     mockApi(workerRoutes());
     renderAt('/worker');
     const nav = await screen.findAllByRole('navigation', { name: 'Main' });
     for (const n of nav) {
       const names = within(n).queryAllByRole('link').map((l) => l.textContent);
-      expect(names).toEqual(['Dashboard', 'Profile']);
+      expect(names).toEqual(['Dashboard', 'My profile']);
     }
     await userEvent.setup().click(screen.getByRole('button', { name: 'Open menu' }));
     const mobile = screen.getAllByRole('navigation', { name: 'Main' }).at(-1);
-    expect(within(mobile).queryAllByRole('link').map((l) => l.textContent)).toEqual(['Dashboard', 'Profile']);
+    expect(within(mobile).queryAllByRole('link').map((l) => l.textContent)).toEqual(['Dashboard', 'My profile']);
     expect(document.querySelector('header').textContent).not.toMatch(/skill|profiler|\bAI\b/i);
   });
 
-  test('dashboard: real worker ID, completion ring, identity chip, skills with "Self-declared", "Update skills" opens /worker/skills', async () => {
+  test('dashboard is an overview only: worker ID, completion ring, identity chip, skill chips, and no edit form', async () => {
     mockApi(workerRoutes());
     renderAt('/worker');
     expect(await screen.findByRole('heading', { level: 1, name: 'Welcome, Rashid' })).toBeInTheDocument();
     expect(screen.getByText(/DLM-2026-000042/)).toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: 'Profile completion' })).toHaveAttribute('aria-valuenow', '80');
     expect(screen.getByText('Identity pending review')).toBeInTheDocument();
-    expect(screen.getAllByText('Self-declared').length).toBeGreaterThan(0);
-    expect(screen.getByRole('link', { name: 'Update skills' })).toHaveAttribute('href', '/worker/skills');
-    expect(screen.getByText('Evidence: 0 approved')).toBeInTheDocument();
-    expect(screen.getByText('Strength: No evidence yet')).toBeInTheDocument();
-    const proofLink = screen.getAllByRole('link', { name: /Do it/ }).find((l) => l.getAttribute('href').includes('proof='));
-    expect(proofLink).toHaveAttribute('href', '/worker/skills?proof=elec_wiring');
+    expect(screen.getByText(/House wiring/)).toHaveTextContent('Self-declared');
+    expect(screen.getByRole('link', { name: 'View my profile' })).toHaveAttribute('href', '/worker/profile');
+    expect(screen.getByRole('link', { name: 'Edit profile' })).toHaveAttribute('href', '/worker/profile/edit');
+    expect(screen.queryAllByRole('textbox')).toHaveLength(0); // no edit forms here
+    const proofLink = screen.getAllByRole('link', { name: /Do it/ }).find((l) => l.getAttribute('href').includes('section=proof'));
+    expect(proofLink).toHaveAttribute('href', '/worker/profile/edit?section=proof&skill=elec_wiring');
   });
 
   test('a rejected identity shows the admin reason on the dashboard', async () => {
-    mockApi(workerRoutes({ 'GET /workers/me': { status: 200, data: { ...PROFILE, verificationStatus: 'Rejected', identityNote: 'Name on CNIC does not match' } } }));
+    mockApi(workerRoutes({ 'GET /workers/me/full': full({ ...PROFILE, verificationStatus: 'Rejected', identityNote: 'Name on CNIC does not match' }) }));
     renderAt('/worker');
     expect(await screen.findByText('Name on CNIC does not match')).toBeInTheDocument();
     expect(screen.getByText('Identity not accepted')).toBeInTheDocument();
   });
 
-  test('profile page: real worker ID (never a placeholder), own phone shown to the owner, CNIC "Saved (hidden)", M1-15 fields', async () => {
+  test('My profile (view): read only; real worker ID; owner sees own phone, WhatsApp and emergency contact; CNIC "Saved and hidden"', async () => {
     mockApi(workerRoutes());
     const { container } = renderAt('/worker/profile');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Your profile' })).toBeInTheDocument();
-    expect(screen.getByText(/DLM-2026-000042/)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Rashid Mehmood' })).toBeInTheDocument();
+    expect(screen.getAllByText(/DLM-2026-000042/).length).toBeGreaterThan(0);
     expect(container.textContent).not.toMatch(/DLM-2026-NEW/);
+    expect(screen.queryAllByRole('textbox')).toHaveLength(0); // read only
+    const privateCard = screen.getByRole('heading', { name: 'Private' }).closest('div');
+    expect(within(privateCard).getByText('03001234567')).toBeInTheDocument();
+    expect(within(privateCard).getByText('03007654321')).toBeInTheDocument();
+    expect(within(privateCard).getByText('Brother 03111111111')).toBeInTheDocument();
+    expect(within(privateCard).getByText('Saved and hidden')).toBeInTheDocument();
+    expect(screen.getByText('Evidence: 0 approved')).toBeInTheDocument();
+    expect(screen.getByText('Strength: No evidence yet')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Edit profile' })).toHaveAttribute('href', '/worker/profile/edit');
+  });
+
+  test('"See what customers see" shows only the public view: no phone, WhatsApp, email, address, emergency contact or proof photos', async () => {
+    const evidence = [{ _id: 'e1', skillId: 'elec_wiring', skillName: 'House wiring', type: 'work_photo', status: 'pending', createdAt: '2026-11-09T10:00:00Z' }];
+    mockApi(workerRoutes({ 'GET /workers/me/full': full(PROFILE, evidence) }));
+    const { container } = renderAt('/worker/profile');
+    await screen.findByRole('heading', { level: 1, name: 'Rashid Mehmood' });
+    expect(container.querySelectorAll('img').length).toBe(1); // the owner sees the own proof photo
+    await userEvent.setup().click(screen.getByRole('switch', { name: 'See what customers see' }));
+    expect(await screen.findByText(/This is what customers see/)).toBeInTheDocument();
+    for (const secret of SECRETS) expect(container.textContent).not.toContain(secret);
+    expect(container.querySelectorAll('img')).toHaveLength(0);
+    expect(screen.queryByRole('heading', { name: 'Private' })).toBeNull();
+  });
+
+  test('Edit profile, "About you": the real data in the form; CNIC is never filled in; M1-15 fields', async () => {
+    mockApi(workerRoutes());
+    renderAt('/worker/profile/edit');
+    expect(await screen.findByRole('heading', { level: 1, name: 'Edit profile' })).toBeInTheDocument();
+    expect(screen.getByText(/DLM-2026-000042/)).toBeInTheDocument();
     expect(screen.getByLabelText(/^Phone number/)).toHaveValue('03001234567');
     expect(screen.getByLabelText(/^CNIC number/)).toHaveAttribute('placeholder', 'Saved (hidden). Type only to change it');
     expect(screen.getByLabelText(/^CNIC number/)).toHaveValue('');
     expect(screen.getByLabelText(/^Emergency contact/)).toHaveValue('Brother 03111111111');
     expect(screen.getByLabelText(/^Languages you speak/)).toHaveValue('Urdu');
-    expect(screen.getByRole('link', { name: 'Edit skills' })).toHaveAttribute('href', '/worker/skills');
+    expect(screen.getByRole('tablist', { name: 'Profile sections' })).toBeInTheDocument();
   });
 
-  test('past work records keep duration and description (M1-15)', async () => {
+  test('Edit profile, "Work history": past jobs keep duration and description (M1-15) and only workHistory is sent', async () => {
     const calls = mockApi(workerRoutes({ 'PUT /workers/me': (cfg, body) => ({ status: 200, data: { profile: { ...PROFILE, ...body }, onboarding: COMPLETE.data } }) }));
-    renderAt('/worker/profile');
+    renderAt('/worker/profile/edit?section=history');
     const user = userEvent.setup();
     await user.click(await screen.findByRole('button', { name: 'Add a past job' }));
     await user.type(screen.getByLabelText(/^Job title/), 'House wiring');
     await user.type(screen.getByLabelText(/^Duration/), '2 weeks');
     await user.type(screen.getByLabelText(/^What you did/), 'Full house');
-    await user.click(screen.getByRole('button', { name: 'Save work details' }));
-    await waitFor(() => expect(calls.find((c) => c.key === 'PUT /workers/me')?.body.workHistory).toEqual([
-      { jobTitle: 'House wiring', clientOrEmployer: '', duration: '2 weeks', description: 'Full house' },
-    ]));
+    await user.click(screen.getByRole('button', { name: 'Save work history' }));
+    await waitFor(() => expect(calls.find((c) => c.key === 'PUT /workers/me')?.body).toEqual({
+      workHistory: [{ jobTitle: 'House wiring', clientOrEmployer: '', duration: '2 weeks', description: 'Full house' }],
+    }));
+    expect(await screen.findByText('Your profile shows the new details now.')).toBeInTheDocument();
   });
 
-  test('removing a skill asks first (ConfirmDialog), then calls DELETE', async () => {
+  test('Edit profile: switching section with unsaved changes asks first; "Stay and save" keeps the draft', async () => {
+    mockApi(workerRoutes());
+    renderAt('/worker/profile/edit?section=about');
+    const user = userEvent.setup();
+    const city = await screen.findByLabelText(/^City/);
+    await user.clear(city);
+    await user.type(city, 'Lahore');
+    expect(screen.getAllByText('Not saved yet').length).toBeGreaterThan(0);
+    await user.click(screen.getByRole('tab', { name: /Work history/ }));
+    const dialog = screen.getByRole('dialog', { name: 'You have unsaved changes' });
+    await user.click(within(dialog).getByRole('button', { name: 'Stay and save' }));
+    expect(screen.getByLabelText(/^City/)).toHaveValue('Lahore');
+    await user.click(screen.getByRole('tab', { name: /Work history/ }));
+    await user.click(within(screen.getByRole('dialog', { name: 'You have unsaved changes' })).getByRole('button', { name: 'Leave without saving' }));
+    expect(await screen.findByRole('button', { name: 'Save work history' })).toBeInTheDocument();
+  });
+
+  test('Edit profile: leaving the page with unsaved changes asks first (in-app link)', async () => {
+    mockApi(workerRoutes());
+    renderAt('/worker/profile/edit?section=about');
+    const user = userEvent.setup();
+    const city = await screen.findByLabelText(/^City/);
+    await user.type(city, ' Cantt');
+    await user.click(screen.getAllByRole('link', { name: 'Dashboard' })[0]);
+    expect(await screen.findByRole('dialog', { name: 'You have unsaved changes' })).toBeInTheDocument();
+    expect(pathname()).toBe('/worker/profile/edit');
+    await user.click(screen.getByRole('button', { name: 'Leave without saving' }));
+    await waitFor(() => expect(pathname()).toBe('/worker'));
+  });
+
+  test('removing a skill (editor, Skills) asks first (ConfirmDialog), then calls DELETE', async () => {
     const calls = mockApi(workerRoutes({
       'GET /workers/me/skills': { status: 200, data: { skills: PROFILE.skills } },
       'DELETE /workers/me/skills/elec_wiring': { status: 200, data: { skills: [], onboarding: onboarding({ about: true, work: true, skills: false }).data } },
     }));
-    renderAt('/worker/skills');
+    renderAt('/worker/profile/edit?section=skills');
     const user = userEvent.setup();
     await user.click(await screen.findByRole('button', { name: 'Remove House wiring' }));
     const dialog = screen.getByRole('dialog', { name: 'Remove this skill?' });
     expect(calls.some((c) => c.key.startsWith('DELETE'))).toBe(false);
     await user.click(within(dialog).getByRole('button', { name: 'Remove skill' }));
     await waitFor(() => expect(calls.some((c) => c.key === 'DELETE /workers/me/skills/elec_wiring')).toBe(true));
+  });
+
+  test('the old link /worker/skills?proof=<id> still works: it opens the editor on Proof of skills', async () => {
+    mockApi(workerRoutes());
+    renderAt('/worker/skills?proof=elec_wiring');
+    expect(await screen.findByRole('tab', { name: /Proof of skills/, selected: true })).toBeInTheDocument();
+    expect(pathname()).toBe('/worker/profile/edit');
   });
 
   test('a worker who has not finished onboarding cannot open /worker/profile (sent to the right step)', async () => {
@@ -185,7 +253,8 @@ describe('admin pages (M1-9)', () => {
     const drawer = screen.getByRole('dialog');
     await user.click(within(drawer).getByRole('button', { name: 'Save decision' }));
     expect(within(drawer).getByText(/Write a note of at least 5 characters/)).toBeInTheDocument();
-    expect(calls.some((c) => c.key.startsWith('PATCH'))).toBe(false);
+    // (PATCH /users/me/preferences may run: it saves the language, not a decision.)
+    expect(calls.some((c) => c.key.startsWith('PATCH /admin'))).toBe(false);
   });
 
   test('with a note the decision is sent, a toast confirms it, and the list reloads', async () => {

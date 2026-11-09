@@ -1,9 +1,12 @@
 import { useId } from 'react';
+import { useT } from '../../i18n/context';
 import styles from './Field.module.css';
 
 // Shared frame for form controls: label above, hint below, error linked with aria-describedby.
 // children is a function that receives the props the control must spread.
+// error may be a dictionary key, a server error descriptor ({ code, params }) or text: te() handles all.
 export default function Field({ label, hint, error, required, id: givenId, children, counter, hideLabel }) {
+  const { t, te } = useT();
   const autoId = useId();
   const id = givenId || `f${autoId.replace(/:/g, '')}`;
   const hintId = hint ? `${id}-hint` : undefined;
@@ -16,7 +19,7 @@ export default function Field({ label, hint, error, required, id: givenId, child
         {required && (
           <span className={styles.required}>
             <span aria-hidden="true"> *</span>
-            <span className="visually-hidden"> (required)</span>
+            <span className="visually-hidden"> {t('common.required')}</span>
           </span>
         )}
       </label>
@@ -29,7 +32,7 @@ export default function Field({ label, hint, error, required, id: givenId, child
       )}
       {error && (
         <p id={errorId} className={styles.error}>
-          {error}
+          {te(error)}
         </p>
       )}
     </div>

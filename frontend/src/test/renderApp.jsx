@@ -1,26 +1,20 @@
-import { useLayoutEffect } from 'react';
 import { render } from '@testing-library/react';
-import { MemoryRouter, useLocation } from 'react-router-dom';
-import { AppRoutes, Providers } from '../App';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { createAppRoutes } from '../routes/appRoutes';
+import { LanguageProvider } from '../i18n';
 
-let currentPath = '';
-function LocationProbe() {
-  const { pathname } = useLocation();
-  // Layout effect: updated in the same commit as the new page, so tests never see a stale path.
-  useLayoutEffect(() => {
-    currentPath = pathname;
-  }, [pathname]);
-  return null;
-}
-export const pathname = () => currentPath;
+// The same route tree as the app, in a memory router (data router, like the app).
+let router = null;
+export const pathname = () => router?.state.location.pathname ?? '';
+export const currentSearch = () => router?.state.location.search ?? '';
 
-export function renderAt(path) {
+// language: the website language for this test (default English, as if already chosen).
+// Pass language: null to start like a first visit (the language chooser is shown).
+export function renderAt(path, { language = 'en' } = {}) {
+  router = createMemoryRouter(createAppRoutes(), { initialEntries: [path] });
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Providers>
-        <AppRoutes />
-        <LocationProbe />
-      </Providers>
-    </MemoryRouter>
+    <LanguageProvider initialLanguage={language ?? undefined}>
+      <RouterProvider router={router} />
+    </LanguageProvider>
   );
 }

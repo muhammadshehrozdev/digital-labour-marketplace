@@ -4,13 +4,15 @@ import { useAuth } from '../context/auth';
 import { useOnboarding } from '../hooks/useOnboarding';
 import { homePathFor } from '../utils/roles';
 import { Alert, EmptyState, Skeleton } from '../components/ui';
+import { useT } from '../i18n/context';
 
 // These guards are for user experience only. The server checks login and role on every request.
 
 export function PageLoading() {
+  const { t } = useT();
   return (
     <div aria-busy="true">
-      <span className="visually-hidden" role="status">Loading…</span>
+      <span className="visually-hidden" role="status">{t('common.loading')}</span>
       <Skeleton variant="block" height={160} />
     </div>
   );
@@ -18,6 +20,7 @@ export function PageLoading() {
 
 export function RequireRole({ role }) {
   const { user, loading } = useAuth();
+  const { t } = useT();
   const location = useLocation();
   if (loading) return <PageLoading />;
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
@@ -26,8 +29,8 @@ export function RequireRole({ role }) {
       <EmptyState
         icon={ShieldAlert}
         headingLevel={1}
-        title="This page is not for your account"
-        description="You do not have permission to open this page."
+        title={t('guards.wrongRoleTitle')}
+        description={t('guards.wrongRoleText')}
       />
     );
   }
@@ -45,7 +48,8 @@ export function GuestOnly() {
 // /worker/*: a worker who has not finished onboarding goes to the right step.
 export function RequireOnboarding() {
   const { state, error } = useOnboarding();
-  if (error) return <Alert tone="danger">{error}</Alert>;
+  const { te } = useT();
+  if (error) return <Alert tone="danger">{te(error)}</Alert>;
   if (!state) return <PageLoading />;
   if (!state.complete) return <Navigate to={`/onboarding/${state.nextStep}`} replace />;
   return <Outlet />;

@@ -1,0 +1,29 @@
+.wrap {
+  display: block;
+}
+
+.line {
+  display: inline-block;
+  min-block-size: 1.15em;
+
+  &:lang(ur) {
+    font-family: var(--font-urdu);
+    line-height: 1.8;
+    font-size: 0.82em;
+  }
+}
+
+.caret {
+  display: inline-block;
+  inline-size: 0.08em;
+  block-size: 0.9em;
+  margin-inline-start: 0.06em;
+  vertical-align: -0.08em;
+  background: var(--color-dark-accent);
+  border-radius: 2px;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}

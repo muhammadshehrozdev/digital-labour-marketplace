@@ -1,0 +1,23 @@
+.art {
+  overflow: visible;
+  max-inline-size: 520px;
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rings { transform-origin: 210px 170px; animation: spin 60s linear infinite; }
+  .card { transform-origin: 210px 165px; animation: card-in 0.9s var(--ease-out) both, card-float 7s var(--ease-in-out) 0.9s infinite alternate; }
+  .badge { transform-origin: 318px 92px; animation: badge-pop 0.7s var(--ease-spring) 0.9s both; }
+  .badgeCheck { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 0.6s var(--ease-out) 1.4s forwards; }
+  .chipCheck { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 0.5s var(--ease-out) 1.9s forwards; }
+  .tool { animation: bob 5s var(--ease-in-out) infinite alternate; }
+  .brush { animation-delay: -1.5s; animation-duration: 6s; }
+  .bolt { animation-delay: -3s; animation-duration: 4.5s; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes card-float { to { transform: translateY(-8px) rotate(-1deg); } }
+@keyframes card-in { from { opacity: 0; transform: translateY(24px) scale(0.96); } }
+@keyframes badge-pop { from { opacity: 0; transform: scale(0.3); } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes bob { to { transform: translateY(-10px); } }

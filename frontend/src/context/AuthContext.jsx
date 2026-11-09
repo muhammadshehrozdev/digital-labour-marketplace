@@ -1,5 +1,6 @@
 // Holds the logged-in user for the whole app. On start it asks the server who is logged
-// in (GET /api/auth/me) — the login itself lives in an HttpOnly cookie the page cannot read.
+// in (GET /api/auth/session: { user } or { user: null }, never a 401 for visitors) — the login
+// itself lives in an HttpOnly cookie the page cannot read.
 // Note: this is for display only. The server checks the role on every request.
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,13 +11,13 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  // A message for the Login page, e.g. "Your session has ended".
+  // A message key for the Login page, e.g. auth.sessionEnded (translated where it is shown).
   const [notice, setNotice] = useState('');
 
   useEffect(() => {
     let active = true;
-    API.get('/auth/me')
-      .then(({ data }) => active && setUser(data))
+    API.get('/auth/session')
+      .then(({ data }) => active && setUser(data?.user ?? null))
       .catch(() => active && setUser(null))
       .finally(() => active && setLoading(false));
     return () => {
@@ -27,7 +28,7 @@ export function AuthProvider({ children }) {
   // Session expired or ended on the server -> back to login with a message.
   useEffect(() => {
     setUnauthorizedHandler(() => {
-      setNotice('Your session has ended. Please log in again.');
+      setNotice('auth.sessionEnded');
       setUser(null);
       navigate('/login', { replace: true });
     });

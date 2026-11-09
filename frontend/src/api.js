@@ -16,7 +16,7 @@ export function setUnauthorizedHandler(handler) {
 }
 
 // A 401 from these is a normal answer (not logged in yet / wrong password), not an expired session.
-const NO_REDIRECT = ['/auth/me', '/auth/login', '/auth/register', '/auth/logout'];
+const NO_REDIRECT = ['/auth/session', '/auth/me', '/auth/login', '/auth/register', '/auth/logout'];
 
 API.interceptors.response.use(
   (response) => response,

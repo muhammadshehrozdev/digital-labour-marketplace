@@ -1,29 +1,29 @@
 import { CircleDashed, Clock, ShieldCheck, ShieldX, UserRound, FileClock, BadgeCheck, TriangleAlert, CircleX, Undo2 } from 'lucide-react';
 
-// One place that turns a status into tone + icon + words (never colour alone).
+// One place that turns a status into tone + icon. The words are in the dictionaries
+// (status.<kind>.<status>), so they change with the language.
 export const STATUS = {
   identity: {
-    Unverified: { tone: 'neutral', icon: CircleDashed, text: 'Identity not submitted' },
-    Pending: { tone: 'warning', icon: Clock, text: 'Identity pending review' },
-    Verified: { tone: 'success', icon: ShieldCheck, text: 'Identity verified' },
-    Rejected: { tone: 'danger', icon: ShieldX, text: 'Identity not accepted' },
+    Unverified: { tone: 'neutral', icon: CircleDashed },
+    Pending: { tone: 'warning', icon: Clock },
+    Verified: { tone: 'success', icon: ShieldCheck },
+    Rejected: { tone: 'danger', icon: ShieldX },
   },
-  // Module 3 states are built now; only "self_declared" is used until evidence exists.
   skill: {
-    self_declared: { tone: 'neutral', icon: UserRound, text: 'Self-declared' },
-    evidence_pending: { tone: 'warning', icon: FileClock, text: 'Evidence pending' },
-    verified: { tone: 'success', icon: BadgeCheck, text: 'Verified by evidence' },
-    disputed: { tone: 'danger', icon: TriangleAlert, text: 'Disputed' },
+    self_declared: { tone: 'neutral', icon: UserRound },
+    evidence_pending: { tone: 'warning', icon: FileClock },
+    verified: { tone: 'success', icon: BadgeCheck },
+    disputed: { tone: 'danger', icon: TriangleAlert },
   },
   // One proof item (Module 3).
   evidence: {
-    pending: { tone: 'warning', icon: Clock, text: 'Pending review' },
-    approved: { tone: 'success', icon: BadgeCheck, text: 'Approved' },
-    rejected: { tone: 'danger', icon: CircleX, text: 'Not accepted' },
-    suspected_fake: { tone: 'danger', icon: TriangleAlert, text: 'Suspected fake' },
-    revoked: { tone: 'neutral', icon: Undo2, text: 'Approval withdrawn' },
+    pending: { tone: 'warning', icon: Clock },
+    approved: { tone: 'success', icon: BadgeCheck },
+    rejected: { tone: 'danger', icon: CircleX },
+    suspected_fake: { tone: 'danger', icon: TriangleAlert },
+    revoked: { tone: 'neutral', icon: Undo2 },
   },
 };
 
-// Plain-language evidence strength per skill (no percentages anywhere in the UI; D-014).
-export const STRENGTH_TEXT = { none: 'No evidence yet', weak: 'Weak', moderate: 'Moderate', strong: 'Strong' };
+// Evidence strength per skill, shown in plain words (status.strength.*); no percentages in the UI (D-014).
+export const STRENGTHS = ['none', 'weak', 'moderate', 'strong'];

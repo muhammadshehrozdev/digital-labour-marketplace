@@ -1,11 +1,12 @@
-// Client-side photo checks with the SAME rules and messages as the server
-// (backend/services/evidence/image.js). The server checks again; this only saves a slow upload.
+// Client-side photo checks with the SAME rules and error codes as the server
+// (backend/services/evidence/image.js, backend/errors/catalog.js). The server checks again;
+// this only saves a slow upload. Errors are { code } descriptors, translated where shown.
 export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 export const MAX_SIDE_PX = 2000;
-export const MSG_NOT_JPG_PNG = 'Please upload a JPG or PNG photo.';
-export const MSG_PDF = 'PDF files are not accepted. Please upload a JPG or PNG photo of the document.';
-export const MSG_NOT_IMAGE = 'This file is not a photo. Please upload a JPG or PNG photo.';
-export const MSG_TOO_LARGE = 'The photo is too large. The limit is 4 MB.';
+export const ERR_NOT_JPG_PNG = { code: 'PHOTO_NOT_JPG_PNG' };
+export const ERR_PDF = { code: 'PHOTO_PDF' };
+export const ERR_NOT_IMAGE = { code: 'PHOTO_NOT_IMAGE' };
+export const ERR_TOO_LARGE = { code: 'PHOTO_TOO_LARGE' };
 
 const startsWith = (bytes, sig, offset = 0) => sig.every((b, i) => bytes[offset + i] === b);
 const ascii = (bytes, from, to) => String.fromCharCode(...bytes.slice(from, to));
@@ -25,13 +26,13 @@ export async function sniffType(file) {
   return 'unknown';
 }
 
-// '' when the file may be uploaded as it is, otherwise the message to show.
+// null when the file may be uploaded as it is, otherwise the error to show.
 export async function checkImageType(file) {
   const type = await sniffType(file);
-  if (['image/jpeg', 'image/png', 'image/webp'].includes(type)) return '';
-  if (type === 'application/pdf') return MSG_PDF;
-  if (type.startsWith('image/')) return MSG_NOT_JPG_PNG;
-  return MSG_NOT_IMAGE;
+  if (['image/jpeg', 'image/png', 'image/webp'].includes(type)) return null;
+  if (type === 'application/pdf') return ERR_PDF;
+  if (type.startsWith('image/')) return ERR_NOT_JPG_PNG;
+  return ERR_NOT_IMAGE;
 }
 
 // Phone photos are often over 4 MB: shrink in the browser (max 2000 px, JPEG quality 0.85),
@@ -60,7 +61,7 @@ export async function prepareImage(file) {
   if (file.size <= MAX_UPLOAD_BYTES) return { file };
   const smaller = await shrinkImage(file);
   if (smaller && smaller.size <= MAX_UPLOAD_BYTES) return { file: smaller, shrunk: true };
-  return { error: MSG_TOO_LARGE };
+  return { error: ERR_TOO_LARGE };
 }
 
 export const formatBytes = (n) => (n < 1024 * 1024 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / (1024 * 1024)).toFixed(1)} MB`);

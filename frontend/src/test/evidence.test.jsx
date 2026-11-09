@@ -3,9 +3,15 @@
 import { describe, test, expect } from 'vitest';
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mockApi, me, onboarding, PROFILE } from './mockApi';
-import { renderAt } from './renderApp';
-import { MSG_NOT_IMAGE, MSG_NOT_JPG_PNG, MSG_PDF, MSG_TOO_LARGE } from '../utils/imageCheck';
+import { mockApi, me, onboarding, PROFILE, full } from './mockApi';
+import { renderAt, pathname, currentSearch } from './renderApp';
+import en from '../i18n/dictionaries/en';
+
+// The browser checks use the server's error codes; these are their English texts.
+const MSG_NOT_IMAGE = en.errors.PHOTO_NOT_IMAGE;
+const MSG_NOT_JPG_PNG = en.errors.PHOTO_NOT_JPG_PNG;
+const MSG_PDF = en.errors.PHOTO_PDF;
+const MSG_TOO_LARGE = en.errors.PHOTO_TOO_LARGE;
 
 const JPEG_HEAD = [0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46];
 const jpegFile = (name = 'job.jpg', size = 2048) => {
@@ -132,18 +138,18 @@ describe('onboarding Step 4 (real upload)', () => {
   });
 });
 
-describe('worker proof list (/worker/skills)', () => {
+describe('worker proof list (profile editor, Proof of skills; D-020)', () => {
+  const PAGE = '/worker/profile/edit?section=proof';
   const routes = (extra = {}) => ({
     'GET /auth/me': me('worker'),
     'GET /workers/me/onboarding': COMPLETE,
-    'GET /workers/me/skills': { status: 200, data: { skills: SKILLS } },
-    'GET /evidence/mine': { status: 200, data: { evidence: ITEMS } },
+    'GET /workers/me/full': full({ ...PROFILE, skills: SKILLS }, ITEMS),
     ...extra,
   });
 
   test('each skill shows its chip, "Evidence: N approved", the strength label, and items with status and reason; no percentages', async () => {
     mockApi(routes());
-    renderAt('/worker/skills');
+    renderAt(PAGE);
     const wiring = await screen.findByRole('list', { name: 'Proof for House wiring' });
     const card = wiring.closest('li');
     expect(within(card).getByText('Verified by evidence')).toBeInTheDocument();
@@ -156,7 +162,7 @@ describe('worker proof list (/worker/skills)', () => {
 
   test('delete is offered only for pending or rejected items (never for approved or suspected fake)', async () => {
     mockApi(routes());
-    renderAt('/worker/skills');
+    renderAt(PAGE);
     await screen.findByRole('list', { name: 'Proof for House wiring' });
     expect(screen.getByRole('button', { name: 'Delete Blurry one' })).toBeInTheDocument(); // rejected
     expect(screen.getByRole('button', { name: 'Delete Work photo' })).toBeInTheDocument(); // pending, no title
@@ -166,7 +172,7 @@ describe('worker proof list (/worker/skills)', () => {
 
   test('deleting asks first, then calls DELETE /evidence/:id', async () => {
     const calls = mockApi(routes({ 'DELETE /evidence/e3': { status: 200, data: { message: 'Proof deleted.' } } }));
-    renderAt('/worker/skills');
+    renderAt(PAGE);
     const user = userEvent.setup();
     await user.click(await screen.findByRole('button', { name: 'Delete Blurry one' }));
     expect(calls.some((c) => c.key.startsWith('DELETE'))).toBe(false);
@@ -174,13 +180,14 @@ describe('worker proof list (/worker/skills)', () => {
     await waitFor(() => expect(calls.some((c) => c.key === 'DELETE /evidence/e3')).toBe(true));
   });
 
-  test('"Add proof" opens the upload drawer with that skill chosen (no top-menu link needed)', async () => {
+  test('"Add proof" for a skill chooses that skill in the upload form (no top-menu link needed)', async () => {
     mockApi(routes());
-    renderAt('/worker/skills');
+    renderAt(PAGE);
     const user = userEvent.setup();
     await user.click(await screen.findByRole('button', { name: 'Add proof for Solar panel installation' }));
-    const drawer = await screen.findByRole('dialog', { name: 'Add proof' });
-    expect(within(drawer).getByLabelText(/Which skill does this photo prove/)).toHaveValue('elec_solar');
+    await waitFor(() => expect(screen.getByLabelText(/Which skill does this photo prove/)).toHaveValue('elec_solar'));
+    expect(pathname()).toBe('/worker/profile/edit');
+    expect(currentSearch()).toContain('skill=elec_solar');
   });
 });
 
@@ -230,7 +237,7 @@ describe('admin Evidence review', () => {
     const dialog = screen.getByRole('dialog', { name: dialogTitle });
     await user.click(within(dialog).getByRole('button', { name: button }));
     expect(within(dialog).getByText(message)).toBeInTheDocument();
-    expect(calls.some((c) => c.key.startsWith('PATCH'))).toBe(false);
+    expect(calls.some((c) => c.key.startsWith('PATCH /admin'))).toBe(false);
   });
 
   test('Revoke requires a written reason too (on an approved item)', async () => {
@@ -244,7 +251,7 @@ describe('admin Evidence review', () => {
     const dialog = screen.getByRole('dialog', { name: 'Revoke the approval' });
     await user.click(within(dialog).getByRole('button', { name: 'Revoke approval' }));
     expect(within(dialog).getByText('A written reason (at least 5 characters) is required.')).toBeInTheDocument();
-    expect(calls.some((c) => c.key.startsWith('PATCH'))).toBe(false);
+    expect(calls.some((c) => c.key.startsWith('PATCH /admin'))).toBe(false);
   });
 
   test('with a reason the decision is sent; approve needs only a confirmation', async () => {

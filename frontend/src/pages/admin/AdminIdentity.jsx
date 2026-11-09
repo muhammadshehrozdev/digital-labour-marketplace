@@ -6,7 +6,8 @@ import {
   Alert, Badge, Button, ConfirmDialog, DataTable, Drawer, EmptyState, PageHeader, Pagination, RadioCardGroup, Select, Skeleton, StatusChip, TextArea, TextField, useToast,
 } from '../../components/ui';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
-import { apiMessage } from '../../utils/apiErrors';
+import { apiError } from '../../utils/apiErrors';
+import { useDocumentTitle, useT } from '../../i18n';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import styles from './Admin.module.css';
 
@@ -17,11 +18,12 @@ const PAGE_SIZE = 25;
 // that always needs a note (M1-9).
 function DecisionDrawer({ worker, onClose, onDecided }) {
   const toast = useToast();
+  const { t, te } = useT();
   const { categoryLabel } = useTaxonomy();
   const [status, setStatus] = useState(worker?.cnicOnFile ? 'Verified' : 'Rejected');
   const [note, setNote] = useState('');
-  const [noteError, setNoteError] = useState('');
-  const [error, setError] = useState('');
+  const [noteError, setNoteError] = useState(null);
+  const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [confirmReveal, setConfirmReveal] = useState(false);
   const [revealing, setRevealing] = useState(false);
@@ -33,7 +35,7 @@ function DecisionDrawer({ worker, onClose, onDecided }) {
       const { data } = await API.get(`/admin/workers/${worker._id}/cnic`);
       setCnic(data.cnic);
     } catch (err) {
-      setError(apiMessage(err, 'Could not show the CNIC.'));
+      setError(apiError(err, 'admin.identity.revealFailed'));
     } finally {
       setRevealing(false);
       setConfirmReveal(false);
@@ -41,19 +43,19 @@ function DecisionDrawer({ worker, onClose, onDecided }) {
   };
 
   const decide = async () => {
-    setError('');
+    setError(null);
     if (note.trim().length < 5) {
-      setNoteError('Write a note of at least 5 characters: how did you check the CNIC?');
+      setNoteError('validation.identityNote');
       return;
     }
-    setNoteError('');
+    setNoteError(null);
     setSaving(true);
     try {
       await API.patch(`/admin/workers/${worker._id}/identity`, { status, note: note.trim() });
-      toast.show({ title: `Identity marked ${status}`, message: 'The decision was written to the audit log.' });
+      toast.show({ title: t('admin.identity.decided', { status: t(`status.identityShort.${status}`) }), message: t('admin.identity.decidedText') });
       onDecided();
     } catch (err) {
-      setError(apiMessage(err, 'Could not save the decision.'));
+      setError(apiError(err, 'admin.identity.saveFailed'));
       setSaving(false);
     }
   };
@@ -63,69 +65,69 @@ function DecisionDrawer({ worker, onClose, onDecided }) {
       <Drawer
         open={Boolean(worker)}
         onClose={onClose}
-        title={worker ? `${worker.user?.name ?? 'Worker'} · ${worker.workerIdCode}` : ''}
-        description="Check the original CNIC card in person or on a video call, then record your decision."
+        title={worker ? `${worker.user?.name ?? t('common.worker')} · ${worker.workerIdCode}` : ''}
+        description={t('admin.identity.drawerText')}
         footer={
           <>
-            <Button variant="secondary" onClick={onClose}>Cancel</Button>
-            <Button onClick={decide} loading={saving}>Save decision</Button>
+            <Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button>
+            <Button onClick={decide} loading={saving}>{t('admin.identity.saveDecision')}</Button>
           </>
         }
       >
         {worker && (
           <>
-            {error && <Alert tone="danger">{error}</Alert>}
+            {error && <Alert tone="danger">{te(error)}</Alert>}
             <dl className={styles.details}>
-              <div><dt>Current status</dt><dd><StatusChip kind="identity" status={worker.verificationStatus} /></dd></div>
-              <div><dt>Phone</dt><dd className="tabular">{worker.user?.phone}</dd></div>
-              <div><dt>Email</dt><dd>{worker.user?.email}</dd></div>
-              <div><dt>Trade</dt><dd>{worker.occupation || '—'} · {categoryLabel(worker.category) || '—'}</dd></div>
-              <div><dt>City</dt><dd>{worker.city || '—'}</dd></div>
+              <div><dt>{t('admin.identity.current')}</dt><dd><StatusChip kind="identity" status={worker.verificationStatus} /></dd></div>
+              <div><dt>{t('admin.identity.phone')}</dt><dd className="tabular" dir="ltr">{worker.user?.phone}</dd></div>
+              <div><dt>{t('admin.identity.email')}</dt><dd dir="ltr">{worker.user?.email}</dd></div>
+              <div><dt>{t('admin.identity.trade')}</dt><dd>{worker.occupation || t('common.empty')} · {categoryLabel(worker.category) || t('common.empty')}</dd></div>
+              <div><dt>{t('admin.identity.city')}</dt><dd>{worker.city || t('common.empty')}</dd></div>
               <div>
-                <dt>CNIC</dt>
+                <dt>{t('admin.identity.cnic')}</dt>
                 <dd>
                   {!worker.cnicOnFile ? (
-                    'Not saved by the worker'
+                    t('admin.identity.cnicNotSaved')
                   ) : cnic ? (
-                    <span className="tabular">{cnic}</span>
+                    <span className="tabular" dir="ltr">{cnic}</span>
                   ) : (
                     <span className={styles.cnicRow}>
-                      <span className="tabular" aria-label="CNIC hidden">•••••-•••••••-•</span>
-                      <Button size="sm" variant="secondary" icon={Eye} onClick={() => setConfirmReveal(true)}>Reveal</Button>
+                      <span className="tabular" dir="ltr" aria-label={t('admin.identity.cnicHidden')}>•••••-•••••••-•</span>
+                      <Button size="sm" variant="secondary" icon={Eye} onClick={() => setConfirmReveal(true)}>{t('admin.identity.reveal')}</Button>
                     </span>
                   )}
                 </dd>
               </div>
-              {worker.identityNote && <div><dt>Last note</dt><dd>{worker.identityNote}</dd></div>}
+              {worker.identityNote && <div><dt>{t('admin.identity.lastNote')}</dt><dd dir="auto">{worker.identityNote}</dd></div>}
             </dl>
             <RadioCardGroup
-              legend="Decision"
+              legend={t('admin.identity.decision')}
               name="identity-decision"
               value={status}
               onChange={setStatus}
               options={[
-                { value: 'Verified', title: 'Verified', description: worker.cnicOnFile ? 'The CNIC matches the person.' : 'Not possible: no CNIC saved.', disabled: !worker.cnicOnFile },
-                { value: 'Rejected', title: 'Rejected', description: 'The CNIC could not be confirmed. The worker sees your note.' },
+                { value: 'Verified', title: t('admin.identity.verifiedTitle'), description: worker.cnicOnFile ? t('admin.identity.verifiedText') : t('admin.identity.verifiedImpossible'), disabled: !worker.cnicOnFile },
+                { value: 'Rejected', title: t('admin.identity.rejectedTitle'), description: t('admin.identity.rejectedText') },
               ]}
             />
             <TextArea
-              label="Note"
+              label={t('admin.identity.note')}
               required
               maxLength={500}
               rows={3}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               error={noteError}
-              hint="Required. Say how you checked, e.g. Original CNIC seen on a video call."
+              hint={t('admin.identity.noteHint')}
             />
           </>
         )}
       </Drawer>
       <ConfirmDialog
         open={confirmReveal}
-        title="Show the full CNIC?"
-        message="This will be recorded in the audit log."
-        confirmLabel="Show CNIC"
+        title={t('admin.identity.revealTitle')}
+        message={t('admin.identity.revealText')}
+        confirmLabel={t('admin.identity.revealConfirm')}
         loading={revealing}
         onConfirm={reveal}
         onCancel={() => setConfirmReveal(false)}
@@ -135,6 +137,8 @@ function DecisionDrawer({ worker, onClose, onDecided }) {
 }
 
 export default function AdminIdentity() {
+  const { t, te, formatDate } = useT();
+  useDocumentTitle(t('titles.adminIdentity'));
   const { categoryLabel } = useTaxonomy();
   const [params, setParams] = useSearchParams();
   const status = STATUSES.includes(params.get('status')) ? params.get('status') : 'Pending';
@@ -146,18 +150,18 @@ export default function AdminIdentity() {
   const { data, error, reload } = useApiQuery('/admin/workers', query);
 
   const columns = [
-    { key: 'name', header: 'Worker', sortable: true, sortValue: (w) => w.user?.name ?? '', render: (w) => w.user?.name ?? '—' },
-    { key: 'id', header: 'Worker ID', render: (w) => <span className="tabular">{w.workerIdCode}</span> },
-    { key: 'trade', header: 'Trade', sortable: true, sortValue: (w) => w.occupation, render: (w) => (w.occupation ? `${w.occupation} · ${categoryLabel(w.category)}` : '—') },
-    { key: 'city', header: 'City', sortable: true, sortValue: (w) => w.city, render: (w) => w.city || '—' },
-    { key: 'cnic', header: 'CNIC', render: (w) => (w.cnicOnFile ? <Badge tone="primary">On file</Badge> : <Badge>Not saved</Badge>) },
-    { key: 'status', header: 'Identity', render: (w) => <StatusChip kind="identity" status={w.verificationStatus} /> },
-    { key: 'updated', header: 'Updated', sortable: true, sortValue: (w) => w.updatedAt, render: (w) => <span className="tabular">{new Date(w.updatedAt).toLocaleDateString('en-GB')}</span> },
+    { key: 'name', header: t('admin.identity.columns.worker'), sortable: true, sortValue: (w) => w.user?.name ?? '', render: (w) => w.user?.name ?? t('common.empty') },
+    { key: 'id', header: t('admin.identity.columns.id'), render: (w) => <span className="tabular" dir="ltr">{w.workerIdCode}</span> },
+    { key: 'trade', header: t('admin.identity.columns.trade'), sortable: true, sortValue: (w) => w.occupation, render: (w) => (w.occupation ? `${w.occupation} · ${categoryLabel(w.category)}` : t('common.empty')) },
+    { key: 'city', header: t('admin.identity.columns.city'), sortable: true, sortValue: (w) => w.city, render: (w) => w.city || t('common.empty') },
+    { key: 'cnic', header: t('admin.identity.columns.cnic'), render: (w) => (w.cnicOnFile ? <Badge tone="primary">{t('admin.identity.onFile')}</Badge> : <Badge>{t('admin.identity.notSaved')}</Badge>) },
+    { key: 'status', header: t('admin.identity.columns.identity'), render: (w) => <StatusChip kind="identity" status={w.verificationStatus} /> },
+    { key: 'updated', header: t('admin.identity.columns.updated'), sortable: true, sortValue: (w) => w.updatedAt, render: (w) => <span className="tabular">{formatDate(w.updatedAt)}</span> },
   ];
 
   return (
     <div>
-      <PageHeader title="Identity review" description="Open a worker to see the details, reveal the CNIC if needed, and record a decision with a note." />
+      <PageHeader title={t('admin.identity.title')} description={t('admin.identity.lead')} />
       <form
         className={styles.filters}
         role="search"
@@ -169,23 +173,23 @@ export default function AdminIdentity() {
           setParams(next);
         }}
       >
-        <Select label="Status" value={status} onChange={(e) => { setPage(1); const next = new URLSearchParams(params); next.set('status', e.target.value); setParams(next); }} options={STATUSES.map((s) => ({ value: s, label: s }))} />
-        <TextField label="Search name, ID or trade" maxLength={50} value={q} onChange={(e) => setQ(e.target.value)} />
-        <Button type="submit" icon={Search}>Search</Button>
+        <Select label={t('admin.identity.status')} value={status} onChange={(e) => { setPage(1); const next = new URLSearchParams(params); next.set('status', e.target.value); setParams(next); }} options={STATUSES.map((s) => ({ value: s, label: t(`status.identityShort.${s}`) }))} />
+        <TextField label={t('admin.identity.search')} maxLength={50} value={q} onChange={(e) => setQ(e.target.value)} />
+        <Button type="submit" icon={Search}>{t('common.search')}</Button>
       </form>
-      {error && <Alert tone="danger" action={<Button size="sm" variant="secondary" onClick={reload}>Try again</Button>}>{error}</Alert>}
-      {!data && !error && <div aria-busy="true"><span className="visually-hidden" role="status">Loading…</span><Skeleton variant="block" height={240} /></div>}
+      {error && <Alert tone="danger" action={<Button size="sm" variant="secondary" onClick={reload}>{t('common.tryAgain')}</Button>}>{te(error)}</Alert>}
+      {!data && !error && <div aria-busy="true"><span className="visually-hidden" role="status">{t('common.loading')}</span><Skeleton variant="block" height={240} /></div>}
       {data && (
         <>
-          <p className={styles.count} aria-live="polite">{data.total} worker{data.total === 1 ? '' : 's'}</p>
+          <p className={styles.count} aria-live="polite">{t('admin.identity.count', { count: data.total })}</p>
           <DataTable
-            caption="Workers for identity review"
+            caption={t('admin.identity.caption')}
             columns={columns}
             rows={data.workers}
             rowKey={(w) => w._id}
             onRowClick={setSelected}
-            rowLabel={(w) => `Review ${w.user?.name ?? 'worker'}`}
-            empty={<EmptyState icon={Inbox} headingLevel={2} title="Nothing here" description="No workers with this status." />}
+            rowLabel={(w) => t('admin.identity.review', { name: w.user?.name ?? t('common.worker') })}
+            empty={<EmptyState icon={Inbox} headingLevel={2} title={t('admin.identity.emptyTitle')} description={t('admin.identity.emptyText')} />}
           />
           <Pagination page={data.page} pages={Math.max(1, Math.ceil(data.total / PAGE_SIZE))} onChange={setPage} />
         </>

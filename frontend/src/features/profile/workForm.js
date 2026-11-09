@@ -1,5 +1,9 @@
-// Values, checks and request body for the "Your work" form (same rules as the server).
+// Values, checks and request body for "Your work" (same rules as the server).
+// parts: 'work' (trade, experience, rates, availability, bio) and/or 'history' (past jobs).
+// The profile editor saves them as separate sections; onboarding saves both at once.
+// Checks return dictionary keys (translated where they are shown).
 const numberText = (v) => (v === null || v === undefined || v === 0 ? '' : String(v));
+export const ALL_PARTS = ['work', 'history'];
 
 export function workValuesFrom(profile) {
   return {
@@ -18,36 +22,46 @@ export function workValuesFrom(profile) {
 
 const toNumber = (v) => (String(v).trim() === '' ? 0 : Number(v));
 
-export function validateWork(v) {
+export function validateWork(v, parts = ALL_PARTS) {
   const e = {};
-  if (v.occupation.trim().length < 2) e.occupation = 'Please write your occupation, e.g. Electrician.';
-  if (!v.category) e.category = 'Please choose your main trade.';
-  const years = String(v.experienceYears).trim();
-  if (years === '' || !/^\d{1,2}$/.test(years) || Number(years) > 60) e.experienceYears = 'Write your years of experience as a whole number from 0 to 60.';
-  for (const key of ['hourlyRate', 'dailyRate']) {
-    const raw = String(v[key]).trim();
-    if (raw && (!/^\d+(\.\d+)?$/.test(raw) || Number(raw) > 1000000)) e[key] = 'Write an amount in rupees, e.g. 800.';
+  if (parts.includes('work')) {
+    if (v.occupation.trim().length < 2) e.occupation = 'validation.occupation';
+    if (!v.category) e.category = 'validation.category';
+    const years = String(v.experienceYears).trim();
+    if (years === '' || !/^\d{1,2}$/.test(years) || Number(years) > 60) e.experienceYears = 'validation.experience';
+    for (const key of ['hourlyRate', 'dailyRate']) {
+      const raw = String(v[key]).trim();
+      if (raw && (!/^\d+(\.\d+)?$/.test(raw) || Number(raw) > 1000000)) e[key] = 'validation.rate';
+    }
+    if (!e.hourlyRate && !e.dailyRate && toNumber(v.hourlyRate) <= 0 && toNumber(v.dailyRate) <= 0) {
+      e.dailyRate = 'validation.rateNeeded';
+    }
   }
-  if (!e.hourlyRate && !e.dailyRate && toNumber(v.hourlyRate) <= 0 && toNumber(v.dailyRate) <= 0) {
-    e.dailyRate = 'Please give at least one rate (per hour or per day).';
+  if (parts.includes('history')) {
+    v.workHistory.forEach((w, i) => {
+      if (w.jobTitle.trim().length < 2) e[`job${i}`] = 'validation.jobTitle';
+    });
   }
-  v.workHistory.forEach((w, i) => {
-    if (w.jobTitle.trim().length < 2) e[`job${i}`] = 'Each past job needs a title (at least 2 letters).';
-  });
   return e;
 }
 
-export function workPayload(v) {
-  return {
-    occupation: v.occupation.trim(),
-    category: v.category,
-    experienceYears: Number(v.experienceYears),
-    hourlyRate: toNumber(v.hourlyRate),
-    dailyRate: toNumber(v.dailyRate),
-    availability: v.availability,
-    bio: v.bio.trim(),
-    workHistory: v.workHistory.map((w) => ({
+export function workPayload(v, parts = ALL_PARTS) {
+  const payload = {};
+  if (parts.includes('work')) {
+    Object.assign(payload, {
+      occupation: v.occupation.trim(),
+      category: v.category,
+      experienceYears: Number(v.experienceYears),
+      hourlyRate: toNumber(v.hourlyRate),
+      dailyRate: toNumber(v.dailyRate),
+      availability: v.availability,
+      bio: v.bio.trim(),
+    });
+  }
+  if (parts.includes('history')) {
+    payload.workHistory = v.workHistory.map((w) => ({
       jobTitle: w.jobTitle.trim(), clientOrEmployer: w.clientOrEmployer.trim(), duration: w.duration.trim(), description: w.description.trim(),
-    })),
-  };
+    }));
+  }
+  return payload;
 }

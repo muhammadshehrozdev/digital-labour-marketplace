@@ -4,16 +4,16 @@ import { ChevronDown, LogOut, Menu, X } from 'lucide-react';
 import Logo from '../brand/Logo';
 import { Avatar, Button, IconButton } from '../ui';
 import { useAuth } from '../../context/auth';
+import { useT } from '../../i18n';
 import { homePathFor } from '../../utils/roles';
+import LanguageSwitcher from './LanguageSwitcher';
 import { NAV_LINKS } from './navLinks';
 import styles from './AppHeader.module.css';
 
-// Role-aware top navigation. Workers see Dashboard and Profile only (skills are opened from
-// those pages, never from this menu — D-011). No Module 2 link here.
-const ROLE_NAME = { worker: 'Worker', customer: 'Customer', admin: 'Admin' };
-
+// Role-aware top navigation: links, language switcher, account menu (D-020).
 export default function AppHeader() {
   const { user, logout } = useAuth();
+  const { t } = useT();
   const navigate = useNavigate();
   const location = useLocation();
   // Menus remember the page they were opened on, so they close by themselves on navigation.
@@ -44,66 +44,70 @@ export default function AppHeader() {
   };
 
   const links = user ? NAV_LINKS[user.role] ?? [] : [];
+  const linkClass = (base) => ({ isActive }) => [base, isActive && styles.active].filter(Boolean).join(' ');
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Link to={user ? homePathFor(user.role) : '/'} className={styles.brand} aria-label="Digital Labour Marketplace, home">
-          <Logo size={32} />
+        <Link to={user ? homePathFor(user.role) : '/'} className={styles.brand} aria-label={t('app.home')}>
+          <Logo size={34} />
         </Link>
 
-        {user ? (
-          <>
-            <nav aria-label="Main" className={styles.desktopNav}>
-              {links.map((l) => (
-                <NavLink key={l.to} to={l.to} end={l.end} className={({ isActive }) => [styles.link, isActive && styles.active].filter(Boolean).join(' ')}>
-                  {l.label}
-                </NavLink>
-              ))}
-            </nav>
-            <div className={styles.account} ref={accountRef}>
-              <button type="button" className={styles.accountButton} aria-expanded={accountOpen} aria-controls="account-menu" onClick={() => setAccountOpen((o) => !o)}>
-                <Avatar name={user.name} size="sm" />
-                <span className={styles.accountName}>{user.name}</span>
-                <ChevronDown size={16} aria-hidden="true" />
-                <span className="visually-hidden">Account menu</span>
-              </button>
-              {accountOpen && (
-                <div id="account-menu" className={styles.accountMenu}>
-                  <p className={styles.signedIn}>
-                    Signed in as <strong>{user.name}</strong>
-                    <span>{ROLE_NAME[user.role]} · {user.email}</span>
-                  </p>
-                  <button type="button" className={styles.menuItem} onClick={handleLogout}>
-                    <LogOut size={18} aria-hidden="true" /> Log out
-                  </button>
-                </div>
-              )}
-            </div>
-            <IconButton
-              className={styles.menuToggle}
-              label={menuOpen ? 'Close menu' : 'Open menu'}
-              icon={menuOpen ? X : Menu}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-menu"
-              onClick={() => setMenuOpen((o) => !o)}
-            />
-          </>
-        ) : (
-          <div className={styles.guest}>
-            <Button to="/login" variant="ghost" size="sm">Log in</Button>
-            <Button to="/register" size="sm">Create account</Button>
-          </div>
+        {user && (
+          <nav aria-label={t('nav.main')} className={styles.desktopNav}>
+            {links.map((l) => (
+              <NavLink key={l.to} to={l.to} end={l.end} className={linkClass(styles.link)}>{t(l.label)}</NavLink>
+            ))}
+          </nav>
         )}
+
+        <div className={styles.end}>
+          <LanguageSwitcher compact />
+          {user ? (
+            <>
+              <div className={styles.account} ref={accountRef}>
+                <button type="button" className={styles.accountButton} aria-expanded={accountOpen} aria-controls="account-menu" onClick={() => setAccountOpen((o) => !o)}>
+                  <Avatar name={user.name} size="sm" />
+                  <span className={styles.accountName}>{user.name}</span>
+                  <ChevronDown size={16} aria-hidden="true" />
+                  <span className="visually-hidden">{t('header.accountMenu')}</span>
+                </button>
+                {accountOpen && (
+                  <div id="account-menu" className={styles.accountMenu}>
+                    <p className={styles.signedIn}>
+                      {t('header.signedInAs')} <strong>{user.name}</strong>
+                      <span>{t(`roles.${user.role}`)} · <span dir="ltr">{user.email}</span></span>
+                    </p>
+                    <button type="button" className={styles.menuItem} onClick={handleLogout}>
+                      <LogOut size={18} aria-hidden="true" /> {t('header.logout')}
+                    </button>
+                  </div>
+                )}
+              </div>
+              <IconButton
+                className={styles.menuToggle}
+                label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
+                icon={menuOpen ? X : Menu}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-menu"
+                onClick={() => setMenuOpen((o) => !o)}
+              />
+            </>
+          ) : (
+            <div className={styles.guest}>
+              <Button to="/login" variant="ghost" size="sm">{t('header.login')}</Button>
+              <Button to="/register" size="sm" className={styles.createAccount}>{t('header.createAccount')}</Button>
+            </div>
+          )}
+        </div>
       </div>
       {user && menuOpen && (
-        <nav id="mobile-menu" aria-label="Main" className={styles.mobileNav}>
+        <nav id="mobile-menu" aria-label={t('nav.main')} className={styles.mobileNav}>
           {links.map((l) => (
-            <NavLink key={l.to} to={l.to} end={l.end} className={({ isActive }) => [styles.mobileLink, isActive && styles.active].filter(Boolean).join(' ')}>
-              {l.label}
-            </NavLink>
+            <NavLink key={l.to} to={l.to} end={l.end} className={linkClass(styles.mobileLink)}>{t(l.label)}</NavLink>
           ))}
+          <p className={styles.mobileSignedIn}>{t('header.signedInAs')} <strong>{user.name}</strong></p>
           <button type="button" className={styles.mobileLink} onClick={handleLogout}>
-            <LogOut size={18} aria-hidden="true" /> Log out
+            <LogOut size={18} aria-hidden="true" /> {t('header.logout')}
           </button>
         </nav>
       )}

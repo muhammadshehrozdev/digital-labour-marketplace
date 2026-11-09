@@ -1,6 +1,69 @@
-.logo { display: inline-flex; align-items: center; gap: var(--space-2); }
-.mark { flex: none; }
-.wordmark { font-size: 1.0625rem; line-height: 1.2; white-space: nowrap; }
-.primary { font-weight: 800; letter-spacing: -0.02em; color: var(--color-text); }
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text);
+}
+
+.mark {
+  flex-shrink: 0;
+  overflow: visible;
+  --logo-fill-start: var(--primary-500);
+  --logo-fill-end: var(--primary-700);
+  --logo-detail: oklch(1 0 0);
+  --logo-accent: var(--accent-500);
+}
+
+.dark {
+  color: var(--color-on-dark);
+  &.mark, & .mark {
+    --logo-fill-start: var(--color-dark-primary);
+    --logo-fill-end: var(--primary-500);
+    --logo-detail: var(--color-dark-bg);
+    --logo-accent: var(--color-dark-accent);
+  }
+}
+
+.mono {
+  --logo-detail: var(--color-surface);
+  --logo-accent: currentColor;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  :root:lang(ur) & { font-family: var(--font-urdu); letter-spacing: 0; line-height: 1.8; font-size: 1rem; }
+}
+
+.primary { font-weight: 800; }
 .secondary { font-weight: 500; color: var(--color-text-secondary); }
-@media (max-width: 767px) { .secondary { display: none; } }
+.dark .secondary { color: var(--color-on-dark-muted); }
+
+@media (max-width: 400px) {
+  .secondary { display: none; }
+}
+
+/* Animated logo: outline draws (stroke-dashoffset 1 -> 0), the fill and details fade in,
+   then the wordmark slides in. Transform and opacity only, except the one stroke. */
+@media (prefers-reduced-motion: no-preference) {
+  .animated .outline {
+    stroke: var(--logo-fill-start);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 1.1s var(--ease-in-out) 0.1s forwards, fade-out 0.4s ease 1.3s forwards;
+  }
+  .animated .shape { opacity: 0; animation: fade-in 0.5s var(--ease-out) 0.9s forwards; }
+  .animated .details { opacity: 0; transform-origin: center; animation: pop-in 0.5s var(--ease-spring) 1.2s forwards; }
+  .animatedLogo .wordmark { opacity: 0; animation: slide-in 0.6s var(--ease-out) 1.1s forwards; }
+}
+
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fade-in { to { opacity: 1; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+@keyframes slide-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }

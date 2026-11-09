@@ -26,6 +26,12 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  // A language chosen in one test must not leak into the next one (Batch 3).
+  try {
+    window.localStorage.clear();
+  } catch {
+    // storage not available
+  }
   const errors = consoleError.mock.calls.map((c) => c.join(' '));
   const warnings = consoleWarn.mock.calls.map((c) => c.join(' '));
   vi.restoreAllMocks();

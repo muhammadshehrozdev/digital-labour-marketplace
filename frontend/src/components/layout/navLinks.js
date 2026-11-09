@@ -1,10 +1,10 @@
-// Top navigation per role. Workers: Dashboard and Profile only — skills are opened from those
-// pages, never from the top menu (D-011, Batch 1 Part 5.2).
+// Top navigation per role (labels are dictionary keys). Workers: Dashboard and My profile
+// (D-020: one view, one editor; skills and proof are edited inside the profile editor).
 export const NAV_LINKS = {
   worker: [
-    { to: '/worker', label: 'Dashboard', end: true },
-    { to: '/worker/profile', label: 'Profile' },
+    { to: '/worker', label: 'nav.dashboard', end: true },
+    { to: '/worker/profile', label: 'nav.myProfile' },
   ],
-  customer: [{ to: '/find', label: 'Find workers' }],
-  admin: [{ to: '/admin', label: 'Admin' }],
+  customer: [{ to: '/find', label: 'nav.findWorkers' }],
+  admin: [{ to: '/admin', label: 'nav.admin' }],
 };

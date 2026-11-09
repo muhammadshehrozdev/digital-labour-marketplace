@@ -20,6 +20,18 @@ export const TAXONOMY = {
   availability: ['Available', 'Busy', 'Offline'],
 };
 
+// Answers for requests a test did not list. GET /auth/session (Batch 3) is derived from the
+// test's 'GET /auth/me' entry, so older tests stay short: 200 -> { user }, otherwise { user: null }.
+function defaultRoute(key, routes) {
+  if (key === 'GET /meta/taxonomy') return { status: 200, data: TAXONOMY };
+  if (key === 'GET /auth/session') {
+    const me = routes['GET /auth/me'];
+    return me?.status === 200 ? { status: 200, data: { user: me.data } } : { status: 200, data: { user: null } };
+  }
+  if (key === 'PATCH /users/me/preferences') return (config, body) => ({ status: 200, data: body });
+  return { status: 404, data: { code: 'ROUTE_NOT_FOUND', message: 'Not found' } };
+}
+
 // routes: { 'GET /auth/me': { status, data } | (config, body) => ({ status, data }) }
 export function mockApi(routes) {
   const calls = [];
@@ -30,7 +42,7 @@ export function mockApi(routes) {
     if (config.data instanceof FormData) body = Object.fromEntries(config.data.entries()); // uploads
     else body = config.data ? JSON.parse(config.data) : undefined;
     calls.push({ key, body, params: config.params });
-    let route = routes[key] ?? (key === 'GET /meta/taxonomy' ? { status: 200, data: TAXONOMY } : { status: 404, data: { message: 'Not found' } });
+    let route = routes[key] ?? defaultRoute(key, routes);
     if (typeof route === 'function') route = route(config, body);
     const response = { data: route.data, status: route.status, statusText: String(route.status), headers: {}, config };
     if (route.status >= 400) {
@@ -76,3 +88,25 @@ export const PROFILE = {
   skills: [{ skillId: 'elec_wiring', name: 'House wiring', category: 'electrical_solar', addedVia: 'manual', custom: false }],
   profileCompletion: 80,
 };
+
+// GET /api/workers/me/full (Batch 3, D-020) for a profile: the owner's data, the proof items,
+// and the public view built from the same public fields as the server (no private data).
+export const PUBLIC_KEYS = ['workerIdCode', 'occupation', 'category', 'experienceYears', 'hourlyRate', 'dailyRate', 'city', 'availability', 'verificationStatus', 'bio', 'languages', 'profileCompletion'];
+export function publicViewOf(profile) {
+  const view = Object.fromEntries(PUBLIC_KEYS.filter((k) => k in profile).map((k) => [k, profile[k]]));
+  view.user = { name: profile.user?.name };
+  view.skills = (profile.skills ?? []).map(({ skillId, name, category, custom, evidenceSummary }) => ({ skillId, name, category, custom, evidenceSummary }));
+  view.workHistory = (profile.workHistory ?? []).map(({ jobTitle, duration, description }) => ({ jobTitle, duration, description }));
+  return view;
+}
+export const full = (profile, evidence = [], extra = {}) => ({
+  status: 200,
+  data: {
+    profile,
+    evidence,
+    publicView: publicViewOf(profile),
+    listedInDirectory: Boolean(profile.occupation && profile.category),
+    onboarding: { steps: { about: true, work: true, skills: true }, nextStep: null, complete: true, completedAt: '2026-11-09T10:00:00Z' },
+    ...extra,
+  },
+});

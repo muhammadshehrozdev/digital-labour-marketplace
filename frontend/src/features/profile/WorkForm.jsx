@@ -3,17 +3,24 @@ import { Plus, Trash2 } from 'lucide-react';
 import API from '../../api';
 import { Alert, Button, IconButton, Select, TextArea, TextField } from '../../components/ui';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
-import { apiFieldErrors, apiMessage } from '../../utils/apiErrors';
-import { validateWork, workPayload } from './workForm';
+import { useT } from '../../i18n';
+import { apiError, apiFieldErrors } from '../../utils/apiErrors';
+import { ALL_PARTS, validateWork, workPayload } from './workForm';
 import styles from './ProfileForms.module.css';
 
-// Module 1 "Your work": trade, experience, rates, availability, bio, past work.
-export default function WorkForm({ values, onChange, onSaved, submitLabel = 'Save', secondary }) {
+const AVAILABILITY = ['Available', 'Busy', 'Offline'];
+
+// Module 1 "Your work". parts: ['work'] trade, experience, rates, availability, bio;
+// ['history'] past jobs; both by default (onboarding). Saves only the fields of its parts.
+export default function WorkForm({ values, onChange, onSaved, submitLabel, secondary, parts = ALL_PARTS }) {
+  const { t, te } = useT();
   const { categories, categoryOccupation, error: taxonomyError } = useTaxonomy();
   const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState(null);
   const [saving, setSaving] = useState(false);
   const set = (key) => (e) => onChange({ ...values, [key]: e.target.value });
+  const showWork = parts.includes('work');
+  const showHistory = parts.includes('history');
 
   const chooseCategory = (e) => {
     const category = e.target.value;
@@ -27,17 +34,17 @@ export default function WorkForm({ values, onChange, onSaved, submitLabel = 'Sav
 
   const submit = async (e) => {
     e.preventDefault();
-    const found = validateWork(values);
+    const found = validateWork(values, parts);
     setErrors(found);
-    setFormError('');
+    setFormError(null);
     if (Object.keys(found).length) return;
     setSaving(true);
     try {
-      const { data } = await API.put('/workers/me', workPayload(values));
+      const { data } = await API.put('/workers/me', workPayload(values, parts));
       onSaved(data);
     } catch (err) {
       setErrors(apiFieldErrors(err));
-      setFormError(apiMessage(err, 'Could not save. Please check the fields.'));
+      setFormError(apiError(err, 'about.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -45,56 +52,62 @@ export default function WorkForm({ values, onChange, onSaved, submitLabel = 'Sav
 
   return (
     <form onSubmit={submit} noValidate className={styles.form}>
-      {formError && <Alert tone="danger">{formError}</Alert>}
-      {taxonomyError && <Alert tone="danger">{taxonomyError}</Alert>}
-      <div className={styles.grid}>
-        <Select
-          label="Main trade"
-          required
-          placeholder="Choose a trade"
-          options={categories.map((c) => ({ value: c.id, label: c.label }))}
-          value={values.category}
-          onChange={chooseCategory}
-          error={errors.category}
-        />
-        <TextField label="Occupation" required placeholder="Electrician" value={values.occupation} onChange={set('occupation')} error={errors.occupation} urdu />
-        <TextField label="Years of experience" required inputMode="numeric" placeholder="5" value={values.experienceYears} onChange={set('experienceYears')} error={errors.experienceYears} hint="Whole years. Write 0 if you are new." />
-        <Select
-          label="Availability"
-          options={['Available', 'Busy', 'Offline'].map((a) => ({ value: a, label: a }))}
-          value={values.availability}
-          onChange={set('availability')}
-          error={errors.availability}
-        />
-        <TextField label="Rate per hour (PKR)" inputMode="decimal" placeholder="800" value={values.hourlyRate} onChange={set('hourlyRate')} error={errors.hourlyRate} />
-        <TextField label="Rate per day (PKR)" inputMode="decimal" placeholder="4000" value={values.dailyRate} onChange={set('dailyRate')} error={errors.dailyRate} hint="Give at least one rate." />
-      </div>
-      <TextArea label="Short bio" maxLength={500} rows={3} value={values.bio} onChange={set('bio')} error={errors.bio} placeholder="What kind of work do you do best?" urdu />
-
-      <fieldset className={styles.jobs}>
-        <legend className={styles.legend}>Past work (optional)</legend>
-        {values.workHistory.map((w, i) => (
-          <div key={i} className={styles.job}>
-            <div className={styles.jobHead}>
-              <span className={styles.jobNumber}>Job {i + 1}</span>
-              <IconButton label={`Remove job ${i + 1}`} icon={Trash2} size="sm" onClick={() => removeJob(i)} />
-            </div>
-            <div className={styles.grid}>
-              <TextField label="Job title" required value={w.jobTitle} onChange={(e) => setJob(i, 'jobTitle', e.target.value)} error={errors[`job${i}`]} urdu />
-              <TextField label="Client or place" value={w.clientOrEmployer} onChange={(e) => setJob(i, 'clientOrEmployer', e.target.value)} hint="Not shown to customers." urdu />
-              <TextField label="Duration" placeholder="2 weeks" value={w.duration} onChange={(e) => setJob(i, 'duration', e.target.value)} urdu />
-              <TextField label="What you did" value={w.description} onChange={(e) => setJob(i, 'description', e.target.value)} urdu />
-            </div>
+      {formError && <Alert tone="danger">{te(formError)}</Alert>}
+      {showWork && taxonomyError && <Alert tone="danger">{te(taxonomyError)}</Alert>}
+      {showWork && (
+        <>
+          <div className={styles.grid}>
+            <Select
+              label={t('work.trade')}
+              required
+              placeholder={t('work.tradePlaceholder')}
+              options={categories.map((c) => ({ value: c.id, label: c.label }))}
+              value={values.category}
+              onChange={chooseCategory}
+              error={errors.category}
+            />
+            <TextField label={t('work.occupation')} required placeholder={t('work.occupationPlaceholder')} value={values.occupation} onChange={set('occupation')} error={errors.occupation} urdu />
+            <TextField label={t('work.experience')} required inputMode="numeric" dir="ltr" placeholder="5" value={values.experienceYears} onChange={set('experienceYears')} error={errors.experienceYears} hint={t('work.experienceHint')} />
+            <Select
+              label={t('work.availability')}
+              options={AVAILABILITY.map((a) => ({ value: a, label: t(`status.availability.${a}`) }))}
+              value={values.availability}
+              onChange={set('availability')}
+              error={errors.availability}
+            />
+            <TextField label={t('work.hourly')} inputMode="decimal" dir="ltr" placeholder="800" value={values.hourlyRate} onChange={set('hourlyRate')} error={errors.hourlyRate} />
+            <TextField label={t('work.daily')} inputMode="decimal" dir="ltr" placeholder="4000" value={values.dailyRate} onChange={set('dailyRate')} error={errors.dailyRate} hint={t('work.dailyHint')} />
           </div>
-        ))}
-        {values.workHistory.length < 20 && (
-          <Button variant="secondary" size="sm" icon={Plus} onClick={addJob}>Add a past job</Button>
-        )}
-      </fieldset>
+          <TextArea label={t('work.bio')} maxLength={500} rows={3} value={values.bio} onChange={set('bio')} error={errors.bio} placeholder={t('work.bioPlaceholder')} urdu />
+        </>
+      )}
+
+      {showHistory && (
+        <fieldset className={styles.jobs}>
+          <legend className={styles.legend}>{t('work.historyLegend')}</legend>
+          {values.workHistory.map((w, i) => (
+            <div key={i} className={styles.job}>
+              <div className={styles.jobHead}>
+                <span className={styles.jobNumber}>{t('work.job', { n: i + 1 })}</span>
+                <IconButton label={t('work.removeJob', { n: i + 1 })} icon={Trash2} size="sm" onClick={() => removeJob(i)} />
+              </div>
+              <div className={styles.grid}>
+                <TextField label={t('work.jobTitle')} required value={w.jobTitle} onChange={(e) => setJob(i, 'jobTitle', e.target.value)} error={errors[`job${i}`]} urdu />
+                <TextField label={t('work.client')} value={w.clientOrEmployer} onChange={(e) => setJob(i, 'clientOrEmployer', e.target.value)} hint={t('work.clientHint')} urdu />
+                <TextField label={t('work.duration')} placeholder={t('work.durationPlaceholder')} value={w.duration} onChange={(e) => setJob(i, 'duration', e.target.value)} urdu />
+                <TextField label={t('work.whatYouDid')} value={w.description} onChange={(e) => setJob(i, 'description', e.target.value)} urdu />
+              </div>
+            </div>
+          ))}
+          {values.workHistory.length < 20 && (
+            <Button variant="secondary" size="sm" icon={Plus} onClick={addJob}>{t('work.addJob')}</Button>
+          )}
+        </fieldset>
+      )}
 
       <div className={styles.actions}>
         {secondary}
-        <Button type="submit" loading={saving}>{submitLabel}</Button>
+        <Button type="submit" loading={saving}>{submitLabel ?? t('common.save')}</Button>
       </div>
     </form>
   );

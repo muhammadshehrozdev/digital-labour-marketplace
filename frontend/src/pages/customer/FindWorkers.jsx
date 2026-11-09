@@ -4,20 +4,22 @@ import { BadgeCheck, RotateCcw, Search, SearchX, SlidersHorizontal } from 'lucid
 import { Alert, Avatar, Badge, Button, Drawer, EmptyState, PageHeader, Pagination, Select, Skeleton, StatusChip, Switch, TextField } from '../../components/ui';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import { useDocumentTitle, useT } from '../../i18n';
 import styles from './Customer.module.css';
 
 const PAGE_SIZE = 12;
 const EMPTY_FILTERS = { category: 'All', city: '', availability: 'All', verifiedOnly: false, verifiedSkills: false };
 
 function Filters({ value, onChange, categories }) {
+  const { t } = useT();
   const set = (key) => (e) => onChange({ ...value, [key]: e.target.value }, key);
   return (
     <div className={styles.filterFields}>
-      <Select label="Trade" value={value.category} onChange={set('category')} options={[{ value: 'All', label: 'All trades' }, ...categories.map((c) => ({ value: c.id, label: c.label }))]} />
-      <TextField label="City" placeholder="Rawalpindi" maxLength={50} value={value.city} onChange={set('city')} hint="Applied when you press Search or Show workers." />
-      <Select label="Availability" value={value.availability} onChange={set('availability')} options={[{ value: 'All', label: 'Any' }, ...['Available', 'Busy', 'Offline'].map((a) => ({ value: a, label: a }))]} />
-      <Switch label="Identity verified only" checked={value.verifiedOnly} onChange={(on) => onChange({ ...value, verifiedOnly: on }, 'verifiedOnly')} />
-      <Switch label="Verified skills only" hint="At least one skill backed by approved proof" checked={value.verifiedSkills} onChange={(on) => onChange({ ...value, verifiedSkills: on }, 'verifiedSkills')} />
+      <Select label={t('find.trade')} value={value.category} onChange={set('category')} options={[{ value: 'All', label: t('find.allTrades') }, ...categories.map((c) => ({ value: c.id, label: c.label }))]} />
+      <TextField label={t('find.city')} placeholder={t('about.cityPlaceholder')} maxLength={50} value={value.city} onChange={set('city')} hint={t('find.cityHint')} />
+      <Select label={t('find.availability')} value={value.availability} onChange={set('availability')} options={[{ value: 'All', label: t('find.any') }, ...['Available', 'Busy', 'Offline'].map((a) => ({ value: a, label: t(`status.availability.${a}`) }))]} />
+      <Switch label={t('find.verifiedOnly')} checked={value.verifiedOnly} onChange={(on) => onChange({ ...value, verifiedOnly: on }, 'verifiedOnly')} />
+      <Switch label={t('find.verifiedSkills')} hint={t('find.verifiedSkillsHint')} checked={value.verifiedSkills} onChange={(on) => onChange({ ...value, verifiedSkills: on }, 'verifiedSkills')} />
     </div>
   );
 }
@@ -25,7 +27,9 @@ function Filters({ value, onChange, categories }) {
 // Customer directory. The server sends only public fields; no phone, WhatsApp, email, address or
 // CNIC is ever rendered here (D-002).
 export default function FindWorkers() {
-  const { categories, categoryLabel } = useTaxonomy();
+  const { t, te, formatNumber } = useT();
+  useDocumentTitle(t('titles.find'));
+  const { categories, categoryLabel, categoryOccupation, skillName } = useTaxonomy();
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -54,21 +58,18 @@ export default function FindWorkers() {
 
   return (
     <div>
-      <PageHeader
-        title="Find workers"
-        description={'"Identity verified" means an admin checked the worker\'s CNIC. Skills marked "Self-declared" have no checked proof yet.'}
-      />
+      <PageHeader title={t('find.title')} description={t('find.lead')} />
       <form role="search" className={styles.searchBar} onSubmit={(e) => { e.preventDefault(); apply(); }}>
         <div className={styles.searchField}>
-          <TextField label="Search workers" hideLabel placeholder="Search: electrician, plumbing, geyser…" maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} />
+          <TextField label={t('find.searchLabel')} hideLabel placeholder={t('find.searchPlaceholder')} maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <Button type="submit" icon={Search}>Search</Button>
-        <Button variant="secondary" icon={SlidersHorizontal} className={styles.filterButton} onClick={() => setDrawerOpen(true)}>Filters</Button>
+        <Button type="submit" icon={Search}>{t('common.search')}</Button>
+        <Button variant="secondary" icon={SlidersHorizontal} className={styles.filterButton} onClick={() => setDrawerOpen(true)}>{t('find.filters')}</Button>
       </form>
 
       <div className={styles.layout}>
         <aside className={styles.sidebar} aria-labelledby="filters-title">
-          <h2 id="filters-title" className={styles.sidebarTitle}>Filters</h2>
+          <h2 id="filters-title" className={styles.sidebarTitle}>{t('find.filters')}</h2>
           <Filters
             value={filters}
             categories={categories}
@@ -77,14 +78,14 @@ export default function FindWorkers() {
               if (key !== 'city') apply(f); // city waits for the Search button
             }}
           />
-          {active && <Button variant="ghost" size="sm" icon={RotateCcw} onClick={reset}>Clear all</Button>}
+          {active && <Button variant="ghost" size="sm" icon={RotateCcw} onClick={reset}>{t('common.clearAll')}</Button>}
         </aside>
 
         <section aria-labelledby="results-title" className={styles.results}>
           <h2 id="results-title" className={styles.resultsTitle} aria-live="polite">
-            {data ? `${data.total} worker${data.total === 1 ? '' : 's'} found` : 'Searching…'}
+            {data ? t('find.found', { count: data.total }) : t('find.searching')}
           </h2>
-          {error && <Alert tone="danger" action={<Button size="sm" variant="secondary" onClick={reload}>Try again</Button>}>{error}</Alert>}
+          {error && <Alert tone="danger" action={<Button size="sm" variant="secondary" onClick={reload}>{t('common.tryAgain')}</Button>}>{te(error)}</Alert>}
           {!data && !error && (
             <div className={styles.cards} aria-busy="true">
               {Array.from({ length: 6 }, (_, i) => <Skeleton key={i} variant="block" height={176} />)}
@@ -94,62 +95,62 @@ export default function FindWorkers() {
             <EmptyState
               icon={SearchX}
               headingLevel={3}
-              title="No workers match"
-              description="Try another word, or remove some filters."
-              action={active ? <Button variant="secondary" onClick={reset}>Clear search and filters</Button> : null}
+              title={t('find.noneTitle')}
+              description={t('find.noneText')}
+              action={active ? <Button variant="secondary" onClick={reset}>{t('find.clearSearch')}</Button> : null}
             />
           )}
           {data && data.workers.length > 0 && (
             <ul className={styles.cards}>
-              {data.workers.map((w) => (
-                <li key={w.workerIdCode} className={styles.card} data-testid="worker-card">
+              {data.workers.map((w, i) => (
+                <li key={w.workerIdCode} className={styles.card} data-testid="worker-card" style={{ '--i': i }}>
                   <div className={styles.cardTop}>
                     <Avatar name={w.user?.name ?? ''} />
                     <div className={styles.cardName}>
-                      <h3 className={styles.name}><Link to={`/workers/${w.workerIdCode}`} className={styles.cardLink}>{w.user?.name ?? 'Worker'}</Link></h3>
-                      <p className={styles.trade}>{w.occupation}</p>
+                      <h3 className={styles.name}><Link to={`/workers/${w.workerIdCode}`} className={styles.cardLink} viewTransition>{w.user?.name ?? t('common.worker')}</Link></h3>
+                      <p className={styles.trade}>{categoryOccupation(w.category) || w.occupation}</p>
                       <p className={styles.meta}>{categoryLabel(w.category)} · {w.city}</p>
                     </div>
                   </div>
                   <StatusChip kind="identity" status={w.verificationStatus} />
                   <dl className={styles.facts}>
-                    <div><dt>Experience</dt><dd className="tabular">{w.experienceYears ?? 0} yrs</dd></div>
-                    <div><dt>Per hour</dt><dd className="tabular">{w.hourlyRate ? `Rs ${w.hourlyRate.toLocaleString('en')}` : '—'}</dd></div>
-                    <div><dt>Per day</dt><dd className="tabular">{w.dailyRate ? `Rs ${w.dailyRate.toLocaleString('en')}` : '—'}</dd></div>
+                    <div><dt>{t('find.experience')}</dt><dd className="tabular">{t('common.yearsShort', { count: w.experienceYears ?? 0 })}</dd></div>
+                    <div><dt>{t('find.perHour')}</dt><dd className="tabular" dir="ltr">{w.hourlyRate ? t('common.rupees', { amount: formatNumber(w.hourlyRate) }) : t('common.empty')}</dd></div>
+                    <div><dt>{t('find.perDay')}</dt><dd className="tabular" dir="ltr">{w.dailyRate ? t('common.rupees', { amount: formatNumber(w.dailyRate) }) : t('common.empty')}</dd></div>
                   </dl>
                   {w.skills?.length > 0 && (
-                    <ul className={styles.skills} aria-label="Top skills">
+                    <ul className={styles.skills} aria-label={t('find.topSkills')}>
                       {[...w.skills]
                         .sort((x, y) => (y.evidenceSummary?.status === 'verified') - (x.evidenceSummary?.status === 'verified'))
                         .slice(0, 3)
                         .map((s) => (
                           <li key={s.skillId}>
                             {s.evidenceSummary?.status === 'verified' ? (
-                              <Badge tone="success" icon={BadgeCheck}>{s.name}<span className="visually-hidden"> (verified by evidence)</span></Badge>
+                              <Badge tone="success" icon={BadgeCheck}>{skillName(s)}<span className="visually-hidden"> {t('find.verifiedSkill')}</span></Badge>
                             ) : (
-                              <Badge tone="primary">{s.name}</Badge>
+                              <Badge tone="primary">{skillName(s)}</Badge>
                             )}
                           </li>
                         ))}
-                      {w.skills.length > 3 && <li><Badge>+{w.skills.length - 3} more</Badge></li>}
+                      {w.skills.length > 3 && <li><Badge>{t('find.more', { count: w.skills.length - 3 })}</Badge></li>}
                     </ul>
                   )}
                 </li>
               ))}
             </ul>
           )}
-          {data && <Pagination page={data.page} pages={pages} onChange={setPage} label="Result pages" />}
+          {data && <Pagination page={data.page} pages={pages} onChange={setPage} label={t('find.resultPages')} />}
         </section>
       </div>
 
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title="Filters"
+        title={t('find.filters')}
         footer={
           <>
-            <Button variant="secondary" onClick={() => { reset(); setDrawerOpen(false); }}>Clear all</Button>
-            <Button onClick={() => { apply(); setDrawerOpen(false); }}>Show workers</Button>
+            <Button variant="secondary" onClick={() => { reset(); setDrawerOpen(false); }}>{t('common.clearAll')}</Button>
+            <Button onClick={() => { apply(); setDrawerOpen(false); }}>{t('find.showWorkers')}</Button>
           </>
         }
       >
