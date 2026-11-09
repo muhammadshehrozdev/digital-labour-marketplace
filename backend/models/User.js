@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { LANGUAGES } from '../config/languages.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,6 +21,8 @@ const userSchema = new mongoose.Schema(
     // Per-account lockout: 5 wrong passwords -> login paused for 15 minutes.
     failedLoginCount: { type: Number, default: 0 },
     lockUntil: { type: Date, default: null },
+    // Website language chosen by the user (Batch 3). null = not chosen yet.
+    preferredLanguage: { type: String, enum: [...LANGUAGES, null], default: null },
   },
   { timestamps: true }
 );

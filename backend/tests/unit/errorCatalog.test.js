@@ -81,6 +81,12 @@ describe('error catalog (Batch 3)', () => {
     });
   });
 
+  test('docs/API.md lists every code of the catalog (so the documentation stays complete)', () => {
+    const doc = readFileSync(join(root, '..', 'docs', 'API.md'), 'utf8');
+    const missing = ERROR_CODES.filter((code) => !doc.includes(`| \`${code}\` |`));
+    expect(missing).toEqual([]);
+  });
+
   test('field labels: known keys get an English name, unknown keys stay as they are', () => {
     expect(fieldLabel('experienceYears')).toBe('Experience');
     expect(fieldLabel('somethingNew')).toBe('somethingNew');

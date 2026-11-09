@@ -158,7 +158,7 @@ describe('login (M1-10, M1-11)', () => {
     const { cookie, user } = await registerUser(app);
     const res = await api(app, cookie).get('/api/auth/me');
     expect(res.status).toBe(200);
-    expect(Object.keys(res.body).sort()).toEqual(['_id', 'email', 'name', 'phone', 'role']);
+    expect(Object.keys(res.body).sort()).toEqual(['_id', 'email', 'name', 'phone', 'preferredLanguage', 'role']);
     expect(res.body.email).toBe(user.email);
   });
 

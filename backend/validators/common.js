@@ -3,6 +3,7 @@
 // Messages are error CODES from errors/catalog.js (English text and translations live there
 // and in the website's dictionaries). middleware/validate.js adds {field}, {min}, {max}.
 import { z } from 'zod';
+import { LANGUAGES } from '../config/languages.js';
 
 // Escape every RegExp special character so user text is matched literally (audit M1-3).
 export const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\\-/]/g, '\\$&');
@@ -28,6 +29,9 @@ export const phone = z
   .max(20, 'TEXT_TOO_LONG')
   .transform((s) => s.replace(/[\s-]/g, '').replace(/^(\+92|0092)/, '0'))
   .pipe(z.string().regex(/^03\d{9}$/, 'PHONE_INVALID'));
+
+// Website language (Batch 3): en, ur or ur-Latn.
+export const preferredLanguage = z.enum(LANGUAGES, { error: 'LANGUAGE_INVALID' });
 
 export const optionalPhone = z.union([z.literal(''), phone]);
 

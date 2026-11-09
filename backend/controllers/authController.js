@@ -6,9 +6,13 @@ import { ERRORS } from '../errors/catalog.js';
 import {
   SESSION_COOKIE, signSession, verifySession, readCookie, setSessionCookie, clearSessionCookie,
 } from '../services/session.js';
+import { findSessionUser } from '../middleware/authMiddleware.js';
 
 // The only fields of a user that the API ever sends back (to that user or an admin).
-const ownUser = (u) => ({ _id: u._id, name: u.name, email: u.email, phone: u.phone, role: u.role });
+export const ownUser = (u) => ({
+  _id: u._id, name: u.name, email: u.email, phone: u.phone, role: u.role,
+  preferredLanguage: u.preferredLanguage ?? null,
+});
 
 // The English text lives in errors/catalog.js (the website shows it in the chosen language).
 export const LOGIN_FAILED = ERRORS.LOGIN_FAILED;
@@ -25,12 +29,12 @@ const dummyHash = () => {
 
 // POST /api/auth/register  (worker or customer only — admins come from the create-admin script)
 export const registerUser = async (req, res) => {
-  const { name, email, password, phone, role } = req.validated.body;
+  const { name, email, password, phone, role, preferredLanguage } = req.validated.body;
 
   if (await User.exists({ email })) {
     throw httpError(409, 'EMAIL_TAKEN');
   }
-  const user = await User.create({ name, email, password, phone, role });
+  const user = await User.create({ name, email, password, phone, role, preferredLanguage: preferredLanguage ?? null });
 
   setSessionCookie(res, signSession(user));
   res.status(201).json(ownUser(user));
@@ -78,6 +82,19 @@ export const loginUser = async (req, res) => {
 // GET /api/auth/me
 export const getMe = async (req, res) => {
   res.json(ownUser(req.user));
+};
+
+// GET /api/auth/session — who is logged in, for the website's first load (Batch 3).
+// Always 200: { user } or { user: null }. A visitor is a normal case, not an error, so the
+// browser console stays clean. An old or invalid cookie is removed.
+export const getSession = async (req, res) => {
+  const { user, code } = await findSessionUser(req);
+  res.set('Cache-Control', 'no-store');
+  if (!user) {
+    if (code === 'SESSION_ENDED') clearSessionCookie(res);
+    return res.json({ user: null });
+  }
+  return res.json({ user: ownUser(user) });
 };
 
 // POST /api/auth/logout — works even if the session already expired.

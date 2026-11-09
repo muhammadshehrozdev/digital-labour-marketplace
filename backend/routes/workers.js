@@ -1,7 +1,7 @@
 import express from 'express';
 import { protect, requireRole } from '../middleware/authMiddleware.js';
 import { validate } from '../middleware/validate.js';
-import { getMyProfile, getMyOnboarding, updateMyProfile, listDirectory, getPublicProfile } from '../controllers/workersController.js';
+import { getMyProfile, getMyFullProfile, getMyOnboarding, updateMyProfile, listDirectory, getPublicProfile } from '../controllers/workersController.js';
 import { extract, listMySkills, addSkills, addCustomSkill, removeSkill } from '../controllers/skillsController.js';
 import { extractSchema, addSkillsSchema, customSkillSchema, skillIdParams } from '../validators/skills.js';
 import { profileUpdateSchema, directoryQuerySchema, workerIdCodeParams } from '../validators/workers.js';
@@ -12,6 +12,7 @@ const router = express.Router();
 router.get('/me', protect, requireRole('worker'), getMyProfile);
 router.put('/me', protect, requireRole('worker'), validate(profileUpdateSchema), updateMyProfile);
 router.get('/me/onboarding', protect, requireRole('worker'), getMyOnboarding);
+router.get('/me/full', protect, requireRole('worker'), getMyFullProfile);
 
 // Own skills (Module 2). Extract gives suggestions and saves nothing.
 router.post('/me/skills/extract', protect, requireRole('worker'), validate(extractSchema), extract);

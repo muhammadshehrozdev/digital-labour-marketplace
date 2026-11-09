@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { name, email, phone, newPassword, PASSWORD_MAX_BYTES } from './common.js';
+import { name, email, phone, newPassword, preferredLanguage, PASSWORD_MAX_BYTES } from './common.js';
 
 // Public registration: only worker or customer (audit M1-1). Admins come only from
 // scripts/createAdmin.js. Unknown keys are rejected (.strict()).
@@ -10,6 +10,8 @@ export const registerSchema = z
     password: newPassword,
     phone,
     role: z.enum(['worker', 'customer'], { error: 'ROLE_INVALID' }).default('worker'),
+    // The language the visitor chose before registering, so it is saved from the start.
+    preferredLanguage: preferredLanguage.optional(),
   })
   .strict();
 

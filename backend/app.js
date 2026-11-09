@@ -13,6 +13,7 @@ import metaRoutes from './routes/meta.js';
 import workersRoutes from './routes/workers.js';
 import adminRoutes from './routes/admin.js';
 import evidenceRoutes from './routes/evidence.js';
+import usersRoutes from './routes/users.js';
 
 export function createApp() {
   const env = getEnv();
@@ -53,6 +54,7 @@ export function createApp() {
   app.use('/api/workers', workersRoutes);
   app.use('/api/admin', adminRoutes);
   app.use('/api/evidence', evidenceRoutes);
+  app.use('/api/users', usersRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

@@ -1,10 +1,10 @@
-# API reference (after Batch 2, 9 Nov 2026)
+# API reference (Batch 3, updated 10 Nov 2026)
 
 Base path `/api`. Locally the browser calls `http://127.0.0.1:5173/api/...` and Vite forwards to the
 backend on `http://127.0.0.1:5000`. Bodies are JSON, except the evidence upload (multipart form).
 
-**Examples** below are real responses captured from the local preview on 9 Nov 2026 with
-**synthetic** accounts (ids and dates will differ on your computer; long values shortened with …).
+**Examples** below are real responses captured from the local preview on 9 Nov 2026 (Batch 3
+examples: 10 Nov 2026) with **synthetic** accounts (ids and dates will differ on your computer; long values shortened with …).
 
 ## Conventions
 
@@ -13,8 +13,12 @@ backend on `http://127.0.0.1:5000`. Bodies are JSON, except the evidence upload 
   role on the server.
 - **CSRF:** POST/PUT/PATCH/DELETE must come from an origin in `CLIENT_ORIGIN` (otherwise 403).
 - **Validation:** every body, query and URL parameter is checked with a strict schema; unknown keys → 400.
-- **Errors:** always `{ "message": "..." }`; validation errors also carry `errors: [{ field, message }]`.
-  A 500 never contains internal details.
+- **Errors (Batch 3):** always `{ "code": "...", "message": "...", "params"?: {...} }`. `code` is a stable
+  name from `backend/errors/catalog.js` (full list at the end of this file); `message` is the English text;
+  `params` fills placeholders such as `{field}`, `{min}`, `{max}`. The website shows the text of `code` in the
+  chosen language (English, Urdu, Roman Urdu) and uses `message` only as a fallback. Validation errors also
+  carry `errors: [{ field, code, params, message }]`, and the top-level `code` is the first of them.
+  A 500 never contains internal details (`SERVER_ERROR`).
 
 | Code | Meaning |
 |---|---|
@@ -47,19 +51,32 @@ The one list of categories and skills (no matching terms).
 
 | Method | Path | Who | Body | Success |
 |---|---|---|---|---|
-| POST | `/api/auth/register` | anyone | `{ name, email, password, phone, role? }` role `worker` (default) or `customer` only; password 15+ characters, ≤ 72 bytes | 201 user + cookie |
+| POST | `/api/auth/register` | anyone | `{ name, email, password, phone, role?, preferredLanguage? }` role `worker` (default) or `customer` only; password 15+ characters, ≤ 72 bytes; language `en`, `ur` or `ur-Latn` | 201 user + cookie |
 | POST | `/api/auth/login` | anyone | `{ email, password }` | 200 user + cookie |
+| GET | `/api/auth/session` | anyone | — | 200 `{ user }` or `{ user: null }` (never 401; a broken cookie is removed) |
 | GET | `/api/auth/me` | logged in | — | 200 user |
+| PATCH | `/api/users/me/preferences` | logged in (any role) | `{ preferredLanguage }` (`en`, `ur`, `ur-Latn`) | 200 `{ preferredLanguage }` |
 | POST | `/api/auth/logout` | anyone | — | 200; ends every session of this user |
 
+The user object (register, login, session, me) has only `_id, name, email, phone, role, preferredLanguage`
+(`preferredLanguage` is `null` until the user chooses one).
 ```json
-// POST /api/auth/register -> 201
-{"_id":"6af1f57b…514","name":"Example Worker (synthetic)","email":"docs.example…@example.com","phone":"03000000031","role":"worker"}
-// POST /api/auth/register with role "admin" (and a 1-letter name) -> 400
-{"message":"name: Name must be at least 2 characters; role: Role must be worker or customer",
- "errors":[{"field":"name","message":"Name must be at least 2 characters"},{"field":"role","message":"Role must be worker or customer"}]}
-// POST /api/auth/login with a wrong password -> 401 (same message for an unknown email)
-{"message":"Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes."}
+// POST /api/auth/register (customer, with "preferredLanguage":"ur") -> 201
+{"_id":"6af2378c…24c","name":"Example Customer (synthetic)","email":"docs.batch3…@example.com","phone":"03000000032","role":"customer","preferredLanguage":"ur"}
+// GET /api/auth/session without a cookie -> 200
+{"user":null}
+// GET /api/auth/session with the cookie -> 200
+{"user":{"_id":"6af2378c…24c","name":"Example Customer (synthetic)","email":"docs.batch3…@example.com","phone":"03000000032","role":"customer","preferredLanguage":"ur"}}
+// PATCH /api/users/me/preferences {"preferredLanguage":"ur-Latn"} -> 200
+{"preferredLanguage":"ur-Latn"}
+// PATCH /api/users/me/preferences {"preferredLanguage":"urdu"} -> 400
+{"code":"LANGUAGE_INVALID","params":{"field":"Language","fieldKey":"preferredLanguage"},"message":"preferredLanguage: Language must be en, ur or ur-Latn",
+ "errors":[{"field":"preferredLanguage","code":"LANGUAGE_INVALID","params":{"field":"Language","fieldKey":"preferredLanguage"},"message":"Language must be en, ur or ur-Latn"}]}
+// POST /api/auth/register with role "admin", a 1-letter name and a short password -> 400 (shortened)
+{"code":"TEXT_TOO_SHORT","params":{"field":"Name","fieldKey":"name","min":2},"message":"name: Name must be at least 2 characters; password: …; role: Role must be worker or customer",
+ "errors":[{"field":"name","code":"TEXT_TOO_SHORT",…},{"field":"password","code":"PASSWORD_TOO_SHORT",…},{"field":"role","code":"ROLE_INVALID",…}]}
+// POST /api/auth/login with a wrong password -> 401 (same answer for an unknown email)
+{"code":"LOGIN_FAILED","message":"Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes."}
 ```
 Errors: 400 invalid input, 409 email already registered, 429 too many failed attempts.
 
@@ -84,6 +101,16 @@ used by another account → 409.
 // PUT {"hourlyRate":-500} -> 400
 {"message":"hourlyRate: Hourly rate cannot be negative","errors":[{"field":"hourlyRate","message":"Hourly rate cannot be negative"}]}
 ```
+
+### GET /api/workers/me/full — worker (Batch 3, D-020)
+Everything the read-only **My profile** page needs, in one call (`Cache-Control: no-store`):
+`{ profile, evidence[], publicView, listedInDirectory, onboarding }`.
+- `profile`: same as `GET /api/workers/me`. `evidence`: own proof items, metadata only (like `/api/evidence/mine`).
+- `publicView`: built with the **same query and field list** as `GET /api/workers/:workerIdCode`, so
+  "See what customers see" shows exactly what customers get (no phone, WhatsApp, email, address,
+  emergency contact, CNIC, client names or evidence images).
+- `listedInDirectory`: `true` once occupation and category are saved (the directory rule).
+404 `PROFILE_NOT_CREATED` until a profile exists; customers 403; visitors 401.
 
 ### GET /api/workers/me/onboarding — worker
 Progress derived from saved data (D-011).
@@ -234,3 +261,124 @@ Phase 3: `/auth/*` and `/worker/*` without `/api`, `/api/worker/profile`, `/api/
 | `npm run evaluate:skills -- --file <dataset>` / `npm run agreement:skills -- --a <f> --b <f>` | Module 2 evaluation (`docs/evaluation/`) |
 | `npm run migrate:cnic` / `migrate:categories` / `migrate:skills` | Dry run unless `-- --apply`; local only unless `--allow-remote` |
 | `npm run db:local`, `npm run seed:local` | Local preview database and synthetic demo accounts (dev container) |
+
+## Error codes (generated from backend/errors/catalog.js)
+
+The English text is the fallback. Placeholders in braces come from `params`. A test checks that this
+table lists every code in the catalog.
+
+| Code | English text |
+|---|---|
+| `BODY_REQUIRED` | Request body is required (send JSON) |
+| `INVALID_JSON` | Request body is not valid JSON |
+| `BODY_TOO_LARGE` | Request body is too large |
+| `UNKNOWN_FIELD` | Unrecognized key: "{key}" |
+| `WRONG_TYPE` | {field}: wrong type of value |
+| `TEXT_MUST_BE_TEXT` | {field} must be text |
+| `ONE_VALUE` | {field} must be one text value |
+| `TEXT_TOO_SHORT` | {field} must be at least {min} characters |
+| `TEXT_TOO_LONG` | {field} must be at most {max} characters |
+| `TEXT_EMPTY_ITEM` | {field} cannot be empty |
+| `LIST_TOO_SHORT` | Choose at least {min} for {field} |
+| `LIST_TOO_LONG` | At most {max} items for {field} |
+| `NUMBER_REQUIRED` | {field} must be a number |
+| `WHOLE_NUMBER` | {field} must be a whole number |
+| `NOT_NEGATIVE` | {field} cannot be negative |
+| `NUMBER_TOO_SMALL` | {field} must be at least {min} |
+| `NUMBER_TOO_LARGE` | {field} must be at most {max} |
+| `RATE_TOO_HIGH` | {field} is too high |
+| `NOT_ALLOWED` | {field}: this value is not allowed |
+| `INVALID_FORMAT` | {field}: wrong format |
+| `INVALID_VALUE` | {field}: invalid value |
+| `ID_INVALID` | Invalid id |
+| `NAME_REQUIRED` | Name is required |
+| `EMAIL_REQUIRED` | Email is required |
+| `EMAIL_INVALID` | Email address is not valid |
+| `PHONE_REQUIRED` | Phone number is required |
+| `PHONE_INVALID` | Phone must be a Pakistani mobile number like 0300 1234567 |
+| `PASSWORD_REQUIRED` | Password is required |
+| `PASSWORD_TOO_SHORT` | Password must be at least 15 characters. Tip: use 4 or more easy words with spaces, in Roman Urdu or English |
+| `PASSWORD_TOO_LONG` | Password is too long (max 72 bytes; an Urdu letter counts as 2 bytes) |
+| `PASSWORD_ONLY_SPACES` | Password cannot be only spaces |
+| `ROLE_INVALID` | Role must be worker or customer |
+| `LANGUAGE_INVALID` | Language must be en, ur or ur-Latn |
+| `EMAIL_TAKEN` | This email is already registered. Please log in instead. |
+| `LOGIN_FAILED` | Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes. |
+| `NOT_LOGGED_IN` | Please log in first. |
+| `SESSION_ENDED` | Your session has ended. Please log in again. |
+| `FORBIDDEN` | You do not have permission for this action. |
+| `CSRF_BLOCKED` | Request blocked: it did not come from our website. |
+| `RATE_LIMIT_AUTH` | Too many failed attempts from this network. Please wait 15 minutes and try again. |
+| `RATE_LIMIT_UPLOAD` | Too many uploads from this network. Please wait 15 minutes and try again. |
+| `CNIC_INVALID` | CNIC must look like 12345-1234567-1 |
+| `CATEGORY_INVALID` | Category must be one of the listed trades |
+| `EXPERIENCE_WHOLE` | Experience must be whole years |
+| `EXPERIENCE_TOO_HIGH` | Experience must be 60 years or less |
+| `AVAILABILITY_INVALID` | Availability must be Available, Busy or Offline |
+| `PROFILE_NOT_CREATED` | You have not created your worker profile yet. |
+| `CNIC_TAKEN` | This CNIC is already linked to another account. If it is yours, please contact the admin. |
+| `WORKER_NOT_FOUND` | Worker not found |
+| `WORKER_ID_INVALID` | Worker ID must look like DLM-2026-000123 |
+| `CATEGORY_UNKNOWN` | Unknown category |
+| `AVAILABILITY_UNKNOWN` | Unknown availability |
+| `STATUS_UNKNOWN` | Unknown status |
+| `TYPE_UNKNOWN` | Unknown type |
+| `ACTION_UNKNOWN` | Unknown action |
+| `IDENTITY_FILTER_INVALID` | identity must be all or verified |
+| `SKILLS_FILTER_INVALID` | skills must be all or verified |
+| `DUPLICATES_FILTER_INVALID` | duplicates must be "true" |
+| `DATE_INVALID` | Date must look like 2026-11-09 |
+| `DATE_NOT_REAL` | Not a real date |
+| `IDENTITY_STATUS_INVALID` | Status must be Verified or Rejected |
+| `NOTE_REQUIRED` | A note is required |
+| `IDENTITY_NOTE_TOO_SHORT` | Please write a note of at least 5 characters (how the CNIC was checked) |
+| `WORKER_PROFILE_NOT_FOUND` | Worker profile not found |
+| `IDENTITY_NEEDS_CNIC` | This worker has not saved a CNIC yet, so identity cannot be verified. |
+| `IDENTITY_CHANGED` | Someone else changed this worker just now. Please reload and try again. |
+| `NO_CNIC_ON_FILE` | This worker has no CNIC on file. |
+| `CNIC_UNREADABLE` | The stored CNIC cannot be read (wrong key or damaged data). Ask the worker to enter it again. |
+| `TEXT_EMPTY` | Please write a few words about your work |
+| `INPUT_MODE_INVALID` | inputMode must be text or voice |
+| `SKILL_UNKNOWN` | Unknown skill. Choose a skill from the list. |
+| `SKILL_CHOOSE_ONE` | Choose at least one skill |
+| `ADDED_VIA_INVALID` | addedVia must be extractor or manual |
+| `SKILL_ID_INVALID` | Invalid skill id |
+| `SKILL_LIMIT` | At most {max} skills per worker |
+| `CUSTOM_SKILL_LATIN` | Please write the skill name in English letters (a-z) for now |
+| `CUSTOM_SKILL_LIMIT` | At most {max} custom skills |
+| `SKILL_NOT_ON_PROFILE` | This skill is not on your profile |
+| `SKILL_HAS_REVIEWED_PROOF` | This skill has proof that an admin already reviewed, so it cannot be removed. Please contact the admin. |
+| `SKILL_CHOOSE_OWN` | Choose one of your skills |
+| `EVIDENCE_TYPE_INVALID` | Choose the kind of proof: certificate, work photo or reference letter |
+| `CONSENT_REQUIRED` | Please tick the consent box before uploading |
+| `PHOTO_REQUIRED` | Please choose a photo to upload. |
+| `PHOTO_TOO_LARGE` | The photo is too large. The limit is 4 MB. |
+| `PHOTO_FIELD` | Send one photo in the "image" field. |
+| `UPLOAD_FORM_INVALID` | The upload form is not valid. |
+| `UPLOAD_INCOMPLETE` | The upload was not complete. Please try again. |
+| `PHOTO_NOT_JPG_PNG` | Please upload a JPG or PNG photo. |
+| `PHOTO_PDF` | PDF files are not accepted. Please upload a JPG or PNG photo of the document. |
+| `PHOTO_NOT_IMAGE` | This file is not a photo. Please upload a JPG or PNG photo. |
+| `PHOTO_UNREADABLE` | The photo could not be read. Please take the photo again. |
+| `PHOTO_TOO_MANY_PIXELS` | The photo has too many pixels. Please use a normal phone photo. |
+| `PROOF_SKILL_NOT_ON_PROFILE` | You can add proof only for a skill on your profile. |
+| `PROOF_LIMIT_SKILL` | At most {max} proof items per skill. Delete one first. |
+| `PROOF_LIMIT_TOTAL` | At most {max} proof items in total. |
+| `PHOTO_DUPLICATE` | You already uploaded this photo for this skill. |
+| `PHOTO_NOT_FOUND` | Photo not found |
+| `PROOF_NOT_FOUND` | Proof item not found |
+| `PROOF_FAKE_CANNOT_DELETE` | An admin marked this item as a suspected fake. It cannot be deleted. Please contact the admin. |
+| `PROOF_REVIEWED_CANNOT_DELETE` | Reviewed items that were approved or revoked cannot be deleted. Please contact the admin. |
+| `REASON_CODE_INVALID` | Choose a reason: unclear, not relevant, wrong skill or other |
+| `REASON_REQUIRED_TO_REJECT` | A reason is required to reject |
+| `REASON_OTHER_NEEDS_WORDS` | Write the reason (at least 5 characters) |
+| `WRITTEN_REASON_REQUIRED` | A written reason (at least 5 characters) is required |
+| `REASON_CODE_ONLY_FOR_REJECT` | A reason code is only used to reject |
+| `TRANSITION_INVALID` | You cannot {verb} an item that is {state}. |
+| `PROOF_CHANGED` | Someone else reviewed this item just now. Please reload. |
+| `ROUTE_NOT_FOUND` | Route not found |
+| `DUPLICATE_RECORD` | This record already exists |
+| `DB_VALIDATION` | Invalid value for: {fields} |
+| `INVALID_ID_OR_VALUE` | Invalid id or value |
+| `SERVICE_UNAVAILABLE` | Service temporarily unavailable. Please try again in a minute. |
+| `SERVER_ERROR` | Something went wrong on the server. Please try again later. |

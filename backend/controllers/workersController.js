@@ -8,6 +8,8 @@ import { calculateCompletion } from '../services/profileCompletion.js';
 import { encryptCnic, hashCnic } from '../services/cnic.js';
 import { writeAudit } from '../services/audit.js';
 import { refreshOnboarding } from '../services/onboarding.js';
+import Evidence from '../models/Evidence.js';
+import { ownerView as evidenceOwnerView } from './evidenceController.js';
 
 // PUBLIC fields: what customers and admins see in the directory (audit M1-2, decision D-002).
 // Never: CNIC data, address, emergency contact, WhatsApp, phone, email, raw experience text.
@@ -22,6 +24,11 @@ export const PUBLIC_WORKER_FIELDS = [
 export const PUBLIC_USER_FIELDS = 'name -_id';
 // The single public profile adds work history, without the client's name.
 const PUBLIC_PROFILE_FIELDS = `${PUBLIC_WORKER_FIELDS} workHistory.jobTitle workHistory.duration workHistory.description`;
+
+// One query for the public profile, used by the customer page AND by the owner's
+// "See what customers see" preview, so both always show exactly the same fields.
+const findPublicProfile = (filter) =>
+  WorkerProfile.findOne(filter).select(PUBLIC_PROFILE_FIELDS).populate('user', PUBLIC_USER_FIELDS).lean();
 
 // The owner sees their whole profile (toJSON removes the CNIC fields; cnicOnFile says if one is saved).
 async function ownerView(profileId) {
@@ -39,6 +46,28 @@ export const getMyProfile = async (req, res) => {
   const profile = await WorkerProfile.findOne({ user: req.user._id }).populate('user', 'name email phone role');
   if (!profile) throw httpError(404, 'PROFILE_NOT_CREATED');
   res.json(profile);
+};
+
+// GET /api/workers/me/full — everything the read-only "My profile" page needs (Batch 3, D-020):
+// the owner's profile, their proof items (metadata only), onboarding state, and the public view
+// (built with the same field list as GET /api/workers/:workerIdCode).
+export const getMyFullProfile = async (req, res) => {
+  const profile = await WorkerProfile.findOne({ user: req.user._id }).populate('user', 'name email phone role');
+  if (!profile) throw httpError(404, 'PROFILE_NOT_CREATED');
+  const [evidence, publicView, onboarding] = await Promise.all([
+    Evidence.find({ worker: req.user._id }).sort({ createdAt: -1 }).lean(),
+    findPublicProfile({ _id: profile._id }),
+    refreshOnboarding(req.user, profile),
+  ]);
+  res.set('Cache-Control', 'no-store');
+  res.json({
+    profile,
+    evidence: evidence.map(evidenceOwnerView),
+    publicView,
+    // Same rule as the directory: customers can find a worker only after the "Your work" step.
+    listedInDirectory: Boolean(profile.occupation && profile.category),
+    onboarding,
+  });
 };
 
 // PUT /api/workers/me  (body already checked by profileUpdateSchema)
@@ -131,10 +160,7 @@ export const listDirectory = async (req, res) => {
 
 // GET /api/workers/:workerIdCode  (customer, admin)
 export const getPublicProfile = async (req, res) => {
-  const profile = await WorkerProfile.findOne({ workerIdCode: req.validated.params.workerIdCode })
-    .select(PUBLIC_PROFILE_FIELDS)
-    .populate('user', PUBLIC_USER_FIELDS)
-    .lean();
+  const profile = await findPublicProfile({ workerIdCode: req.validated.params.workerIdCode });
   if (!profile) throw httpError(404, 'WORKER_NOT_FOUND');
   res.json(profile);
 };
