@@ -9,7 +9,7 @@
 // 3. Negative phrases ("kuch nahi aata") only explain an empty result; they never delete
 //    anything (fixes M2-4).
 // 4. Output is a SUGGESTION: skills with the matched words, all matching categories, and the
-//    stated experience. No confidence %, no level, no score (fixes M2-8). Nothing is saved.
+//    stated experience. No percentage, no level, no score (fixes M2-8). Nothing is saved.
 //
 // Options exist only for the evaluation's ablation study (evaluation/skill-extraction):
 //   normalize  false -> lower-case + split on spaces only ("dictionary only")
