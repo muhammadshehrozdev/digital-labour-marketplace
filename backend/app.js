@@ -9,6 +9,7 @@ import { createAuthLimiter } from './middleware/rateLimit.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import workerRoutes from './routes/workerRoutes.js';
+import metaRoutes from './routes/meta.js';
 
 export function createApp() {
   const env = getEnv();
@@ -31,6 +32,7 @@ export function createApp() {
 
   // Health check works even when the database is down, and reports its state.
   app.get('/api/health', (req, res) => res.json({ ok: true, db: dbState() }));
+  app.use('/api/meta', metaRoutes); // taxonomy: no database needed
 
   // Every other /api route needs the database; if it is unreachable -> 503.
   app.use('/api', requireDb(env.MONGO_URI, { timeoutMs: env.DB_TIMEOUT_MS }));
