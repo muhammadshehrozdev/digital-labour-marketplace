@@ -2,6 +2,59 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Phases 2 and 3 — Backend foundation and Module 1 fixes (9 Nov 2026)
+
+Decisions given by the team on 9 Nov 2026 and recorded in `docs/DECISIONS.md`: D-005 (password
+≥ 15 characters), D-006 (HttpOnly cookie, Option A), D-007 (CNIC Option 2). Also D-008
+(provisional category list, needs team approval) and D-009 (identity rules).
+
+**Local preview**
+- `frontend` `npm run dev` = `vite --host 127.0.0.1 --port 5173 --strictPort`; Vite forwards
+  `/api` to `http://127.0.0.1:5000`, so the login cookie is same-origin. Backend listens on 127.0.0.1.
+
+**Phase 2 — foundation**
+- `app.js` builds the app (tests, Vercel); `server.js` checks settings, connects, listens.
+- `config/env.js`: required `MONGO_URI`, `JWT_SECRET` (≥ 32), `CLIENT_ORIGIN`, `CNIC_ENC_KEY`,
+  `CNIC_HASH_KEY`; stops with a clear message (M1-12). `config/db.js`: cached connect promise,
+  `sanitizeFilter` everywhere, `strictQuery: 'throw'` outside production, 503 if the DB is down.
+- helmet, CORS allow-list, `express.json({ limit: '100kb' })`, failed-auth rate limit,
+  central 404 + error handler with a generic 500 message (M1-7, M1-10, M1-13), `/api/health`.
+- `validate(schema, source)` stores parsed input on `req.validated`.
+
+**Phase 3 — Module 1 (M1-1 to M1-16)**
+- Auth: register only worker/customer; zod schemas; generic login message + dummy bcrypt;
+  per-account lockout; HS256 JWT with iss/aud/exp in an HttpOnly Secure SameSite=Strict cookie;
+  `tokenVersion` logout; Origin CSRF check; `npm run create-admin`.
+- User schema: lowercase/trim/maxlength, `password` `select:false`, bcrypt cost 12.
+- Worker profile: `GET/PUT /api/workers/me` with a strict schema; counter-based worker IDs
+  (`DLM-<year>-<6 digits>`); CNIC encrypted + hashed, never returned; category = taxonomy id.
+- Directory: `GET /api/workers` (customer/admin, paginated, name only from the user, **no phone**
+  — D-002), `GET /api/workers/:workerIdCode`; escaped search; strict query schema.
+- Admin: `GET /api/admin/workers`, `PATCH /api/admin/workers/:id/identity` (note required,
+  409 on stale status), `GET /api/admin/workers/:id/cnic` (audited), `GET /api/admin/users`.
+- Hash-chained, append-only `AuditLog`; `npm run audit:verify`.
+- One provisional taxonomy file + `GET /api/meta/taxonomy` (adds Domestic Work).
+- Migration scripts `npm run migrate:cnic`, `npm run migrate:categories` (dry run by default,
+  local only unless `--allow-remote`). Run on the **local** database only (1 category label
+  converted, 1 empty plain CNIC field removed). **Not run on Atlas.**
+- Old `/api/worker` router keeps only the three Module 2 profiler routes (validated, no raw
+  errors); their logic is unchanged until Phase 4, except that "None" no longer overwrites the category.
+- Frontend: `AuthContext` (user from `/api/auth/me`, no `localStorage`), 401 → login with a
+  message, `/` redirect, Not Found page, Register password rule, worker profile inputs restored
+  (emergency contact, languages, work-history duration/description), categories from the API,
+  customer page "Find workers" with identity badge/filter and no phone, admin identity form
+  with required note and masked CNIC + audited Reveal.
+- Bug found by the local end-to-end check and fixed with a regression test: accounts created
+  before `tokenVersion` existed got 401 right after login, and logout did not cancel their tokens.
+
+**Results (real runs, 9 Nov 2026)**
+- Backend `npm test`: 14 files, **139/139 passed** (unit: setup 2, cnic 5, taxonomy 4;
+  integration: foundation 20, db-down 2, auth 33, auth-rate-limit 1, workers-profile 24,
+  directory 15, admin 21, hotfix-critical 4, migrations 3, model-hooks 3, multer-express5 2).
+- Frontend `npm test`: 3 files, **20/20 passed**. `npm run build` OK. `npm run lint`: 0 errors,
+  3 warnings (all in `SkillProfilerPage.jsx`, present before; Phase 4 rewrites that page).
+- No new npm packages; both lockfiles unchanged.
+
 ## Phase 1 — Dependencies and test tooling (8–9 Nov 2026)
 
 **Dependencies**
