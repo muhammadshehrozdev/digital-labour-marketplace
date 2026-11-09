@@ -19,6 +19,7 @@ import WorkerPublicProfile from './pages/customer/WorkerPublicProfile';
 import AdminOverview from './pages/admin/AdminOverview';
 import AdminIdentity from './pages/admin/AdminIdentity';
 import AdminAudit from './pages/admin/AdminAudit';
+import AdminEvidence from './pages/admin/AdminEvidence';
 
 // Style guide only in development builds (not shipped in production).
 const StyleGuide = import.meta.env.DEV ? lazy(() => import('./pages/dev/StyleGuide')) : null;
@@ -52,6 +53,7 @@ export function AppRoutes() {
           <Route path="admin" element={<AdminLayout />}>
             <Route index element={<AdminOverview />} />
             <Route path="identity" element={<AdminIdentity />} />
+            <Route path="evidence" element={<AdminEvidence />} />
             <Route path="audit" element={<AdminAudit />} />
           </Route>
         </Route>

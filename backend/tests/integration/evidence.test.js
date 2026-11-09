@@ -284,7 +284,7 @@ describe('admin review (state machine, audit log, skill status)', () => {
     expect(res.status).toBe(200);
     expect(res.body.evidence.status).toBe('approved');
     expect(res.body.skill.evidenceSummary).toMatchObject({ status: 'verified', approved: 1, strength: 'moderate' });
-    expect(res.body.confidence).toMatchObject({ r: 2, s: 0, belief: 0.5, uncertainty: 0.5, expected: 0.75 });
+    expect(res.body.opinion).toMatchObject({ r: 2, s: 0, belief: 0.5, uncertainty: 0.5, expected: 0.75 });
     expect((await skillOf(w.user._id, 'elec_wiring')).evidenceSummary.status).toBe('verified');
     const entry = await AuditLog.findOne({ action: 'evidence.approved', targetId: id }).lean();
     expect(entry).toMatchObject({ fromState: 'pending', toState: 'approved', actorRole: 'admin' });
@@ -344,7 +344,7 @@ describe('admin review (state machine, audit log, skill status)', () => {
     await decide(good, { action: 'approve' });
     const res = await decide(fake, { action: 'suspected_fake', note: 'Certificate number does not exist at the issuer' });
     expect(res.body.skill.evidenceSummary.status).toBe('disputed'); // Disputed wins over Verified
-    expect(res.body.confidence).toMatchObject({ r: 2, s: 1, expected: 0.6 });
+    expect(res.body.opinion).toMatchObject({ r: 2, s: 1, expected: 0.6 });
 
     const del = await api(app, w.cookie).delete(`/api/evidence/${fake}`);
     expect(del.status).toBe(409);
@@ -400,8 +400,8 @@ describe('admin review (state machine, audit log, skill status)', () => {
     const res = await api(app, adminCookie).get(`/api/admin/evidence/${id}`);
     expect(res.body.duplicate).toMatchObject({ skillId: 'elec_wiring' });
     expect(res.body.duplicate.worker.name).toBe('Evidence Worker');
-    expect(res.body.confidence.method).toMatch(/subjective-logic/);
-    expect(res.body.confidence).toMatchObject({ belief: 0, disbelief: 0, uncertainty: 1, expected: 0.5 });
+    expect(res.body.opinion.method).toMatch(/subjective-logic/);
+    expect(res.body.opinion).toMatchObject({ belief: 0, disbelief: 0, uncertainty: 1, expected: 0.5 });
     expect(res.body.evidence.allowedActions).toEqual(['approve', 'reject', 'suspected_fake']);
   });
 

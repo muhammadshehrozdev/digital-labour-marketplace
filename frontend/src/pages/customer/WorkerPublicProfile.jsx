@@ -4,6 +4,7 @@ import { Alert, Avatar, Button, Card, EmptyState, Section, StatusChip } from '..
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { PageLoading } from '../../routes/guards';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import { SkillProofSummary } from '../../features/evidence/SkillProofList';
 import styles from './Customer.module.css';
 
 // A worker's profile as a customer sees it: public fields only, no phone (D-002).
@@ -49,13 +50,13 @@ export default function WorkerPublicProfile() {
           </Section>
         </Card>
         <Card>
-          <Section title="Skills" id="skills" description='"Self-declared" means the worker added it; proof checks come next.'>
+          <Section title="Skills" id="skills" description={'"Verified by evidence" means an admin approved a photo of a certificate, finished work or a reference letter. "Self-declared" means there is no approved proof yet.'}>
             {worker.skills?.length ? (
               <ul className={styles.skillRows}>
                 {worker.skills.map((s) => (
                   <li key={s.skillId}>
                     <span>{s.name}</span>
-                    <StatusChip kind="skill" status="self_declared" />
+                    <SkillProofSummary skill={s} />
                   </li>
                 ))}
               </ul>

@@ -6,7 +6,13 @@ import { mockApi, me, onboarding, PROFILE } from './mockApi';
 import { renderAt, pathname } from './renderApp';
 
 const COMPLETE = onboarding({ about: true, work: true, skills: true }, '2026-11-09T10:00:00Z');
-const workerRoutes = (extra = {}) => ({ 'GET /auth/me': me('worker'), 'GET /workers/me/onboarding': COMPLETE, 'GET /workers/me': { status: 200, data: PROFILE }, ...extra });
+const workerRoutes = (extra = {}) => ({
+  'GET /auth/me': me('worker'),
+  'GET /workers/me/onboarding': COMPLETE,
+  'GET /workers/me': { status: 200, data: PROFILE },
+  'GET /evidence/mine': { status: 200, data: { evidence: [] } },
+  ...extra,
+});
 
 // Private data that must never appear on customer screens (even if a buggy server sent it).
 const SECRETS = ['03001234567', '03007654321', '03111111111', 'Satellite Town', 'rashid@example.com', '37405-1234567-1', '3740512345671'];
@@ -43,7 +49,10 @@ describe('worker navigation (D-011)', () => {
     expect(screen.getByText('Identity pending review')).toBeInTheDocument();
     expect(screen.getAllByText('Self-declared').length).toBeGreaterThan(0);
     expect(screen.getByRole('link', { name: 'Update skills' })).toHaveAttribute('href', '/worker/skills');
-    expect(screen.getByText('Coming next')).toBeInTheDocument();
+    expect(screen.getByText('Evidence: 0 approved')).toBeInTheDocument();
+    expect(screen.getByText('Strength: No evidence yet')).toBeInTheDocument();
+    const proofLink = screen.getAllByRole('link', { name: /Do it/ }).find((l) => l.getAttribute('href').includes('proof='));
+    expect(proofLink).toHaveAttribute('href', '/worker/skills?proof=elec_wiring');
   });
 
   test('a rejected identity shows the admin reason on the dashboard', async () => {

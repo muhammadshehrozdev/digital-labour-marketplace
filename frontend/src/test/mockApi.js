@@ -26,7 +26,9 @@ export function mockApi(routes) {
   resetTaxonomyCache();
   API.defaults.adapter = async (config) => {
     const key = `${config.method.toUpperCase()} ${config.url}`;
-    const body = config.data ? JSON.parse(config.data) : undefined;
+    let body;
+    if (config.data instanceof FormData) body = Object.fromEntries(config.data.entries()); // uploads
+    else body = config.data ? JSON.parse(config.data) : undefined;
     calls.push({ key, body, params: config.params });
     let route = routes[key] ?? (key === 'GET /meta/taxonomy' ? { status: 200, data: TAXONOMY } : { status: 404, data: { message: 'Not found' } });
     if (typeof route === 'function') route = route(config, body);

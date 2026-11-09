@@ -10,10 +10,6 @@
   .footerRight { width: 100%; }
   .footerRight > button, .footerRight > a { flex: 1; }
 }
-.proof { display: flex; gap: var(--space-4); align-items: flex-start; }
-.proofIcon { display: grid; place-items: center; width: 56px; height: 56px; flex: none; border-radius: var(--radius-lg); background: var(--color-accent-soft); color: var(--color-text); }
-.proofText { display: grid; gap: var(--space-2); justify-items: start; }
-.proofTitle { font-weight: 700; font-size: var(--text-h3); line-height: var(--leading-h3); }
 .summary { display: grid; gap: var(--space-3); margin: 0 0 var(--space-4); }
 .summary div { display: grid; grid-template-columns: 9rem 1fr; gap: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-border); }
 .summary dt { color: var(--color-text-secondary); font-size: var(--text-small); }

@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ScrollText, ShieldCheck } from 'lucide-react';
+import { FileCheck2, LayoutDashboard, ScrollText, ShieldCheck } from 'lucide-react';
 import styles from './AdminSidebar.module.css';
 
 const LINKS = [
   { to: '/admin', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/admin/identity', label: 'Identity review', icon: ShieldCheck },
+  { to: '/admin/evidence', label: 'Evidence review', icon: FileCheck2 },
   { to: '/admin/audit', label: 'Audit log', icon: ScrollText },
 ];
 

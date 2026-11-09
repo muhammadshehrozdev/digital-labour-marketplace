@@ -17,6 +17,8 @@ export default function AdminOverview() {
   const tiles = stats
     ? [
         { label: 'Waiting for identity review', value: stats.workers.Pending, to: '/admin/identity?status=Pending', strong: true },
+        { label: 'Proof waiting for review', value: stats.evidence?.pending ?? 0, to: '/admin/evidence?status=pending', strong: true },
+        { label: 'Proof marked suspected fake', value: stats.evidence?.suspected_fake ?? 0, to: '/admin/evidence?status=suspected_fake' },
         { label: 'Worker profiles', value: stats.workers.total, to: '/admin/identity?status=All' },
         { label: 'Identity verified', value: stats.workers.Verified, to: '/admin/identity?status=Verified' },
         { label: 'Identity not accepted', value: stats.workers.Rejected, to: '/admin/identity?status=Rejected' },
@@ -29,10 +31,10 @@ export default function AdminOverview() {
 
   return (
     <div>
-      <PageHeader title="Admin overview" description="Queues and counts. Every decision is written to the audit log." />
+      <PageHeader title="Admin overview" description="Queues and counts for identity and evidence review. Every decision is written to the audit log." />
       {error && <Alert tone="danger">{error}</Alert>}
       {!stats && !error && (
-        <div className={styles.tiles} aria-busy="true">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} variant="block" height={104} />)}</div>
+        <div className={styles.tiles} aria-busy="true">{Array.from({ length: 10 }, (_, i) => <Skeleton key={i} variant="block" height={104} />)}</div>
       )}
       {stats && (
         <ul className={styles.tiles}>

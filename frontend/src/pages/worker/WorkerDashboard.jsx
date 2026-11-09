@@ -1,5 +1,8 @@
-import { CheckCircle2, Circle, ListChecks, Pencil } from 'lucide-react';
-import { Alert, Badge, Button, Card, PageHeader, ProgressRing, StatusChip } from '../../components/ui';
+import { CheckCircle2, Circle, ImagePlus, ListChecks, Pencil } from 'lucide-react';
+import { Alert, Button, Card, PageHeader, ProgressRing, StatusChip } from '../../components/ui';
+import SkillProofList from '../../features/evidence/SkillProofList';
+import { useApiQuery } from '../../hooks/useApiQuery';
+import { useNavigate } from 'react-router-dom';
 import { useMyProfile } from '../../hooks/useMyProfile';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { PageLoading } from '../../routes/guards';
@@ -13,8 +16,11 @@ const IDENTITY_TEXT = {
 };
 
 export default function WorkerDashboard() {
+  const navigate = useNavigate();
   const { profile, error } = useMyProfile();
   const { categoryLabel } = useTaxonomy();
+  const evidenceQuery = useApiQuery('/evidence/mine');
+  const evidence = evidenceQuery.data?.evidence ?? [];
   if (error) return <Alert tone="danger">{error}</Alert>;
   if (!profile) return <PageLoading />;
 
@@ -23,7 +29,11 @@ export default function WorkerDashboard() {
     { done: profile.cnicOnFile, text: 'Add your CNIC for the identity check', to: '/worker/profile' },
     { done: profile.skills.length > 0, text: 'Add your skills', to: '/worker/skills' },
     { done: profile.workHistory.length > 0, text: 'Add a past job', to: '/worker/profile' },
-    { done: false, soon: true, text: 'Add proof for your skills' },
+    {
+      done: evidence.length > 0,
+      text: 'Add proof for your skills',
+      to: `/worker/skills?proof=${encodeURIComponent((profile.skills.find((sk) => !evidence.some((e) => e.skillId === sk.skillId)) ?? profile.skills[0])?.skillId ?? '')}`,
+    },
   ];
 
   return (
@@ -62,15 +72,14 @@ export default function WorkerDashboard() {
           {profile.skills.length === 0 ? (
             <p className={styles.muted}>No skills yet. Add them so customers can find you.</p>
           ) : (
-            <ul className={styles.skillList}>
-              {profile.skills.map((s) => (
-                <li key={s.skillId} className={styles.skillRow}>
-                  <span className={styles.skillName}>{s.name}</span>
-                  <StatusChip kind="skill" status="self_declared" />
-                </li>
-              ))}
-            </ul>
+            <SkillProofList
+              skills={profile.skills}
+              evidence={evidence}
+              compact
+              onAddProof={(skillId) => navigate(`/worker/skills?proof=${encodeURIComponent(skillId)}`)}
+            />
           )}
+          {evidenceQuery.error && <Alert tone="danger">{evidenceQuery.error}</Alert>}
         </Card>
 
         <Card className={styles.wideCard}>
@@ -85,9 +94,9 @@ export default function WorkerDashboard() {
                 )}
                 <span className={s.done ? styles.doneText : undefined}>
                   {s.text}
-                  <span className="visually-hidden">{s.done ? ' (done)' : s.soon ? ' (coming next)' : ' (to do)'}</span>
+                  <span className="visually-hidden">{s.done ? ' (done)' : ' (to do)'}</span>
                 </span>
-                {s.soon ? <Badge tone="accent">Coming next</Badge> : !s.done && <Button to={s.to} size="sm" variant="ghost">Do it</Button>}
+                {!s.done && <Button to={s.to} size="sm" variant="ghost" icon={s.to.includes('proof') ? ImagePlus : undefined}>Do it</Button>}
               </li>
             ))}
           </ul>

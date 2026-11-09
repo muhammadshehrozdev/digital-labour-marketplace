@@ -57,8 +57,9 @@ export const getEvidenceForAdmin = async (req, res) => {
     const d = await populated(Evidence.findById(evidence.possibleDuplicateOf)).lean();
     if (d) duplicate = adminView(d);
   }
-  const confidence = confidenceForAdmin(skillConfidence(await evidenceFor(evidence.worker._id, evidence.skillId)));
-  res.json({ evidence: adminView(evidence), duplicate, confidence });
+  // "opinion" = the subjective-logic numbers b, d, u, E for this worker's skill (admin only).
+  const opinion = confidenceForAdmin(skillConfidence(await evidenceFor(evidence.worker._id, evidence.skillId)));
+  res.json({ evidence: adminView(evidence), duplicate, opinion });
 };
 
 const REASON_WORDS = { unclear: 'Photo is unclear', not_relevant: 'Not relevant to the skill', wrong_skill: 'Belongs to another skill', other: 'Other' };
@@ -104,5 +105,5 @@ export const decideEvidence = async (req, res) => {
     reason: reviewNote || null,
     details: { skillId: current.skillId, reasonCode: reasonCode ?? null },
   });
-  res.json({ evidence: adminView(updated), skill: { skillId: current.skillId, evidenceSummary: summary }, confidence: confidenceForAdmin(confidence) });
+  res.json({ evidence: adminView(updated), skill: { skillId: current.skillId, evidenceSummary: summary }, opinion: confidenceForAdmin(confidence) });
 };

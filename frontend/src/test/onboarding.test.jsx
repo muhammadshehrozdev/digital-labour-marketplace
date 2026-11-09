@@ -190,15 +190,16 @@ describe('skills step (Module 2)', () => {
     expect(screen.getByRole('combobox', { name: /Add a skill from the list/ })).toBeInTheDocument();
   });
 
-  test('proof step is honest ("Coming next", nothing to upload) and "Skip for now" leads to "All set" with the worker ID', async () => {
+  test('proof step: "Skip for now" leads to "All set" with the worker ID and how much proof waits for review', async () => {
     mockApi({
       'GET /auth/me': me('worker'),
       'GET /workers/me/onboarding': onboarding({ about: true, work: true, skills: true }),
       'GET /workers/me': { status: 200, data: PROFILE },
+      'GET /evidence/mine': { status: 200, data: { evidence: [] } },
     });
     renderAt('/onboarding/proof');
-    expect(await screen.findByText('Coming next')).toBeInTheDocument();
-    expect(document.querySelector('input[type="file"]')).toBeNull();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Proof of skills' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Photo/)).toBeInTheDocument();
     await userEvent.setup().click(screen.getByRole('button', { name: 'Skip for now' }));
     expect(await screen.findByRole('heading', { level: 1, name: 'All set' })).toBeInTheDocument();
     expect(screen.getByText('DLM-2026-000042')).toBeInTheDocument();

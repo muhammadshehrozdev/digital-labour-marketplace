@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { RotateCcw, Search, SearchX, SlidersHorizontal } from 'lucide-react';
+import { BadgeCheck, RotateCcw, Search, SearchX, SlidersHorizontal } from 'lucide-react';
 import { Alert, Avatar, Badge, Button, Drawer, EmptyState, PageHeader, Pagination, Select, Skeleton, StatusChip, Switch, TextField } from '../../components/ui';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import styles from './Customer.module.css';
 
 const PAGE_SIZE = 12;
-const EMPTY_FILTERS = { category: 'All', city: '', availability: 'All', verifiedOnly: false };
+const EMPTY_FILTERS = { category: 'All', city: '', availability: 'All', verifiedOnly: false, verifiedSkills: false };
 
 function Filters({ value, onChange, categories }) {
   const set = (key) => (e) => onChange({ ...value, [key]: e.target.value }, key);
@@ -17,6 +17,7 @@ function Filters({ value, onChange, categories }) {
       <TextField label="City" placeholder="Rawalpindi" maxLength={50} value={value.city} onChange={set('city')} hint="Applied when you press Search or Show workers." />
       <Select label="Availability" value={value.availability} onChange={set('availability')} options={[{ value: 'All', label: 'Any' }, ...['Available', 'Busy', 'Offline'].map((a) => ({ value: a, label: a }))]} />
       <Switch label="Identity verified only" checked={value.verifiedOnly} onChange={(on) => onChange({ ...value, verifiedOnly: on }, 'verifiedOnly')} />
+      <Switch label="Verified skills only" hint="At least one skill backed by approved proof" checked={value.verifiedSkills} onChange={(on) => onChange({ ...value, verifiedSkills: on }, 'verifiedSkills')} />
     </div>
   );
 }
@@ -35,6 +36,7 @@ export default function FindWorkers() {
   if (query.search.trim()) params.search = query.search.trim();
   if (query.city.trim()) params.city = query.city.trim();
   if (query.verifiedOnly) params.identity = 'verified';
+  if (query.verifiedSkills) params.skills = 'verified';
   const { data, error, reload } = useApiQuery('/workers', params);
 
   const apply = (nextFilters = filters) => {
@@ -48,7 +50,7 @@ export default function FindWorkers() {
     setQuery({ search: '', ...EMPTY_FILTERS });
   };
   const pages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
-  const active = query.search || query.city || query.category !== 'All' || query.availability !== 'All' || query.verifiedOnly;
+  const active = query.search || query.city || query.category !== 'All' || query.availability !== 'All' || query.verifiedOnly || query.verifiedSkills;
 
   return (
     <div>
@@ -117,7 +119,18 @@ export default function FindWorkers() {
                   </dl>
                   {w.skills?.length > 0 && (
                     <ul className={styles.skills} aria-label="Top skills">
-                      {w.skills.slice(0, 3).map((s) => <li key={s.skillId}><Badge tone="primary">{s.name}</Badge></li>)}
+                      {[...w.skills]
+                        .sort((x, y) => (y.evidenceSummary?.status === 'verified') - (x.evidenceSummary?.status === 'verified'))
+                        .slice(0, 3)
+                        .map((s) => (
+                          <li key={s.skillId}>
+                            {s.evidenceSummary?.status === 'verified' ? (
+                              <Badge tone="success" icon={BadgeCheck}>{s.name}<span className="visually-hidden"> (verified by evidence)</span></Badge>
+                            ) : (
+                              <Badge tone="primary">{s.name}</Badge>
+                            )}
+                          </li>
+                        ))}
                       {w.skills.length > 3 && <li><Badge>+{w.skills.length - 3} more</Badge></li>}
                     </ul>
                   )}

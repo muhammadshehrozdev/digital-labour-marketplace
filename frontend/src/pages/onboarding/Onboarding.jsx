@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, FileImage } from 'lucide-react';
-import { Alert, Badge, Button, Card, Stepper, StatusChip, useToast } from '../../components/ui';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { Alert, Button, Card, Stepper, StatusChip, useToast } from '../../components/ui';
 import AboutForm from '../../features/profile/AboutForm';
 import WorkForm from '../../features/profile/WorkForm';
 import { aboutValuesFrom } from '../../features/profile/aboutForm';
@@ -12,6 +12,7 @@ import { useOnboarding, allowedStep, ONBOARDING_STEPS, STEP_IDS, DATA_STEPS } fr
 import { useMyProfile } from '../../hooks/useMyProfile';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { PageLoading } from '../../routes/guards';
+import ProofStep from './ProofStep';
 import styles from './Onboarding.module.css';
 
 // Guided worker onboarding: one task per screen; each step saves on its own; the skills step
@@ -117,20 +118,7 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
       )}
 
       {step === 'proof' && (
-        <Card>
-          <div className={styles.proof}>
-            <span className={styles.proofIcon}><FileImage size={28} strokeWidth={1.75} aria-hidden="true" /></span>
-            <div className={styles.proofText}>
-              <Badge tone="accent">Coming next</Badge>
-              <p className={styles.proofTitle}>Upload photos of certificates or your work to get skills verified.</p>
-              <p className={styles.hint}>This part is not ready yet. Your skills show as &quot;Self-declared&quot; until then.</p>
-            </div>
-          </div>
-          <div className={styles.footer}>
-            {back}
-            <Button iconRight={ArrowRight} onClick={() => goTo('done')}>Skip for now</Button>
-          </div>
-        </Card>
+        <ProofStep profile={profile} onProfileChange={setProfile} back={back} onNext={() => goTo('done')} />
       )}
 
       {step === 'done' && (
@@ -139,7 +127,8 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
             <div><dt>Name</dt><dd>{profile?.user?.name ?? user.name}</dd></div>
             <div><dt>Your worker ID</dt><dd className="tabular">{profile?.workerIdCode}</dd></div>
             <div><dt>Trade</dt><dd>{profile?.occupation} · {categoryLabel(profile?.category)}</dd></div>
-            <div><dt>Skills</dt><dd>{skillCount} added (Self-declared)</dd></div>
+            <div><dt>Skills</dt><dd>{skillCount} added</dd></div>
+            <div><dt>Proof</dt><dd>{(profile?.skills ?? []).reduce((n, s) => n + (s.evidenceSummary?.pending ?? 0), 0)} waiting for review</dd></div>
             <div>
               <dt>Identity</dt>
               <dd><StatusChip kind="identity" status={profile?.verificationStatus} /></dd>
@@ -162,6 +151,6 @@ const LEADS = {
   about: 'Your name, how to reach you, and where you work. Customers never see your phone or CNIC.',
   work: 'Your trade, experience and rates. This is what customers see first.',
   skills: 'Tell us about your work. We suggest skills; you choose which ones to add.',
-  proof: 'Proof makes your skills stronger.',
+  proof: 'A photo of a certificate, a finished job or a reference letter makes a skill stronger. An admin checks every photo.',
   done: 'Your profile is ready. Here is what we saved.',
 };
