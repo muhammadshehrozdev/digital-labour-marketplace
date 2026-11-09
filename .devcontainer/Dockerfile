@@ -25,7 +25,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   jq \
   nano \
   vim \
+  chromium \
+  fonts-noto-core \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Headless Chromium (from Debian's repository) for local visual checks with Playwright.
+# Playwright must use this browser and never download its own.
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV CHROMIUM_PATH=/usr/bin/chromium
 
 # Ensure default node user has access to /usr/local/share
 RUN mkdir -p /usr/local/share/npm-global && \
