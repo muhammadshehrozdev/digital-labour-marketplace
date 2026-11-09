@@ -46,7 +46,7 @@ describe('WorkerProfile pre-save hook (sync, no next)', () => {
   test('gives a new profile a worker ID code', async () => {
     const user = await User.findOne({ email: 'hook-test@example.com' });
     const profile = await WorkerProfile.create({ user: user._id });
-    // Current (pre-Phase-3) format; Phase 3 replaces it with a counter (M1-8).
-    expect(profile.workerIdCode).toMatch(/^DLM-2026-\d{4}$/);
+    // Phase 3 (M1-8): atomic counter format DLM-<year>-<6 digits>.
+    expect(profile.workerIdCode).toMatch(/^DLM-\d{4}-\d{6}$/);
   });
 });

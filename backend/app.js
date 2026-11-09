@@ -11,6 +11,7 @@ import { notFound, errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import workerRoutes from './routes/workerRoutes.js';
 import metaRoutes from './routes/meta.js';
+import workersRoutes from './routes/workers.js';
 
 export function createApp() {
   const env = getEnv();
@@ -46,7 +47,8 @@ export function createApp() {
 
   // Each route group is mounted once, under /api only (audit M1-13).
   app.use('/api/auth', authRoutes);
-  app.use('/api/worker', workerRoutes);
+  app.use('/api/workers', workersRoutes);
+  app.use('/api/worker', workerRoutes); // old Module 2 profiler routes only (replaced in Phase 4)
 
   app.use(notFound);
   app.use(errorHandler);
