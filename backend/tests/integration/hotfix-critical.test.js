@@ -39,3 +39,31 @@ describe('M1-1: public registration cannot create an admin', () => {
     }
   });
 });
+
+describe('M1-2: worker directory sends only safe fields', () => {
+  test('a worker calling GET /api/workers -> 403', async () => {
+    const res = await api(app).post('/api/auth/register').send(newUser());
+    const cookie = res.headers['set-cookie'][0].split(';')[0];
+    expect((await api(app, cookie).get('/api/workers')).status).toBe(403);
+  });
+
+  test('a customer gets no CNIC, address, emergency contact, WhatsApp, phone or email', async () => {
+    const w = await api(app).post('/api/auth/register').send({ ...newUser(), name: 'Ali Worker', phone: '03001112222' });
+    const workerCookie = w.headers['set-cookie'][0].split(';')[0];
+    await api(app, workerCookie).put('/api/workers/me').send({
+      occupation: 'Electrician', cnicNumber: '37405-1234567-1', address: 'House 1, Street 2, G-10',
+      emergencyContact: '03111111111', whatsappNumber: '03222222222',
+    });
+    const c = await api(app).post('/api/auth/register').send({ ...newUser(), role: 'customer' });
+    const customerCookie = c.headers['set-cookie'][0].split(';')[0];
+
+    const res = await api(app, customerCookie).get('/api/workers');
+    expect(res.status).toBe(200);
+    const w0 = res.body.workers[0];
+    for (const secret of ['cnicNumber', 'cnicEncrypted', 'cnicHash', 'address', 'emergencyContact', 'whatsappNumber', 'rawExperienceText']) {
+      expect(w0[secret], `${secret} must not be sent`).toBeUndefined();
+    }
+    expect(w0.user).toEqual({ name: 'Ali Worker' }); // D-002: phone removed too
+    expect(w0.occupation).toBe('Electrician');
+  });
+});
