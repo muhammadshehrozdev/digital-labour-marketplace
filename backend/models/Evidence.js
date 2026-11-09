@@ -33,8 +33,8 @@ const evidenceSchema = new mongoose.Schema(
   { timestamps: true, versionKey: false }
 );
 
-evidenceSchema.index({ worker: 1, skillId: 1 });
 // The same processed photo cannot be saved twice for the same worker and skill (also under a race).
+// Its prefix { worker, skillId } also serves "evidence of this worker's skill" queries.
 evidenceSchema.index({ worker: 1, skillId: 1, sha256: 1 }, { unique: true });
 evidenceSchema.index({ status: 1, createdAt: 1 }); // review queue, oldest first
 evidenceSchema.index({ sha256: 1 }); // exact duplicates

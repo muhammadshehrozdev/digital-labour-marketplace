@@ -21,3 +21,14 @@ updated content). Mobile = 360 px single column; desktop = up to 1200 px.
 | `*` | centred card | "Page not found", link home | |
 | Error boundary | centred card | "Something went wrong", reload button | No error details shown. |
 | `/dev/styleguide` | long page | every component and state | Only when `import.meta.env.DEV`. |
+
+## Batch 2 additions (Module 3, 9 Nov 2026)
+
+| Route / place | Layout | Content | Notes |
+|---|---|---|---|
+| `/onboarding/proof` (Step 4) | card with the upload form + card "Your proof so far" | Skill select, kind (3 RadioCards: certificate, work photo, reference letter), FileUpload (tap for camera/gallery, drag and drop, preview, remove), optional title, consent checkbox, upload progress bar; list per skill with item status chips ("Pending review") | "Skip for now" until something is uploaded, then "Continue". Client checks use the server's messages |
+| `/worker/skills` → "Proof of skills" | card under the skills editor | Per skill: StatusChip (Self-declared / Evidence pending / Verified by evidence / Disputed), "Evidence: N approved", "Strength: None/Weak/Moderate/Strong", items with thumbnail, kind, date, status and reason; delete (ConfirmDialog) only for pending/rejected; "Add proof" opens a Drawer with the skill preselected (`?proof=<skillId>`) | No percentages anywhere |
+| `/worker` dashboard | "Your skills" card | Same per-skill summary and items (compact, no thumbnails); "Add proof" goes to `/worker/skills?proof=…`; next step "Add proof for your skills" | Not in the top menu |
+| `/admin/evidence` | sidebar layout; filters row; DataTable (cards on phones); Drawer | Filters: status (default pending, oldest first), kind, skill, "Possible duplicates only". Drawer: large image with "Zoom to full size"/"Fit", possible duplicate side by side, file facts, b/d/u/E with "How this is computed", only the allowed actions | Each action opens a Dialog: Approve (confirm), Reject (reason select, note), Suspected fake (written reason), Revoke (written reason) |
+| `/admin` overview | tiles | Adds "Proof waiting for review" and "Proof marked suspected fake" | Real counts from `/api/admin/stats` |
+| `/find`, `/workers/:workerId` | as before | Verified skills marked on cards; "Verified skills only" filter; public profile shows chip + approved count + strength per skill | Never evidence images |

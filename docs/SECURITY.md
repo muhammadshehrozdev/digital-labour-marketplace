@@ -1,9 +1,9 @@
 # Security
 
-The full threat → mitigation → test table is finished in Phase 7. Below: what Phases 2–3
-built (with the test that proves it), how keys are handled, accepted limitations, and incidents.
+Each threat → mitigation → the automated test that proves it (mapped to the audit IDs), how keys
+are handled, accepted limitations, and incidents. Test files: backend `backend/tests/`, frontend `frontend/src/`.
 
-## Module 1 controls (Phases 2–3)
+## Threats, mitigations and tests (Modules 1–3)
 
 | Audit ID | Threat | Mitigation | Test (backend `tests/`, frontend `src/test/`) |
 |---|---|---|---|
@@ -27,6 +27,15 @@ built (with the test that proves it), how keys are handled, accepted limitations
 | M2-9/M2-11 | Free-text skills / oversized input | Skills only by taxonomy id (custom skills through a separate, marked route, max 10); text ≤ 2,000 characters; strict schemas | `skills.test.js` "unknown skillId -> 400", "-> 400 (M2-11)" |
 | Batch 1 | Admin audit viewer leaks data | Read-only route, admin only, no hashes in the response; entries never contain a CNIC | `skills.test.js` "admin overview and audit viewer" |
 | Batch 1 | Private data on customer screens | API projections (D-002) **and** UI tests with a deliberately leaky server response | `pages.test.jsx` "customer pages (D-002)" |
+| M3 | Malicious file disguised as a photo (script, PDF, HEIC, polyglot) | Type from the bytes (`file-type`), allow-list JPEG/PNG/WebP, the browser's type and name ignored, every image decoded and **re-encoded** to WebP by sharp (anything that does not decode is refused) | `evidence.test.js` "text file renamed to .jpg", "PDF", "HEIC", "corrupt JPEG" |
+| M3 | Location / camera data leaking from photos | sharp drops all metadata (EXIF incl. GPS, ICC); only the processed file is stored | `evidence.test.js` "a real JPEG with GPS EXIF -> 201; the stored file is WebP with no EXIF and no GPS" |
+| M3 | Oversized uploads / decompression bombs / upload flooding | multer memory storage with 4 MB, 1 file, 5 fields, 6 parts → 413; sharp input limit 50 MP; 30 uploads per 15 min per network; 5 per skill, 30 per worker | `evidence.test.js` "a 5 MB file -> 413", "at most 5 proof items per skill" |
+| M3 | Someone else's photos viewed or deleted | File route checks owner or admin inside the handler (others 404, customers 403); `Cache-Control: private, no-store`, `nosniff`; ids never in public responses | `evidence.test.js` "who can see and delete evidence" |
+| M3 | Customers seeing evidence | Public projections list only chip, approved count and strength; UI tests feed a leaky response and check no `<img>` | `evidence.test.js` "customers never get images…", `evidence.test.jsx` "customers never see evidence images" |
+| M3 | Hiding a suspected-fake finding | Worker cannot delete `suspected_fake` (409) nor remove a skill with reviewed proof (409); "Disputed" wins over "Verified" | `evidence.test.js` "a worker cannot delete a suspected fake, and the skill stays Disputed" |
+| M3 | Two admins deciding at once / stale screens | Conditional `findOneAndUpdate` on the read status → 409 | `evidence.test.js` "two simultaneous reviews…" |
+| M3 | Re-using another worker's photo | SHA-256 (exact) and dHash (look-alike) flags for the admin | `evidence.test.js` "same file from another worker", "look-alike picture … flagged similar" |
+| M3 | Tampering with review history | Every evidence change audited; hash chain checked by `npm run audit:verify` | `evidence.test.js` "audit:verify detects an edited evidence decision" |
 
 ## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET)
 
@@ -46,7 +55,7 @@ built (with the test that proves it), how keys are handled, accepted limitations
 - Since INC-001 (below), all Vercel environment variables count as exposed: generate **new**
   CNIC keys and a new `JWT_SECRET` for Vercel in Phase 8; never reuse the local ones.
 
-## Accepted limitations (Phases 2–3)
+## Accepted limitations
 
 - **Keys in environment variables, not a key-management service** (OWASP prefers one). Accepted for an FYP.
 - **IP rate limit is in memory**, one store per server instance; on Vercel it is partial protection.
@@ -59,6 +68,14 @@ built (with the test that proves it), how keys are handled, accepted limitations
 - **Audit log:** the hash chain detects edited, inserted or deleted entries in the middle, but not
   deletion of the newest entries at the end, and an action and its audit entry are two separate
   writes (no transaction), so a crash between them can leave a change without its entry.
+- **Perceptual hash (dHash) limits (Module 3):** it flags look-alikes but can be fooled on purpose
+  (cropping, rotating, mirroring, filters, adding borders), and it can flag honest uploads that only look
+  alike (two workers photographing the same printed certificate template, or very plain photos). So it
+  never rejects anything: it only warns the admin, who decides. The threshold (distance ≤ 10 of 64 bits)
+  is provisional and must be measured on our own photos.
+- **Evidence review is one admin's judgement**; a determined forger with a good fake certificate can
+  still pass. "Verified by evidence" means "an admin approved a photo", not "officially certified".
+- **Evidence bytes in MongoDB** share the free 0.5 GB Atlas tier with all other data (D-013).
 - **Secure cookie on http://127.0.0.1:** browsers accept `Secure` cookies on localhost/127.0.0.1;
   everywhere else HTTPS is required (Vercel uses HTTPS).
 
