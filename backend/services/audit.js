@@ -32,13 +32,25 @@ export function computeHash(entry) {
   return createHash('sha256').update(entry.prevHash).update(canonical(content)).digest('hex');
 }
 
-// Appends one entry. Two writers at the same moment cannot both take the same seq
-// (unique index), so the loser simply retries on top of the new last entry.
-export async function writeAudit({
+// Appends one entry.
+// - Inside one server process, writes wait in a queue, one after another.
+// - Across several server instances (Vercel), two writers cannot both take the same seq
+//   (unique index): the loser waits a few random milliseconds and retries on the new last entry.
+let queue = Promise.resolve();
+
+export function writeAudit(entry) {
+  const run = queue.then(() => appendEntry(entry));
+  queue = run.catch(() => {}); // one failed write must not block the next ones
+  return run;
+}
+
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function appendEntry({
   actor = null, actorRole = 'system', action, targetType = null, targetId = null,
   fromState = null, toState = null, reason = null, details = null,
 }) {
-  for (let attempt = 0; attempt < 10; attempt += 1) {
+  for (let attempt = 0; attempt < 25; attempt += 1) {
     const last = await AuditLog.findOne().sort({ seq: -1 }).select('seq hash').lean();
     const entry = {
       seq: (last?.seq ?? 0) + 1,
@@ -59,6 +71,7 @@ export async function writeAudit({
       return await AuditLog.create(entry);
     } catch (err) {
       if (err.code !== 11000) throw err;
+      await pause(5 + Math.floor(Math.random() * 20));
     }
   }
   throw new Error('Could not write the audit log entry (too many concurrent writers)');
