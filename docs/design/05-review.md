@@ -40,3 +40,21 @@ possible, otherwise by reading the code. "Not checked" is written where no check
 - `lucide-react` is pinned to 1.61.0 (the newest release older than two weeks on 9 Nov 2026).
 - The Urdu consent-form text was written by Claude Code and must be checked by a team member who reads Urdu.
 - Skill list v1 has not met real data yet; its quality is unknown until the evaluation runs.
+
+## Batch 2 review (Module 3, 9 Nov 2026)
+
+| # | Found | Fix |
+|---|---|---|
+| B1 | The admin "possible duplicates" filter used a `$in` operator that `sanitizeFilter` neutralised, so it could never match | marked as our own operator with `mongoose.trusted()`; the filter test failed before the fix |
+| B2 | Client photo check trusted the browser's claimed type when the bytes matched nothing (a text file named .jpg got the "JPG or PNG" message, not the server's "not a photo") | client recognises image formats only by their bytes, like the server; GIF/BMP/TIFF covered by a test |
+| B3 | Admin API field named `confidence` clashed with the "no confidence %" honesty rule | renamed to `opinion` (the subjective-logic term for b, d, u) |
+| B4 | A preview-URL effect needed a lint suppression | replaced by a small keyed `Preview` component (no suppression) |
+| B5 | An old Phase 4 test banned the word "strength", which Batch 2 now requires as a plain-language label | the test now bans the old numeric score fields by name |
+| B6 | Redundant Evidence index `{ worker, skillId }` (prefix of the unique index) | removed |
+| B7 | Unused CSS classes left from the old dashboard skills list | removed |
+| B8 | Test flakiness: the router path probe could lag one render; typing-heavy tests could pass 5 s on a busy machine; the race test assumed one timing | layout-effect probe; 15 s frontend test timeout; race test split into "exactly one succeeds" (real concurrency) + a deterministic stale-read 409 test |
+| B9 | My end-to-end script, placed in `backend/`, made nodemon restart the API mid-run (502s) | scripts now run from the scratchpad |
+
+Still not checked in a real browser (no browser in the dev container): layout at 360/768/1280 px,
+the live console, screen-reader output, and the camera picker on a phone — see the final report's
+click-through.

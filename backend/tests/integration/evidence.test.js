@@ -364,14 +364,34 @@ describe('admin review (state machine, audit log, skill status)', () => {
     expect((await api(app, w.cookie).delete(`/api/evidence/${pending}`)).status).toBe(200);
   });
 
-  test('two simultaneous reviews of the same item -> one succeeds, the other gets 409', async () => {
+  test('two simultaneous reviews of the same item -> exactly one succeeds; the other is refused; one audit entry', async () => {
+    // Which request wins, and whether the loser sees "changed meanwhile" (409) or "invalid from the
+    // new state" (400), depends on timing. What must never happen: both succeed.
     const w = await newWorker();
     const id = (await upload(w.cookie, { file: await jpeg(nextSeed()) })).body.evidence._id;
     const results = await Promise.all([decide(id, { action: 'approve' }), decide(id, { action: 'reject', reasonCode: 'unclear' })]);
-    expect(results.map((r) => r.status).sort()).toEqual([200, 409]);
-    const loser = results.find((r) => r.status === 409);
-    expect(loser.body.message).toMatch(/Someone else reviewed this item/);
+    const statuses = results.map((r) => r.status).sort();
+    expect(statuses[0]).toBe(200); // sorted: the success comes first
+    expect([400, 409]).toContain(statuses[1]);
+    const winner = results.find((r) => r.status === 200).body.evidence.status;
+    expect((await Evidence.findById(id).lean()).status).toBe(winner);
     expect(await AuditLog.countDocuments({ targetId: id, action: mongoose.trusted({ $in: ['evidence.approved', 'evidence.rejected'] }) })).toBe(1);
+  });
+
+  test('a decision based on a stale read (another admin decided in between) -> 409, nothing written', async () => {
+    const w = await newWorker();
+    const id = (await upload(w.cookie, { file: await jpeg(nextSeed()) })).body.evidence._id;
+    expect((await decide(id, { action: 'approve' })).status).toBe(200);
+    // The second admin's server read still saw "pending" (the race window), then tries to update.
+    vi.spyOn(Evidence, 'findById').mockImplementationOnce(() => ({
+      select: () => ({ lean: async () => ({ _id: id, status: 'pending', worker: w.user._id, skillId: 'elec_wiring' }) }),
+    }));
+    const auditBefore = await AuditLog.countDocuments({ targetId: id });
+    const res = await decide(id, { action: 'reject', reasonCode: 'unclear' });
+    expect(res.status).toBe(409);
+    expect(res.body.message).toMatch(/Someone else reviewed this item/);
+    expect((await Evidence.findById(id).lean()).status).toBe('approved');
+    expect(await AuditLog.countDocuments({ targetId: id })).toBe(auditBefore);
   });
 
   test('admin queue: pending items oldest first; filters by status, type, skill and possible duplicates', async () => {

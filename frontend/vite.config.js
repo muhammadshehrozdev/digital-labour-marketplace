@@ -18,5 +18,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.js'],
+    // Tests that simulate typing many characters can take a few seconds on a busy machine.
+    testTimeout: 15000,
   },
 })

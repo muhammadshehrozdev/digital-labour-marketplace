@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { AppRoutes, Providers } from '../App';
@@ -6,7 +6,8 @@ import { AppRoutes, Providers } from '../App';
 let currentPath = '';
 function LocationProbe() {
   const { pathname } = useLocation();
-  useEffect(() => {
+  // Layout effect: updated in the same commit as the new page, so tests never see a stale path.
+  useLayoutEffect(() => {
     currentPath = pathname;
   }, [pathname]);
   return null;
