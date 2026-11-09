@@ -20,6 +20,11 @@ Department rule (as reported by the team): a marketplace with "AI features on to
 - Windows 11, VS Code, PowerShell terminal, Google Chrome. Give PowerShell commands, say in which folder to run them, and explain what each command does before running it.
 - If the user writes in Roman Urdu and asks for Roman Urdu, answer in natural Roman Urdu.
 
+## Reporting to the user
+
+- At the end of every task or phase: (1) give the local preview link, http://127.0.0.1:5173, and list the exact pages and clicks where the user can see what changed; (2) give a progress table: phases done and left, and percent complete per module; (3) give the real test summary.
+- While working on long batches, after each major step write one short line: what was finished, and where to see it in the browser.
+
 ## Repository layout
 
 ```
