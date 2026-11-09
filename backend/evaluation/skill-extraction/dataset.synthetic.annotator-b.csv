@@ -1,0 +1,14 @@
+# SYNTHETIC — a second, invented annotator file to test agreement.js only. Never report.
+id,script,text,gold_skills,gold_category,gold_years,gold_months
+syn-01,roman_urdu,"Main 5 saal se plumbing, PPRC pipe fitting aur geyser ka kaam karta hoon",plumb_pipe;plumb_geyser,plumbing_sanitary,5,
+syn-02,urdu,میں دو سال سے وائرنگ کرتا ہوں,elec_wiring,electrical_solar,2,
+syn-03,english,I am a plumber with 10 years experience,plumb_general,plumbing_sanitary,10,
+syn-04,english,I install fans and lights in new houses,elec_fittings,electrical_solar,,
+syn-05,roman_urdu,"6 mahine se wiring aur solar ka kaam seekh raha hoon",elec_wiring;elec_solar,electrical_solar,0,6
+syn-06,english,I am a big fan of cricket and I like light music,,,,
+syn-07,mixed,"Ghar ki safai aur cooking karti hoon, 3 saal",dom_cleaning;dom_cooking,domestic_work,3,
+syn-08,urdu,میں ٹائل اور ماربل کا کام کرتا ہوں,mason_tile,construction_masonry,,
+syn-09,roman_urdu,"AC service aur gas charging, fridge bhi theek karta hoon",ac_service;ac_gas;ac_fridge,ac_appliance_repair,,
+syn-10,english,"Carpenter, I make wardrobes and fix door locks",carp_cabinets;carp_locks,carpentry_woodwork,,
+syn-11,roman_urdu,"meri 30000 salary hai, paint aur putty ka kaam",paint_interior;paint_putty,painting_renovation,,
+syn-12,english,"House shifting, loading and packing for 4 years",move_shifting;move_loading,moving_loading,4,

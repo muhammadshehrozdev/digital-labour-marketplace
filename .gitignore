@@ -10,3 +10,6 @@ dist/
 
 # Windows adds these when copying files into WSL
 *:Zone.Identifier
+
+# Evaluation outputs from the synthetic sample are not results
+backend/evaluation/skill-extraction/results/SYNTHETIC-*

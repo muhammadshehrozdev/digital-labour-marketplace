@@ -14,7 +14,9 @@
     "audit:verify": "node scripts/verifyAudit.js",
     "migrate:cnic": "node scripts/migrateCnic.js",
     "migrate:categories": "node scripts/migrateCategories.js",
-    "migrate:skills": "node scripts/migrateSkills.js"
+    "migrate:skills": "node scripts/migrateSkills.js",
+    "evaluate:skills": "node evaluation/skill-extraction/evaluate.js",
+    "agreement:skills": "node evaluation/skill-extraction/agreement.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
