@@ -154,6 +154,81 @@ export const SKILLS = Object.freeze([
     ['packing', 'furniture packing', 'پیکنگ'], ['boxes']),
 ]);
 
+// Display names in Urdu and Roman Urdu (Batch 3, D-019). Draft translations, to be checked by a
+// team member who reads Urdu (docs/i18n/REVIEW.md). Only the names shown on screen: the matching
+// terms above are unchanged, so extraction results and TAXONOMY_VERSION do not change.
+// Categories: [label, occupation]. Skills: name.
+export const DISPLAY_NAMES = Object.freeze({
+  categories: {
+    electrical_solar: { ur: ['بجلی اور سولر', 'الیکٹریشن'], 'ur-Latn': ['Bijli aur Solar', 'Electrician'] },
+    plumbing_sanitary: { ur: ['پلمبنگ اور سینیٹری', 'پلمبر'], 'ur-Latn': ['Plumbing aur Sanitary', 'Plumber'] },
+    construction_masonry: { ur: ['تعمیر اور مستری کا کام', 'راج مستری'], 'ur-Latn': ['Tameer aur Mistri ka kaam', 'Raj mistri'] },
+    carpentry_woodwork: { ur: ['کارپینٹری اور لکڑی کا کام', 'کارپینٹر (ترکھان)'], 'ur-Latn': ['Carpentry aur Lakri ka kaam', 'Carpenter (tarkhan)'] },
+    painting_renovation: { ur: ['رنگ و روغن اور مرمت', 'پینٹر'], 'ur-Latn': ['Rang o Rogan aur Marammat', 'Painter'] },
+    ac_appliance_repair: { ur: ['اے سی اور گھریلو مشینوں کی مرمت', 'اے سی ٹیکنیشن'], 'ur-Latn': ['AC aur Gharelu Machinon ki Marammat', 'AC technician'] },
+    home_maintenance: { ur: ['گھر کی مرمت', 'مرمت کا کاریگر'], 'ur-Latn': ['Ghar ki Marammat', 'Marammat ka karigar'] },
+    domestic_work: { ur: ['گھریلو کام', 'گھریلو ملازم'], 'ur-Latn': ['Gharelu Kaam', 'Gharelu mulazim'] },
+    moving_loading: { ur: ['شفٹنگ اور لوڈنگ', 'شفٹنگ اور لوڈنگ کا مزدور'], 'ur-Latn': ['Shifting aur Loading', 'Shifting aur loading mazdoor'] },
+  },
+  skills: {
+    elec_general: { ur: 'بجلی کا عام کام', 'ur-Latn': 'Bijli ka aam kaam' },
+    elec_wiring: { ur: 'گھر کی وائرنگ', 'ur-Latn': 'Ghar ki wiring' },
+    elec_solar: { ur: 'سولر پینل لگانا', 'ur-Latn': 'Solar panel lagana' },
+    elec_ups: { ur: 'یو پی ایس اور بیٹری لگانا', 'ur-Latn': 'UPS aur battery lagana' },
+    elec_db: { ur: 'ڈی بی بورڈ اور بریکر', 'ur-Latn': 'DB board aur breaker' },
+    elec_fittings: { ur: 'سوئچ، ساکٹ، لائٹ اور پنکھے', 'ur-Latn': 'Switch, socket, light aur pankhay' },
+    elec_generator: { ur: 'جنریٹر چینج اوور', 'ur-Latn': 'Generator changeover' },
+    elec_earthing: { ur: 'ارتھنگ اور حفاظتی جانچ', 'ur-Latn': 'Earthing aur hifazati jaanch' },
+    elec_3phase: { ur: 'تھری فیز وائرنگ', 'ur-Latn': 'Three phase wiring' },
+    plumb_general: { ur: 'پلمبنگ کا عام کام', 'ur-Latn': 'Plumbing ka aam kaam' },
+    plumb_pipe: { ur: 'پی پی آر سی اور یو پی وی سی پائپ فٹنگ', 'ur-Latn': 'PPRC aur uPVC pipe fitting' },
+    plumb_leak: { ur: 'پانی کی لیکج ٹھیک کرنا', 'ur-Latn': 'Paani ki leakage theek karna' },
+    plumb_fixtures: { ur: 'باتھ روم اور سینیٹری فٹنگ', 'ur-Latn': 'Bathroom aur sanitary fitting' },
+    plumb_geyser: { ur: 'گیزر لگانا', 'ur-Latn': 'Geyser lagana' },
+    plumb_pump: { ur: 'واٹر پمپ اور ٹینکی', 'ur-Latn': 'Water pump aur tanki' },
+    plumb_drain: { ur: 'نالی اور گٹر کھولنا', 'ur-Latn': 'Naali aur gutter kholna' },
+    mason_general: { ur: 'مستری کا عام کام', 'ur-Latn': 'Mistri ka aam kaam' },
+    mason_brick: { ur: 'اینٹوں کی چنائی', 'ur-Latn': 'Eenton ki chinai' },
+    mason_plaster: { ur: 'دیوار اور چھت کا پلستر', 'ur-Latn': 'Deewar aur chhat ka plaster' },
+    mason_tile: { ur: 'ٹائل اور ماربل کا فرش', 'ur-Latn': 'Tile aur marble ka farsh' },
+    mason_concrete: { ur: 'کنکریٹ، لینٹر اور بنیاد', 'ur-Latn': 'Concrete, lanter aur buniyaad' },
+    mason_waterproof: { ur: 'چھت کی واٹر پروفنگ', 'ur-Latn': 'Chhat ki waterproofing' },
+    carp_general: { ur: 'لکڑی کا عام کام', 'ur-Latn': 'Lakri ka aam kaam' },
+    carp_cabinets: { ur: 'الماریاں اور کچن کیبنٹ', 'ur-Latn': 'Almariyan aur kitchen cabinet' },
+    carp_doors: { ur: 'دروازے اور کھڑکیاں لگانا', 'ur-Latn': 'Darwazay aur khirkiyan lagana' },
+    carp_locks: { ur: 'دروازوں کے تالے اور کنڈیاں', 'ur-Latn': 'Darwazon ke taalay aur kundiyan' },
+    carp_furniture: { ur: 'فرنیچر بنانا اور مرمت', 'ur-Latn': 'Furniture banana aur marammat' },
+    carp_polish: { ur: 'لکڑی کی پالش اور لیمینیٹ', 'ur-Latn': 'Lakri ki polish aur laminate' },
+    paint_general: { ur: 'پینٹ کا عام کام', 'ur-Latn': 'Paint ka aam kaam' },
+    paint_interior: { ur: 'اندر کا ایملشن اور ڈسٹمپر', 'ur-Latn': 'Andar ka emulsion aur distemper' },
+    paint_exterior: { ur: 'باہر کی ویدر کوٹنگ', 'ur-Latn': 'Bahar ki weather coating' },
+    paint_putty: { ur: 'وال پٹی اور پرائمر', 'ur-Latn': 'Wall putty aur primer' },
+    paint_texture: { ur: 'ٹیکسچر اور وال پیپر', 'ur-Latn': 'Texture aur wallpaper' },
+    ac_general: { ur: 'اے سی کی مرمت (عام)', 'ur-Latn': 'AC ki marammat (aam)' },
+    ac_install: { ur: 'سپلٹ اور انورٹر اے سی لگانا', 'ur-Latn': 'Split aur inverter AC lagana' },
+    ac_gas: { ur: 'اے سی میں گیس بھرنا', 'ur-Latn': 'AC mein gas bharna' },
+    ac_service: { ur: 'اے سی سروس اور کیمیکل واش', 'ur-Latn': 'AC service aur chemical wash' },
+    ac_fridge: { ur: 'فریج اور فریزر کی مرمت', 'ur-Latn': 'Fridge aur freezer ki marammat' },
+    ac_washing: { ur: 'واشنگ مشین کی مرمت', 'ur-Latn': 'Washing machine ki marammat' },
+    home_general: { ur: 'گھر کی عام مرمت', 'ur-Latn': 'Ghar ki aam marammat' },
+    home_fixtures: { ur: 'پردے کی راڈ، شیلف اور دیوار کی فٹنگ', 'ur-Latn': 'Parday ki rod, shelf aur deewar ki fitting' },
+    dom_general: { ur: 'گھریلو کام (عام)', 'ur-Latn': 'Gharelu kaam (aam)' },
+    dom_cleaning: { ur: 'گھر کی صفائی', 'ur-Latn': 'Ghar ki safai' },
+    dom_cooking: { ur: 'کھانا پکانا', 'ur-Latn': 'Khana pakana' },
+    dom_laundry: { ur: 'کپڑے دھونا اور استری', 'ur-Latn': 'Kapray dhona aur istri' },
+    dom_childcare: { ur: 'بچوں کی دیکھ بھال', 'ur-Latn': 'Bachon ki dekh bhaal' },
+    dom_eldercare: { ur: 'بزرگوں اور مریضوں کی دیکھ بھال', 'ur-Latn': 'Buzurgon aur mareezon ki dekh bhaal' },
+    move_shifting: { ur: 'گھر کی شفٹنگ', 'ur-Latn': 'Ghar ki shifting' },
+    move_loading: { ur: 'سامان چڑھانا اور اتارنا', 'ur-Latn': 'Saamaan charhana aur utaarna' },
+    move_packing: { ur: 'شفٹنگ کے لیے سامان کی پیکنگ', 'ur-Latn': 'Shifting ke liye saamaan ki packing' },
+  },
+});
+
+const categoryNames = (id) => {
+  const names = DISPLAY_NAMES.categories[id] ?? {};
+  return Object.fromEntries(Object.entries(names).map(([lang, [label, occupation]]) => [lang, { label, occupation }]));
+};
+
 export const CATEGORY_IDS = Object.freeze(CATEGORIES.map((c) => c.id));
 export const SKILL_IDS = Object.freeze(SKILLS.map((s) => s.id));
 export const AVAILABILITY = Object.freeze(['Available', 'Busy', 'Offline']);
@@ -181,8 +256,9 @@ export const skillById = (id) => SKILLS.find((s) => s.id === id) ?? null;
 export function publicTaxonomy() {
   return {
     version: TAXONOMY_VERSION,
-    categories: CATEGORIES.map(({ id, label, occupation, iscoCode }) => ({ id, label, occupation, iscoCode })),
-    skills: SKILLS.map(({ id, name, category }) => ({ id, name, category })),
+    // i18n: the same names in Urdu and Roman Urdu (English stays in label / occupation / name).
+    categories: CATEGORIES.map(({ id, label, occupation, iscoCode }) => ({ id, label, occupation, iscoCode, i18n: categoryNames(id) })),
+    skills: SKILLS.map(({ id, name, category }) => ({ id, name, category, i18n: { ...DISPLAY_NAMES.skills[id] } })),
     availability: [...AVAILABILITY],
   };
 }
