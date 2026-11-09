@@ -158,6 +158,31 @@ describe('skills step (Module 2)', () => {
     expect(calls.some((c) => c.key === 'PUT /workers/me')).toBe(false); // trade/years not touched
   });
 
+  test('root cause of the Step 3 dead end (Batch 3): after adding skills, Continue really opens Step 4', async () => {
+    mockApi(skillsRoutes({
+      'POST /workers/me/skills': (cfg, body) => ({ status: 201, data: { skills: body.skillIds.map((id) => ({ skillId: id, name: id, category: 'electrical_solar', addedVia: 'extractor', custom: false })), onboarding: onboarding({ ...WORK_DONE, skills: true }).data } }),
+      'GET /evidence/mine': { status: 200, data: { evidence: [] } },
+    }));
+    renderAt('/onboarding/skills');
+    const user = userEvent.setup();
+    await user.type(await screen.findByLabelText(/what work do you do/), '6 saal se wiring aur solar');
+    await user.click(screen.getByRole('button', { name: 'Find my skills' }));
+    await user.click(await screen.findByRole('button', { name: /Add selected skills/ }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Proof of skills' })).toBeInTheDocument();
+    expect(pathname()).toBe('/onboarding/proof');
+  });
+
+  test('no silent dead end: without a skill, Continue explains why and links to the skill search', async () => {
+    mockApi(skillsRoutes());
+    renderAt('/onboarding/skills');
+    const cont = await screen.findByRole('button', { name: 'Continue' });
+    expect(cont).toBeDisabled();
+    expect(cont).toHaveAccessibleDescription(/Add at least one skill to continue/);
+    await userEvent.setup().click(screen.getByRole('button', { name: 'search the skill list' }));
+    expect(screen.getByRole('combobox', { name: /Add a skill from the list/ })).toHaveFocus();
+  });
+
   test('"Use these on my profile" is the only way the suggestion reaches the profile', async () => {
     const calls = mockApi(skillsRoutes({ 'PUT /workers/me': (cfg, body) => ({ status: 200, data: { profile: { ...PROFILE, ...body, skills: [] }, onboarding: onboarding(WORK_DONE).data } }) }));
     renderAt('/onboarding/skills');

@@ -96,9 +96,10 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
       {step === 'skills' && (
         <>
           <SkillsEditor
-            onSkillsChange={(list) => {
+            onSkillsChange={(list, serverState) => {
               setSkillCount(list.length);
-              setState((s) => ({ ...s, steps: { ...s.steps, skills: list.length > 0 } }));
+              // Use the server's onboarding state (complete, nextStep), so Continue is allowed (Batch 3 fix).
+              if (serverState) setState(serverState);
             }}
             onProfileSuggestionUsed={(data) => {
               setProfile(data.profile);
@@ -108,7 +109,15 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
           <div className={styles.footer}>
             {back}
             <div className={styles.footerRight}>
-              {skillCount === 0 && <p className={styles.hint} id="skills-needed">Add at least one skill to continue.</p>}
+              {skillCount === 0 && (
+                <p className={styles.hint} id="skills-needed">
+                  Add at least one skill to continue: use “Find my skills”, or{' '}
+                  <button type="button" className={styles.inlineLink} onClick={() => document.getElementById('skill-search')?.focus()}>
+                    search the skill list
+                  </button>
+                  .
+                </p>
+              )}
               <Button iconRight={ArrowRight} disabled={skillCount === 0} aria-describedby={skillCount === 0 ? 'skills-needed' : undefined} onClick={() => goTo('proof')}>
                 Continue
               </Button>

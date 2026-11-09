@@ -6,7 +6,7 @@ import styles from './Combobox.module.css';
 // Searchable select (WAI-ARIA combobox pattern with a listbox popup).
 // options: [{ value, label, group? }]. onSelect(option) is called on Enter or click; the input then clears.
 // Keys: ArrowDown/ArrowUp move, Enter selects, Escape closes.
-export default function Combobox({ label, hint, options, onSelect, placeholder, emptyText = 'No match', maxResults = 50 }) {
+export default function Combobox({ id, label, hint, options, onSelect, placeholder, emptyText = 'No match', maxResults = 50 }) {
   const listId = `l${useId().replace(/:/g, '')}`;
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
@@ -48,7 +48,7 @@ export default function Combobox({ label, hint, options, onSelect, placeholder, 
 
   const optionId = (i) => `${listId}-o${i}`;
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} hint={hint} id={id}>
       {(fieldProps) => (
         <div className={styles.wrap}>
           <input

@@ -30,15 +30,17 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
   const Recognition = useSpeech();
   const recognitionRef = useRef(null);
 
-  const update = (list) => {
+  // `onboarding` is the server's onboarding state returned with every skills response; the
+  // wizard must use it (not a local guess), otherwise Continue can bounce back (Batch 3 fix).
+  const update = (list, onboarding) => {
     setSaved(list);
-    onSkillsChange?.(list);
+    onSkillsChange?.(list, onboarding);
   };
 
   useEffect(() => {
     let active = true;
     API.get('/workers/me/skills')
-      .then(({ data }) => active && update(data.skills))
+      .then(({ data }) => active && update(data.skills, data.onboarding))
       .catch((err) => active && setLoadError(apiMessage(err, 'Could not load your skills.')));
     return () => {
       active = false;
@@ -73,7 +75,7 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
     setError('');
     try {
       const { data } = await API.post('/workers/me/skills', { skillIds: [...selected], addedVia: 'extractor', sourceText: text });
-      update(data.skills);
+      update(data.skills, data.onboarding);
       setResult((r) => r && { ...r, skills: r.skills.map((s) => ({ ...s, alreadySaved: s.alreadySaved || selected.has(s.skillId) })) });
       toast.show({ title: `${selected.size} skill${selected.size === 1 ? '' : 's'} added`, message: 'They show as "Self-declared" until proof is checked.' });
       setSelected(new Set());
@@ -88,7 +90,7 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
     setError('');
     try {
       const { data } = await API.post('/workers/me/skills', { skillIds: [option.value], addedVia: 'manual' });
-      update(data.skills);
+      update(data.skills, data.onboarding);
       toast.show({ title: `"${option.label}" added` });
     } catch (err) {
       setError(apiMessage(err, 'Could not add the skill.'));
@@ -100,7 +102,7 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
     setBusy('remove');
     try {
       const { data } = await API.delete(`/workers/me/skills/${encodeURIComponent(skill.skillId)}`);
-      update(data.skills);
+      update(data.skills, data.onboarding);
       toast.show({ tone: 'info', title: `"${skill.name}" removed` });
     } catch (err) {
       setError(apiMessage(err, 'Could not remove the skill.'));
@@ -302,6 +304,7 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
           </ul>
         )}
         <Combobox
+          id="skill-search"
           label="Add a skill from the list"
           hint="Type to search, then press Enter or tap a skill."
           placeholder="e.g. Geyser installation"
