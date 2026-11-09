@@ -35,7 +35,7 @@ for (const data of demoUsers) {
       user: user._id,
       occupation: 'Electrician',
       category: 'electrical_solar',
-      skills: ['House Wiring'],
+      skills: [{ skillId: 'elec_wiring', name: 'House wiring', category: 'electrical_solar', addedVia: 'manual' }],
       experienceYears: 3,
       hourlyRate: 500,
       dailyRate: 3000,

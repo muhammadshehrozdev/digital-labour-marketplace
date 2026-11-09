@@ -1,5 +1,9 @@
-// Module 2: 100% Strict Zero-Assumption AI Skill Profiler
-// Analyzes ONLY the current text/voice input. Never recycles old skills or assumes unmentioned tools/skills.
+// BASELINE ONLY — the old Module 2 keyword profiler, kept unchanged in its matching logic so the
+// evaluation can compare the new rule-based extractor against it (CLAUDE_CODE_PROMPT.md C5).
+// Moved from utils/ in Batch 1; it is no longer used by the live API.
+// It is a keyword dictionary (not "AI"); its old names were renamed, its rules were not changed.
+// Known problems it keeps on purpose (audit M2-4 to M2-8): substring matching for Urdu, everyday
+// words as skills, invented confidence numbers, years capped at 45.
 
 // Whole-word matching helper so "backup" NEVER matches "ac"!
 const matchesPhrase = (text, phrase) => {
@@ -210,7 +214,7 @@ const getExperienceTier = (years) => {
   return 'Entry-Level / Years Not Stated';
 };
 
-export const runAiSkillProfiler = ({ rawExperienceText = '', isVoiceInput = false }) => {
+export const runLegacyProfiler = ({ rawExperienceText = '', isVoiceInput = false }) => {
   const cleanInput = (rawExperienceText || '').trim();
 
   // 1. Agar input khali hai ya worker ne likha "mujay kuch nhi ata", to sab 0 / empty return karo!
@@ -226,7 +230,7 @@ export const runAiSkillProfiler = ({ rawExperienceText = '', isVoiceInput = fals
       recommendedSkills: [],
       toolsAndEquipment: [],
       experienceTierBadge: 'Not Profiled Yet',
-      aiSkillSummary: '',
+      skillSummary: '',
       skillStrengthScore: 0,
     };
   }
@@ -260,7 +264,7 @@ export const runAiSkillProfiler = ({ rawExperienceText = '', isVoiceInput = fals
           category: catName,
           level,
           confidenceScore: confidence,
-          source: isVoiceInput ? 'AI-Voice-Extracted' : 'AI-Extracted',
+          source: isVoiceInput ? 'legacy-voice' : 'legacy-text', // old values renamed (were the cause of M2-1)
         });
       }
     });
@@ -292,7 +296,7 @@ export const runAiSkillProfiler = ({ rawExperienceText = '', isVoiceInput = fals
       recommendedSkills: [],
       toolsAndEquipment: [],
       experienceTierBadge: 'Not Profiled Yet',
-      aiSkillSummary: '',
+      skillSummary: '',
       skillStrengthScore: 0,
     };
   }
@@ -328,7 +332,7 @@ export const runAiSkillProfiler = ({ rawExperienceText = '', isVoiceInput = fals
       ? ` Mentioned tools: ${toolsAndEquipment.join(', ')}.`
       : '';
 
-  const aiSkillSummary = `Trade identified from input: ${detectedOccupation} (${bestCategory}). ${yearsText} ${skillsText}${toolsText}`;
+  const skillSummary = `Trade identified from input: ${detectedOccupation} (${bestCategory}). ${yearsText} ${skillsText}${toolsText}`;
 
   let skillStrengthScore = 15;
   if (detectedYears > 0) skillStrengthScore += 20;
@@ -347,7 +351,7 @@ export const runAiSkillProfiler = ({ rawExperienceText = '', isVoiceInput = fals
     recommendedSkills: recommendedSkills.slice(0, 5),
     toolsAndEquipment,
     experienceTierBadge,
-    aiSkillSummary,
+    skillSummary,
     skillStrengthScore,
   };
 };

@@ -13,7 +13,8 @@
     "list-admins": "node scripts/listAdmins.js",
     "audit:verify": "node scripts/verifyAudit.js",
     "migrate:cnic": "node scripts/migrateCnic.js",
-    "migrate:categories": "node scripts/migrateCategories.js"
+    "migrate:categories": "node scripts/migrateCategories.js",
+    "migrate:skills": "node scripts/migrateSkills.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

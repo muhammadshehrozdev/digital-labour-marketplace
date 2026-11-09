@@ -9,7 +9,6 @@ import { createAuthLimiter } from './middleware/rateLimit.js';
 import { requireTrustedOrigin } from './middleware/csrf.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
-import workerRoutes from './routes/workerRoutes.js';
 import metaRoutes from './routes/meta.js';
 import workersRoutes from './routes/workers.js';
 import adminRoutes from './routes/admin.js';
@@ -50,7 +49,6 @@ export function createApp() {
   app.use('/api/auth', authRoutes);
   app.use('/api/workers', workersRoutes);
   app.use('/api/admin', adminRoutes);
-  app.use('/api/worker', workerRoutes); // old Module 2 profiler routes only (replaced in Phase 4)
 
   app.use(notFound);
   app.use(errorHandler);

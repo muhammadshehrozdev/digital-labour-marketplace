@@ -1,4 +1,5 @@
 // Module 1: the worker's own profile, and the public worker directory.
+import mongoose from 'mongoose';
 import WorkerProfile from '../models/WorkerProfile.js';
 import User from '../models/User.js';
 import { httpError } from '../utils/httpError.js';
@@ -6,12 +7,14 @@ import { escapeRegex } from '../validators/common.js';
 import { calculateCompletion } from '../services/profileCompletion.js';
 import { encryptCnic, hashCnic } from '../services/cnic.js';
 import { writeAudit } from '../services/audit.js';
+import { refreshOnboarding } from '../services/onboarding.js';
 
 // PUBLIC fields: what customers and admins see in the directory (audit M1-2, decision D-002).
 // Never: CNIC data, address, emergency contact, WhatsApp, phone, email, raw experience text.
 export const PUBLIC_WORKER_FIELDS = [
-  'workerIdCode', 'occupation', 'category', 'skills', 'experienceYears', 'hourlyRate', 'dailyRate',
-  'city', 'availability', 'verificationStatus', 'bio', 'languages', 'profileCompletion', 'user',
+  'workerIdCode', 'occupation', 'category', 'skills.skillId', 'skills.name', 'skills.category', 'skills.custom',
+  'experienceYears', 'hourlyRate', 'dailyRate', 'city', 'availability', 'verificationStatus', 'bio', 'languages',
+  'profileCompletion', 'user',
 ].join(' ');
 // From the linked user: the name only (no phone, no email).
 export const PUBLIC_USER_FIELDS = 'name -_id';
@@ -22,6 +25,12 @@ const PUBLIC_PROFILE_FIELDS = `${PUBLIC_WORKER_FIELDS} workHistory.jobTitle work
 async function ownerView(profileId) {
   return WorkerProfile.findById(profileId).populate('user', 'name email phone role');
 }
+
+// GET /api/workers/me/onboarding — where the worker is in the guided onboarding (D-011).
+export const getMyOnboarding = async (req, res) => {
+  const profile = await WorkerProfile.findOne({ user: req.user._id });
+  res.json(await refreshOnboarding(req.user, profile));
+};
 
 // GET /api/workers/me
 export const getMyProfile = async (req, res) => {
@@ -80,21 +89,27 @@ export const updateMyProfile = async (req, res) => {
     });
   }
 
-  res.json({ message: 'Profile saved.', profile: await ownerView(profile._id) });
+  const fresh = await ownerView(profile._id);
+  const user = { ...req.user, ...userChanges };
+  res.json({ message: 'Profile saved.', profile: fresh, onboarding: await refreshOnboarding(user, fresh) });
 };
 
 // GET /api/workers  (customer, admin) — public directory, paginated, safe fields only.
 export const listDirectory = async (req, res) => {
   const { search, city, category, availability, identity, page = 1, limit = 20 } = req.validated.query;
 
-  const filter = {};
+  // Only workers who finished the "Your work" step are listed (a card needs a trade).
+  const filter = {
+    occupation: mongoose.trusted({ $nin: ['', null] }),
+    category: mongoose.trusted({ $ne: null }),
+  };
   if (category && category !== 'All') filter.category = category;
   if (availability && availability !== 'All') filter.availability = availability;
   if (identity === 'verified') filter.verificationStatus = 'Verified';
   if (city) filter.city = new RegExp(escapeRegex(city), 'i');
   if (search) {
     const pattern = new RegExp(escapeRegex(search), 'i');
-    filter.$or = [{ occupation: pattern }, { skills: pattern }, { bio: pattern }];
+    filter.$or = [{ occupation: pattern }, { 'skills.name': pattern }, { bio: pattern }];
   }
 
   const [workers, total] = await Promise.all([

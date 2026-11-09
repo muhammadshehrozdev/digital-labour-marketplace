@@ -20,7 +20,6 @@ afterAll(stopTestDb);
 const goodProfile = {
   occupation: 'Electrician',
   category: 'electrical_solar',
-  skills: ['House Wiring', 'Solar Panel'],
   experienceYears: 6,
   hourlyRate: 800,
   dailyRate: 5000,
@@ -68,7 +67,7 @@ describe('PUT /api/workers/me', () => {
     ['setting verificationStatus', { verificationStatus: 'Verified' }, /Unrecognized key/],
     ['setting workerIdCode', { workerIdCode: 'DLM-2026-000001' }, /Unrecognized key/],
     ['object as city', { city: { $ne: 'x' } }, /City must be text/],
-    ['31 skills', { skills: Array.from({ length: 31 }, (_, i) => `Skill ${i}`) }, /At most 30/],
+    ['skills sent with the profile (they have their own routes now)', { skills: ['House Wiring'] }, /Unrecognized key/],
   ])('%s -> 400 (M1-6)', async (_label, body, message) => {
     const { cookie } = await registerUser(app);
     const res = await api(app, cookie).put('/api/workers/me').send(body);

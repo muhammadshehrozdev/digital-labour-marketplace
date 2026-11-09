@@ -3,7 +3,7 @@
 // + skills 15 + bio 5 + work history 10 = 100.
 export function calculateCompletion(profile) {
   let score = 20;
-  if (profile.occupation && profile.occupation !== 'No Trade Identified' && profile.category) score += 15;
+  if (profile.occupation && profile.category) score += 15;
   if (profile.experienceYears > 0 && (profile.hourlyRate > 0 || profile.dailyRate > 0)) score += 15;
   if (profile.city && profile.address) score += 10;
   if (profile.whatsappNumber || profile.emergencyContact) score += 10;

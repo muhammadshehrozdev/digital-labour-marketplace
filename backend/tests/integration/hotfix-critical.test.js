@@ -51,7 +51,8 @@ describe('M1-2: worker directory sends only safe fields', () => {
     const w = await api(app).post('/api/auth/register').send({ ...newUser(), name: 'Ali Worker', phone: '03001112222' });
     const workerCookie = w.headers['set-cookie'][0].split(';')[0];
     await api(app, workerCookie).put('/api/workers/me').send({
-      occupation: 'Electrician', cnicNumber: '37405-1234567-1', address: 'House 1, Street 2, G-10',
+      occupation: 'Electrician', category: 'electrical_solar', experienceYears: 3, hourlyRate: 500,
+      city: 'Islamabad', cnicNumber: '37405-1234567-1', address: 'House 1, Street 2, G-10',
       emergencyContact: '03111111111', whatsappNumber: '03222222222',
     });
     const c = await api(app).post('/api/auth/register').send({ ...newUser(), role: 'customer' });

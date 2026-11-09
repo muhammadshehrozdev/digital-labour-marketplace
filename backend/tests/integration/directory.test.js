@@ -34,7 +34,6 @@ beforeAll(async () => {
   const res = await api(app, worker.cookie).put('/api/workers/me').send({
     occupation: 'C++ Electrician',
     category: 'electrical_solar',
-    skills: ['House Wiring'],
     experienceYears: 6,
     hourlyRate: 800,
     city: 'Islamabad',
@@ -46,9 +45,15 @@ beforeAll(async () => {
     workHistory: [{ jobTitle: 'Wiring', clientOrEmployer: 'Private client name', duration: '1 week', description: 'Done' }],
   });
   workerCode = res.body.profile.workerIdCode;
+  await api(app, worker.cookie).post('/api/workers/me/skills').send({ skillIds: ['elec_wiring'], addedVia: 'manual' });
   // A second worker in another trade and city.
   const other = await registerUser(app);
-  await api(app, other.cookie).put('/api/workers/me').send({ occupation: 'Plumber', category: 'plumbing_sanitary', city: 'Lahore' });
+  await api(app, other.cookie).put('/api/workers/me').send({
+    occupation: 'Plumber', category: 'plumbing_sanitary', city: 'Lahore', experienceYears: 2, hourlyRate: 400,
+  });
+  // A third worker who has not finished the "Your work" step is not listed.
+  const unfinished = await registerUser(app);
+  await api(app, unfinished.cookie).put('/api/workers/me').send({ city: 'Lahore' });
 });
 afterAll(stopTestDb);
 afterEach(() => vi.restoreAllMocks());
@@ -68,7 +73,7 @@ describe('GET /api/workers (directory)', () => {
   test('a customer gets no CNIC, address, emergency contact, WhatsApp, email or phone anywhere (M1-2, D-002)', async () => {
     const res = await api(app, customer.cookie).get('/api/workers');
     expect(res.status).toBe(200);
-    expect(res.body.total).toBe(2);
+    expect(res.body.total).toBe(2); // the unfinished profile is not listed
     const keys = allKeys(res.body);
     for (const key of PRIVATE_KEYS) expect(keys.has(key), `${key} must not be sent`).toBe(false);
     const text = JSON.stringify(res.body);
@@ -78,6 +83,12 @@ describe('GET /api/workers (directory)', () => {
     const ali = res.body.workers.find((w) => w.workerIdCode === workerCode);
     expect(ali.user).toEqual({ name: 'Ali Worker' });
     expect(ali.occupation).toBe('C++ Electrician');
+    expect(ali.skills).toEqual([{ skillId: 'elec_wiring', name: 'House wiring', category: 'electrical_solar', custom: false }]);
+  });
+
+  test('search finds a worker by a skill name ("house wiring")', async () => {
+    const res = await api(app, customer.cookie).get('/api/workers').query({ search: 'house wiring' });
+    expect(res.body.workers.map((w) => w.workerIdCode)).toEqual([workerCode]);
   });
 
   test('search "C++" and "(" -> 200, matched literally (M1-3)', async () => {

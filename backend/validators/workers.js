@@ -15,13 +15,13 @@ const workHistoryItem = z
 
 // PUT /api/workers/me — every field optional (send only what changed), unknown keys -> 400.
 // The worker can never set workerIdCode, verificationStatus, cnicOnFile, user, etc.
+// Skills are not set here: they have their own routes (/api/workers/me/skills, Module 2).
 export const profileUpdateSchema = z
   .object({
     name: name.optional(),
     phone: phone.optional(),
     occupation: text(60, 'Occupation').min(2, 'Occupation must be at least 2 characters').optional(),
     category: z.enum(CATEGORY_IDS, { error: 'Category must be one of the listed trades' }).optional(),
-    skills: z.array(text(60, 'Skill').min(1, 'Skill cannot be empty')).max(30, 'At most 30 skills').optional(),
     experienceYears: z
       .number({ error: 'Experience must be a number' })
       .int('Experience must be whole years')
@@ -77,7 +77,23 @@ export const identityDecisionSchema = z
 export const adminWorkersQuerySchema = z
   .object({
     status: z.enum(['All', 'Unverified', 'Pending', 'Verified', 'Rejected'], { error: 'Unknown status' }).optional(),
+    q: z.string({ error: 'q must be one text value' }).trim().max(50, 'Search text must be at most 50 characters').optional(),
     page: queryInt(1, 1000).optional(),
+    limit: queryInt(1, 100).optional(),
+  })
+  .strict();
+
+const isoDate = z
+  .string({ error: 'Date must be one value' })
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must look like 2026-11-09')
+  .refine((d) => !Number.isNaN(Date.parse(`${d}T00:00:00Z`)), { message: 'Not a real date' });
+
+export const auditQuerySchema = z
+  .object({
+    action: z.string({ error: 'action must be one value' }).regex(/^[a-z]+(\.[a-z_]+)+$/, 'Unknown action').max(60).optional(),
+    from: isoDate.optional(),
+    to: isoDate.optional(),
+    page: queryInt(1, 10000).optional(),
     limit: queryInt(1, 100).optional(),
   })
   .strict();

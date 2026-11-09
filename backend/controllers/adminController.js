@@ -1,9 +1,12 @@
 // Admin-only actions (Module 1). Every route here is behind protect + requireRole('admin').
+import mongoose from 'mongoose';
 import WorkerProfile from '../models/WorkerProfile.js';
+import AuditLog from '../models/AuditLog.js';
 import User from '../models/User.js';
 import { httpError } from '../utils/httpError.js';
 import { writeAudit } from '../services/audit.js';
 import { decryptCnic, formatCnic } from '../services/cnic.js';
+import { escapeRegex } from '../validators/common.js';
 
 // Admin may see private contact fields (CLAUDE.md), but never the CNIC data fields:
 // those are select:false, and toJSON removes them as a second layer. cnicOnFile tells if one exists.
@@ -11,8 +14,18 @@ const ADMIN_USER_FIELDS = 'name email phone role';
 
 // GET /api/admin/workers
 export const listWorkersForAdmin = async (req, res) => {
-  const { status, page = 1, limit = 50 } = req.validated.query;
+  const { status, q, page = 1, limit = 50 } = req.validated.query;
   const filter = status && status !== 'All' ? { verificationStatus: status } : {};
+  if (q) {
+    // Search by worker ID, occupation or the user's name (text is escaped, max 50 characters).
+    const pattern = new RegExp(escapeRegex(q), 'i');
+    const users = await User.find({ name: pattern, role: 'worker' }).select('_id').limit(200).lean();
+    filter.$or = [
+      { workerIdCode: pattern },
+      { occupation: pattern },
+      { user: mongoose.trusted({ $in: users.map((u) => u._id) }) },
+    ];
+  }
   const [workers, total] = await Promise.all([
     WorkerProfile.find(filter)
       .select('-rawExperienceText')
@@ -103,4 +116,45 @@ export const listUsersForAdmin = async (req, res) => {
     .limit(500)
     .lean();
   res.json(users);
+};
+
+// GET /api/admin/stats — counts for the admin overview (real counts from the database).
+export const getStats = async (req, res) => {
+  const [byStatus, byRole] = await Promise.all([
+    WorkerProfile.aggregate([{ $group: { _id: '$verificationStatus', n: { $sum: 1 } } }]),
+    User.aggregate([{ $group: { _id: '$role', n: { $sum: 1 } } }]),
+  ]);
+  const workers = { total: 0, Unverified: 0, Pending: 0, Verified: 0, Rejected: 0 };
+  for (const row of byStatus) {
+    if (row._id in workers) workers[row._id] = row.n;
+    workers.total += row.n;
+  }
+  const users = { worker: 0, customer: 0, admin: 0 };
+  for (const row of byRole) if (row._id in users) users[row._id] = row.n;
+  res.json({ workers, users });
+};
+
+// GET /api/admin/audit — read-only audit log viewer (newest first). Entries never contain a CNIC.
+export const listAudit = async (req, res) => {
+  const { action, from, to, page = 1, limit = 50 } = req.validated.query;
+  const filter = {};
+  if (action) filter.action = action;
+  if (from || to) {
+    const range = {};
+    if (from) range.$gte = new Date(`${from}T00:00:00.000Z`);
+    if (to) range.$lt = new Date(new Date(`${to}T00:00:00.000Z`).getTime() + 24 * 60 * 60 * 1000);
+    filter.createdAt = mongoose.trusted(range);
+  }
+  const [entries, total, actions] = await Promise.all([
+    AuditLog.find(filter)
+      .sort({ seq: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('actor', 'name -_id')
+      .select('-prevHash -hash')
+      .lean(),
+    AuditLog.countDocuments(filter),
+    AuditLog.distinct('action'),
+  ]);
+  res.json({ entries, total, page, limit, actions: actions.sort() });
 };

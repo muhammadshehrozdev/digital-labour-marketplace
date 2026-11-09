@@ -30,7 +30,9 @@ beforeAll(async () => {
   adminCookie = sessionCookie(await api(app).post('/api/auth/login').send({ email, password: GOOD_PASSWORD }));
   customer = await registerUser(app, { role: 'customer' });
   worker = await registerUser(app);
-  const saved = await api(app, worker.cookie).put('/api/workers/me').send({ occupation: 'Mason', cnicNumber: CNIC_TEXT });
+  const saved = await api(app, worker.cookie).put('/api/workers/me').send({
+    occupation: 'Mason', category: 'construction_masonry', experienceYears: 4, dailyRate: 2500, city: 'Rawalpindi', cnicNumber: CNIC_TEXT,
+  });
   profileId = saved.body.profile._id;
   const noCnic = await registerUser(app);
   noCnicProfileId = (await api(app, noCnic.cookie).put('/api/workers/me').send({ occupation: 'Painter' })).body.profile._id;

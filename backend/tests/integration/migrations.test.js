@@ -52,17 +52,23 @@ describe('migrateCnic', () => {
 });
 
 describe('migrateCategories', () => {
-  test('labels become ids; unknown values (e.g. "None") become the default category', async () => {
+  test('labels become ids; "Cleaning & Shifting" -> Domestic Work (D-012, counted); unknown ("None") -> null', async () => {
     const col = WorkerProfile.collection;
     await col.insertMany([
       { user: oid(), workerIdCode: 'DLM-2026-0011', category: 'Plumbing & Sanitary' },
       { user: oid(), workerIdCode: 'DLM-2026-0012', category: 'None' },
       { user: oid(), workerIdCode: 'DLM-2026-0013', category: 'domestic_work' },
+      { user: oid(), workerIdCode: 'DLM-2026-0014', category: 'Cleaning & Shifting' },
+      { user: oid(), workerIdCode: 'DLM-2026-0015', category: 'cleaning_shifting' },
     ]);
-    expect(await migrateCategories({ apply: false })).toMatchObject({ checked: 2, converted: 1, unknownSetToDefault: 1 });
+    expect(await migrateCategories({ apply: false })).toMatchObject({
+      checked: 4, converted: 1, cleaningShiftingToDomestic: 2, unknownSetToNull: 1,
+    });
     await migrateCategories({ apply: true });
     expect((await col.findOne({ workerIdCode: 'DLM-2026-0011' })).category).toBe('plumbing_sanitary');
-    expect((await col.findOne({ workerIdCode: 'DLM-2026-0012' })).category).toBe('home_maintenance');
+    expect((await col.findOne({ workerIdCode: 'DLM-2026-0012' })).category).toBeNull();
     expect((await col.findOne({ workerIdCode: 'DLM-2026-0013' })).category).toBe('domestic_work');
+    expect((await col.findOne({ workerIdCode: 'DLM-2026-0014' })).category).toBe('domestic_work');
+    expect((await col.findOne({ workerIdCode: 'DLM-2026-0015' })).category).toBe('domestic_work');
   });
 });

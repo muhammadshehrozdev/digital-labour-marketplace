@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { CATEGORY_IDS, DEFAULT_CATEGORY_ID, AVAILABILITY, categoryIdFrom } from '../config/skillTaxonomy.js';
+import { CATEGORY_IDS, AVAILABILITY, categoryIdFrom } from '../config/skillTaxonomy.js';
 import { nextWorkerIdCode } from '../services/workerId.js';
 
 export const IDENTITY_STATUSES = ['Unverified', 'Pending', 'Verified', 'Rejected'];
@@ -14,37 +14,17 @@ const workHistorySchema = new mongoose.Schema(
   { _id: true }
 );
 
-// Module 2: Category-wise organized skill item
-const categorizedSkillSchema = new mongoose.Schema(
+// Module 2: ONE skills array (fixes M2-10). A skill is a taxonomy id, or a clearly marked
+// custom skill. No confidence, level or score is stored (fixes M2-8, M2-9).
+// Module 3 will add evidenceSummary per skill.
+const skillSchema = new mongoose.Schema(
   {
-    skillName: { type: String, required: true },
-    category: { type: String, required: true },
-    level: {
-      type: String,
-      enum: ['Beginner', 'Intermediate', 'Expert'],
-      default: 'Intermediate',
-    },
-    confidenceScore: { type: Number, default: 85 },
-    source: {
-      type: String,
-      enum: ['AI-Extracted', 'Manual', 'Recommended-Added'],
-      default: 'AI-Extracted',
-    },
-  },
-  { _id: false }
-);
-
-// Module 2: Potential / Recommended skill item
-const recommendedSkillSchema = new mongoose.Schema(
-  {
-    skillName: { type: String, required: true },
-    category: { type: String, required: true },
-    reason: { type: String, default: '' },
-    demandLevel: {
-      type: String,
-      enum: ['High Demand', 'Growing', 'Core Trade Skill'],
-      default: 'High Demand',
-    },
+    skillId: { type: String, required: true, maxlength: 80 },
+    name: { type: String, required: true, trim: true, maxlength: 60 },
+    category: { type: String, required: true, enum: CATEGORY_IDS },
+    addedVia: { type: String, required: true, enum: ['extractor', 'manual'] },
+    custom: { type: Boolean, default: false },
+    addedAt: { type: Date, default: () => new Date() },
   },
   { _id: false }
 );
@@ -64,43 +44,28 @@ const workerProfileSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
-    occupation: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-      maxlength: 60,
-      default: 'General Technician',
-    },
+    // No pretend defaults: an empty value means "not filled in yet" (onboarding derives its state from it).
+    occupation: { type: String, trim: true, maxlength: 60, default: '' },
     // One taxonomy (config/skillTaxonomy.js) for UI, API and database (audit M1-16).
-    category: {
-      type: String,
-      required: true,
-      enum: CATEGORY_IDS,
-      default: DEFAULT_CATEGORY_ID,
-    },
+    category: { type: String, enum: [...CATEGORY_IDS, null], default: null },
     skills: {
-      type: [{ type: String, trim: true, maxlength: 60 }],
+      type: [skillSchema],
       default: [],
+      validate: {
+        validator: (list) => new Set(list.map((s) => s.skillId)).size === list.length,
+        message: 'A skill can be added only once',
+      },
     },
     experienceYears: {
       type: Number,
-      required: true,
       min: 0,
       max: 60,
-      validate: { validator: Number.isInteger, message: 'experienceYears must be a whole number' },
-      default: 0,
+      validate: { validator: (v) => v === null || Number.isInteger(v), message: 'experienceYears must be a whole number' },
+      default: null,
     },
     hourlyRate: { type: Number, min: 0, max: 1000000, default: 0 },
     dailyRate: { type: Number, min: 0, max: 1000000, default: 0 },
-    city: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2,
-      maxlength: 50,
-      default: 'Islamabad',
-    },
+    city: { type: String, trim: true, maxlength: 50, default: '' },
     // Private (owner and admin only): address, WhatsApp, emergency contact, CNIC.
     address: { type: String, trim: true, maxlength: 200, default: '' },
     whatsappNumber: { type: String, trim: true, maxlength: 20, default: '' },
@@ -141,38 +106,13 @@ const workerProfileSchema = new mongoose.Schema(
       default: 20,
     },
 
-    // ================= MODULE 2: AI EXPERIENCE & SKILL PROFILER FIELDS =================
-    rawExperienceText: {
-      type: String,
-      default: '',
-    },
-    experienceTierBadge: {
-      type: String,
-      default: 'Skilled Worker',
-    },
-    aiSkillSummary: {
-      type: String,
-      default: '',
-    },
-    categorizedSkills: {
-      type: [categorizedSkillSchema],
-      default: [],
-    },
-    recommendedSkills: {
-      type: [recommendedSkillSchema],
-      default: [],
-    },
-    toolsAndEquipment: {
-      type: [String],
-      default: [],
-    },
-    skillStrengthScore: {
-      type: Number,
-      default: 0,
-    },
-    lastAiProfiledAt: {
-      type: Date,
-    },
+    // Set once, when about + work + skills are first all done (GET /api/workers/me/onboarding).
+    onboardingCompletedAt: { type: Date, default: null },
+
+    // ================= MODULE 2: EXPERIENCE AND SKILL PROFILER =================
+    // The text the worker used when they last ADDED skills from suggestions (owner/admin only).
+    rawExperienceText: { type: String, maxlength: 2000, default: '', select: false },
+    lastExtractedAt: { type: Date, default: null },
   },
   { timestamps: true }
 );
@@ -185,6 +125,7 @@ workerProfileSchema.index(
 
 // Old documents stored the category label ("Electrical & Solar"); convert it to the id.
 workerProfileSchema.pre('validate', function () {
+  if (this.category === null || this.category === undefined) return;
   const id = categoryIdFrom(this.category);
   if (id && id !== this.category) this.category = id;
 });
