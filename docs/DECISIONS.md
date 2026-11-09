@@ -155,8 +155,11 @@ Domestic Work.
 categories before the team decides. The database stores an id (e.g. `electrical_solar`);
 old labels are converted on save and by `npm run migrate:categories`.
 
-**Open:** the final category and skill list (CLAUDE_CODE_PROMPT.md C5) and the ISCO-08 codes
-(all `null` until checked against the official ISCO-08 list).
+**Update (Batch 1, 9 Nov 2026):** the team approved the list for Phase 4 with one change:
+"Cleaning & Shifting" overlapped with "Domestic Work". **Reason for the split:** cleaning a home
+is domestic work, while shifting (moving goods) is a different job with different skills, tools
+and pricing; one category for both made search results mix maids and movers. So cleaning moved
+into Domestic Work and **Moving & Loading** became its own category. Final list: **D-012**.
 
 ---
 
@@ -169,3 +172,73 @@ old labels are converted on save and by `npm run migrate:categories`.
   there is no default status. `Verified` is refused if no CNIC is on file.
 - The update is conditional on the status the admin last saw; a stale screen gets 409.
 - Every decision is written to the hash-chained audit log (who, when, from, to, note).
+
+---
+
+## D-010 — Design system (Batch 1, 9 Nov 2026)
+
+**Decision (team brief, BATCH_1_PROMPT.md Part 3; implemented by Claude Code):** one design
+system for the whole frontend: tokens in `frontend/src/styles/tokens.css` (Trust Green primary,
+Saffron accent, warm stone neutrals, semantic roles), Manrope self-hosted
+(`@fontsource-variable/manrope`, no Google request), lucide-react icons, CSS Modules, a component
+library in `frontend/src/components/ui/`, light theme only (semantic role tokens ready for a
+dark theme later). Mobile first (360 px). Details: `docs/design/03-design-system.md`.
+
+**Two measured deviations from the brief** (`frontend/src/styles/contrast.test.js` enforces both):
+1. Focus ring: the brief's 3 px primary-300 measures **2.15:1** on white, below its own 3:1 rule.
+   The focus indicator is a **2 px primary-600 outline (6.46:1)** with a 2 px offset **plus** the
+   primary-300 halo.
+2. Saffron-700 on saffron-100 measures **3.53:1** (needs 4.5:1 for small text). Accent badges
+   use **stone-900 text on saffron-100**; saffron is never used for text.
+Also: input borders use stone-500 (4.62:1) because input borders must reach 3:1; card borders
+(decorative) keep stone-200.
+
+**Packages (approved in the brief):** lucide-react **1.61.0** (ISC licence, released 21 Oct 2026 —
+the newest release at least two weeks old; the project publishes almost daily) and
+@fontsource-variable/manrope **5.3.0** (OFL-1.1, released 19 Jul 2026). `npm audit`: 0 vulnerabilities.
+
+---
+
+## D-011 — Guided worker onboarding (Batch 1, 9 Nov 2026)
+
+**Decision (team brief, Part 5.2):** after registering, or logging in with onboarding unfinished,
+a worker goes to a step-by-step wizard: 1 About you → 2 Your work → 3 Your skills (Module 2;
+opens by itself after step 2 is saved) → 4 Proof of skills (Module 3, "coming next", Skip) →
+5 All set. Module 2 is **not** in the top menu; skills are edited from the dashboard and profile.
+
+**Progress comes from the server**, never from localStorage: `GET /api/workers/me/onboarding`
+**derives** it from saved data every time (`backend/services/onboarding.js`):
+about = name, phone, city; work = category, occupation, experience, at least one rate > 0;
+skills = at least one confirmed skill. `onboardingCompletedAt` is stored the first time all
+three are done. Consequences (accepted):
+- A worker who removes every skill is sent back to step 3 (skills) until they add one.
+- Profile fields no longer have pretend defaults (city was "Islamabad", occupation "General
+  Technician", category "Home Maintenance"); empty means "not filled in yet".
+- The customer directory lists only workers who finished "Your work" (a card needs a trade).
+
+---
+
+## D-012 — Final category list and skill list v1 (Batch 1, 9 Nov 2026)
+
+**Categories (approved by the team, with the D-008 change):** Electrical & Solar, Plumbing &
+Sanitary, Construction & Masonry, Carpentry & Woodwork, Painting & Renovation, AC & Appliance
+Repair, Home Maintenance, **Domestic Work (includes cleaning)**, **Moving & Loading**. Ids are
+stable slugs (`domestic_work`, `moving_loading`, …) so labels can change without breaking data.
+Old values "Cleaning & Shifting" / `cleaning_shifting` map to `domestic_work`; the migration
+counts them separately so an admin can check those profiles by hand.
+
+**Skills v1 (Claude Code, for the team to review with real data):** 50 skills
+(electrical 9, plumbing 7, masonry 6, carpentry 6, painting 5, AC & appliance 6, home
+maintenance 2, domestic work 6, moving & loading 3), taken from the old profiler's rules (the
+team's earlier work) plus domestic work and moving. Each skill has **strong** terms (clear trade
+words) and **weak** terms (everyday words such as fan, tap, table, lock, ups) in English, Roman
+Urdu and Urdu script. A weak term counts only with a strong term of the same category. Roman Urdu
+words that are also everyday words were left out or made weak ("aaya" = came; "masi" = aunt).
+
+**ISCO-08 codes:** still `null`. They are filled in only after a team member checks each code
+against the official ILO ISCO-08 list (rule in the brief); that list could not be opened from the
+dev container.
+
+**Not changed by this decision:** the rule-based extractor is evaluated only on real data
+(`docs/evaluation/`); the skill list will change after the development-set error analysis,
+and the test set must be frozen before that.

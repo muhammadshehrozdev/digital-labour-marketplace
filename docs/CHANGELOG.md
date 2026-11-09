@@ -2,6 +2,62 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 1 — UI/UX redesign, guided onboarding, Module 2 / Phase 4 (9 Nov 2026)
+
+Instructions: `BATCH_1_PROMPT.md`. Decisions recorded: D-008 (reason for the category split),
+D-010 design system, D-011 guided onboarding, D-012 final categories + skill list v1.
+
+**Stages (docs/design/):** 01 UX requirements (personas, FR/NFR, acceptance criteria), 02 analysis
+(audit of the old UI, sitemap, Mermaid flows), 03 design system, 04 screen specs, 05 self-review,
+06 deploy readiness (nothing deployed).
+
+**Module 2 (Phase 4) — backend**
+- Taxonomy v1: 9 categories (Cleaning & Shifting split into Domestic Work + Moving & Loading)
+  and 50 skills with strong/weak terms in English, Roman Urdu and Urdu.
+- `services/skillExtractor/`: normalisation (NFC, Urdu/Arabic digits, letter variants,
+  punctuation), whole-token matching, weak-term rule, experience in years + months
+  (number words in three languages, over 60 ignored), all matching categories with ties
+  reported, negative phrases only explain an empty result. No confidence, level or score.
+- New endpoints: `POST /api/workers/me/skills/extract` (saves nothing), `GET/POST/DELETE
+  /api/workers/me/skills`, `POST /api/workers/me/skills/custom`,
+  `GET /api/workers/me/onboarding`, `GET /api/admin/stats`, `GET /api/admin/audit`,
+  `q` search on `GET /api/admin/workers`.
+- One `skills` array of objects; old fields (categorizedSkills, recommendedSkills,
+  skillStrengthScore, aiSkillSummary, …) removed; `npm run migrate:skills`.
+- Old profiler moved to `evaluation/baselines/legacyProfiler.js` (git history kept); old
+  `/api/worker/*` routes and `controllers/workerController.js`, `routes/workerRoutes.js` deleted.
+- Evaluation harness: `npm run evaluate:skills` (micro/macro P/R/F1, Wilson and bootstrap
+  intervals, per category, per script, ablation, legacy + naive baselines, paired bootstrap),
+  `npm run agreement:skills` (Cohen's kappa, Krippendorff's alpha), SYNTHETIC sample files
+  (tests only, never reported), `docs/evaluation/` (format, annotation guide, consent form
+  English/Urdu, data handling).
+
+**Frontend redesign**
+- Design tokens, base styles, Manrope (self-hosted), lucide-react icons, new logomark and favicon.
+- Component library (31 files in `components/ui/`), app shell with landmarks and skip link,
+  admin sidebar layout, error boundary, development-only `/dev/styleguide`.
+- New pages: landing, login, register (role cards), guided onboarding (5 steps), worker
+  dashboard, profile, skills, find workers (sidebar/drawer filters), public worker profile,
+  admin overview, identity review (drawer + audited reveal), audit log, 404.
+- Removed: old pages, `App.css`, `index.css`, Vite sample assets, the old Phase 3 frontend
+  test files (replaced by the new test files below).
+- New packages (approved): lucide-react 1.61.0, @fontsource-variable/manrope 5.3.0.
+
+**Local preview data:** `migrate:skills` applied to the **local** database (1 profile, 1 skill
+mapped). Atlas not touched.
+
+**Results (real runs, 9 Nov 2026)**
+- Backend `npm test`: 18 files, **272/272 passed** (unit: setup 2, cnic 5, taxonomy 4,
+  skillExtractor 39, evaluationMetrics 13, honesty 53; integration: foundation 20, db-down 2,
+  auth 33, auth-rate-limit 1, workers-profile 24, directory 16, admin 21, skills 27,
+  hotfix-critical 4, migrations 3, model-hooks 3, multer-express5 2).
+- Frontend `npm test`: 6 files, **215/215 passed** (contrast 33, auth 16, onboarding 14,
+  pages 19, components 11, honesty 122). Every test fails on any console error or warning.
+- `npm run build` OK (JS 419.6 kB, gzip 132.6 kB; CSS 52.4 kB, gzip 12.6 kB).
+  `oxlint`: exit 0, no findings.
+- `npm run evaluate:skills` and `npm run agreement:skills` run on the SYNTHETIC sample (script
+  check only; numbers not reported).
+
 ## Phases 2 and 3 — Backend foundation and Module 1 fixes (9 Nov 2026)
 
 Decisions given by the team on 9 Nov 2026 and recorded in `docs/DECISIONS.md`: D-005 (password

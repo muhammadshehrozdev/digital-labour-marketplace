@@ -275,7 +275,7 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
       )}
 
       <Section
-        title="Your skills"
+        title="Skills on your profile"
         id="saved-skills"
         description="Skills show as Self-declared until proof is checked (coming next)."
       >

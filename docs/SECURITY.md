@@ -23,6 +23,10 @@ built (with the test that proves it), how keys are handled, accepted limitations
 | M1-14 | Weak user schema | lowercase/trim/maxlength, `password` `select:false`, bcrypt cost 12 | `auth.test.js` "M1-14: user schema" |
 | D-007 | CNIC exposure | AES-256-GCM + HMAC, select:false, toJSON strip, audited admin-only reveal | `unit/cnic.test.js`, `workers-profile.test.js` "CNIC", `admin.test.js` "reveal" |
 | — | Audit log tampering | Append-only hooks + SHA-256 hash chain, `npm run audit:verify` | `admin.test.js` "audit log: append-only and hash-chained" |
+| M2-2/M2-3 | A tool silently overwrites or wipes a worker's profile | Extract endpoint saves nothing; skills change only through explicit add/remove routes; no "reset" route | `skills.test.js` "never changes the database", "hello", "old profiler routes are gone" |
+| M2-9/M2-11 | Free-text skills / oversized input | Skills only by taxonomy id (custom skills through a separate, marked route, max 10); text ≤ 2,000 characters; strict schemas | `skills.test.js` "unknown skillId -> 400", "-> 400 (M2-11)" |
+| Batch 1 | Admin audit viewer leaks data | Read-only route, admin only, no hashes in the response; entries never contain a CNIC | `skills.test.js` "admin overview and audit viewer" |
+| Batch 1 | Private data on customer screens | API projections (D-002) **and** UI tests with a deliberately leaky server response | `pages.test.jsx` "customer pages (D-002)" |
 
 ## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET)
 
