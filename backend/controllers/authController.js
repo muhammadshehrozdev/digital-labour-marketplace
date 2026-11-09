@@ -84,7 +84,8 @@ export const getMe = async (req, res) => {
 export const logoutUser = async (req, res) => {
   const payload = verifySession(readCookie(req, SESSION_COOKIE));
   if (payload && mongoose.isValidObjectId(payload.sub)) {
-    await User.updateOne({ _id: payload.sub, tokenVersion: payload.tv }, { $inc: { tokenVersion: 1 } });
+    // $inc also works on older accounts that have no tokenVersion field yet (it becomes 1).
+    await User.updateOne({ _id: payload.sub }, { $inc: { tokenVersion: 1 } });
   }
   clearSessionCookie(res);
   res.json({ message: 'You are logged out.' });

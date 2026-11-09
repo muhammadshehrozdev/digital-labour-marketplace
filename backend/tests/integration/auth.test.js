@@ -235,3 +235,21 @@ describe('register logs the new user in', () => {
     expect(sessionCookie(res)).toMatch(/^dlm_session=/);
   });
 });
+
+describe('accounts created before Phase 3 (no tokenVersion / lockout fields)', () => {
+  test('can log in, stay logged in, and logout still cancels the old cookie', async () => {
+    const bcrypt = (await import('bcryptjs')).default;
+    const email = uniqueEmail('legacy');
+    // Exactly how an old account looks in the database: no tokenVersion, failedLoginCount, lockUntil.
+    await User.collection.insertOne({
+      name: 'Old Account', email, phone: '03001234567', role: 'worker',
+      password: await bcrypt.hash('old short pw', 10), createdAt: new Date(), updatedAt: new Date(),
+    });
+    const login = await api(app).post('/api/auth/login').send({ email, password: 'old short pw' });
+    expect(login.status).toBe(200);
+    const cookie = sessionCookie(login);
+    expect((await api(app, cookie).get('/api/auth/me')).status).toBe(200);
+    expect((await api(app, cookie).post('/api/auth/logout')).status).toBe(200);
+    expect((await api(app, cookie).get('/api/auth/me')).status).toBe(401);
+  });
+});

@@ -18,7 +18,8 @@ export const protect = async (req, res, next) => {
   }
 
   const user = await User.findById(payload.sub).select('name email phone role tokenVersion').lean();
-  if (!user || user.tokenVersion !== payload.tv) {
+  // Accounts created before tokenVersion existed have no such field: treat it as 0.
+  if (!user || (user.tokenVersion ?? 0) !== payload.tv) {
     return res.status(401).json({ message: SESSION_ENDED });
   }
 
