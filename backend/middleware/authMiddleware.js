@@ -5,22 +5,22 @@
 import mongoose from 'mongoose';
 import User from '../models/User.js';
 import { SESSION_COOKIE, readCookie, verifySession } from '../services/session.js';
+import { errorBody } from '../utils/httpError.js';
 
-const SESSION_ENDED = 'Your session has ended. Please log in again.';
 
 export const protect = async (req, res, next) => {
   const token = readCookie(req, SESSION_COOKIE);
-  if (!token) return res.status(401).json({ message: 'Please log in first.' });
+  if (!token) return res.status(401).json(errorBody('NOT_LOGGED_IN'));
 
   const payload = verifySession(token);
   if (!payload || !mongoose.isValidObjectId(payload.sub)) {
-    return res.status(401).json({ message: SESSION_ENDED });
+    return res.status(401).json(errorBody('SESSION_ENDED'));
   }
 
   const user = await User.findById(payload.sub).select('name email phone role tokenVersion').lean();
   // Accounts created before tokenVersion existed have no such field: treat it as 0.
   if (!user || (user.tokenVersion ?? 0) !== payload.tv) {
-    return res.status(401).json({ message: SESSION_ENDED });
+    return res.status(401).json(errorBody('SESSION_ENDED'));
   }
 
   req.user = user;
@@ -29,7 +29,7 @@ export const protect = async (req, res, next) => {
 
 export const requireRole = (...roles) => (req, res, next) => {
   if (!req.user || !roles.includes(req.user.role)) {
-    return res.status(403).json({ message: 'You do not have permission for this action.' });
+    return res.status(403).json(errorBody('FORBIDDEN'));
   }
   return next();
 };

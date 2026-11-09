@@ -6,19 +6,14 @@ import sharp from 'sharp';
 import { ALLOWED_IMAGE_TYPES, MAX_INPUT_PIXELS, MAX_SIDE_PX, WEBP_QUALITY } from '../../config/evidence.js';
 import { httpError } from '../../utils/httpError.js';
 
-export const MSG_NOT_JPG_PNG = 'Please upload a JPG or PNG photo.';
-export const MSG_PDF = 'PDF files are not accepted. Please upload a JPG or PNG photo of the document.';
-export const MSG_NOT_IMAGE = 'This file is not a photo. Please upload a JPG or PNG photo.';
-export const MSG_UNREADABLE = 'The photo could not be read. Please take the photo again.';
-export const MSG_TOO_MANY_PIXELS = 'The photo has too many pixels. Please use a normal phone photo.';
 
 // Throws a 400 with a clear message unless the bytes are a JPEG, PNG or WebP image.
 export async function detectImageType(buffer) {
   const type = await fileTypeFromBuffer(buffer);
   if (type && ALLOWED_IMAGE_TYPES.includes(type.mime)) return type.mime;
-  if (type?.mime === 'application/pdf') throw httpError(400, MSG_PDF);
-  if (type?.mime?.startsWith('image/')) throw httpError(400, MSG_NOT_JPG_PNG); // HEIC, AVIF, GIF, ...
-  throw httpError(400, MSG_NOT_IMAGE);
+  if (type?.mime === 'application/pdf') throw httpError(400, 'PHOTO_PDF');
+  if (type?.mime?.startsWith('image/')) throw httpError(400, 'PHOTO_NOT_JPG_PNG'); // HEIC, AVIF, GIF, ...
+  throw httpError(400, 'PHOTO_NOT_IMAGE');
 }
 
 // Auto-rotate (EXIF orientation), fit inside 2000 x 2000 without enlarging, WebP quality 80.
@@ -32,8 +27,8 @@ export async function processImage(buffer) {
       .toBuffer({ resolveWithObject: true });
     return { data, width: info.width, height: info.height, size: info.size, contentType: 'image/webp' };
   } catch (err) {
-    if (/pixel limit/i.test(String(err.message))) throw httpError(400, MSG_TOO_MANY_PIXELS);
-    throw httpError(400, MSG_UNREADABLE);
+    if (/pixel limit/i.test(String(err.message))) throw httpError(400, 'PHOTO_TOO_MANY_PIXELS');
+    throw httpError(400, 'PHOTO_UNREADABLE');
   }
 }
 

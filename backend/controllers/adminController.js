@@ -47,9 +47,9 @@ export const decideIdentity = async (req, res) => {
   const { status, note } = req.validated.body;
 
   const current = await WorkerProfile.findById(id).select('verificationStatus cnicOnFile').lean();
-  if (!current) throw httpError(404, 'Worker profile not found');
+  if (!current) throw httpError(404, 'WORKER_PROFILE_NOT_FOUND');
   if (status === 'Verified' && !current.cnicOnFile) {
-    throw httpError(400, 'This worker has not saved a CNIC yet, so identity cannot be verified.');
+    throw httpError(400, 'IDENTITY_NEEDS_CNIC');
   }
 
   const updated = await WorkerProfile.findOneAndUpdate(
@@ -64,7 +64,7 @@ export const decideIdentity = async (req, res) => {
     },
     { returnDocument: 'after', runValidators: true }
   ).populate('user', ADMIN_USER_FIELDS);
-  if (!updated) throw httpError(409, 'Someone else changed this worker just now. Please reload and try again.');
+  if (!updated) throw httpError(409, 'IDENTITY_CHANGED');
 
   await writeAudit({
     actor: req.user._id,
@@ -85,15 +85,15 @@ export const decideIdentity = async (req, res) => {
 export const revealCnic = async (req, res) => {
   const { id } = req.validated.params;
   const profile = await WorkerProfile.findById(id).select('+cnicEncrypted user').lean();
-  if (!profile) throw httpError(404, 'Worker profile not found');
-  if (!profile.cnicEncrypted) throw httpError(404, 'This worker has no CNIC on file.');
+  if (!profile) throw httpError(404, 'WORKER_PROFILE_NOT_FOUND');
+  if (!profile.cnicEncrypted) throw httpError(404, 'NO_CNIC_ON_FILE');
 
   let digits;
   try {
     digits = decryptCnic(profile.cnicEncrypted, profile.user);
   } catch (err) {
     console.error(`[cnic] could not decrypt CNIC of profile ${id}: ${err.message}`);
-    throw httpError(409, 'The stored CNIC cannot be read (wrong key or damaged data). Ask the worker to enter it again.');
+    throw httpError(409, 'CNIC_UNREADABLE');
   }
 
   await writeAudit({

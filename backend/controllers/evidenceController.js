@@ -44,20 +44,20 @@ async function findPossibleDuplicate(workerId, hash, dhash) {
 
 // POST /api/evidence (multipart: image + skillId, type, title?, consent)
 export const uploadEvidence = async (req, res) => {
-  if (!req.file) throw httpError(400, 'Please choose a photo to upload.');
+  if (!req.file) throw httpError(400, 'PHOTO_REQUIRED');
   const { skillId, type, title = '' } = req.validated.body;
   const workerId = req.user._id;
 
   const profile = await WorkerProfile.findOne({ user: workerId }).select('skills').lean();
   const skill = profile?.skills.find((s) => s.skillId === skillId);
-  if (!skill) throw httpError(400, 'You can add proof only for a skill on your profile.');
+  if (!skill) throw httpError(400, 'PROOF_SKILL_NOT_ON_PROFILE');
 
   const [forSkill, forWorker] = await Promise.all([
     Evidence.countDocuments({ worker: workerId, skillId }),
     Evidence.countDocuments({ worker: workerId }),
   ]);
-  if (forSkill >= MAX_EVIDENCE_PER_SKILL) throw httpError(400, `At most ${MAX_EVIDENCE_PER_SKILL} proof items per skill. Delete one first.`);
-  if (forWorker >= MAX_EVIDENCE_PER_WORKER) throw httpError(400, `At most ${MAX_EVIDENCE_PER_WORKER} proof items in total.`);
+  if (forSkill >= MAX_EVIDENCE_PER_SKILL) throw httpError(400, 'PROOF_LIMIT_SKILL', { max: MAX_EVIDENCE_PER_SKILL });
+  if (forWorker >= MAX_EVIDENCE_PER_WORKER) throw httpError(400, 'PROOF_LIMIT_TOTAL', { max: MAX_EVIDENCE_PER_WORKER });
 
   await detectImageType(req.file.buffer); // 400 unless JPEG, PNG or WebP by content
   const processed = await processImage(req.file.buffer); // rotate, resize, WebP, no metadata
@@ -65,7 +65,7 @@ export const uploadEvidence = async (req, res) => {
   const dhash = await dHash(processed.data);
 
   if (await Evidence.exists({ worker: workerId, skillId, sha256: hash })) {
-    throw httpError(409, 'You already uploaded this photo for this skill.');
+    throw httpError(409, 'PHOTO_DUPLICATE');
   }
   const duplicate = await findPossibleDuplicate(workerId, hash, dhash);
 
@@ -91,7 +91,7 @@ export const uploadEvidence = async (req, res) => {
     });
   } catch (err) {
     await storage.remove(fileId); // no orphan bytes
-    if (err.code === 11000) throw httpError(409, 'You already uploaded this photo for this skill.');
+    if (err.code === 11000) throw httpError(409, 'PHOTO_DUPLICATE');
     throw err;
   }
 
@@ -120,9 +120,9 @@ export const listMyEvidence = async (req, res) => {
 export const getEvidenceFile = async (req, res) => {
   const evidence = await Evidence.findById(req.validated.params.id).select('worker fileId').lean();
   const allowed = evidence && (req.user.role === 'admin' || String(evidence.worker) === String(req.user._id));
-  if (!allowed) throw httpError(404, 'Photo not found');
+  if (!allowed) throw httpError(404, 'PHOTO_NOT_FOUND');
   const file = await storage.read(evidence.fileId);
-  if (!file) throw httpError(404, 'Photo not found');
+  if (!file) throw httpError(404, 'PHOTO_NOT_FOUND');
   res.set({
     'Content-Type': file.contentType,
     'X-Content-Type-Options': 'nosniff',
@@ -151,12 +151,12 @@ export async function deleteEvidenceItem(evidence, actorId) {
 // never be deleted, so a worker cannot remove a "Disputed" status by deleting the finding.
 export const deleteEvidence = async (req, res) => {
   const evidence = await Evidence.findById(req.validated.params.id).select('worker status fileId skillId').lean();
-  if (!evidence || String(evidence.worker) !== String(req.user._id)) throw httpError(404, 'Proof item not found');
+  if (!evidence || String(evidence.worker) !== String(req.user._id)) throw httpError(404, 'PROOF_NOT_FOUND');
   if (evidence.status === 'suspected_fake') {
-    throw httpError(409, 'An admin marked this item as a suspected fake. It cannot be deleted. Please contact the admin.');
+    throw httpError(409, 'PROOF_FAKE_CANNOT_DELETE');
   }
   if (!WORKER_DELETABLE.includes(evidence.status)) {
-    throw httpError(409, 'Reviewed items that were approved or revoked cannot be deleted. Please contact the admin.');
+    throw httpError(409, 'PROOF_REVIEWED_CANNOT_DELETE');
   }
   await deleteEvidenceItem(evidence, req.user._id);
   const { summary } = await recomputeSkillSummary(req.user._id, evidence.skillId);

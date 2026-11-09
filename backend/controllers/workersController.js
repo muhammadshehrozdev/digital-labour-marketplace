@@ -37,7 +37,7 @@ export const getMyOnboarding = async (req, res) => {
 // GET /api/workers/me
 export const getMyProfile = async (req, res) => {
   const profile = await WorkerProfile.findOne({ user: req.user._id }).populate('user', 'name email phone role');
-  if (!profile) throw httpError(404, 'You have not created your worker profile yet.');
+  if (!profile) throw httpError(404, 'PROFILE_NOT_CREATED');
   res.json(profile);
 };
 
@@ -62,7 +62,7 @@ export const updateMyProfile = async (req, res) => {
     if (hash !== profile.cnicHash) {
       const other = await WorkerProfile.findOne({ cnicHash: hash }).select('_id').lean();
       if (other && String(other._id) !== String(profile._id)) {
-        throw httpError(409, 'This CNIC is already linked to another account. If it is yours, please contact the admin.');
+        throw httpError(409, 'CNIC_TAKEN');
       }
       profile.cnicHash = hash;
       profile.cnicEncrypted = encryptCnic(cnicNumber, req.user._id);
@@ -135,6 +135,6 @@ export const getPublicProfile = async (req, res) => {
     .select(PUBLIC_PROFILE_FIELDS)
     .populate('user', PUBLIC_USER_FIELDS)
     .lean();
-  if (!profile) throw httpError(404, 'Worker not found');
+  if (!profile) throw httpError(404, 'WORKER_NOT_FOUND');
   res.json(profile);
 };

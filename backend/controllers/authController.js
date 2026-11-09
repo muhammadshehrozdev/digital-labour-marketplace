@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import User, { BCRYPT_COST } from '../models/User.js';
 import { httpError } from '../utils/httpError.js';
+import { ERRORS } from '../errors/catalog.js';
 import {
   SESSION_COOKIE, signSession, verifySession, readCookie, setSessionCookie, clearSessionCookie,
 } from '../services/session.js';
@@ -9,8 +10,8 @@ import {
 // The only fields of a user that the API ever sends back (to that user or an admin).
 const ownUser = (u) => ({ _id: u._id, name: u.name, email: u.email, phone: u.phone, role: u.role });
 
-export const LOGIN_FAILED =
-  'Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes.';
+// The English text lives in errors/catalog.js (the website shows it in the chosen language).
+export const LOGIN_FAILED = ERRORS.LOGIN_FAILED;
 export const MAX_FAILED_LOGINS = 5;
 export const LOCK_MINUTES = 15;
 
@@ -27,7 +28,7 @@ export const registerUser = async (req, res) => {
   const { name, email, password, phone, role } = req.validated.body;
 
   if (await User.exists({ email })) {
-    throw httpError(409, 'This email is already registered. Please log in instead.');
+    throw httpError(409, 'EMAIL_TAKEN');
   }
   const user = await User.create({ name, email, password, phone, role });
 
@@ -42,13 +43,13 @@ export const loginUser = async (req, res) => {
 
   if (!user) {
     await bcrypt.compare(password, await dummyHash());
-    throw httpError(401, LOGIN_FAILED);
+    throw httpError(401, 'LOGIN_FAILED');
   }
 
   const passwordOk = await bcrypt.compare(password, user.password);
   const locked = user.lockUntil && user.lockUntil > new Date();
 
-  if (locked) throw httpError(401, LOGIN_FAILED); // even a correct password waits out the lock
+  if (locked) throw httpError(401, 'LOGIN_FAILED'); // even a correct password waits out the lock
 
   if (!passwordOk) {
     // Atomic +1, so parallel guesses are all counted.
@@ -63,7 +64,7 @@ export const loginUser = async (req, res) => {
         { $set: { lockUntil: new Date(Date.now() + LOCK_MINUTES * 60 * 1000), failedLoginCount: 0 } }
       );
     }
-    throw httpError(401, LOGIN_FAILED);
+    throw httpError(401, 'LOGIN_FAILED');
   }
 
   if (user.failedLoginCount !== 0 || user.lockUntil) {

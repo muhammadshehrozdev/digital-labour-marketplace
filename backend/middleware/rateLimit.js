@@ -5,6 +5,7 @@
 // that is only partial protection; the per-account lockout (User model) and a
 // Vercel Firewall rule (Phase 8) are the real protection. See docs/SECURITY.md.
 import rateLimit from 'express-rate-limit';
+import { errorBody } from '../utils/httpError.js';
 
 export function createAuthLimiter({ limit }) {
   return rateLimit({
@@ -13,7 +14,7 @@ export function createAuthLimiter({ limit }) {
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     skipSuccessfulRequests: true,
-    message: { message: 'Too many failed attempts from this network. Please wait 15 minutes and try again.' },
+    message: errorBody('RATE_LIMIT_AUTH'),
   });
 }
 
@@ -24,6 +25,6 @@ export function createUploadLimiter({ limit }) {
     limit,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
-    message: { message: 'Too many uploads from this network. Please wait 15 minutes and try again.' },
+    message: errorBody('RATE_LIMIT_UPLOAD'),
   });
 }

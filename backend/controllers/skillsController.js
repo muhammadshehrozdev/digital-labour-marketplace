@@ -53,7 +53,7 @@ export const addSkills = async (req, res) => {
   const profile = await loadOrCreate(req.user._id);
   const existing = new Set(profile.skills.map((s) => s.skillId));
   const toAdd = [...new Set(skillIds)].filter((id) => !existing.has(id)); // adding twice keeps one copy
-  if (profile.skills.length + toAdd.length > MAX_SKILLS) throw httpError(400, `At most ${MAX_SKILLS} skills per worker`);
+  if (profile.skills.length + toAdd.length > MAX_SKILLS) throw httpError(400, 'SKILL_LIMIT', { max: MAX_SKILLS });
 
   for (const id of toAdd) {
     const s = skillById(id);
@@ -74,12 +74,12 @@ const slug = (name) => name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/
 export const addCustomSkill = async (req, res) => {
   const { name, category } = req.validated.body;
   const id = slug(name);
-  if (!id) throw httpError(400, 'Please write the skill name in English letters (a-z) for now');
+  if (!id) throw httpError(400, 'CUSTOM_SKILL_LATIN');
   const profile = await loadOrCreate(req.user._id);
   const skillId = `custom-${id}`;
   if (profile.skills.some((s) => s.skillId === skillId)) return respond(req, res, profile);
-  if (profile.skills.filter((s) => s.custom).length >= MAX_CUSTOM_SKILLS) throw httpError(400, `At most ${MAX_CUSTOM_SKILLS} custom skills`);
-  if (profile.skills.length >= MAX_SKILLS) throw httpError(400, `At most ${MAX_SKILLS} skills per worker`);
+  if (profile.skills.filter((s) => s.custom).length >= MAX_CUSTOM_SKILLS) throw httpError(400, 'CUSTOM_SKILL_LIMIT', { max: MAX_CUSTOM_SKILLS });
+  if (profile.skills.length >= MAX_SKILLS) throw httpError(400, 'SKILL_LIMIT', { max: MAX_SKILLS });
   profile.skills.push({ skillId, name, category, addedVia: 'manual', custom: true });
   profile.profileCompletion = calculateCompletion(profile);
   await profile.save();
@@ -90,12 +90,12 @@ export const addCustomSkill = async (req, res) => {
 export const removeSkill = async (req, res) => {
   const { skillId } = req.validated.params;
   const profile = await WorkerProfile.findOne({ user: req.user._id });
-  if (!profile || !profile.skills.some((s) => s.skillId === skillId)) throw httpError(404, 'This skill is not on your profile');
+  if (!profile || !profile.skills.some((s) => s.skillId === skillId)) throw httpError(404, 'SKILL_NOT_ON_PROFILE');
   // Module 3: a skill with reviewed proof (approved, revoked or suspected fake) cannot be removed,
   // otherwise a worker could hide a "suspected fake" finding. Pending or rejected proof goes with it.
   const items = await Evidence.find({ worker: req.user._id, skillId }).select('status fileId skillId').lean();
   if (items.some((e) => !WORKER_DELETABLE.includes(e.status))) {
-    throw httpError(409, 'This skill has proof that an admin already reviewed, so it cannot be removed. Please contact the admin.');
+    throw httpError(409, 'SKILL_HAS_REVIEWED_PROOF');
   }
   for (const item of items) await deleteEvidenceItem(item, req.user._id);
   profile.skills = profile.skills.filter((s) => s.skillId !== skillId);

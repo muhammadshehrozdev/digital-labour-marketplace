@@ -7,6 +7,8 @@
 // Requests without either header do not come from a modern browser (e.g. curl, tests);
 // they cannot carry a victim's cookie automatically, so they are allowed.
 // SameSite=Strict on the cookie is a second layer, not the only one (OWASP).
+import { errorBody } from '../utils/httpError.js';
+
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 export function requireTrustedOrigin(allowedOrigins) {
@@ -17,12 +19,12 @@ export function requireTrustedOrigin(allowedOrigins) {
     const origin = req.headers.origin;
     if (origin !== undefined) {
       if (allowed.has(origin)) return next();
-      return res.status(403).json({ message: 'Request blocked: it did not come from our website.' });
+      return res.status(403).json(errorBody('CSRF_BLOCKED'));
     }
 
     const site = req.headers['sec-fetch-site'];
     if (site === 'cross-site' || site === 'same-site') {
-      return res.status(403).json({ message: 'Request blocked: it did not come from our website.' });
+      return res.status(403).json(errorBody('CSRF_BLOCKED'));
     }
     return next();
   };

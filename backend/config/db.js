@@ -39,7 +39,7 @@ export function requireDb(uri, options) {
       next();
     } catch (err) {
       console.error('[db] connection failed:', err.name, err.message);
-      res.status(503).json({ message: 'Service temporarily unavailable. Please try again in a minute.' });
+      res.status(503).json({ code: 'SERVICE_UNAVAILABLE', message: 'Service temporarily unavailable. Please try again in a minute.' });
     }
   };
 }

@@ -24,9 +24,10 @@ const STATUS_WORDS = {
 
 export function checkTransition(action, currentStatus) {
   const rule = ACTIONS[action];
-  if (!rule) return { ok: false, message: 'Unknown action' };
+  if (!rule) return { ok: false, verb: action, stateWords: currentStatus, message: 'Unknown action' };
   if (!rule.from.includes(currentStatus)) {
-    return { ok: false, message: `You cannot ${rule.verb} an item that is ${STATUS_WORDS[currentStatus] ?? currentStatus}.` };
+    const stateWords = STATUS_WORDS[currentStatus] ?? currentStatus;
+    return { ok: false, verb: rule.verb, stateWords, message: `You cannot ${rule.verb} an item that is ${stateWords}.` };
   }
   return { ok: true, to: rule.to };
 }

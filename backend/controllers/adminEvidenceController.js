@@ -51,7 +51,7 @@ export const listEvidenceQueue = async (req, res) => {
 // GET /api/admin/evidence/:id — details, the possible duplicate, and the skill's numbers.
 export const getEvidenceForAdmin = async (req, res) => {
   const evidence = await populated(Evidence.findById(req.validated.params.id)).lean();
-  if (!evidence) throw httpError(404, 'Proof item not found');
+  if (!evidence) throw httpError(404, 'PROOF_NOT_FOUND');
   let duplicate = null;
   if (evidence.possibleDuplicateOf) {
     const d = await populated(Evidence.findById(evidence.possibleDuplicateOf)).lean();
@@ -71,9 +71,9 @@ export const decideEvidence = async (req, res) => {
   const { id } = req.validated.params;
   const { action, reasonCode, note = '' } = req.validated.body;
   const current = await Evidence.findById(id).select('status worker skillId').lean();
-  if (!current) throw httpError(404, 'Proof item not found');
+  if (!current) throw httpError(404, 'PROOF_NOT_FOUND');
   const t = checkTransition(action, current.status);
-  if (!t.ok) throw httpError(400, t.message);
+  if (!t.ok) throw httpError(400, 'TRANSITION_INVALID', { verb: t.verb, state: t.stateWords, action, status: current.status });
 
   const reviewNote = action === 'reject' ? (note || REASON_WORDS[reasonCode]) : note;
   const updated = await populated(
@@ -91,7 +91,7 @@ export const decideEvidence = async (req, res) => {
       { returnDocument: 'after', runValidators: true }
     )
   ).lean();
-  if (!updated) throw httpError(409, 'Someone else reviewed this item just now. Please reload.');
+  if (!updated) throw httpError(409, 'PROOF_CHANGED');
 
   const { summary, confidence } = await recomputeSkillSummary(current.worker, current.skillId);
   await writeAudit({

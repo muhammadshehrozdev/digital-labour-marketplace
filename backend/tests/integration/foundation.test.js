@@ -10,6 +10,7 @@ import { loadEnv } from '../../config/env.js';
 import { errorHandler, notFound, GENERIC_500 } from '../../middleware/errorHandler.js';
 import { validate } from '../../middleware/validate.js';
 import { startTestDb, stopTestDb } from '../helpers/testDb.js';
+import { ERRORS, isErrorCode } from '../../errors/catalog.js';
 
 const ORIGIN = 'http://127.0.0.1:5173';
 
@@ -65,7 +66,7 @@ describe('error handling (M1-7, M1-13)', () => {
     const res = await request(app).get('/boom');
     console.error = original;
     expect(res.status).toBe(500);
-    expect(res.body).toEqual({ message: GENERIC_500 });
+    expect(res.body).toEqual({ code: 'SERVER_ERROR', message: GENERIC_500 });
     expect(JSON.stringify(res.body)).not.toContain('secret');
   });
 
@@ -124,7 +125,35 @@ describe('the real app with an in-memory MongoDB', () => {
   test('unknown route -> 404 JSON', async () => {
     const res = await request(app).get('/api/does-not-exist');
     expect(res.status).toBe(404);
-    expect(res.body).toEqual({ message: 'Route not found' });
+    expect(res.body).toEqual({ code: 'ROUTE_NOT_FOUND', message: 'Route not found' });
+  });
+
+  test('every error answer carries a stable code from the catalog, so the website can translate it (Batch 3)', async () => {
+    const shortPassword = await request(app)
+      .post('/api/auth/register')
+      .send({ name: 'Code Test', email: 'code.test@example.com', phone: '03001234567', password: 'short', role: 'worker' });
+    expect(shortPassword.status).toBe(400);
+    expect(shortPassword.body.code).toBe('PASSWORD_TOO_SHORT');
+    expect(shortPassword.body.errors[0]).toMatchObject({ field: 'password', code: 'PASSWORD_TOO_SHORT' });
+
+    const extraField = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'a@example.com', password: 'x', isAdmin: true });
+    expect(extraField.status).toBe(400);
+    expect(extraField.body.errors.find((e) => e.code === 'UNKNOWN_FIELD')?.params.key).toBe('isAdmin');
+
+    const badJson = await request(app).post('/api/auth/login').set('Content-Type', 'application/json').send('{"email":');
+    expect(badJson.status).toBe(400);
+    expect(isErrorCode(badJson.body.code)).toBe(true);
+    expect(badJson.body.code).toBe('INVALID_JSON');
+
+    const notLoggedIn = await request(app).get('/api/workers/me');
+    expect(notLoggedIn.status).toBe(401);
+    expect(notLoggedIn.body).toEqual({ code: 'NOT_LOGGED_IN', message: ERRORS.NOT_LOGGED_IN });
+
+    const blocked = await request(app).post('/api/auth/logout').set('Origin', 'https://evil.example');
+    expect(blocked.status).toBe(403);
+    expect(blocked.body.code).toBe('CSRF_BLOCKED');
   });
 
   test('routes are mounted once: old /auth and /worker paths are gone (M1-13)', async () => {

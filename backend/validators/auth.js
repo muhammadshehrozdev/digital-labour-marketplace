@@ -9,7 +9,7 @@ export const registerSchema = z
     email,
     password: newPassword,
     phone,
-    role: z.enum(['worker', 'customer'], { error: 'Role must be worker or customer' }).default('worker'),
+    role: z.enum(['worker', 'customer'], { error: 'ROLE_INVALID' }).default('worker'),
   })
   .strict();
 
@@ -19,8 +19,8 @@ export const loginSchema = z
   .object({
     email,
     password: z
-      .string({ error: 'Password is required' })
-      .min(1, 'Password is required')
-      .refine((pw) => Buffer.byteLength(pw, 'utf8') <= PASSWORD_MAX_BYTES, { message: 'Password is too long' }),
+      .string({ error: 'PASSWORD_REQUIRED' })
+      .min(1, 'PASSWORD_REQUIRED')
+      .refine((pw) => Buffer.byteLength(pw, 'utf8') <= PASSWORD_MAX_BYTES, { message: 'PASSWORD_TOO_LONG' }),
   })
   .strict();

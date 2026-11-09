@@ -2,14 +2,15 @@ import { z } from 'zod';
 import { CATEGORY_IDS, AVAILABILITY } from '../config/skillTaxonomy.js';
 import { name, phone, optionalPhone, cnic, queryInt, objectId } from './common.js';
 
-const text = (max, label) => z.string({ error: `${label} must be text` }).trim().max(max, `${label} must be at most ${max} characters`);
+// Text field: codes TEXT_MUST_BE_TEXT / TEXT_TOO_LONG; the field name comes from the request key.
+const text = (max) => z.string({ error: 'TEXT_MUST_BE_TEXT' }).trim().max(max, 'TEXT_TOO_LONG');
 
 const workHistoryItem = z
   .object({
-    jobTitle: text(100, 'Job title').min(2, 'Job title must be at least 2 characters'),
-    clientOrEmployer: text(100, 'Client / location').optional().default(''),
-    duration: text(50, 'Duration').optional().default(''),
-    description: text(500, 'Description').optional().default(''),
+    jobTitle: text(100).min(2, 'TEXT_TOO_SHORT'),
+    clientOrEmployer: text(100).optional().default(''),
+    duration: text(50).optional().default(''),
+    description: text(500).optional().default(''),
   })
   .strict();
 
@@ -20,25 +21,25 @@ export const profileUpdateSchema = z
   .object({
     name: name.optional(),
     phone: phone.optional(),
-    occupation: text(60, 'Occupation').min(2, 'Occupation must be at least 2 characters').optional(),
-    category: z.enum(CATEGORY_IDS, { error: 'Category must be one of the listed trades' }).optional(),
+    occupation: text(60).min(2, 'TEXT_TOO_SHORT').optional(),
+    category: z.enum(CATEGORY_IDS, { error: 'CATEGORY_INVALID' }).optional(),
     experienceYears: z
-      .number({ error: 'Experience must be a number' })
-      .int('Experience must be whole years')
-      .min(0, 'Experience cannot be negative')
-      .max(60, 'Experience must be 60 years or less')
+      .number({ error: 'NUMBER_REQUIRED' })
+      .int('EXPERIENCE_WHOLE')
+      .min(0, 'NOT_NEGATIVE')
+      .max(60, 'EXPERIENCE_TOO_HIGH')
       .optional(),
-    hourlyRate: z.number({ error: 'Hourly rate must be a number' }).min(0, 'Hourly rate cannot be negative').max(1000000, 'Hourly rate is too high').optional(),
-    dailyRate: z.number({ error: 'Daily rate must be a number' }).min(0, 'Daily rate cannot be negative').max(1000000, 'Daily rate is too high').optional(),
-    city: text(50, 'City').min(2, 'City must be at least 2 characters').optional(),
-    address: text(200, 'Address').optional(),
+    hourlyRate: z.number({ error: 'NUMBER_REQUIRED' }).min(0, 'NOT_NEGATIVE').max(1000000, 'RATE_TOO_HIGH').optional(),
+    dailyRate: z.number({ error: 'NUMBER_REQUIRED' }).min(0, 'NOT_NEGATIVE').max(1000000, 'RATE_TOO_HIGH').optional(),
+    city: text(50).min(2, 'TEXT_TOO_SHORT').optional(),
+    address: text(200).optional(),
     whatsappNumber: optionalPhone.optional(),
-    emergencyContact: text(100, 'Emergency contact').optional(),
+    emergencyContact: text(100).optional(),
     cnicNumber: cnic.optional(),
-    languages: z.array(text(30, 'Language').min(1, 'Language cannot be empty')).max(10, 'At most 10 languages').optional(),
-    availability: z.enum(AVAILABILITY, { error: 'Availability must be Available, Busy or Offline' }).optional(),
-    bio: text(500, 'Bio').optional(),
-    workHistory: z.array(workHistoryItem).max(20, 'At most 20 work records').optional(),
+    languages: z.array(text(30).min(1, 'TEXT_EMPTY_ITEM')).max(10, 'LIST_TOO_LONG').optional(),
+    availability: z.enum(AVAILABILITY, { error: 'AVAILABILITY_INVALID' }).optional(),
+    bio: text(500).optional(),
+    workHistory: z.array(workHistoryItem).max(20, 'LIST_TOO_LONG').optional(),
   })
   .strict();
 
@@ -46,19 +47,19 @@ export const profileUpdateSchema = z
 // values where possible. Unknown keys such as "category[$ne]" -> 400 (audit M1-3, M1-4).
 export const directoryQuerySchema = z
   .object({
-    search: z.string({ error: 'search must be one text value' }).trim().max(50, 'Search text must be at most 50 characters').optional(),
-    city: z.string({ error: 'city must be one text value' }).trim().max(50, 'City must be at most 50 characters').optional(),
-    category: z.enum(['All', ...CATEGORY_IDS], { error: 'Unknown category' }).optional(),
-    availability: z.enum(['All', ...AVAILABILITY], { error: 'Unknown availability' }).optional(),
-    identity: z.enum(['all', 'verified'], { error: 'identity must be all or verified' }).optional(),
-    skills: z.enum(['all', 'verified'], { error: 'skills must be all or verified' }).optional(),
+    search: z.string({ error: 'ONE_VALUE' }).trim().max(50, 'TEXT_TOO_LONG').optional(),
+    city: z.string({ error: 'ONE_VALUE' }).trim().max(50, 'TEXT_TOO_LONG').optional(),
+    category: z.enum(['All', ...CATEGORY_IDS], { error: 'CATEGORY_UNKNOWN' }).optional(),
+    availability: z.enum(['All', ...AVAILABILITY], { error: 'AVAILABILITY_UNKNOWN' }).optional(),
+    identity: z.enum(['all', 'verified'], { error: 'IDENTITY_FILTER_INVALID' }).optional(),
+    skills: z.enum(['all', 'verified'], { error: 'SKILLS_FILTER_INVALID' }).optional(),
     page: queryInt(1, 1000).optional(),
     limit: queryInt(1, 50).optional(),
   })
   .strict();
 
 export const workerIdCodeParams = z
-  .object({ workerIdCode: z.string().regex(/^DLM-\d{4}-\d{4,6}$/, 'Worker ID must look like DLM-2026-000123') })
+  .object({ workerIdCode: z.string().regex(/^DLM-\d{4}-\d{4,6}$/, 'WORKER_ID_INVALID') })
   .strict();
 
 export const profileIdParams = z.object({ id: objectId }).strict();
@@ -66,32 +67,32 @@ export const profileIdParams = z.object({ id: objectId }).strict();
 // PATCH /api/admin/workers/:id/identity (audit M1-9): a decision always has a note.
 export const identityDecisionSchema = z
   .object({
-    status: z.enum(['Verified', 'Rejected'], { error: 'Status must be Verified or Rejected' }),
+    status: z.enum(['Verified', 'Rejected'], { error: 'IDENTITY_STATUS_INVALID' }),
     note: z
-      .string({ error: 'A note is required' })
+      .string({ error: 'NOTE_REQUIRED' })
       .trim()
-      .min(5, 'Please write a note of at least 5 characters (how the CNIC was checked)')
-      .max(500, 'Note must be at most 500 characters'),
+      .min(5, 'IDENTITY_NOTE_TOO_SHORT')
+      .max(500, 'TEXT_TOO_LONG'),
   })
   .strict();
 
 export const adminWorkersQuerySchema = z
   .object({
-    status: z.enum(['All', 'Unverified', 'Pending', 'Verified', 'Rejected'], { error: 'Unknown status' }).optional(),
-    q: z.string({ error: 'q must be one text value' }).trim().max(50, 'Search text must be at most 50 characters').optional(),
+    status: z.enum(['All', 'Unverified', 'Pending', 'Verified', 'Rejected'], { error: 'STATUS_UNKNOWN' }).optional(),
+    q: z.string({ error: 'ONE_VALUE' }).trim().max(50, 'TEXT_TOO_LONG').optional(),
     page: queryInt(1, 1000).optional(),
     limit: queryInt(1, 100).optional(),
   })
   .strict();
 
 const isoDate = z
-  .string({ error: 'Date must be one value' })
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must look like 2026-11-09')
-  .refine((d) => !Number.isNaN(Date.parse(`${d}T00:00:00Z`)), { message: 'Not a real date' });
+  .string({ error: 'ONE_VALUE' })
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'DATE_INVALID')
+  .refine((d) => !Number.isNaN(Date.parse(`${d}T00:00:00Z`)), { message: 'DATE_NOT_REAL' });
 
 export const auditQuerySchema = z
   .object({
-    action: z.string({ error: 'action must be one value' }).regex(/^[a-z]+(\.[a-z_]+)+$/, 'Unknown action').max(60).optional(),
+    action: z.string({ error: 'ONE_VALUE' }).regex(/^[a-z]+(\.[a-z_]+)+$/, 'ACTION_UNKNOWN').max(60, 'TEXT_TOO_LONG').optional(),
     from: isoDate.optional(),
     to: isoDate.optional(),
     page: queryInt(1, 10000).optional(),
