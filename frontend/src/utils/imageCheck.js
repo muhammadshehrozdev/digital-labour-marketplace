@@ -18,7 +18,11 @@ export async function sniffType(file) {
   if (ascii(bytes, 0, 4) === 'RIFF' && ascii(bytes, 8, 12) === 'WEBP') return 'image/webp';
   if (ascii(bytes, 0, 4) === '%PDF') return 'application/pdf';
   if (ascii(bytes, 4, 8) === 'ftyp') return 'image/heif-family'; // HEIC, HEIF, AVIF
-  return file.type?.startsWith('image/') ? 'image/other' : 'unknown';
+  // Other picture formats, recognised by their bytes (never by the browser's claimed type).
+  if (ascii(bytes, 0, 4) === 'GIF8' || ascii(bytes, 0, 2) === 'BM' || startsWith(bytes, [0x49, 0x49, 0x2a, 0x00]) || startsWith(bytes, [0x4d, 0x4d, 0x00, 0x2a])) {
+    return 'image/other';
+  }
+  return 'unknown';
 }
 
 // '' when the file may be uploaded as it is, otherwise the message to show.
