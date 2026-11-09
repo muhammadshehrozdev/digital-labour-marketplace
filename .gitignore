@@ -7,3 +7,6 @@ dist/
 
 # Local-only data: MongoDB program + local preview database (never commit)
 .local/
+
+# Windows adds these when copying files into WSL
+*:Zone.Identifier
