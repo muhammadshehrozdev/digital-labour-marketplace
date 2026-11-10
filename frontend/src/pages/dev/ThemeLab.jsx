@@ -1,7 +1,7 @@
 // Development only (/dev/themes): compare the three themes (D-017) and the three logo concepts
 // (D-018) live. Switching here changes the whole page until reload.
 import { ArrowRight, BadgeCheck, Hammer } from 'lucide-react';
-import { LogoMark } from '../../components/brand/Logo';
+import Logo, { LogoMark } from '../../components/brand/Logo';
 import { LOGO_CONCEPTS, LOGO_CONCEPT_IDS } from '../../components/brand/logoMarks';
 import { Alert, Badge, Button, Card, PageHeader, ProgressRing, Section, StatusChip } from '../../components/ui';
 import ThemePicker from './ThemePicker';
@@ -33,6 +33,19 @@ export default function ThemeLab() {
                 <LogoMark concept={id} size={64} tone="dark" animated />
               </div>
             </Card>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Logo concepts in the header">
+        <div className={styles.headerPreviews}>
+          {LOGO_CONCEPT_IDS.map((id) => (
+            <div key={id} className={styles.headerPreview} data-concept={id}>
+              <Logo size={34} concept={id} compact />
+              <span className={styles.headerSpacer} />
+              <Button size="sm" variant="ghost">Log in</Button>
+              <Button size="sm">Create account</Button>
+            </div>
           ))}
         </div>
       </Section>

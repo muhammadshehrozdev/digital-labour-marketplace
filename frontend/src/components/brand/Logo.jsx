@@ -7,7 +7,8 @@ import { useT } from '../../i18n/context';
 import { LOGO_CONCEPTS } from './logoMarks';
 import styles from './Logo.module.css';
 
-// The chosen concept (D-018). The other two stay in docs/design/logo-concepts/ and the theme lab.
+// The chosen concept (D-018): "Stitched Nut". The other two stay in docs/design/logo-concepts/ and
+// in the theme lab (/dev/themes).
 export const LOGO_CONCEPT = 'nut';
 
 export function LogoMark({ size = 32, title, concept = LOGO_CONCEPT, tone = 'light', mono = false, animated = false }) {
@@ -35,7 +36,7 @@ export function LogoMark({ size = 32, title, concept = LOGO_CONCEPT, tone = 'lig
       )}
       <path className={styles.shape} d={mark.shape} fill={fill} />
       {animated && <path className={styles.outline} d={mark.shape} pathLength="1" fill="none" />}
-      <g className={styles.details}>{mark.details}</g>
+      <g className={styles.details}>{size <= 20 && mark.smallDetails ? mark.smallDetails : mark.details}</g>
     </svg>
   );
 }

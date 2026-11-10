@@ -39,3 +39,10 @@
 
 .sampleGrid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 .ringCard { display: grid; justify-items: center; gap: var(--space-2); }
+
+.headerPreviews { display: grid; gap: var(--space-3); }
+.headerPreview {
+  display: flex; align-items: center; gap: var(--space-2); block-size: var(--header-height);
+  padding-inline: var(--gutter); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md);
+}
+.headerSpacer { flex: 1; }

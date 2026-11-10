@@ -37,6 +37,10 @@ export const LOGO_CONCEPTS = {
         <path d="M11.8 17.2 14.8 20.2 20.4 14" fill="none" stroke="var(--logo-detail)" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round" />
       </>
     ),
+    // At 20 px and below the stitched ring turns into noise: nut + a bolder check only.
+    smallDetails: (
+      <path d="M10.8 17 14.6 20.8 21.4 13.4" fill="none" stroke="var(--logo-detail)" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+    ),
   },
 };
 
