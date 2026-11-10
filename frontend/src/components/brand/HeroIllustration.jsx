@@ -1,7 +1,8 @@
 // In-house animated illustration for the landing hero (decorative, aria-hidden).
 // A worker's ID card with a check that draws itself, a skill chip that turns "verified",
 // and floating tools. No people, no stock photos. Motion: transform/opacity, plus one stroke
-// draw; everything is still with reduced motion (see the CSS).
+// draw; everything is still with reduced motion (see the CSS). On desktop the layers shift a
+// little with the mouse (parallax, Batch 4): the hero sets --px / --py.
 import styles from './HeroIllustration.module.css';
 
 export default function HeroIllustration() {
@@ -19,12 +20,15 @@ export default function HeroIllustration() {
       </defs>
 
       {/* soft rings behind the card */}
+      <g className={styles.depth1}>
       <g className={styles.rings} fill="none" stroke="var(--color-dark-border)">
         <circle cx="210" cy="170" r="150" strokeDasharray="2 10" />
         <circle cx="210" cy="170" r="112" opacity="0.7" />
       </g>
+      </g>
 
       {/* the ID card */}
+      <g className={styles.depth2}>
       <g className={styles.card}>
         <rect x="88" y="70" width="244" height="190" rx="22" fill="url(#hero-card)" stroke="var(--color-dark-border)" />
         <rect x="88" y="70" width="244" height="42" rx="22" fill="color-mix(in oklch, var(--color-dark-primary) 22%, transparent)" />
@@ -40,14 +44,18 @@ export default function HeroIllustration() {
         <rect x="224" y="203" width="66" height="8" rx="4" fill="var(--color-on-dark-muted)" opacity="0.5" />
         <rect x="112" y="234" width="130" height="7" rx="3.5" fill="var(--color-on-dark-muted)" opacity="0.35" />
       </g>
+      </g>
 
       {/* the big check badge that draws itself */}
+      <g className={styles.depth3}>
       <g className={styles.badge}>
         <circle cx="318" cy="92" r="34" fill="url(#hero-accent)" />
         <path className={styles.badgeCheck} d="M302 92l11 11 21-23" fill="none" stroke="var(--color-dark-bg)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" pathLength="1" />
       </g>
+      </g>
 
       {/* floating tools */}
+      <g className={styles.depth3}>
       <g className={`${styles.tool} ${styles.wrench}`}>
         <path d="M56 236a20 20 0 0 0 27 24l22 22a8 8 0 0 0 11-11l-22-22a20 20 0 0 0-24-27l12 12-4 11-11 4Z" fill="var(--color-dark-accent)" />
       </g>
@@ -57,6 +65,7 @@ export default function HeroIllustration() {
       </g>
       <g className={`${styles.tool} ${styles.bolt}`}>
         <path d="M66 70l-16 30h14l-8 26 24-34H66l8-22Z" fill="var(--color-dark-primary)" />
+      </g>
       </g>
     </svg>
   );

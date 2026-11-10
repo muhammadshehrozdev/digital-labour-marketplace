@@ -1,0 +1,67 @@
+/* In-house illustration system (design v3, Batch 4). One style for every drawing:
+   - drawn on a fixed grid (96 x 96 for trades, 160 x 120 for scenes)
+   - one line weight (2.5), round caps and joins
+   - five colours only, all from the theme, so every drawing works in light and dark mode:
+       --ill-ink     lines            --ill-paper   light fill
+       --ill-soft    tinted fill      --ill-primary emerald fill      --ill-accent  saffron (one accent)
+   - a soft blob behind and a ground shadow under each drawing
+   - small hover animations (the parent card can trigger them with data-art-hover); none with
+     reduced motion. */
+.art {
+  --ill-ink: color-mix(in oklch, var(--color-text) 88%, var(--color-primary));
+  --ill-paper: var(--color-surface);
+  --ill-soft: var(--color-primary-soft-strong);
+  --ill-primary: var(--color-primary);
+  --ill-accent: var(--color-accent);
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+}
+/* inside dark sections (hero, footer, side panels) */
+.dark {
+  --ill-ink: var(--color-on-dark);
+  --ill-paper: var(--color-dark-surface);
+  --ill-soft: color-mix(in oklch, var(--color-dark-primary) 22%, var(--color-dark-bg));
+  --ill-primary: var(--color-dark-primary);
+  --ill-accent: var(--color-dark-accent);
+}
+
+.art :global(.ink) { fill: none; stroke: var(--ill-ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.art :global(.paper) { fill: var(--ill-paper); stroke: var(--ill-ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.art :global(.soft) { fill: var(--ill-soft); stroke: var(--ill-ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.art :global(.primary) { fill: var(--ill-primary); stroke: var(--ill-ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.art :global(.accent) { fill: var(--ill-accent); stroke: var(--ill-ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.art :global(.accent-line) { fill: none; stroke: var(--ill-accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.art :global(.primary-line) { fill: none; stroke: var(--ill-primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.art :global(.dot) { fill: var(--ill-ink); }
+.art :global(.blob) { fill: color-mix(in oklch, var(--ill-soft) 70%, transparent); }
+.art :global(.ground) { fill: color-mix(in oklch, var(--ill-ink) 12%, transparent); }
+.art :global(.faint) { fill: none; stroke: color-mix(in oklch, var(--ill-ink) 35%, transparent); stroke-width: 2.5; stroke-linecap: round; }
+
+/* ---- hover animations: parts are tagged with a-* classes ---- */
+.art :global(.a-bob), .art :global(.a-swing), .art :global(.a-spark), .art :global(.a-slide), .art :global(.a-drop), .art :global(.a-spin), .art :global(.a-wave) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.art :global(.a-swing) { transform-origin: 50% 0%; }
+.art :global(.a-spark) { opacity: 0.75; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .art:hover :global(.a-bob), [data-art-hover]:hover .art :global(.a-bob), .play :global(.a-bob) { animation: art-bob 0.9s var(--ease-in-out) 2 alternate; }
+  .art:hover :global(.a-swing), [data-art-hover]:hover .art :global(.a-swing), .play :global(.a-swing) { animation: art-swing 0.7s var(--ease-in-out) 2 alternate; }
+  .art:hover :global(.a-spark), [data-art-hover]:hover .art :global(.a-spark), .play :global(.a-spark) { animation: art-spark 0.6s var(--ease-out) 3 alternate; }
+  .art:hover :global(.a-slide), [data-art-hover]:hover .art :global(.a-slide), .play :global(.a-slide) { animation: art-slide 0.8s var(--ease-in-out) 2 alternate; }
+  .art:hover :global(.a-drop), [data-art-hover]:hover .art :global(.a-drop), .play :global(.a-drop) { animation: art-drop 0.9s var(--ease-in-out) 2; }
+  .art:hover :global(.a-spin), [data-art-hover]:hover .art :global(.a-spin), .play :global(.a-spin) { animation: art-spin 1.2s var(--ease-in-out) 1; }
+  .art:hover :global(.a-wave), [data-art-hover]:hover .art :global(.a-wave), .play :global(.a-wave) { animation: art-wave 0.9s var(--ease-in-out) 2 alternate; }
+  /* gentle idle float for large scenes */
+  .float { animation: art-float 6s var(--ease-in-out) infinite alternate; }
+}
+@keyframes art-bob { to { transform: translateY(-3px); } }
+@keyframes art-swing { from { transform: rotate(-5deg); } to { transform: rotate(6deg); } }
+@keyframes art-spark { from { opacity: 0.35; transform: scale(0.8); } to { opacity: 1; transform: scale(1.15); } }
+@keyframes art-slide { to { transform: translateX(4px); } }
+@keyframes art-drop { 0% { transform: translateY(-5px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(6px); opacity: 0; } }
+@keyframes art-spin { to { transform: rotate(360deg); } }
+@keyframes art-wave { from { transform: translateY(-2px); opacity: 0.5; } to { transform: translateY(3px); opacity: 1; } }
+@keyframes art-float { from { transform: translateY(0); } to { transform: translateY(-6px); } }

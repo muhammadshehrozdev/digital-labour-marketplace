@@ -1,6 +1,6 @@
 import { Component } from 'react';
-import { TriangleAlert } from 'lucide-react';
 import { Button } from '../ui';
+import SceneArt from '../illustrations/SceneArt';
 import { useT } from '../../i18n/context';
 import styles from './ErrorBoundary.module.css';
 
@@ -11,7 +11,7 @@ export function CrashScreen() {
   return (
     <main id="main" className={styles.page}>
       <div className={styles.card} role="alert">
-        <TriangleAlert size={32} aria-hidden="true" className={styles.icon} />
+        <SceneArt name="crash" size={200} float />
         <h1>{t('crash.title')}</h1>
         <p>{t('crash.text')}</p>
         <Button onClick={() => window.location.reload()}>{t('crash.reload')}</Button>

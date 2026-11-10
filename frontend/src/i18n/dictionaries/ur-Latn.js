@@ -52,6 +52,11 @@ export default {
   roles: { worker: 'Karigar', customer: 'Customer', admin: 'Admin' },
 
   nav: {
+    home: 'Home page',
+    notifications: 'Ittelaat',
+    saved: 'Mehfooz karigar',
+    compare: 'Karigaron ka muwazna',
+    help: 'Madad',
     main: 'Main menu',
     dashboard: 'Dashboard',
     myProfile: 'Meri profile',
@@ -102,6 +107,13 @@ export default {
     findWorker: 'Karigar dhoondein',
     joinWorker: 'Karigar ban kar join karein',
     heroNote: 'Electrician, plumber, painter, raj mistri, carpenter, AC technician, gharelu mulazim aur bohat se doosray.',
+    howKicker: 'Do fareeq, aik website',
+    bento: {
+      example: 'Misaal',
+      sentence: 'Main **ghar ki wiring** karta hoon aur **solar panel** lagata hoon.',
+      verifiedMeans: 'Admin ne is hunar ke saboot ki tasveer manzoor ki hai.',
+      selfMeans: 'Karigar ne khud bataya hai. Abhi koi saboot check nahi hua.',
+    },
     howTitle: 'Yeh kaise kaam karta hai',
     howLead: 'Dono taraf teen asaan qadam.',
     forWorkers: 'Karigaron ke liye',
@@ -117,6 +129,7 @@ export default {
       compare: { title: 'Profiles ka muqabla karein', text: 'Tajurba, rate, hunar, aur yeh ke admin ne kya check kiya hai.' },
       choose: { title: 'Bharosay se chunein', text: 'Saaf dekhein ke kya check hua hai aur kya sirf karigar ne apne baare mein bataya hai.' },
     },
+    trustKicker: 'Insanon ki jaanch',
     trustTitle: 'Yahan ki profile par bharosa kyun karein',
     trustLead: 'Profile par har nishan ka matlab hai ke kisi insaan ne asal mein check kiya hai.',
     trust: {
@@ -125,6 +138,7 @@ export default {
       review: { title: 'Har faisla likha jata hai', text: 'Admin har faislay ki wajah likhta hai, aur har faisla aise record mein jata hai jise badla nahi ja sakta.' },
       privacy: { title: 'Phone aur CNIC chupay rehtay hain', text: 'Phone, WhatsApp, pata aur CNIC talaash ke nataij mein kabhi nahi dikhaye jatay. Rabtay ki maloomat sirf booking qabool honay ke baad di jayengi.' },
     },
+    tradesKicker: 'Nau peshay',
     tradesTitle: 'Marketplace par kaam',
     tradesLead: 'Ghar ki wiring se ghar ki shifting tak: hunarmand kaam ke liye aik jagah.',
     tradeSkills: { one: '{count} hunar', other: '{count} hunar' },
@@ -377,8 +391,12 @@ export default {
 
   notFound: {
     title: 'Safha nahi mila',
-    text: 'Yeh safha mojood nahi hai.',
+    text: 'Shayad link purana hai ya pata ghalat likha gaya hai. Kuch kharab nahi hua.',
     home: 'Home page par jayein',
+    searchLabel: 'Aap kahan jana chahte hain?',
+    searchPlaceholder: 'Safhe ka naam likhein, maslan profile',
+    places: 'Woh safhaat jo aap khol sakte hain',
+    noPlace: 'Is naam ka koi safha nahi. Koi aur lafz azmayein.',
   },
 
   crash: {
@@ -740,7 +758,7 @@ export default {
   },
 
   admin: {
-    nav: { label: 'Admin', overview: 'Khulasa', identity: 'Shanakht ki jaanch', evidence: 'Saboot ki jaanch', audit: 'Audit log' },
+    nav: { label: 'Admin', overview: 'Khulasa', identity: 'Shanakht ki jaanch', evidence: 'Saboot ki jaanch', users: 'Users', audit: 'Audit log', templates: 'Wajuhaat ke templates', exports: 'Exports' },
     overview: {
       title: 'Admin khulasa',
       lead: 'Shanakht aur saboot ki jaanch ki qataarein aur ginti. Har faisla audit log mein likha jata hai.',
@@ -881,5 +899,14 @@ export default {
     small: 'Chhoti likhai',
     normal: 'Aam likhai',
     large: 'Bari likhai',
+  },
+
+  palette: {
+    editAbout: 'Tarmeem: Aap ke baare mein',
+    editWork: 'Tarmeem: Kaam aur rate',
+    editSkills: 'Tarmeem: Hunar',
+    editProof: 'Tarmeem: Hunar ka saboot',
+    editHistory: 'Tarmeem: Pichla kaam',
+    editLanguage: 'Tarmeem: Zabaan ki tarjeeh',
   },
 };

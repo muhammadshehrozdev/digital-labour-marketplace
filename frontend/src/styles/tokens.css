@@ -19,7 +19,7 @@
   --text-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
   --text-body: 1rem;
   --text-small: 0.875rem;
-  --text-caption: 0.75rem;
+  --text-caption: 0.8125rem;
   --leading-tight: 1.1;
   --leading-heading: 1.2;
   --leading-body: 1.55;
@@ -48,6 +48,10 @@
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Texture: a tiny grain drawn by an SVG filter (no image file). Used with a low opacity on
+     dark surfaces so gradients do not band. */
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 
   /* Layout */
   --content-max: 1200px;

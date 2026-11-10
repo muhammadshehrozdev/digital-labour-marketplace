@@ -4,3 +4,8 @@
 .grid { display: grid; gap: var(--space-4); }
 @media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } .full { grid-column: 1 / -1; } }
 .grow { flex: 1 1 200px; }
+
+.artGrid { display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: end; margin-block-end: var(--space-4); }
+.artGrid figure { margin: 0; display: grid; justify-items: center; gap: var(--space-2); }
+.artGrid figcaption { font-size: var(--text-caption); color: var(--color-text-secondary); }
+.artDark { padding: var(--space-6); border-radius: var(--radius-xl); }

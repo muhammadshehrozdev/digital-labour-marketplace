@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, Plus, Search, Trash2 } from 'lucide-react';
 import Logo, { LogoMark } from '../../components/brand/Logo';
+import { SceneArt, TradeArt, SCENE_IDS, TRADE_ART_IDS } from '../../components/illustrations';
 import {
   Alert, Avatar, Badge, Button, Card, Checkbox, Combobox, ConfirmDialog, DataTable, Dialog, Drawer, EmptyState, IconButton,
   PageHeader, Pagination, PasswordField, ProgressBar, ProgressRing, RadioCardGroup, Section, Select, Skeleton, StatusChip,
@@ -28,6 +29,19 @@ export default function StyleGuide() {
 
       <Section title="Brand">
         <Card className={styles.row}><Logo size={40} /><LogoMark size={16} title="Mark at 16 px" /><LogoMark size={32} title="Mark at 32 px" /><LogoMark size={64} title="Mark at 64 px" /></Card>
+      </Section>
+
+      <Section title="Illustrations (design v3)" id="illustrations" description="One style: fixed grid, one line weight, five theme colours. Hover a drawing to see its small animation.">
+        <Card className={styles.artGrid}>
+          {TRADE_ART_IDS.map((id) => <figure key={id}><TradeArt category={id} size={96} /><figcaption>{id}</figcaption></figure>)}
+        </Card>
+        <Card className={styles.artGrid}>
+          {SCENE_IDS.map((id) => <figure key={id}><SceneArt name={id} size={160} /><figcaption>{id}</figcaption></figure>)}
+        </Card>
+        <div className={`${styles.artGrid} ${styles.artDark} dark-section`}>
+          {TRADE_ART_IDS.slice(0, 5).map((id) => <figure key={id}><TradeArt category={id} size={96} tone="dark" /></figure>)}
+          {SCENE_IDS.slice(8, 11).map((id) => <figure key={id}><SceneArt name={id} size={160} tone="dark" /></figure>)}
+        </div>
       </Section>
 
       <Section title="Buttons">

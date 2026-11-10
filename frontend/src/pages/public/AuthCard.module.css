@@ -2,11 +2,14 @@
   display: grid;
   gap: var(--space-6);
   align-items: stretch;
-  max-inline-size: 1040px;
+  align-content: center;
+  max-inline-size: 1080px;
   margin-inline: auto;
 
   @media (min-width: 900px) {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    /* centred in the screen: the form is the page, not a small card at the top of an empty one */
+    min-block-size: calc(100dvh - var(--header-height) - var(--space-20));
   }
 }
 
@@ -16,9 +19,8 @@
   gap: var(--space-5);
   padding: clamp(var(--space-6), 4vw, var(--space-10));
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent);
   animation: card-in var(--duration-slow) var(--ease-out);
 }
 
@@ -43,10 +45,12 @@
 .side {
   display: none;
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   padding: var(--space-10);
-  border-radius: var(--radius-xl);
-  align-content: start;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  align-content: space-between;
   gap: var(--space-6);
 
   /* A soft moving light in the corner (transform only). */
@@ -111,3 +115,7 @@
 @keyframes drift {
   to { transform: translate(-12%, -10%) scale(1.15); }
 }
+
+/* grain on the dark side panel, and the drawing */
+.side::before { content: ''; position: absolute; inset: 0; z-index: -1; background-image: var(--noise); opacity: 0.2; mix-blend-mode: overlay; pointer-events: none; }
+.sideArt { justify-self: center; max-inline-size: 100%; block-size: auto; }

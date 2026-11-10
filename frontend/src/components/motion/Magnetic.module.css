@@ -1,0 +1,5 @@
+.magnetic {
+  display: inline-flex;
+  transition: transform 380ms var(--ease-spring);
+  will-change: transform;
+}

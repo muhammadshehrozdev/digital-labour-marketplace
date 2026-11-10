@@ -21,3 +21,11 @@
 @keyframes badge-pop { from { opacity: 0; transform: scale(0.3); } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes bob { to { transform: translateY(-10px); } }
+
+/* Parallax depth (feature 42): the landing hero sets --px / --py (-1 to 1) from the mouse; each
+   layer moves by a different amount. The wrappers below carry the parallax so the float
+   animations on the parts inside keep running. */
+.depth1, .depth2, .depth3 { transition: transform 500ms var(--ease-out); }
+.depth1 { transform: translate(calc(var(--px, 0) * -5px), calc(var(--py, 0) * -5px)); }
+.depth2 { transform: translate(calc(var(--px, 0) * 10px), calc(var(--py, 0) * 10px)); }
+.depth3 { transform: translate(calc(var(--px, 0) * 22px), calc(var(--py, 0) * 22px)); }

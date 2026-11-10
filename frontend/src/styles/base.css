@@ -28,6 +28,19 @@ body {
   overflow-x: clip;
 }
 
+/* A very soft light behind every page (emerald from the top end corner, a little saffron from
+   the start): the page is never a flat sheet. Fixed, so it costs nothing while scrolling. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 520px at 88% -8%, color-mix(in oklch, var(--color-primary) 9%, transparent), transparent 70%),
+    radial-gradient(820px 460px at -6% 4%, color-mix(in oklch, var(--color-accent) 7%, transparent), transparent 70%);
+}
+
 img, svg { display: block; max-inline-size: 100%; }
 input, button, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -41,8 +54,8 @@ h1, h2, h3, h4 {
   overflow-wrap: anywhere;
   text-wrap: balance;
 }
-h1 { font-size: var(--text-h1); font-weight: 800; letter-spacing: -0.025em; }
-h2 { font-size: var(--text-h2); }
+h1 { font-size: var(--text-h1); font-weight: 800; letter-spacing: -0.032em; line-height: 1.12; }
+h2 { font-size: var(--text-h2); letter-spacing: -0.022em; }
 h3 { font-size: var(--text-h3); }
 p { overflow-wrap: anywhere; text-wrap: pretty; }
 
@@ -109,6 +122,23 @@ a:hover { color: var(--color-primary-hover); }
   border-radius: var(--radius-md);
 }
 .skip-link:focus { inset-block-start: var(--space-2); }
+
+/* Cursor spotlight (feature 39): a soft light follows the mouse over cards marked
+   data-spotlight inside a data-spotlight-group (motion/pointerEffects.js sets --mx / --my). */
+[data-spotlight] { position: relative; }
+[data-spotlight]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 320ms var(--ease-out);
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklch, var(--color-primary) 13%, transparent), transparent 72%);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  [data-spotlight-group]:hover [data-spotlight]::after { opacity: 1; }
+}
 
 /* Dark sections (hero, footer, CTA band): local colour roles, so buttons, links and text
    inside adapt without extra classes. */

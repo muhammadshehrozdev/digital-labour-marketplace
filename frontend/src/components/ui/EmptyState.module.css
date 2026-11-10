@@ -1,14 +1,16 @@
 .empty {
   display: grid; justify-items: center; gap: var(--space-2);
-  padding: var(--space-12) var(--space-4); text-align: center;
+  padding: var(--space-10) var(--space-4); text-align: center;
   background: radial-gradient(80% 100% at 50% 0%, var(--color-primary-soft), transparent 70%), var(--color-surface);
-  border: 1px dashed var(--color-border-strong); border-radius: var(--radius-xl);
+  border-radius: var(--radius-2xl);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-border) 80%, transparent);
 }
+.compact { padding: var(--space-6) var(--space-4); border-radius: var(--radius-xl); }
 .icon {
   display: grid; place-items: center; inline-size: 64px; block-size: 64px; border-radius: var(--radius-xl);
   background: var(--gradient-primary); color: var(--color-on-primary); margin-block-end: var(--space-2);
   box-shadow: 0 10px 24px -10px var(--glow);
 }
-.title { font-size: var(--text-h3); line-height: var(--leading-h3); }
-.description { color: var(--color-text-secondary); max-inline-size: 40ch; }
-.action { margin-block-start: var(--space-3); }
+.title { font-size: var(--text-h3); line-height: var(--leading-h3); margin-block-start: var(--space-2); }
+.description { color: var(--color-text-secondary); max-inline-size: 44ch; }
+.action { margin-block-start: var(--space-4); display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; }

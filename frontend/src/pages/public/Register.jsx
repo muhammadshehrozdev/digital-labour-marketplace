@@ -56,7 +56,7 @@ export default function Register() {
   };
 
   return (
-    <AuthLayout>
+    <AuthLayout art="step-skills">
       <div className={styles.head}>
         <h1>{t('auth.register.title')}</h1>
         <p>{t('auth.register.lead')}</p>

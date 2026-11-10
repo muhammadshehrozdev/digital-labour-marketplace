@@ -53,6 +53,11 @@ export default {
 
   nav: {
     main: 'Main',
+    home: 'Home page',
+    notifications: 'Notifications',
+    saved: 'Saved workers',
+    compare: 'Compare workers',
+    help: 'Help centre',
     dashboard: 'Dashboard',
     myProfile: 'My profile',
     findWorkers: 'Find workers',
@@ -102,8 +107,15 @@ export default {
     findWorker: 'Find a worker',
     joinWorker: 'Join as a worker',
     heroNote: 'For electricians, plumbers, painters, masons, carpenters, AC technicians, domestic workers and more.',
+    howKicker: 'Two sides, one website',
     howTitle: 'How it works',
     howLead: 'Three short steps on each side.',
+    bento: {
+      example: 'Example',
+      sentence: 'I do **house wiring** and fit **solar panels**.',
+      verifiedMeans: 'An admin approved a photo as proof of this skill.',
+      selfMeans: 'The worker says so. No proof has been checked yet.',
+    },
     forWorkers: 'For workers',
     forCustomers: 'For customers',
     stepNumber: 'Step {n}',
@@ -117,6 +129,7 @@ export default {
       compare: { title: 'Compare profiles', text: 'Experience, rates, skills, and what an admin has checked.' },
       choose: { title: 'Choose with trust', text: 'See clearly what is checked and what the worker only says about themselves.' },
     },
+    trustKicker: 'Checked by people',
     trustTitle: 'Why you can trust a profile here',
     trustLead: 'Every badge on a profile means a real check by a person.',
     trust: {
@@ -125,6 +138,7 @@ export default {
       review: { title: 'Every decision is recorded', text: 'Admins give a reason for every decision, and each one is written to a log that cannot be changed.' },
       privacy: { title: 'Phone and CNIC stay private', text: 'Phone, WhatsApp, address and CNIC are never shown in search results. Contact details will be shared only after a booking is accepted.' },
     },
+    tradesKicker: 'Nine trades',
     tradesTitle: 'Trades on the marketplace',
     tradesLead: 'From house wiring to house shifting: one place for skilled work.',
     tradeSkills: { one: '{count} skill', other: '{count} skills' },
@@ -379,8 +393,12 @@ export default {
 
   notFound: {
     title: 'Page not found',
-    text: 'This page does not exist.',
+    text: 'The link may be old, or the address was typed wrongly. Nothing is broken.',
     home: 'Go to the home page',
+    searchLabel: 'Where do you want to go?',
+    searchPlaceholder: 'Type a page name, for example profile',
+    places: 'Pages you can open',
+    noPlace: 'No page with that name. Try another word.',
   },
 
   crash: {
@@ -742,7 +760,7 @@ export default {
   },
 
   admin: {
-    nav: { label: 'Admin', overview: 'Overview', identity: 'Identity review', evidence: 'Evidence review', audit: 'Audit log' },
+    nav: { label: 'Admin', overview: 'Overview', identity: 'Identity review', evidence: 'Evidence review', users: 'Users', audit: 'Audit log', templates: 'Reason templates', exports: 'Exports' },
     overview: {
       title: 'Admin overview',
       lead: 'Queues and counts for identity and evidence review. Every decision is written to the audit log.',
@@ -883,5 +901,14 @@ export default {
     small: 'Smaller text',
     normal: 'Normal text',
     large: 'Larger text',
+  },
+
+  palette: {
+    editAbout: 'Edit: About you',
+    editWork: 'Edit: Work and rates',
+    editSkills: 'Edit: Skills',
+    editProof: 'Edit: Proof of skills',
+    editHistory: 'Edit: Work history',
+    editLanguage: 'Edit: Language preference',
   },
 };
