@@ -6,6 +6,7 @@ import { checkTransition, allowedActions } from '../services/evidence/transition
 import { recomputeSkillSummary, evidenceFor, confidenceForAdmin } from '../services/evidence/skillSummary.js';
 import { skillConfidence } from '../services/trust/skillConfidence.js';
 import { writeAudit } from '../services/audit.js';
+import { notify, EVIDENCE_NOTIFICATIONS } from '../services/notifications.js';
 
 const adminView = (e) => ({
   _id: e._id,
@@ -105,5 +106,10 @@ export const decideEvidence = async (req, res) => {
     reason: reviewNote || null,
     details: { skillId: current.skillId, reasonCode: reasonCode ?? null },
   });
+  // Tell the worker (in-app). The note is the review note the worker can already see on the item.
+  await notify(current.worker, EVIDENCE_NOTIFICATIONS[t.to], {
+    skillId: current.skillId, skillName: updated.skillName, evidenceId: id, reasonCode: action === 'reject' ? reasonCode : null, note: reviewNote,
+  });
+
   res.json({ evidence: adminView(updated), skill: { skillId: current.skillId, evidenceSummary: summary }, opinion: confidenceForAdmin(confidence) });
 };

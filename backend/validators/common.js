@@ -51,6 +51,12 @@ export const newPassword = z
 
 export const objectId = z.string().regex(/^[a-f0-9]{24}$/i, 'ID_INVALID');
 
+// Free text that is written to the audit log (decision notes, reasons, templates) must not
+// contain a CNIC number (CLAUDE.md: "Never write a CNIC number into logs or the audit log").
+// 13 digits in the CNIC grouping, with or without dashes or spaces.
+export const CNIC_LIKE = /\d{5}[-\s]?\d{7}[-\s]?\d/;
+export const noCnic = (schema) => schema.refine((text) => !CNIC_LIKE.test(text), { message: 'NOTE_HAS_CNIC' });
+
 // CNIC: 13 digits, written #####-#######-# (dashes optional). Returns the 13 digits.
 export const cnic = z
   .string({ error: 'TEXT_MUST_BE_TEXT' })

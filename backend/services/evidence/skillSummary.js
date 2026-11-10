@@ -2,7 +2,7 @@
 // review decision or deletion. Stores only what users may see (status, counts, strength label);
 // the numbers b, d, u, E are computed on demand for admins only.
 import Evidence from '../../models/Evidence.js';
-import WorkerProfile from '../../models/WorkerProfile.js';
+import WorkerProfile, { sumApprovedEvidence } from '../../models/WorkerProfile.js';
 import { skillConfidence } from '../trust/skillConfidence.js';
 
 export async function evidenceFor(userId, skillId) {
@@ -19,6 +19,9 @@ export async function recomputeSkillSummary(userId, skillId) {
     updatedAt: new Date(),
   };
   await WorkerProfile.updateOne({ user: userId, 'skills.skillId': skillId }, { $set: { 'skills.$.evidenceSummary': summary } });
+  // Keep the directory's sort key (sum of approved items) in step with the summaries.
+  const profile = await WorkerProfile.findOne({ user: userId }).select('skills.evidenceSummary.approved').lean();
+  if (profile) await WorkerProfile.updateOne({ user: userId }, { $set: { approvedEvidenceCount: sumApprovedEvidence(profile.skills) } });
   return { summary, confidence };
 }
 

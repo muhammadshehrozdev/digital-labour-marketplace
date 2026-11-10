@@ -10,6 +10,8 @@ import { writeAudit } from '../services/audit.js';
 import { refreshOnboarding } from '../services/onboarding.js';
 import Evidence from '../models/Evidence.js';
 import { ownerView as evidenceOwnerView } from './evidenceController.js';
+import { profileStrength } from '../services/profileStrength.js';
+import { hideSuspendedWorkers } from '../services/accountStatus.js';
 
 // PUBLIC fields: what customers and admins see in the directory (audit M1-2, decision D-002).
 // Never: CNIC data, address, emergency contact, WhatsApp, phone, email, raw experience text.
@@ -24,6 +26,23 @@ export const PUBLIC_WORKER_FIELDS = [
 export const PUBLIC_USER_FIELDS = 'name -_id';
 // The single public profile adds work history, without the client's name.
 const PUBLIC_PROFILE_FIELDS = `${PUBLIC_WORKER_FIELDS} workHistory.jobTitle workHistory.duration workHistory.description`;
+
+// Only workers who finished the "Your work" step are listed (a card needs a trade).
+export const LISTED_FILTER = () => ({
+  occupation: mongoose.trusted({ $nin: ['', null] }),
+  category: mongoose.trusted({ $ne: null }),
+});
+
+// Sort keys of the directory (Batch 4, feature 22). Documented in docs/API.md.
+//   updated    recently updated first (the default)
+//   experience most years of experience first (workers without a number come last)
+//   evidence   most approved proof items first (approvedEvidenceCount, the sum over all skills)
+// _id is always the last key, so the order is stable across pages.
+export const DIRECTORY_SORT = Object.freeze({
+  updated: { updatedAt: -1, _id: -1 },
+  experience: { experienceYears: -1, updatedAt: -1, _id: -1 },
+  evidence: { approvedEvidenceCount: -1, updatedAt: -1, _id: -1 },
+});
 
 // One query for the public profile, used by the customer page AND by the owner's
 // "See what customers see" preview, so both always show exactly the same fields.
@@ -63,6 +82,8 @@ export const getMyFullProfile = async (req, res) => {
   res.json({
     profile,
     evidence: evidence.map(evidenceOwnerView),
+    // What to do next, from the worker's own data (services/profileStrength.js).
+    strength: profileStrength(profile, evidence),
     publicView,
     // Same rule as the directory: customers can find a worker only after the "Your work" step.
     listedInDirectory: Boolean(profile.occupation && profile.category),
@@ -99,6 +120,7 @@ export const updateMyProfile = async (req, res) => {
       // A new CNIC must be checked again by an admin.
       identityChange = { from: profile.verificationStatus, to: 'Pending' };
       profile.verificationStatus = 'Pending';
+      profile.identityRequestedAt = new Date();
       profile.identityReviewedBy = null;
       profile.identityReviewedAt = null;
     }
@@ -127,13 +149,9 @@ export const updateMyProfile = async (req, res) => {
 
 // GET /api/workers  (customer, admin) — public directory, paginated, safe fields only.
 export const listDirectory = async (req, res) => {
-  const { search, city, category, availability, identity, skills, page = 1, limit = 20 } = req.validated.query;
+  const { search, city, category, availability, identity, skills, sort = 'updated', page = 1, limit = 20 } = req.validated.query;
 
-  // Only workers who finished the "Your work" step are listed (a card needs a trade).
-  const filter = {
-    occupation: mongoose.trusted({ $nin: ['', null] }),
-    category: mongoose.trusted({ $ne: null }),
-  };
+  const filter = await hideSuspendedWorkers(LISTED_FILTER());
   if (category && category !== 'All') filter.category = category;
   if (availability && availability !== 'All') filter.availability = availability;
   if (identity === 'verified') filter.verificationStatus = 'Verified';
@@ -148,19 +166,35 @@ export const listDirectory = async (req, res) => {
     WorkerProfile.find(filter)
       .select(PUBLIC_WORKER_FIELDS)
       .populate('user', PUBLIC_USER_FIELDS)
-      .sort({ updatedAt: -1, _id: -1 })
+      .sort(DIRECTORY_SORT[sort])
       .skip((page - 1) * limit)
       .limit(limit)
       .lean(),
     WorkerProfile.countDocuments(filter),
   ]);
 
-  res.json({ workers, page, limit, total });
+  res.json({ workers, page, limit, total, sort });
 };
 
 // GET /api/workers/:workerIdCode  (customer, admin)
 export const getPublicProfile = async (req, res) => {
-  const profile = await findPublicProfile({ workerIdCode: req.validated.params.workerIdCode });
+  // A suspended worker's profile is not shown to customers (same answer as "does not exist").
+  const filter = await hideSuspendedWorkers({ workerIdCode: req.validated.params.workerIdCode });
+  const profile = await findPublicProfile(filter);
   if (!profile) throw httpError(404, 'WORKER_NOT_FOUND');
   res.json(profile);
+};
+
+// GET /api/workers/compare?ids=A,B[,C]  (customer, admin) — two or three public profiles side by
+// side, in the order asked. Same public fields as the single profile. Unknown or hidden ids are
+// reported in `missing` instead of failing the whole comparison.
+export const compareWorkers = async (req, res) => {
+  const { ids } = req.validated.query;
+  const filter = await hideSuspendedWorkers({ ...LISTED_FILTER(), workerIdCode: mongoose.trusted({ $in: ids }) });
+  const found = await WorkerProfile.find(filter).select(PUBLIC_PROFILE_FIELDS).populate('user', PUBLIC_USER_FIELDS).lean();
+  const byCode = new Map(found.map((p) => [p.workerIdCode, p]));
+  res.json({
+    workers: ids.map((id) => byCode.get(id)).filter(Boolean).map(({ _id, ...rest }) => rest),
+    missing: ids.filter((id) => !byCode.has(id)),
+  });
 };

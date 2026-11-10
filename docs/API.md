@@ -63,8 +63,12 @@ drafts, see `docs/i18n/REVIEW.md`).
 | POST | `/api/auth/logout` | anyone | — | 200; ends every session of this user |
 
 The user object (register, login, session, me) has only `_id, name, email, phone, role, preferredLanguage,
-preferredTheme, preferredTextSize` (the three settings are `null` until the user chooses; the examples
-below were recorded in Batch 3, before the two display settings were added in Batch 4).
+preferredTheme, preferredTextSize, sessionExpiresAt` (the three settings are `null` until the user chooses;
+`sessionExpiresAt` is when this login ends, 8 hours after logging in; the examples below were recorded in
+Batch 3, before the Batch 4 fields were added).
+
+Batch 4: a **suspended** account gets 403 `ACCOUNT_SUSPENDED` at login, only after the correct password (a
+wrong password still gets the usual 401 `LOGIN_FAILED`), and every open session of that account ends.
 ```json
 // POST /api/auth/register (customer, with "preferredLanguage":"ur") -> 201
 {"_id":"6af2378c…24c","name":"Example Customer (synthetic)","email":"docs.batch3…@example.com","phone":"03000000032","role":"customer","preferredLanguage":"ur"}
@@ -117,6 +121,12 @@ Everything the read-only **My profile** page needs, in one call (`Cache-Control:
 - `listedInDirectory`: `true` once occupation and category are saved (the directory rule).
 404 `PROFILE_NOT_CREATED` until a profile exists; customers 403; visitors 401.
 
+Batch 4: the answer also has `strength`: `{ percent, level, checks, proof, tips }`. `percent` is the documented
+completion checklist (20 base + trade 15 + experience and rate 15 + city and address 10 + contact 10 + skills 15 +
+bio 5 + work history 10); `level` is `starting` (< 50), `good` (50–79), `strong` (80–99, or 100 with no approved
+proof) or `complete` (100 and at least one skill with approved proof); `tips` are up to five next steps as
+lower-case codes with params (for example `{ code: "add_proof", params: { skillId, skillName } }`). No hidden weights.
+
 ### GET /api/workers/me/onboarding — worker
 Progress derived from saved data (D-011). `profileExists` (Batch 3) tells the website whether
 `GET /api/workers/me` would answer 404, so a new worker's browser does not request it.
@@ -128,7 +138,8 @@ Progress derived from saved data (D-011). `profileExists` (Batch 3) tells the we
 |---|---|---|---|
 | POST | `/api/workers/me/skills/extract` | `{ text (1–2,000), inputMode?: "text"\|"voice" }` | **Saves nothing.** Rule-based suggestions |
 | GET | `/api/workers/me/skills` | — | `{ skills, onboarding }` |
-| POST | `/api/workers/me/skills` | `{ skillIds[1–30], addedVia: "extractor"\|"manual", sourceText? }` | 201 added / 200 nothing new; unknown id → 400; max 40 |
+| GET | `/api/workers/me/skills/potential` | — | Batch 4, "You may also do…": `{ suggestions: [{ id, name, category, i18n, reason: "main_trade"\|"same_category" }] (≤ 8), method: "same trade category (rule-based)" }`. Skills of the worker's main trade category, then of the categories of skills already added, that are not on the profile. **Saves nothing**; the worker confirms with `POST …/skills` and `addedVia: "related"` |
+| POST | `/api/workers/me/skills` | `{ skillIds[1–30], addedVia: "extractor"\|"manual"\|"related", sourceText? }` | 201 added / 200 nothing new; unknown id → 400; max 40 |
 | POST | `/api/workers/me/skills/custom` | `{ name (2–60), category }` | clearly marked `custom: true`; max 10 |
 | DELETE | `/api/workers/me/skills/:skillId` | — | 404 if not on profile; **409 if the skill has reviewed proof** (approved, revoked or suspected fake); pending/rejected proof is deleted with it |
 
@@ -194,7 +205,14 @@ Only `pending` or `rejected` items (file bytes are deleted too; audited). `suspe
 ### GET /api/workers — customer, admin
 Query: `search` (≤ 50, in occupation, skill names, bio), `city` (≤ 50), `category` (`All` or id),
 `availability`, `identity` (`all|verified`), `skills` (`all|verified` = at least one skill verified by
-evidence), `page`, `limit` (≤ 50). Lists only workers who finished "Your work". Public fields only.
+evidence), `sort` (Batch 4, below), `page`, `limit` (≤ 50). Lists only workers who finished "Your work" and whose
+account is not suspended. Public fields only. The answer also repeats the `sort` that was used.
+
+| `sort` | Order (documented sort keys; `_id` is always the last key, so pages are stable) |
+|---|---|
+| `updated` (default) | `updatedAt` newest first |
+| `experience` | `experienceYears` highest first (workers without a number last), then `updatedAt` |
+| `evidence` | `approvedEvidenceCount` highest first (the sum of approved proof items over all skills), then `updatedAt` |
 ```json
 {"workers":[{"_id":"6af1f57c…515","user":{"name":"Example Worker (synthetic)"},"occupation":"Plumber","category":"plumbing_sanitary",
   "skills":[{"skillId":"plumb_pipe","name":"PPRC and uPVC pipe fitting","category":"plumbing_sanitary","custom":false,
@@ -206,7 +224,38 @@ evidence), `page`, `limit` (≤ 50). Lists only workers who finished "Your work"
 Never: phone, WhatsApp, email, address, emergency contact, CNIC data, evidence images, file ids, hashes, numbers.
 
 ### GET /api/workers/:workerIdCode — customer, admin
-Same public fields plus `workHistory[{ jobTitle, duration, description }]` (no client name). 404 if unknown.
+Same public fields plus `workHistory[{ jobTitle, duration, description }]` (no client name). 404 if unknown
+or if the worker's account is suspended.
+
+### GET /api/workers/compare?ids=A,B[,C] — customer, admin (Batch 4)
+Two or three different worker IDs, comma separated. Answers `{ workers: [public profile, …], missing: [ids] }`
+in the order asked; an unknown, unlisted or suspended worker is reported in `missing`. Errors:
+`COMPARE_NEEDS_TWO`, `COMPARE_MAX_THREE`, `COMPARE_SAME_WORKER`, `WORKER_ID_INVALID`.
+
+## Saved workers (Batch 4) — customer only
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/api/saved` | `{ workers: [public card, …], total, max }`, newest first; suspended workers are left out |
+| GET | `/api/saved/ids` | `{ ids: ["DLM-…"], max }` for the heart buttons |
+| PUT | `/api/saved/:workerIdCode` | save; 201 the first time, 200 if already saved; at most 100 (`SAVED_LIMIT`) |
+| DELETE | `/api/saved/:workerIdCode` | remove; 200 also when it was not saved |
+
+A customer reads and changes only their own list. Workers and admins get 403.
+
+## Notifications (Batch 4) — any logged-in user, own notifications only
+
+Created by the server when the real event happens: `identity_verified`, `identity_rejected`,
+`evidence_approved`, `evidence_rejected`, `evidence_suspected_fake`, `evidence_revoked`. The text is built by the
+website from `type` + `params` (`skillId`, `skillName`, `evidenceId`, `reasonCode`, `note`; never a CNIC). Kept
+180 days. The website asks for the count once a minute (no websockets).
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/api/notifications` | `page`, `limit` (≤ 50) → `{ notifications: [{ _id, type, params, read, createdAt }], unread, page, limit, total }` |
+| GET | `/api/notifications/unread-count` | `{ unread }` |
+| PATCH | `/api/notifications/:id/read` | `{ notification, unread }`; someone else's id → 404 `NOTIFICATION_NOT_FOUND` |
+| POST | `/api/notifications/read-all` | `{ updated, unread: 0 }` |
 
 ## Admin (every route: admin only; others 403)
 
@@ -216,7 +265,16 @@ Same public fields plus `workHistory[{ jobTitle, duration, description }]` (no c
 | GET | `/api/admin/workers` | `status`, `q` (name/ID/occupation), `page`, `limit`; contact details; CNIC only as `cnicOnFile` |
 | PATCH | `/api/admin/workers/:id/identity` | `{ status: "Verified"\|"Rejected", note (5–500) }`; Verified needs a CNIC; stale → 409; audited |
 | GET | `/api/admin/workers/:id/cnic` | `{ cnic }`, `no-store`; audit entry written first |
-| GET | `/api/admin/users` | users without passwords |
+| GET | `/api/admin/users` | Batch 4: `q` (name, email, phone), `role`, `status` (`all\|active\|suspended`), `page`, `limit` → `{ users: [{ _id, name, email, phone, role, status, createdAt, lockedNow, suspendedAt, suspensionReason }], page, limit, total }` |
+| GET | `/api/admin/users/:id` | `{ user, worker (summary + evidence counts) \| null, customer ({ savedWorkers }) \| null, activity (last 10 audit entries) }`; no CNIC, no address |
+| PATCH | `/api/admin/users/:id/status` | `{ status: "suspended"\|"active", reason (5–300, no CNIC number) }`; not yourself (`CANNOT_SUSPEND_SELF`), not an admin (`CANNOT_SUSPEND_ADMIN`); same status → 409; ends every session of that user; audited (`user.suspended`, `user.reactivated`) |
+| GET | `/api/admin/charts` | `days` (7–90, default 30) → `{ days, timezone: "Asia/Karachi", generatedAt, registrations: [{ date, worker, customer }] (every day present), identity: { counts, waiting }, evidence: { counts, waiting }, skillsByCategory: [{ category, count }] }`; `waiting` = `{ under1Day, days1to3, days4to7, over7Days, oldest }` |
+| GET | `/api/admin/audit/verify` | the same check as `npm run audit:verify` → `{ ok, count, checkedAt }` or `{ ok: false, badSeq, problemCode: "entry_missing"\|"link_broken"\|"content_changed", problem }` |
+| GET | `/api/admin/exports/:kind` | `kind`: `audit\|identity\|evidence\|users`; filters `status`, and for `audit` also `action`, `from`, `to`; a CSV file (UTF-8, at most 5,000 rows, headers `X-Export-Rows`, `X-Export-Truncated`); audited first (`export.downloaded`); never a CNIC; cells are protected against spreadsheet formulas |
+| GET | `/api/admin/reason-templates` | `kind?` → `{ templates: [{ _id, kind, text: { en, ur, ur-Latn }, updatedAt }], max }` |
+| POST | `/api/admin/reason-templates` | `{ kind, text: { en (5–300), ur?, ur-Latn? } }`; at most 60; audited |
+| POST | `/api/admin/reason-templates/starter-set` | adds the starter sentences for kinds that have none; safe to repeat |
+| PATCH / DELETE | `/api/admin/reason-templates/:id` | change the three texts (the kind is fixed) / delete; audited |
 | GET | `/api/admin/audit` | `action`, `from`, `to` (YYYY-MM-DD), `page`, `limit`; newest first; no hashes; read-only |
 | GET | `/api/admin/evidence` | `status` (default `pending`; `all`), `type`, `skillId`, `duplicates=true`, `page`, `limit`; pending oldest first |
 | GET | `/api/admin/evidence/:id` | item + `duplicate` (the other item) + `opinion` (b, d, u, E) |
@@ -271,7 +329,7 @@ Phase 3: `/auth/*` and `/worker/*` without `/api`, `/api/worker/profile`, `/api/
 ## Error codes (generated from backend/errors/catalog.js)
 
 The English text is the fallback. Placeholders in braces come from `params`. A test checks that this
-table lists every code in the catalog.
+table lists every code in the catalog. Regenerate it with `node docs/tools/generate-error-table.mjs`.
 
 | Code | English text |
 |---|---|
@@ -350,7 +408,7 @@ table lists every code in the catalog.
 | `INPUT_MODE_INVALID` | inputMode must be text or voice |
 | `SKILL_UNKNOWN` | Unknown skill. Choose a skill from the list. |
 | `SKILL_CHOOSE_ONE` | Choose at least one skill |
-| `ADDED_VIA_INVALID` | addedVia must be extractor or manual |
+| `ADDED_VIA_INVALID` | addedVia must be extractor, manual or related |
 | `SKILL_ID_INVALID` | Invalid skill id |
 | `SKILL_LIMIT` | At most {max} skills per worker |
 | `CUSTOM_SKILL_LATIN` | Please write the skill name in English letters (a-z) for now |
@@ -385,6 +443,27 @@ table lists every code in the catalog.
 | `REASON_CODE_ONLY_FOR_REJECT` | A reason code is only used to reject |
 | `TRANSITION_INVALID` | You cannot {verb} an item that is {state}. |
 | `PROOF_CHANGED` | Someone else reviewed this item just now. Please reload. |
+| `ACCOUNT_SUSPENDED` | This account is suspended. Please contact the admin. |
+| `USER_NOT_FOUND` | User not found |
+| `USER_STATUS_INVALID` | Status must be active or suspended |
+| `USER_STATUS_CHANGED` | This account already has that status. Please reload. |
+| `CANNOT_SUSPEND_SELF` | You cannot suspend your own account. |
+| `CANNOT_SUSPEND_ADMIN` | Admin accounts cannot be suspended from the website. |
+| `ROLE_FILTER_INVALID` | Role must be all, worker, customer or admin |
+| `REASON_REQUIRED` | A reason is required |
+| `REASON_TOO_SHORT` | Write a reason of at least 5 characters |
+| `NOTE_HAS_CNIC` | Do not write a CNIC number here. Notes are saved in the audit log. |
+| `NOTIFICATION_NOT_FOUND` | Notification not found |
+| `SAVED_LIMIT` | You can save at most {max} workers. Remove one first. |
+| `SORT_INVALID` | Sort must be updated, experience or evidence |
+| `COMPARE_NEEDS_TWO` | Choose at least two workers to compare |
+| `COMPARE_MAX_THREE` | You can compare at most three workers |
+| `COMPARE_SAME_WORKER` | Choose different workers to compare |
+| `EXPORT_KIND_UNKNOWN` | Export must be audit, identity, evidence or users |
+| `TEMPLATE_KIND_INVALID` | Unknown kind of reason template |
+| `TEMPLATE_TEXT_REQUIRED` | Write the English text of the template (at least 5 characters) |
+| `TEMPLATE_NOT_FOUND` | Reason template not found |
+| `TEMPLATE_LIMIT` | At most {max} reason templates. Delete one first. |
 | `ROUTE_NOT_FOUND` | Route not found |
 | `DUPLICATE_RECORD` | This record already exists |
 | `DB_VALIDATION` | Invalid value for: {fields} |

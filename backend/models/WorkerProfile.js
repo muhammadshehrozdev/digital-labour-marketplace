@@ -34,7 +34,9 @@ const skillSchema = new mongoose.Schema(
     skillId: { type: String, required: true, maxlength: 80 },
     name: { type: String, required: true, trim: true, maxlength: 60 },
     category: { type: String, required: true, enum: CATEGORY_IDS },
-    addedVia: { type: String, required: true, enum: ['extractor', 'manual'] },
+    // extractor = from the rule-based suggestions; manual = picked from the list;
+    // related = confirmed from "You may also do..." (same category, Batch 4)
+    addedVia: { type: String, required: true, enum: ['extractor', 'manual', 'related'] },
     custom: { type: Boolean, default: false },
     addedAt: { type: Date, default: () => new Date() },
     evidenceSummary: { type: evidenceSummarySchema, default: () => ({}) },
@@ -106,6 +108,9 @@ const workerProfileSchema = new mongoose.Schema(
       enum: IDENTITY_STATUSES,
       default: 'Unverified',
     },
+    // When the worker last asked for an identity check (saved a CNIC). The admin queue shows
+    // "waiting N days" from this date (Batch 4).
+    identityRequestedAt: { type: Date, default: null },
     identityNote: { type: String, trim: true, maxlength: 500, default: '' },
     identityReviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     identityReviewedAt: { type: Date, default: null },
@@ -118,6 +123,10 @@ const workerProfileSchema = new mongoose.Schema(
       type: Number,
       default: 20,
     },
+
+    // Sum of approved proof items over all skills: the sort key "most approved evidence" of the
+    // directory (Batch 4). Kept in step by the save hook below and by recomputeSkillSummary.
+    approvedEvidenceCount: { type: Number, min: 0, default: 0 },
 
     // Set once, when about + work + skills are first all done (GET /api/workers/me/onboarding).
     onboardingCompletedAt: { type: Date, default: null },
@@ -142,6 +151,14 @@ workerProfileSchema.pre('validate', function () {
   const id = categoryIdFrom(this.category);
   if (id && id !== this.category) this.category = id;
 });
+
+// The directory's "most approved evidence" sort key always matches the skills on the profile.
+export const sumApprovedEvidence = (skills) => (skills || []).reduce((sum, s) => sum + (s.evidenceSummary?.approved ?? 0), 0);
+workerProfileSchema.pre('save', function () {
+  this.approvedEvidenceCount = sumApprovedEvidence(this.skills);
+});
+workerProfileSchema.index({ approvedEvidenceCount: -1, _id: -1 });
+workerProfileSchema.index({ experienceYears: -1, _id: -1 });
 
 // Worker ID from an atomic counter, never random (audit M1-8).
 workerProfileSchema.pre('save', async function () {

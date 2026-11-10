@@ -90,7 +90,7 @@ export const ERRORS = Object.freeze({
   INPUT_MODE_INVALID: 'inputMode must be text or voice',
   SKILL_UNKNOWN: 'Unknown skill. Choose a skill from the list.',
   SKILL_CHOOSE_ONE: 'Choose at least one skill',
-  ADDED_VIA_INVALID: 'addedVia must be extractor or manual',
+  ADDED_VIA_INVALID: 'addedVia must be extractor, manual or related',
   SKILL_ID_INVALID: 'Invalid skill id',
   SKILL_LIMIT: 'At most {max} skills per worker',
   CUSTOM_SKILL_LATIN: 'Please write the skill name in English letters (a-z) for now',
@@ -128,6 +128,29 @@ export const ERRORS = Object.freeze({
   TRANSITION_INVALID: 'You cannot {verb} an item that is {state}.',
   PROOF_CHANGED: 'Someone else reviewed this item just now. Please reload.',
 
+  // ---- Batch 4: accounts, notifications, saved workers, compare, admin tools ----
+  ACCOUNT_SUSPENDED: 'This account is suspended. Please contact the admin.',
+  USER_NOT_FOUND: 'User not found',
+  USER_STATUS_INVALID: 'Status must be active or suspended',
+  USER_STATUS_CHANGED: 'This account already has that status. Please reload.',
+  CANNOT_SUSPEND_SELF: 'You cannot suspend your own account.',
+  CANNOT_SUSPEND_ADMIN: 'Admin accounts cannot be suspended from the website.',
+  ROLE_FILTER_INVALID: 'Role must be all, worker, customer or admin',
+  REASON_REQUIRED: 'A reason is required',
+  REASON_TOO_SHORT: 'Write a reason of at least 5 characters',
+  NOTE_HAS_CNIC: 'Do not write a CNIC number here. Notes are saved in the audit log.',
+  NOTIFICATION_NOT_FOUND: 'Notification not found',
+  SAVED_LIMIT: 'You can save at most {max} workers. Remove one first.',
+  SORT_INVALID: 'Sort must be updated, experience or evidence',
+  COMPARE_NEEDS_TWO: 'Choose at least two workers to compare',
+  COMPARE_MAX_THREE: 'You can compare at most three workers',
+  COMPARE_SAME_WORKER: 'Choose different workers to compare',
+  EXPORT_KIND_UNKNOWN: 'Export must be audit, identity, evidence or users',
+  TEMPLATE_KIND_INVALID: 'Unknown kind of reason template',
+  TEMPLATE_TEXT_REQUIRED: 'Write the English text of the template (at least 5 characters)',
+  TEMPLATE_NOT_FOUND: 'Reason template not found',
+  TEMPLATE_LIMIT: 'At most {max} reason templates. Delete one first.',
+
   // ---- server ----
   ROUTE_NOT_FOUND: 'Route not found',
   DUPLICATE_RECORD: 'This record already exists',
@@ -151,7 +174,7 @@ export const FIELD_LABELS = Object.freeze({
   sourceText: 'Text', skillIds: 'Skill', skillId: 'Skill', title: 'Title', note: 'Note', page: 'Page',
   limit: 'Limit', status: 'Status', action: 'Action', from: 'From date', to: 'To date', type: 'Type',
   identity: 'identity', skills: 'skills', duplicates: 'duplicates', consent: 'Consent', inputMode: 'inputMode',
-  addedVia: 'addedVia', reasonCode: 'Reason', preferredLanguage: 'Language', preferredTheme: 'Theme', preferredTextSize: 'Text size', id: 'Id', workerIdCode: 'Worker ID',
+  addedVia: 'addedVia', reasonCode: 'Reason', preferredLanguage: 'Language', preferredTheme: 'Theme', preferredTextSize: 'Text size', reason: 'Reason', sort: 'Sort', ids: 'Workers', days: 'Days', kind: 'Kind', en: 'English text', ur: 'Urdu text', 'ur-Latn': 'Roman Urdu text', id: 'Id', workerIdCode: 'Worker ID',
 });
 
 export const isErrorCode = (value) => typeof value === 'string' && Object.prototype.hasOwnProperty.call(ERRORS, value);

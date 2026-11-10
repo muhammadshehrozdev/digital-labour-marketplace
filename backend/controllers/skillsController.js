@@ -10,6 +10,7 @@ import { extractSkills } from '../services/skillExtractor/extractor.js';
 import { skillById, categoryLabel } from '../config/skillTaxonomy.js';
 import { calculateCompletion } from '../services/profileCompletion.js';
 import { refreshOnboarding } from '../services/onboarding.js';
+import { potentialSkills } from '../services/potentialSkills.js';
 
 export const MAX_SKILLS = 40;
 export const MAX_CUSTOM_SKILLS = 10;
@@ -35,6 +36,13 @@ export const extract = async (req, res) => {
     categories: result.categories.map((c) => ({ ...c, label: categoryLabel(c.id) })),
     method: 'rule-based word list',
   });
+};
+
+// GET /api/workers/me/skills/potential — "You may also do...": skills of the same trade category
+// that are not on the profile yet (rule-based, services/potentialSkills.js). Saves nothing.
+export const listPotentialSkills = async (req, res) => {
+  const profile = await WorkerProfile.findOne({ user: req.user._id }).select('category skills.skillId skills.category').lean();
+  res.json({ suggestions: potentialSkills(profile), method: 'same trade category (rule-based)' });
 };
 
 // GET /api/workers/me/skills

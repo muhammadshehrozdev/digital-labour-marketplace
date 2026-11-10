@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import { LANGUAGES } from '../config/languages.js';
 import { TEXT_SIZES, THEME_PREFERENCES } from '../config/preferences.js';
 
+export const USER_STATUSES = Object.freeze(['active', 'suspended']);
+
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 60 },
@@ -22,6 +24,12 @@ const userSchema = new mongoose.Schema(
     // Per-account lockout: 5 wrong passwords -> login paused for 15 minutes.
     failedLoginCount: { type: Number, default: 0 },
     lockUntil: { type: Date, default: null },
+    // Account status (Batch 4): an admin can suspend an account with a reason, and reactivate it.
+    // A suspended user cannot log in, and their open sessions end (tokenVersion is increased).
+    status: { type: String, enum: USER_STATUSES, default: 'active' },
+    suspendedAt: { type: Date, default: null },
+    suspendedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    suspensionReason: { type: String, trim: true, maxlength: 300, default: '' },
     // Website language chosen by the user (Batch 3). null = not chosen yet.
     preferredLanguage: { type: String, enum: [...LANGUAGES, null], default: null },
     // Light / dark / follow the device, and the text size (Batch 4). null = not chosen yet.

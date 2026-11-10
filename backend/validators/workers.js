@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CATEGORY_IDS, AVAILABILITY } from '../config/skillTaxonomy.js';
-import { name, phone, optionalPhone, cnic, queryInt, objectId } from './common.js';
+import { name, phone, optionalPhone, cnic, queryInt, objectId, noCnic } from './common.js';
 
 // Text field: codes TEXT_MUST_BE_TEXT / TEXT_TOO_LONG; the field name comes from the request key.
 const text = (max) => z.string({ error: 'TEXT_MUST_BE_TEXT' }).trim().max(max, 'TEXT_TOO_LONG');
@@ -43,6 +43,8 @@ export const profileUpdateSchema = z
   })
   .strict();
 
+export const DIRECTORY_SORTS = Object.freeze(['updated', 'experience', 'evidence']);
+
 // GET /api/workers — every value must be ONE string (no arrays, no objects), from known
 // values where possible. Unknown keys such as "category[$ne]" -> 400 (audit M1-3, M1-4).
 export const directoryQuerySchema = z
@@ -53,8 +55,30 @@ export const directoryQuerySchema = z
     availability: z.enum(['All', ...AVAILABILITY], { error: 'AVAILABILITY_UNKNOWN' }).optional(),
     identity: z.enum(['all', 'verified'], { error: 'IDENTITY_FILTER_INVALID' }).optional(),
     skills: z.enum(['all', 'verified'], { error: 'SKILLS_FILTER_INVALID' }).optional(),
+    // Batch 4: updated = recently updated (default), experience = most years first,
+    // evidence = most approved proof items first.
+    sort: z.enum(DIRECTORY_SORTS, { error: 'SORT_INVALID' }).optional(),
     page: queryInt(1, 1000).optional(),
     limit: queryInt(1, 50).optional(),
+  })
+  .strict();
+
+const WORKER_ID = /^DLM-\d{4}-\d{4,6}$/;
+
+// GET /api/workers/compare?ids=DLM-2026-000001,DLM-2026-000002 — two or three different workers.
+export const compareQuerySchema = z
+  .object({
+    ids: z
+      .string({ error: 'ONE_VALUE' })
+      .max(80, 'TEXT_TOO_LONG')
+      .transform((text) => text.split(',').map((part) => part.trim()).filter(Boolean))
+      .pipe(
+        z
+          .array(z.string().regex(WORKER_ID, 'WORKER_ID_INVALID'))
+          .min(2, 'COMPARE_NEEDS_TWO')
+          .max(3, 'COMPARE_MAX_THREE')
+          .refine((list) => new Set(list).size === list.length, { message: 'COMPARE_SAME_WORKER' })
+      ),
   })
   .strict();
 
@@ -68,11 +92,13 @@ export const profileIdParams = z.object({ id: objectId }).strict();
 export const identityDecisionSchema = z
   .object({
     status: z.enum(['Verified', 'Rejected'], { error: 'IDENTITY_STATUS_INVALID' }),
-    note: z
-      .string({ error: 'NOTE_REQUIRED' })
-      .trim()
-      .min(5, 'IDENTITY_NOTE_TOO_SHORT')
-      .max(500, 'TEXT_TOO_LONG'),
+    note: noCnic(
+      z
+        .string({ error: 'NOTE_REQUIRED' })
+        .trim()
+        .min(5, 'IDENTITY_NOTE_TOO_SHORT')
+        .max(500, 'TEXT_TOO_LONG')
+    ),
   })
   .strict();
 

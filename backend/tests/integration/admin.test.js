@@ -81,7 +81,8 @@ describe('GET /api/admin/workers and /api/admin/users', () => {
   test('users list has no password or token data', async () => {
     const res = await api(app, adminCookie).get('/api/admin/users');
     expect(res.status).toBe(200);
-    for (const u of res.body) {
+    expect(res.body.users.length).toBeGreaterThan(0); // paginated since Batch 4: { users, page, limit, total }
+    for (const u of res.body.users) {
       expect(u.password).toBeUndefined();
       expect(u.tokenVersion).toBeUndefined();
       expect(u.failedLoginCount).toBeUndefined();

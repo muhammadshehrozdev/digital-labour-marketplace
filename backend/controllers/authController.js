@@ -4,17 +4,22 @@ import User, { BCRYPT_COST } from '../models/User.js';
 import { httpError } from '../utils/httpError.js';
 import { ERRORS } from '../errors/catalog.js';
 import {
-  SESSION_COOKIE, signSession, verifySession, readCookie, setSessionCookie, clearSessionCookie,
+  SESSION_COOKIE, SESSION_HOURS, signSession, verifySession, readCookie, setSessionCookie, clearSessionCookie,
 } from '../services/session.js';
 import { findSessionUser } from '../middleware/authMiddleware.js';
 
 // The only fields of a user that the API ever sends back (to that user or an admin).
-export const ownUser = (u) => ({
+// sessionExpiresAt: when this login ends (8 hours after logging in). The website warns the user
+// two minutes before (Batch 4, feature 48). The session itself stays in the HttpOnly cookie.
+export const ownUser = (u, sessionExpiresAt = null) => ({
   _id: u._id, name: u.name, email: u.email, phone: u.phone, role: u.role,
   preferredLanguage: u.preferredLanguage ?? null,
   preferredTheme: u.preferredTheme ?? null,
   preferredTextSize: u.preferredTextSize ?? null,
+  sessionExpiresAt,
 });
+
+const newSessionEnd = () => new Date(Date.now() + SESSION_HOURS * 60 * 60 * 1000);
 
 // The English text lives in errors/catalog.js (the website shows it in the chosen language).
 export const LOGIN_FAILED = ERRORS.LOGIN_FAILED;
@@ -39,7 +44,7 @@ export const registerUser = async (req, res) => {
   const user = await User.create({ name, email, password, phone, role, preferredLanguage: preferredLanguage ?? null });
 
   setSessionCookie(res, signSession(user));
-  res.status(201).json(ownUser(user));
+  res.status(201).json(ownUser(user, newSessionEnd()));
 };
 
 // POST /api/auth/login
@@ -77,26 +82,30 @@ export const loginUser = async (req, res) => {
     await User.updateOne({ _id: user._id }, { $set: { failedLoginCount: 0, lockUntil: null } });
   }
 
+  // Suspended (Batch 4): said only after the correct password, so a stranger who guesses emails
+  // still learns nothing about which accounts exist. No session is created.
+  if (user.status === 'suspended') throw httpError(403, 'ACCOUNT_SUSPENDED');
+
   setSessionCookie(res, signSession(user));
-  res.json(ownUser(user));
+  res.json(ownUser(user, newSessionEnd()));
 };
 
 // GET /api/auth/me
 export const getMe = async (req, res) => {
-  res.json(ownUser(req.user));
+  res.json(ownUser(req.user, req.sessionExpiresAt));
 };
 
 // GET /api/auth/session — who is logged in, for the website's first load (Batch 3).
 // Always 200: { user } or { user: null }. A visitor is a normal case, not an error, so the
 // browser console stays clean. An old or invalid cookie is removed.
 export const getSession = async (req, res) => {
-  const { user, code } = await findSessionUser(req);
+  const { user, code, expiresAt } = await findSessionUser(req);
   res.set('Cache-Control', 'no-store');
   if (!user) {
     if (code === 'SESSION_ENDED') clearSessionCookie(res);
     return res.json({ user: null });
   }
-  return res.json({ user: ownUser(user) });
+  return res.json({ user: ownUser(user, expiresAt) });
 };
 
 // POST /api/auth/logout — works even if the session already expired.

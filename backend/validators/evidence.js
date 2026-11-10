@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { EVIDENCE_TYPES, EVIDENCE_STATUSES, REJECT_REASONS } from '../config/evidence.js';
-import { objectId, queryInt } from './common.js';
+import { noCnic, objectId, queryInt } from './common.js';
 
 const skillId = z.string({ error: 'SKILL_CHOOSE_OWN' }).regex(/^(custom-[a-z0-9-]{1,60}|[a-z0-9_]{2,40})$/, 'SKILL_CHOOSE_OWN');
 export const CONSENT_TEXT = "I own this photo or have permission to share it, and it shows no other person's private information.";
@@ -30,7 +30,7 @@ export const adminEvidenceQuerySchema = z
   })
   .strict();
 
-const note = z.string({ error: 'TEXT_MUST_BE_TEXT' }).trim().max(500, 'TEXT_TOO_LONG');
+const note = noCnic(z.string({ error: 'TEXT_MUST_BE_TEXT' }).trim().max(500, 'TEXT_TOO_LONG'));
 
 // PATCH /api/admin/evidence/:id — reject needs a reason code; suspected fake and revoke need a
 // written reason; "other" needs a written note too.

@@ -8,6 +8,7 @@ import { httpError } from '../utils/httpError.js';
 import { writeAudit } from '../services/audit.js';
 import { decryptCnic, formatCnic } from '../services/cnic.js';
 import { escapeRegex } from '../validators/common.js';
+import { notify } from '../services/notifications.js';
 
 // Admin may see private contact fields (CLAUDE.md), but never the CNIC data fields:
 // those are select:false, and toJSON removes them as a second layer. cnicOnFile tells if one exists.
@@ -77,6 +78,9 @@ export const decideIdentity = async (req, res) => {
     reason: note,
   });
 
+  // Tell the worker (in-app notification; the note is the one the worker already sees).
+  await notify(updated.user?._id, status === 'Verified' ? 'identity_verified' : 'identity_rejected', status === 'Rejected' ? { note } : {});
+
   res.json({ message: `Identity status is now ${status}.`, profile: updated });
 };
 
@@ -107,16 +111,6 @@ export const revealCnic = async (req, res) => {
 
   res.set('Cache-Control', 'no-store');
   res.json({ cnic: formatCnic(digits) });
-};
-
-// GET /api/admin/users — no passwords, no login internals except the lock status.
-export const listUsersForAdmin = async (req, res) => {
-  const users = await User.find()
-    .select('name email phone role createdAt lockUntil')
-    .sort({ createdAt: -1 })
-    .limit(500)
-    .lean();
-  res.json(users);
 };
 
 // GET /api/admin/stats — counts for the admin overview (real counts from the database).

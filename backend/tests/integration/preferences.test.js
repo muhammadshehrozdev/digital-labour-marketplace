@@ -39,7 +39,7 @@ describe('GET /api/auth/session', () => {
     const { cookie } = await registerUser(app, { role: 'customer' });
     const res = await api(app, cookie).get('/api/auth/session');
     expect(res.status).toBe(200);
-    expect(Object.keys(res.body.user).sort()).toEqual(['_id', 'email', 'name', 'phone', 'preferredLanguage', 'preferredTextSize', 'preferredTheme', 'role']);
+    expect(Object.keys(res.body.user).sort()).toEqual(['_id', 'email', 'name', 'phone', 'preferredLanguage', 'preferredTextSize', 'preferredTheme', 'role', 'sessionExpiresAt']);
     expect(res.body.user.preferredLanguage).toBeNull(); // not chosen yet
     expect(JSON.stringify(res.body)).not.toMatch(/password|tokenVersion|failedLogin|lockUntil/);
   });

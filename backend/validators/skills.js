@@ -21,7 +21,8 @@ export const addSkillsSchema = z
       .array(z.enum(SKILL_IDS, { error: 'SKILL_UNKNOWN' }))
       .min(1, 'SKILL_CHOOSE_ONE')
       .max(30, 'LIST_TOO_LONG'),
-    addedVia: z.enum(['extractor', 'manual'], { error: 'ADDED_VIA_INVALID' }),
+    // related = confirmed from "You may also do..." (potential skills, Batch 4)
+    addedVia: z.enum(['extractor', 'manual', 'related'], { error: 'ADDED_VIA_INVALID' }),
     sourceText: text.optional(),
   })
   .strict();

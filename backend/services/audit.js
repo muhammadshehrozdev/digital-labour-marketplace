@@ -84,13 +84,13 @@ export async function verifyAuditChain() {
   let count = 0;
   for await (const entry of AuditLog.find().sort({ seq: 1 }).lean().cursor()) {
     if (entry.seq !== expectedSeq) {
-      return { ok: false, count, badSeq: entry.seq, problem: `expected entry ${expectedSeq}, found ${entry.seq} (missing entry?)` };
+      return { ok: false, count, badSeq: entry.seq, problemCode: 'entry_missing', problem: `expected entry ${expectedSeq}, found ${entry.seq} (missing entry?)` };
     }
     if (entry.prevHash !== prevHash) {
-      return { ok: false, count, badSeq: entry.seq, problem: 'prevHash does not match the previous entry' };
+      return { ok: false, count, badSeq: entry.seq, problemCode: 'link_broken', problem: 'prevHash does not match the previous entry' };
     }
     if (computeHash(entry) !== entry.hash) {
-      return { ok: false, count, badSeq: entry.seq, problem: 'content was changed after it was written' };
+      return { ok: false, count, badSeq: entry.seq, problemCode: 'content_changed', problem: 'content was changed after it was written' };
     }
     prevHash = entry.hash;
     expectedSeq += 1;

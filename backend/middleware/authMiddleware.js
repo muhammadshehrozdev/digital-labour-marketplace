@@ -8,7 +8,7 @@ import { SESSION_COOKIE, readCookie, verifySession } from '../services/session.j
 import { errorBody } from '../utils/httpError.js';
 
 // The fields of the logged-in user that routes may use (never the password).
-const SESSION_USER_FIELDS = 'name email phone role tokenVersion preferredLanguage preferredTheme preferredTextSize';
+const SESSION_USER_FIELDS = 'name email phone role status tokenVersion preferredLanguage preferredTheme preferredTextSize';
 
 // Reads the session cookie. Returns { user } for a valid session, or { code } that says why not.
 // Used by protect (login required) and by GET /api/auth/session (visitors allowed).
@@ -22,13 +22,17 @@ export async function findSessionUser(req) {
   const user = await User.findById(payload.sub).select(SESSION_USER_FIELDS).lean();
   // Accounts created before tokenVersion existed have no such field: treat it as 0.
   if (!user || (user.tokenVersion ?? 0) !== payload.tv) return { code: 'SESSION_ENDED' };
-  return { user };
+  // Suspending an account already ends its sessions (tokenVersion); this is the second lock.
+  if (user.status === 'suspended') return { code: 'SESSION_ENDED' };
+  // When this login ends (the token's own expiry), for the website's "session ending" warning.
+  return { user, expiresAt: new Date(payload.exp * 1000) };
 }
 
 export const protect = async (req, res, next) => {
-  const { user, code } = await findSessionUser(req);
+  const { user, code, expiresAt } = await findSessionUser(req);
   if (!user) return res.status(401).json(errorBody(code));
   req.user = user;
+  req.sessionExpiresAt = expiresAt;
   return next();
 };
 
