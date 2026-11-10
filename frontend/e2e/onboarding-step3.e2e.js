@@ -1,6 +1,6 @@
 // Batch 3 Part 2.1: onboarding must not get stuck at Step 3 "Your skills".
 import { test, expect } from '@playwright/test';
-import { registerWorker, completeSteps1and2 } from './helpers.js';
+import { registerWorker, completeSteps1and2, setLanguage, watchConsole } from './helpers.js';
 
 const SENTENCES = [
   ['Urdu', 'میں پانچ سال سے وائرنگ اور سولر پینل کا کام کرتا ہوں۔'],
@@ -10,6 +10,8 @@ const SENTENCES = [
 
 for (const [label, sentence] of SENTENCES) {
   test(`Step 3 with ${label} text: suggestions (wiring, solar, 5 years) -> add -> Continue reaches Step 4`, async ({ page }) => {
+    const browserConsole = watchConsole(page);
+    await setLanguage(page, 'en');
     await registerWorker(page);
     await completeSteps1and2(page);
     await page.getByLabel(/what work do you do/).fill(sentence);
@@ -23,5 +25,6 @@ for (const [label, sentence] of SENTENCES) {
     await cont.click();
     await expect(page).toHaveURL(/\/onboarding\/proof$/);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Proof of skills');
+    browserConsole.assertClean();
   });
 }

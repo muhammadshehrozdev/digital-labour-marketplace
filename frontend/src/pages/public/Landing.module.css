@@ -53,7 +53,6 @@
   line-height: var(--leading-tight);
   letter-spacing: -0.035em;
   font-weight: 800;
-  min-block-size: calc(2 * var(--leading-tight) * 1em);
   background: var(--gradient-text);
   -webkit-background-clip: text;
   background-clip: text;

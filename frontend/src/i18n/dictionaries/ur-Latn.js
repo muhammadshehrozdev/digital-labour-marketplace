@@ -128,7 +128,6 @@ export default {
     tradesTitle: 'Marketplace par kaam',
     tradesLead: 'Ghar ki wiring se ghar ki shifting tak: hunarmand kaam ke liye aik jagah.',
     tradeSkills: { one: '{count} hunar', other: '{count} hunar' },
-    tradeLink: '{trade} ke liye karigar dhoondein',
     ctaTitle: 'Shuru karne ke liye tayyar hain?',
     ctaText: 'Chand minute mein account banayein. Karigar aur customer dono aik hi asaan website use karte hain.',
   },

@@ -212,3 +212,13 @@ describe('audit log: append-only and hash-chained', () => {
     expect((await verifyAuditChain()).ok).toBe(true);
   });
 });
+
+describe('create-admin input checks (Batch 3: codes become English text for the script)', () => {
+  test('a bad admin input explains itself in English, not with an error code', async () => {
+    const result = await createAdminAccount({ name: 'A', email: 'not-an-email', phone: '123', password: 'short' });
+    expect(result.ok).toBe(false);
+    expect(result.message).toContain('name: Name must be at least 2 characters');
+    expect(result.message).toContain('Password must be at least 15 characters');
+    expect(result.message).not.toMatch(/\b[A-Z]{3,}_[A-Z_]+\b/); // no raw codes such as TEXT_TOO_SHORT
+  });
+});

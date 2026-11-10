@@ -1,6 +1,7 @@
 // GET data for a page. "loading" is derived from the request key (no state reset inside the
 // effect), so every change of url/params loads again, and reload() asks again.
 // error is a translatable descriptor (show it with te() from useT()), or null.
+// url null = do not ask (yet): nothing is loading and data is null.
 import { useEffect, useState } from 'react';
 import API from '../api';
 import { apiError } from '../utils/apiErrors';
@@ -13,6 +14,7 @@ export function useApiQuery(url, params) {
   useEffect(() => {
     let active = true;
     const [u, p] = JSON.parse(key.slice(0, key.lastIndexOf('#')));
+    if (u === null) return undefined;
     API.get(u, p ? { params: p } : undefined)
       .then((res) => active && setResult({ key, data: res.data, error: null, status: res.status }))
       .catch((err) => active && setResult({ key, data: null, error: apiError(err), status: err.response?.status ?? 0 }));
@@ -21,7 +23,7 @@ export function useApiQuery(url, params) {
     };
   }, [key]);
 
-  const loading = result.key !== key;
+  const loading = url !== null && result.key !== key;
   return {
     data: loading ? null : result.data,
     error: loading ? null : result.error,

@@ -135,12 +135,14 @@ export default function Landing() {
             const count = skills.filter((s) => s.category === c.id).length;
             return (
               <Reveal as="li" key={c.id} index={i % 3}>
-                <Link to="/register?role=customer" className={styles.trade} aria-label={t('landing.tradeLink', { trade: c.label })}>
+                <Link to="/register?role=customer" className={styles.trade}>
                   <span className={styles.tradeIcon}><Icon size={24} strokeWidth={1.75} aria-hidden="true" /></span>
                   <span className={styles.tradeText}>
                     <span className={styles.tradeName}>{c.label}</span>
                     <span className={styles.tradeMeta}>{c.occupation} · {t('landing.tradeSkills', { count })}</span>
                   </span>
+                  {/* The visible text stays the link name (WCAG 2.5.3); the purpose is added for screen readers. */}
+                  <span className="visually-hidden"> · {t('landing.findWorker')}</span>
                   <ArrowRight size={18} aria-hidden="true" className={styles.tradeArrow} />
                 </Link>
               </Reveal>

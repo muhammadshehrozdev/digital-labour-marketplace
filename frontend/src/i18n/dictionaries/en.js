@@ -128,7 +128,6 @@ export default {
     tradesTitle: 'Trades on the marketplace',
     tradesLead: 'From house wiring to house shifting: one place for skilled work.',
     tradeSkills: { one: '{count} skill', other: '{count} skills' },
-    tradeLink: 'Find a worker for {trade}',
     ctaTitle: 'Ready to start?',
     ctaText: 'Create an account in a few minutes. Workers and customers use the same simple website.',
   },

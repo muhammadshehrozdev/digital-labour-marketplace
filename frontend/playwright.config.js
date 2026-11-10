@@ -1,10 +1,15 @@
-// Playwright: end-to-end checks and screenshots against the RUNNING local preview
-// (http://127.0.0.1:5173). It uses the dev container's Chromium (Debian package) and never
-// downloads a browser (PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1, CHROMIUM_PATH=/usr/bin/chromium).
-// Only the local app is opened: http://127.0.0.1:5173 and http://127.0.0.1:5000.
+// End-to-end tests (Batch 3) with the container's Chromium: never downloads a browser.
+// The tests run against their OWN servers and their OWN local database (dlm_e2e), not the
+// preview on 5173/5000 and never Atlas (CLAUDE.md: tests use a separate database):
+//   backend  http://127.0.0.1:5001  (MONGO_URI = E2E_MONGO_URI, default 127.0.0.1:27017/dlm_e2e)
+//   frontend http://127.0.0.1:5174  (Vite, forwards /api to 5001)
+// The local MongoDB must be running (in .\backend: npm run db:local).
 import { defineConfig } from '@playwright/test';
 
 const executablePath = process.env.CHROMIUM_PATH || '/usr/bin/chromium';
+export const E2E_MONGO_URI = process.env.E2E_MONGO_URI || 'mongodb://127.0.0.1:27017/dlm_e2e';
+const FRONTEND = 'http://127.0.0.1:5174';
+const BACKEND = 'http://127.0.0.1:5001';
 
 export default defineConfig({
   testDir: './e2e',
@@ -16,12 +21,38 @@ export default defineConfig({
   retries: 0,
   reporter: [['list']],
   outputDir: '../.local/playwright-results',
+  globalSetup: './e2e/global-setup.js',
   use: {
-    baseURL: process.env.E2E_BASE_URL || 'http://127.0.0.1:5173',
+    baseURL: FRONTEND,
     headless: true,
     viewport: { width: 1280, height: 800 },
     screenshot: 'only-on-failure',
     trace: 'off',
     launchOptions: { executablePath, args: ['--no-sandbox', '--disable-dev-shm-usage'] },
   },
+  webServer: [
+    {
+      command: 'node server.js',
+      cwd: '../backend',
+      url: `${BACKEND}/api/health`,
+      reuseExistingServer: false,
+      timeout: 60_000,
+      env: {
+        PORT: '5001',
+        MONGO_URI: E2E_MONGO_URI,
+        CLIENT_ORIGIN: FRONTEND,
+        NODE_ENV: 'development',
+        // Many synthetic accounts are created in one run; the limits themselves are tested in the backend suite.
+        AUTH_RATE_LIMIT: '1000',
+        UPLOAD_RATE_LIMIT: '1000',
+      },
+    },
+    {
+      command: 'npx vite',
+      url: FRONTEND,
+      reuseExistingServer: false,
+      timeout: 60_000,
+      env: { FRONTEND_PORT: '5174', API_PROXY_TARGET: BACKEND },
+    },
+  ],
 });

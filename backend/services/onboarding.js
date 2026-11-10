@@ -27,6 +27,8 @@ export function onboardingState(user, profile) {
     nextStep,
     complete: nextStep === null,
     completedAt: p.onboardingCompletedAt ?? null,
+    // Batch 3: lets the website skip GET /api/workers/me (a 404) before the profile exists.
+    profileExists: Boolean(profile),
   };
 }
 

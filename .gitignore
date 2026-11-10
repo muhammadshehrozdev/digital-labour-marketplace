@@ -13,3 +13,6 @@ dist/
 
 # Evaluation outputs from the synthetic sample are not results
 backend/evaluation/skill-extraction/results/SYNTHETIC-*
+
+# Full screenshot run (npm run screenshots); only the curated set is committed
+docs/design/screenshots/all/

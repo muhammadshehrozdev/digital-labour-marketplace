@@ -24,7 +24,8 @@ export default function Onboarding() {
   const { t, te } = useT();
   useDocumentTitle(t('titles.onboarding'));
   const { state, setState, error } = useOnboarding();
-  const { profile, setProfile, error: profileError } = useMyProfile();
+  // Ask for the profile only after the onboarding state says whether it exists (no 404 for new workers).
+  const { profile, setProfile, error: profileError } = useMyProfile({ exists: state ? state.profileExists : false });
 
   if (error || profileError) return <Alert tone="danger">{te(error || profileError)}</Alert>;
   if (!state || profile === undefined) return <PageLoading />;

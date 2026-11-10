@@ -183,3 +183,12 @@ describe('GET /api/workers/me/full (read-only "My profile", D-020)', () => {
     expect(res.body.listedInDirectory).toBe(false);
   });
 });
+
+describe('GET /api/workers/me/onboarding says whether a profile exists (Batch 3)', () => {
+  test('false for a new worker, true after the first save', async () => {
+    const w = await registerUser(app);
+    expect((await api(app, w.cookie).get('/api/workers/me/onboarding')).body.profileExists).toBe(false);
+    await api(app, w.cookie).put('/api/workers/me').send({ city: 'Rawalpindi' });
+    expect((await api(app, w.cookie).get('/api/workers/me/onboarding')).body.profileExists).toBe(true);
+  });
+});

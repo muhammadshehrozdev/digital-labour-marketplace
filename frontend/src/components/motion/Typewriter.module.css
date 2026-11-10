@@ -2,14 +2,28 @@
   display: block;
 }
 
+/* Every line fills the full width and starts at its own script's start edge (English and
+   Roman Urdu on the left, Urdu on the right), so letters are added without moving earlier ones. */
+.stage {
+  display: grid;
+  & > * {
+    grid-area: 1 / 1;
+    text-align: start;
+  }
+}
+
+.ghost {
+  visibility: hidden;
+}
+
 .line {
-  display: inline-block;
-  min-block-size: 1.15em;
+  display: block;
+  line-height: var(--leading-tight);
 
   &[lang='ur'] {
     font-family: var(--font-urdu);
-    line-height: 1.8;
-    font-size: 0.82em;
+    line-height: 1.7;
+    font-size: 0.7em;
   }
 }
 

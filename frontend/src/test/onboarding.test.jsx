@@ -254,3 +254,15 @@ describe('voice input notice (M2-13)', () => {
     expect(screen.queryByRole('button', { name: 'Use voice typing' })).toBeNull();
   });
 });
+
+describe('no 404 for a new worker (Batch 3, console gate)', () => {
+  test('when the server says no profile exists yet, the page does not ask for it', async () => {
+    const calls = mockApi({
+      'GET /auth/me': me('worker'),
+      'GET /workers/me/onboarding': { status: 200, data: { steps: { about: false, work: false, skills: false }, nextStep: 'about', complete: false, completedAt: null, profileExists: false } },
+    });
+    renderAt('/onboarding/about');
+    expect(await screen.findByRole('heading', { level: 1, name: 'About you' })).toBeInTheDocument();
+    expect(calls.some((c) => c.key === 'GET /workers/me')).toBe(false);
+  });
+});

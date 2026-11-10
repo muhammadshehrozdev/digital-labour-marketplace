@@ -37,12 +37,19 @@ export default function Typewriter({ lines, label, className }) {
 
   if (reduced) return <span className={className}>{label}</span>;
   const current = split[state.line];
+  // All lines sit invisibly in the same grid cell ("ghosts"), so the headline is always as tall
+  // as its tallest line and nothing below it moves while typing (no layout shift).
   return (
     <span className={[styles.wrap, className].filter(Boolean).join(' ')}>
       <span className="visually-hidden">{label}</span>
-      <span className={styles.line} aria-hidden="true" lang={current.lang} dir={current.dir} data-testid="typewriter">
-        {current.parts.slice(0, state.count).join('')}
-        <span className={styles.caret} />
+      <span className={styles.stage} aria-hidden="true">
+        {split.map((l) => (
+          <span key={l.lang} className={`${styles.line} ${styles.ghost}`} lang={l.lang} dir={l.dir}>{l.text}</span>
+        ))}
+        <span className={styles.line} lang={current.lang} dir={current.dir} data-testid="typewriter">
+          {current.parts.slice(0, state.count).join('')}
+          <span className={styles.caret} />
+        </span>
       </span>
     </span>
   );

@@ -3,13 +3,17 @@ import { z } from 'zod';
 import User from '../models/User.js';
 import { name, email, phone, newPassword } from '../validators/common.js';
 import { writeAudit } from './audit.js';
+import { fieldLabel, formatError, isErrorCode } from '../errors/catalog.js';
 
 export const adminInputSchema = z.object({ name, email, phone, password: newPassword }).strict();
 
 export async function createAdminAccount(input) {
   const parsed = adminInputSchema.safeParse(input);
   if (!parsed.success) {
-    const message = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
+    // Validator messages are error codes; the script shows their English text.
+    const message = parsed.error.issues
+      .map((i) => `${i.path.join('.')}: ${isErrorCode(i.message) ? formatError(i.message, { field: fieldLabel(String(i.path[0])), min: i.minimum, max: i.maximum }) : i.message}`)
+      .join('; ');
     return { ok: false, message };
   }
   const data = parsed.data;
