@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Inbox, ZoomIn, ZoomOut } from 'lucide-react';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 import API from '../../api';
 import {
   Alert, Badge, Button, DataTable, Dialog, Drawer, EmptyState, PageHeader, Pagination, Select, Skeleton, StatusChip, Switch, TextArea, useToast,
@@ -10,17 +10,23 @@ import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { apiError } from '../../utils/apiErrors';
 import { EVIDENCE_TYPES, REASON_CODES, evidenceFileUrl } from '../../features/evidence/evidenceText';
 import { useDocumentTitle, useT } from '../../i18n';
+import WaitingBadge from '../../features/admin/WaitingBadge';
+import TemplatePicker from '../../features/admin/TemplatePicker';
+import CompareSlider from '../../features/admin/CompareSlider';
+import ShortcutsHelp, { ShortcutsButton } from '../../features/admin/ShortcutsHelp';
+import { useReviewShortcuts } from '../../features/admin/useReviewShortcuts';
 import styles from './Admin.module.css';
 
 const STATUSES = ['pending', 'approved', 'rejected', 'suspected_fake', 'revoked', 'all'];
 const PAGE_SIZE = 25;
 
 // Texts: admin.evidence.actions.<action>.{label,title,help}
+// template: the kind of saved reason offered above the note (Batch 4, feature 29).
 const ACTION_UI = {
   approve: { tone: 'primary', needs: null },
-  reject: { tone: 'danger', needs: 'code' },
-  suspected_fake: { tone: 'danger', needs: 'note' },
-  revoke: { tone: 'danger', needs: 'note' },
+  reject: { tone: 'danger', needs: 'code', template: 'evidence_reject' },
+  suspected_fake: { tone: 'danger', needs: 'note', template: 'evidence_fake' },
+  revoke: { tone: 'danger', needs: 'note', template: 'evidence_revoke' },
 };
 
 // Asks for the reason the action needs, then sends PATCH /api/admin/evidence/:id.
@@ -82,6 +88,7 @@ function DecisionDialog({ action, evidenceId, onClose, onDone }) {
           error={errors.reasonCode}
         />
       )}
+      {ui.template && <TemplatePicker kind={ui.template} onPick={setNote} />}
       {ui.needs !== null && (
         <TextArea
           label={ui.needs === 'note' ? t('admin.evidence.reason') : t('admin.evidence.noteOptional')}
@@ -112,11 +119,25 @@ function ImageViewer({ id, alt }) {
   );
 }
 
-function ReviewDrawer({ id, onClose, onChanged }) {
+// Keyboard (feature 30): A = approve, R = reject, J / K = next / previous item, ? = help.
+function ReviewDrawer({ id, onClose, onChanged, onNext, onPrevious }) {
   const { t, te, formatDate } = useT();
   const detail = useApiQuery(`/admin/evidence/${id}`);
   const [action, setAction] = useState(null);
+  const [help, setHelp] = useState(false);
   const e = detail.data?.evidence;
+  const allowed = e?.allowedActions;
+  const shortcuts = useMemo(
+    () => ({
+      approve: () => allowed?.includes('approve') && setAction('approve'),
+      reject: () => allowed?.includes('reject') && setAction('reject'),
+      next: onNext,
+      previous: onPrevious,
+      help: () => setHelp(true),
+    }),
+    [allowed, onNext, onPrevious]
+  );
+  useReviewShortcuts(shortcuts, !action && !help);
   const c = detail.data?.opinion; // admin-only numbers b, d, u, E
   const dup = detail.data?.duplicate;
   return (
@@ -126,21 +147,22 @@ function ReviewDrawer({ id, onClose, onChanged }) {
         {detail.loading && <Skeleton variant="block" height={280} />}
         {e && (
           <>
-            <div className={styles.statusRow}>
-              <StatusChip kind="evidence" status={e.status} />
-              {e.duplicateKind && <Badge tone="warning">{e.duplicateKind === 'exact' ? t('admin.evidence.sameAsOther') : t('admin.evidence.looksLike', { distance: e.duplicateDistance })}</Badge>}
+            <div className={styles.drawerTools}>
+              <div className={styles.statusRow}>
+                <StatusChip kind="evidence" status={e.status} />
+                {e.status === 'pending' && <WaitingBadge since={e.createdAt} />}
+                {e.duplicateKind && <Badge tone="warning">{e.duplicateKind === 'exact' ? t('admin.evidence.sameAsOther') : t('admin.evidence.looksLike', { distance: e.duplicateDistance })}</Badge>}
+              </div>
+              <ShortcutsButton onClick={() => setHelp(true)} />
             </div>
             {dup ? (
-              <div className={styles.compare}>
-                <div>
-                  <p className={styles.compareLabel}>{t('admin.evidence.thisUpload')}</p>
-                  <ImageViewer id={e._id} alt={t('admin.evidence.proofAlt', { skill: e.skillName })} />
-                </div>
-                <div>
-                  <p className={styles.compareLabel}>{t('admin.evidence.possibleDuplicate', { name: dup.worker?.name ?? '', id: dup.workerIdCode ?? '', skill: dup.skillName ?? '' })}</p>
-                  <ImageViewer id={dup._id} alt={t('admin.evidence.duplicateAlt', { name: dup.worker?.name ?? t('common.worker') })} />
-                </div>
-              </div>
+              <CompareSlider
+                thisSrc={evidenceFileUrl(e._id)}
+                earlierSrc={evidenceFileUrl(dup._id)}
+                thisAlt={t('admin.evidence.proofAlt', { skill: e.skillName })}
+                earlierAlt={t('admin.evidence.duplicateAlt', { name: dup.worker?.name ?? t('common.worker') })}
+                earlierLabel={t('admin.evidence.possibleDuplicate', { name: dup.worker?.name ?? '', id: dup.workerIdCode ?? '', skill: dup.skillName ?? '' })}
+              />
             ) : (
               <ImageViewer id={e._id} alt={t('admin.evidence.proofAlt', { skill: e.skillName })} />
             )}
@@ -177,6 +199,7 @@ function ReviewDrawer({ id, onClose, onChanged }) {
           </>
         )}
       </Drawer>
+      <ShortcutsHelp open={help} onClose={() => setHelp(false)} />
       {action && e && (
         <DecisionDialog
           action={action}
@@ -217,6 +240,13 @@ export default function AdminEvidence() {
   if (duplicates) query.duplicates = 'true';
   const { data, error, reload } = useApiQuery('/admin/evidence', query);
 
+  // J / K in the drawer: the next or previous item of this page of the queue.
+  const step = (by) => {
+    const list = data?.evidence ?? [];
+    const next = list[list.findIndex((item) => item._id === selected) + by];
+    if (next) setSelected(next._id);
+  };
+
   const columns = [
     { key: 'worker', header: t('admin.evidence.columns.worker'), render: (e) => e.worker?.name ?? t('common.empty') },
     { key: 'id', header: t('admin.evidence.columns.id'), render: (e) => <span className="tabular" dir="ltr">{e.workerIdCode}</span> },
@@ -224,6 +254,7 @@ export default function AdminEvidence() {
     { key: 'type', header: t('admin.evidence.columns.type'), render: (e) => t(`evidence.types.${e.type}.title`) },
     { key: 'uploaded', header: t('admin.evidence.columns.uploaded'), sortable: true, sortValue: (e) => e.createdAt, render: (e) => <span className="tabular">{formatDate(e.createdAt)}</span> },
     { key: 'status', header: t('admin.evidence.columns.status'), render: (e) => <StatusChip kind="evidence" status={e.status} /> },
+    { key: 'waiting', header: t('adminx.waiting.column'), render: (e) => (e.status === 'pending' ? <WaitingBadge since={e.createdAt} /> : t('common.empty')) },
     { key: 'dup', header: t('admin.evidence.columns.dup'), render: (e) => (e.duplicateKind ? <Badge tone="warning">{e.duplicateKind === 'exact' ? t('admin.evidence.samePhoto') : t('admin.evidence.lookAlike')}</Badge> : t('common.empty')) },
   ];
 
@@ -248,12 +279,12 @@ export default function AdminEvidence() {
             rowKey={(e) => e._id}
             onRowClick={(e) => setSelected(e._id)}
             rowLabel={(e) => t('admin.evidence.review', { name: e.worker?.name ?? t('common.worker'), skill: e.skillName })}
-            empty={<EmptyState icon={Inbox} headingLevel={2} title={t('admin.evidence.emptyTitle')} description={t('admin.evidence.emptyText')} />}
+            empty={<EmptyState art="all-done" headingLevel={2} title={t('admin.evidence.emptyTitle')} description={t('admin.evidence.emptyText')} />}
           />
           <Pagination page={data.page} pages={Math.max(1, Math.ceil(data.total / PAGE_SIZE))} onChange={setPage} />
         </>
       )}
-      {selected && <ReviewDrawer key={selected} id={selected} onClose={() => setSelected(null)} onChanged={reload} />}
+      {selected && <ReviewDrawer key={selected} id={selected} onClose={() => setSelected(null)} onChanged={reload} onNext={() => step(1)} onPrevious={() => step(-1)} />}
     </div>
   );
 }

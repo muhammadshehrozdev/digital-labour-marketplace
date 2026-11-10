@@ -8,5 +8,5 @@ export default function StatusChip({ kind = 'identity', status }) {
   const { t } = useT();
   const s = STATUS[kind]?.[status];
   if (!s) return <Badge tone="neutral" icon={CircleDashed}>{status ? String(status) : t('status.unknown')}</Badge>;
-  return <Badge tone={s.tone} icon={s.icon}>{t(`status.${kind}.${status}`)}</Badge>;
+  return <Badge tone={s.tone} icon={s.icon}>{t(kind === 'account' ? `status_account.${status}` : `status.${kind}.${status}`)}</Badge>;
 }

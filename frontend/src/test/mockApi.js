@@ -44,7 +44,7 @@ export function mockApi(routes) {
     calls.push({ key, body, params: config.params });
     let route = routes[key] ?? defaultRoute(key, routes);
     if (typeof route === 'function') route = route(config, body);
-    const response = { data: route.data, status: route.status, statusText: String(route.status), headers: {}, config };
+    const response = { data: route.data, status: route.status, statusText: String(route.status), headers: route.headers ?? {}, config };
     if (route.status >= 400) {
       throw new AxiosError(`Request failed with status code ${route.status}`, 'ERR_BAD_REQUEST', config, null, response);
     }

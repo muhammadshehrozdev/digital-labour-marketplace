@@ -10,11 +10,12 @@ export default function AppShell() {
   const { t } = useT();
   const { pathname } = useLocation();
   const wide = pathname === '/';
+  const admin = pathname.startsWith('/admin'); // tables and charts need more room
   return (
     <>
       <a href="#main" className="skip-link">{t('app.skipToContent')}</a>
       <AppHeader />
-      <main id="main" tabIndex={-1} className={[styles.main, wide && styles.wide].filter(Boolean).join(' ')}>
+      <main id="main" tabIndex={-1} className={[styles.main, wide && styles.wide, admin && styles.admin].filter(Boolean).join(' ')}>
         <Outlet />
       </main>
       <Footer />

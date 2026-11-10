@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Eye, Inbox, Search } from 'lucide-react';
+import { Eye, Search } from 'lucide-react';
 import API from '../../api';
 import {
   Alert, Badge, Button, ConfirmDialog, DataTable, Drawer, EmptyState, PageHeader, Pagination, RadioCardGroup, Select, Skeleton, StatusChip, TextArea, TextField, useToast,
@@ -9,6 +9,10 @@ import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { apiError } from '../../utils/apiErrors';
 import { useDocumentTitle, useT } from '../../i18n';
 import { useApiQuery } from '../../hooks/useApiQuery';
+import WaitingBadge from '../../features/admin/WaitingBadge';
+import TemplatePicker from '../../features/admin/TemplatePicker';
+import ShortcutsHelp, { ShortcutsButton } from '../../features/admin/ShortcutsHelp';
+import { useReviewShortcuts } from '../../features/admin/useReviewShortcuts';
 import styles from './Admin.module.css';
 
 const STATUSES = ['Pending', 'Unverified', 'Verified', 'Rejected', 'All'];
@@ -16,7 +20,8 @@ const PAGE_SIZE = 25;
 
 // Decision panel for one worker: CNIC reveal through a ConfirmDialog (audited), and a decision
 // that always needs a note (M1-9).
-function DecisionDrawer({ worker, onClose, onDecided }) {
+// Keyboard (feature 30): A = verified, R = not accepted, J / K = next / previous worker, ? = help.
+function DecisionDrawer({ worker, onClose, onDecided, onNext, onPrevious }) {
   const toast = useToast();
   const { t, te } = useT();
   const { categoryLabel } = useTaxonomy();
@@ -28,6 +33,18 @@ function DecisionDrawer({ worker, onClose, onDecided }) {
   const [confirmReveal, setConfirmReveal] = useState(false);
   const [revealing, setRevealing] = useState(false);
   const [cnic, setCnic] = useState('');
+  const [help, setHelp] = useState(false);
+  const shortcuts = useMemo(
+    () => ({
+      approve: () => worker?.cnicOnFile && setStatus('Verified'),
+      reject: () => setStatus('Rejected'),
+      next: onNext,
+      previous: onPrevious,
+      help: () => setHelp(true),
+    }),
+    [worker, onNext, onPrevious]
+  );
+  useReviewShortcuts(shortcuts, Boolean(worker) && !confirmReveal && !help);
 
   const reveal = async () => {
     setRevealing(true);
@@ -77,6 +94,10 @@ function DecisionDrawer({ worker, onClose, onDecided }) {
         {worker && (
           <>
             {error && <Alert tone="danger">{te(error)}</Alert>}
+            <div className={styles.drawerTools}>
+              {worker.verificationStatus === 'Pending' ? <WaitingBadge since={worker.identityRequestedAt ?? worker.updatedAt} /> : <span />}
+              <ShortcutsButton onClick={() => setHelp(true)} />
+            </div>
             <dl className={styles.details}>
               <div><dt>{t('admin.identity.current')}</dt><dd><StatusChip kind="identity" status={worker.verificationStatus} /></dd></div>
               <div><dt>{t('admin.identity.phone')}</dt><dd className="tabular" dir="ltr">{worker.user?.phone}</dd></div>
@@ -110,6 +131,7 @@ function DecisionDrawer({ worker, onClose, onDecided }) {
                 { value: 'Rejected', title: t('admin.identity.rejectedTitle'), description: t('admin.identity.rejectedText') },
               ]}
             />
+            <TemplatePicker kind={status === 'Verified' ? 'identity_verify' : 'identity_reject'} onPick={setNote} />
             <TextArea
               label={t('admin.identity.note')}
               required
@@ -123,6 +145,7 @@ function DecisionDrawer({ worker, onClose, onDecided }) {
           </>
         )}
       </Drawer>
+      <ShortcutsHelp open={help} onClose={() => setHelp(false)} />
       <ConfirmDialog
         open={confirmReveal}
         title={t('admin.identity.revealTitle')}
@@ -149,6 +172,14 @@ export default function AdminIdentity() {
   if (params.get('q')) query.q = params.get('q');
   const { data, error, reload } = useApiQuery('/admin/workers', query);
 
+  // J / K in the drawer: the next or previous worker of this page of the list.
+  const step = (by) => {
+    const list = data?.workers ?? [];
+    const at = list.findIndex((w) => w._id === selected?._id);
+    const next = list[at + by];
+    if (next) setSelected(next);
+  };
+
   const columns = [
     { key: 'name', header: t('admin.identity.columns.worker'), sortable: true, sortValue: (w) => w.user?.name ?? '', render: (w) => w.user?.name ?? t('common.empty') },
     { key: 'id', header: t('admin.identity.columns.id'), render: (w) => <span className="tabular" dir="ltr">{w.workerIdCode}</span> },
@@ -156,6 +187,7 @@ export default function AdminIdentity() {
     { key: 'city', header: t('admin.identity.columns.city'), sortable: true, sortValue: (w) => w.city, render: (w) => w.city || t('common.empty') },
     { key: 'cnic', header: t('admin.identity.columns.cnic'), render: (w) => (w.cnicOnFile ? <Badge tone="primary">{t('admin.identity.onFile')}</Badge> : <Badge>{t('admin.identity.notSaved')}</Badge>) },
     { key: 'status', header: t('admin.identity.columns.identity'), render: (w) => <StatusChip kind="identity" status={w.verificationStatus} /> },
+    { key: 'waiting', header: t('adminx.waiting.column'), sortable: true, sortValue: (w) => w.identityRequestedAt ?? w.updatedAt, render: (w) => (w.verificationStatus === 'Pending' ? <WaitingBadge since={w.identityRequestedAt ?? w.updatedAt} /> : t('common.empty')) },
     { key: 'updated', header: t('admin.identity.columns.updated'), sortable: true, sortValue: (w) => w.updatedAt, render: (w) => <span className="tabular">{formatDate(w.updatedAt)}</span> },
   ];
 
@@ -189,7 +221,7 @@ export default function AdminIdentity() {
             rowKey={(w) => w._id}
             onRowClick={setSelected}
             rowLabel={(w) => t('admin.identity.review', { name: w.user?.name ?? t('common.worker') })}
-            empty={<EmptyState icon={Inbox} headingLevel={2} title={t('admin.identity.emptyTitle')} description={t('admin.identity.emptyText')} />}
+            empty={<EmptyState art="all-done" headingLevel={2} title={t('admin.identity.emptyTitle')} description={t('admin.identity.emptyText')} />}
           />
           <Pagination page={data.page} pages={Math.max(1, Math.ceil(data.total / PAGE_SIZE))} onChange={setPage} />
         </>
@@ -198,6 +230,8 @@ export default function AdminIdentity() {
         <DecisionDrawer
           key={selected._id}
           worker={selected}
+          onNext={() => step(1)}
+          onPrevious={() => step(-1)}
           onClose={() => setSelected(null)}
           onDecided={() => {
             setSelected(null);

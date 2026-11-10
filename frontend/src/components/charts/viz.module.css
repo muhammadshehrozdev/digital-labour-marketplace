@@ -1,0 +1,99 @@
+/* Charts (Batch 4, admin overview). Own SVG, no library.
+   Colours were checked with a palette validator (lightness band, chroma, colour-blind
+   separation, contrast against the card), once for light and once for dark:
+     two series  light #0e7e53 / #ce7c22   dark #1ca56e / #ce7c22   (emerald = workers, saffron = customers)
+     ramp (short wait -> long wait, one hue)  light #38c789 #1ca56e #128155 #0c5c3c
+                                              dark  #166845 #1d8c5e #32b57d #65e0a5
+   Rules followed: thin marks (bars at most 24 px), a 2 px gap in the card colour between touching
+   marks, rounded data end and square baseline, hairline solid grid, text in text colours (never in
+   a series colour), a legend for two series, a tooltip on hover and keyboard focus, and a table
+   view of the same numbers. */
+.viz {
+  --viz-1: #0e7e53;
+  --viz-2: #ce7c22;
+  --viz-ord-1: #38c789;
+  --viz-ord-2: #1ca56e;
+  --viz-ord-3: #128155;
+  --viz-ord-4: #0c5c3c;
+  --viz-grid: color-mix(in oklch, var(--color-text) 10%, transparent);
+  --viz-surface: var(--color-surface);
+  display: grid;
+  gap: var(--space-3);
+  min-inline-size: 0;
+  margin: 0;
+}
+:global(:root[data-mode='dark']) .viz {
+  --viz-1: #1ca56e;
+  --viz-2: #ce7c22;
+  --viz-ord-1: #166845;
+  --viz-ord-2: #1d8c5e;
+  --viz-ord-3: #32b57d;
+  --viz-ord-4: #65e0a5;
+}
+@media (forced-colors: active) {
+  .viz { --viz-1: CanvasText; --viz-2: Highlight; --viz-grid: GrayText; }
+}
+
+.head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2) var(--space-4); }
+.title { font-family: var(--font-sans); font-size: var(--text-body); font-weight: 700; letter-spacing: 0; }
+.subtitle { font-size: var(--text-small); color: var(--color-text-secondary); }
+
+.legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0; padding: 0; list-style: none; font-size: var(--text-small); color: var(--color-text-secondary); }
+.legend li { display: inline-flex; align-items: center; gap: var(--space-2); }
+.swatch { inline-size: 12px; block-size: 12px; border-radius: 3px; flex-shrink: 0; }
+
+/* ---- column chart ---- */
+.plot { position: relative; outline: none; border-radius: var(--radius-md); }
+.plot:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
+.svg { display: block; inline-size: 100%; block-size: auto; overflow: visible; }
+.grid { stroke: var(--viz-grid); stroke-width: 1; }
+.tick { fill: var(--color-text-secondary); font-size: 11px; font-family: var(--font-latin); font-variant-numeric: tabular-nums; }
+.band { fill: transparent; }
+.bandActive { fill: color-mix(in oklch, var(--color-text) 6%, transparent); }
+.column { transition: opacity var(--duration-fast) var(--ease-out); }
+.dim { opacity: 0.45; }
+
+.tooltip {
+  position: absolute;
+  inset-block-start: 0;
+  z-index: 2;
+  min-inline-size: 150px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-md), inset 0 0 0 1px var(--color-border);
+  font-size: var(--text-small);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+.tooltipDate { color: var(--color-text-secondary); margin-block-end: 2px; }
+.tooltipRow { display: flex; align-items: center; gap: var(--space-2); }
+.tooltipRow strong { font-variant-numeric: tabular-nums; }
+.key { inline-size: 12px; block-size: 3px; border-radius: 2px; flex-shrink: 0; }
+
+.empty { display: grid; place-items: center; min-block-size: 160px; padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-bg-subtle); color: var(--color-text-secondary); text-align: center; font-size: var(--text-small); }
+
+/* the same numbers as a table */
+.table summary { cursor: pointer; font-size: var(--text-small); font-weight: 600; color: var(--color-primary-text); min-block-size: 32px; display: inline-flex; align-items: center; }
+.table table { inline-size: 100%; margin-block-start: var(--space-2); border-collapse: collapse; font-size: var(--text-small); }
+.table th, .table td { padding: 6px var(--space-2); text-align: start; border-block-end: 1px solid var(--color-border); }
+.table td:not(:first-child), .table th:not(:first-child) { text-align: end; font-variant-numeric: tabular-nums; }
+.tableScroll { max-block-size: 260px; overflow: auto; }
+
+/* ---- bar list: one name, one thin bar and one figure per row ---- */
+.rows { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px var(--space-3); align-items: center; }
+.rowName { font-size: var(--text-small); color: var(--color-text); min-inline-size: 0; display: flex; align-items: center; gap: var(--space-2); }
+.rowValue { font-size: var(--text-small); font-weight: 700; font-variant-numeric: tabular-nums; }
+.rowBar { grid-column: 1 / -1; block-size: 10px; }
+.rowBar svg { display: block; inline-size: 100%; block-size: 10px; overflow: visible; }
+.rowBar rect { fill: var(--viz-1); transition: width var(--duration-slow) var(--ease-out); }
+.row:hover .rowBar rect { opacity: 0.82; }
+:global(:root[dir='rtl']) .rowBar svg { transform: scaleX(-1); }
+
+/* ---- thin segmented bar with its figures listed beside it ---- */
+.segments { display: flex; gap: 2px; block-size: 8px; border-radius: var(--radius-full); overflow: hidden; background: var(--viz-grid); }
+.segments span { display: block; min-inline-size: 3px; }
+.segmentList { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px var(--space-4); margin: 0; padding: 0; list-style: none; font-size: var(--text-caption); color: var(--color-text-secondary); }
+.segmentList li { display: flex; align-items: center; gap: var(--space-2); }
+.segmentList strong { margin-inline-start: auto; color: var(--color-text); font-variant-numeric: tabular-nums; }

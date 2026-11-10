@@ -32,3 +32,27 @@
 .method { font-size: var(--text-small); color: var(--color-text-secondary); }
 .actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 @keyframes tile-in { from { opacity: 0; transform: translateY(10px); } }
+
+/* ---- Batch 4: users, templates, exports ---- */
+.sectionTitle { font-family: var(--font-sans); font-size: var(--text-body); font-weight: 700; letter-spacing: 0; margin-block-end: var(--space-2); }
+.wrapAnywhere { overflow-wrap: anywhere; }
+.activity { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-3); }
+.activity li { padding-inline-start: var(--space-3); border-inline-start: 2px solid var(--color-border); }
+.templateGroups { display: grid; gap: var(--space-6); }
+.templateGroup { padding: var(--space-5); border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent); }
+.templateList { margin: 0; padding: 0; list-style: none; display: grid; }
+.template { display: flex; gap: var(--space-3); align-items: flex-start; justify-content: space-between; padding-block: var(--space-3); }
+.template + .template { border-block-start: 1px solid var(--color-border); }
+.templateTexts { display: grid; gap: 4px; min-inline-size: 0; }
+.templateActions { display: flex; gap: var(--space-1); flex-shrink: 0; }
+.exportGrid { display: grid; gap: var(--space-4); margin-block: var(--space-6) var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.exportCard { display: grid; gap: var(--space-3); align-content: start; padding: var(--space-5); border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent); }
+.exportCard > button, .exportCard > a { justify-self: start; }
+.exportIcon { display: grid; place-items: center; inline-size: 44px; block-size: 44px; border-radius: var(--radius-md); background: var(--color-primary-soft); color: var(--color-primary-text); }
+.exportText { display: grid; gap: 2px; }
+.exportFilters { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.privacy { display: inline-flex; gap: var(--space-2); align-items: flex-start; }
+.privacy svg { flex-shrink: 0; margin-block-start: 3px; }
+.drawerTools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.thumb { inline-size: 44px; block-size: 44px; border-radius: var(--radius-sm); object-fit: cover; background: var(--color-surface-muted); display: block; }
+.chainRow { margin-block-end: var(--space-6); max-inline-size: 640px; }

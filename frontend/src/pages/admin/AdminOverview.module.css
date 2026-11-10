@@ -1,0 +1,57 @@
+.page { display: grid; gap: var(--space-10); }
+.block { display: grid; gap: var(--space-4); min-inline-size: 0; }
+.blockHead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.blockTitle { font-size: var(--text-h3); letter-spacing: -0.015em; }
+.muted { font-size: var(--text-small); color: var(--color-text-secondary); }
+
+/* ---- what needs attention ---- */
+.queues { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); }
+.queue {
+  display: grid; gap: var(--space-2); align-content: start;
+  padding: var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent);
+  transition: box-shadow var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out);
+  @media (hover: hover) { &:hover { box-shadow: var(--shadow-md), inset 0 0 0 1px color-mix(in oklch, var(--color-primary) 26%, transparent); transform: translateY(-2px); } }
+}
+.queueHead { display: flex; align-items: center; gap: var(--space-3); }
+.queueIcon { display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: var(--radius-md); background: var(--color-surface-muted); color: var(--color-text-secondary); flex-shrink: 0; }
+.queueLabel { font-family: var(--font-sans); font-size: var(--text-small); font-weight: 700; letter-spacing: 0; color: var(--color-text-secondary); }
+/* the one number of the tile: the page's sans face, proportional figures */
+.queueValue { font-family: var(--font-latin); font-size: 2.75rem; line-height: 1; font-weight: 700; letter-spacing: -0.03em; }
+.queueLink { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--touch-target); font-weight: 700; font-size: var(--text-small); margin-block-start: auto; }
+.attention { background: linear-gradient(160deg, var(--color-primary-soft), var(--color-surface) 70%); }
+.attention .queueIcon { background: var(--color-primary); color: var(--color-on-primary); }
+.danger .queueIcon { background: var(--color-danger-soft); color: var(--color-danger); }
+
+/* ---- period presets (one row above the charts they scope) ---- */
+.periods { display: inline-flex; padding: 3px; gap: 2px; border-radius: var(--radius-full); background: var(--color-surface); box-shadow: inset 0 0 0 1px var(--color-border); }
+.period {
+  min-block-size: 36px; padding-inline: var(--space-3); border: 0; border-radius: var(--radius-full); background: none;
+  color: var(--color-text-secondary); font-weight: 600; font-size: var(--text-small); cursor: pointer;
+  &:hover { color: var(--color-text); }
+  &[aria-checked='true'] { background: var(--color-primary); color: var(--color-on-primary); }
+}
+
+/* ---- charts ---- */
+.grid { display: grid; gap: var(--space-4); transition: opacity var(--duration-base) var(--ease-out); @media (min-width: 1100px) { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.stale { opacity: 0.55; }
+.card { padding: var(--space-5); border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent); min-inline-size: 0; }
+.feedCell { display: grid; min-inline-size: 0; }
+/* wide screens: the chart and two bar lists on the left, the activity feed beside them (two rows
+   tall), the trades list across the bottom */
+@media (min-width: 1100px) {
+  .wide { grid-column: span 2; }
+  .feedCell { grid-column: 3; grid-row: 1 / span 2; }
+  .full { grid-column: 1 / -1; }
+  .full ul { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--space-8); }
+}
+
+/* ---- accounts ---- */
+.accounts { margin: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.account { padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: inset 0 0 0 1px var(--color-border); display: grid; gap: 2px; }
+.account dt { font-size: var(--text-small); color: var(--color-text-secondary); }
+.account dd { margin: 0; font-family: var(--font-latin); font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+.account dd a { color: var(--color-text); text-decoration: none; }
+.account dd a:hover { color: var(--color-primary); text-decoration: underline; }

@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { ScrollText } from 'lucide-react';
+import { FileDown, ScrollText } from 'lucide-react';
 import { Alert, Button, DataTable, EmptyState, PageHeader, Pagination, Select, Skeleton, TextField } from '../../components/ui';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { useDocumentTitle, useT } from '../../i18n';
+import ChainStatus from '../../features/admin/ChainStatus';
+import { actionKey } from '../../features/admin/adminHelpers';
 import styles from './Admin.module.css';
 
 const PAGE_SIZE = 50;
@@ -20,11 +22,13 @@ export default function AdminAudit() {
   const { data, error, reload } = useApiQuery('/admin/audit', params);
 
   const set = (key) => (e) => setFilters({ ...filters, [key]: e.target.value });
+  // Plain words for an action, with its code beside it (an unknown action shows only the code).
+  const actionName = (action) => (t(actionKey(action)) === actionKey(action) ? '' : t(actionKey(action)));
   const columns = [
     { key: 'seq', header: t('admin.audit.columns.seq'), render: (e) => <span className="tabular">{e.seq}</span> },
     { key: 'time', header: t('admin.audit.columns.time'), render: (e) => <span className="tabular">{formatDate(e.createdAt, { dateStyle: 'medium', timeStyle: 'short' })}</span> },
     { key: 'actor', header: t('admin.audit.columns.by'), render: (e) => (e.actor?.name ? `${e.actor.name} (${t(`roles.${e.actorRole}`)})` : t(`roles.${e.actorRole}`)) },
-    { key: 'action', header: t('admin.audit.columns.action'), render: (e) => <code>{e.action}</code> },
+    { key: 'action', header: t('admin.audit.columns.action'), render: (e) => <span>{actionName(e.action)} <code className={styles.method}>{e.action}</code></span> },
     { key: 'target', header: t('admin.audit.columns.target'), render: (e) => (e.targetType ? <span dir="ltr">{`${e.targetType} ${e.targetId ?? ''}`}</span> : t('common.empty')) },
     { key: 'change', header: t('admin.audit.columns.change'), render: (e) => (e.fromState || e.toState ? <span dir="ltr">{`${e.fromState ?? '—'} → ${e.toState ?? '—'}`}</span> : t('common.empty')) },
     { key: 'reason', header: t('admin.audit.columns.reason'), render: (e) => <span dir="auto">{e.reason ?? '—'}</span> },
@@ -32,9 +36,10 @@ export default function AdminAudit() {
 
   return (
     <div>
-      <PageHeader title={t('admin.audit.title')} description={t('admin.audit.lead')} />
+      <PageHeader title={t('admin.audit.title')} description={t('admin.audit.lead')} actions={<Button to="/admin/exports" variant="secondary" icon={FileDown}>{t('admin.nav.exports')}</Button>} />
+      <div className={styles.chainRow}><ChainStatus /></div>
       <form className={styles.filters} onSubmit={(e) => { e.preventDefault(); setPage(1); setApplied(filters); }}>
-        <Select label={t('admin.audit.action')} value={filters.action} onChange={set('action')} placeholder={t('admin.audit.allActions')} options={(data?.actions ?? []).map((a) => ({ value: a, label: a }))} />
+        <Select label={t('admin.audit.action')} value={filters.action} onChange={set('action')} placeholder={t('admin.audit.allActions')} options={(data?.actions ?? []).map((a) => ({ value: a, label: actionName(a) ? `${actionName(a)} (${a})` : a }))} />
         <TextField label={t('admin.audit.from')} type="date" value={filters.from} onChange={set('from')} />
         <TextField label={t('admin.audit.to')} type="date" value={filters.to} onChange={set('to')} />
         <Button type="submit">{t('common.apply')}</Button>

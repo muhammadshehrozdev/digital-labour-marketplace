@@ -235,13 +235,25 @@ describe('admin pages (M1-9)', () => {
   });
 
   test('overview shows the real counts from the server', async () => {
-    mockApi({ 'GET /auth/me': me('admin'), 'GET /admin/stats': { status: 200, data: { workers: { total: 7, Unverified: 1, Pending: 3, Verified: 2, Rejected: 1 }, users: { worker: 7, customer: 4, admin: 1 } } } });
+    const none = { under1Day: 0, days1to3: 0, days4to7: 0, over7Days: 0, oldest: null };
+    mockApi({
+      'GET /auth/me': me('admin'),
+      'GET /admin/stats': { status: 200, data: { workers: { total: 7, Unverified: 1, Pending: 3, Verified: 2, Rejected: 1 }, users: { worker: 7, customer: 4, admin: 1 }, evidence: { total: 0, pending: 0, approved: 0, rejected: 0, suspected_fake: 0, revoked: 0 } } },
+      'GET /admin/charts': { status: 200, data: { days: 30, timezone: 'Asia/Karachi', generatedAt: '2026-11-10T10:00:00Z', registrations: [], identity: { counts: { Unverified: 1, Pending: 3, Verified: 2, Rejected: 1 }, waiting: { ...none, under1Day: 3, oldest: new Date().toISOString() } }, evidence: { counts: { pending: 0, approved: 0, rejected: 0, suspected_fake: 0, revoked: 0 }, waiting: none }, skillsByCategory: [] } },
+      'GET /admin/audit': { status: 200, data: { entries: [], total: 0, page: 1, limit: 8, actions: [] } },
+      'GET /admin/audit/verify': { status: 200, data: { ok: true, count: 0, checkedAt: '2026-11-10T10:00:00Z' } },
+    });
     renderAt('/admin');
     expect(await screen.findByRole('heading', { level: 1, name: 'Admin overview' })).toBeInTheDocument();
-    const label = await screen.findByText('Waiting for identity review', { selector: 'p' });
-    expect(label.previousSibling).toHaveTextContent('3');
-    expect(label.parentElement.querySelector('a')).toHaveAttribute('href', '/admin/identity?status=Pending');
-    expect(label.parentElement.querySelector('a')).toHaveTextContent('Open Waiting for identity review');
+    // Batch 4: each queue is a tile with its count and a link to the queue.
+    const tile = (await screen.findByRole('heading', { name: 'Waiting for identity review' })).closest('article');
+    expect(within(tile).getAllByText('3')[0]).toBeInTheDocument(); // the count (the same 3 is also in the waiting list)
+    expect(within(tile).getByRole('link')).toHaveAttribute('href', '/admin/identity?status=Pending');
+    expect(within(tile).getByRole('link')).toHaveTextContent('Open the queue: Waiting for identity review');
+    // a queue with nothing in it says so instead of showing an empty chart
+    expect(within((await screen.findByRole('heading', { name: 'Proof waiting for review' })).closest('article')).getByText('Nothing is waiting. Well done.')).toBeInTheDocument();
+    // the account counts are still shown, as real numbers from the server
+    expect(within(screen.getByRole('region', { name: 'Accounts' })).getByText('Customer accounts').nextSibling).toHaveTextContent('4');
     expect(screen.getByRole('navigation', { name: 'Admin' })).toBeInTheDocument();
   });
 

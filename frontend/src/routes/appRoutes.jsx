@@ -20,6 +20,9 @@ import AdminOverview from '../pages/admin/AdminOverview';
 import AdminIdentity from '../pages/admin/AdminIdentity';
 import AdminAudit from '../pages/admin/AdminAudit';
 import AdminEvidence from '../pages/admin/AdminEvidence';
+import AdminUsers from '../pages/admin/AdminUsers';
+import AdminTemplates from '../pages/admin/AdminTemplates';
+import AdminExports from '../pages/admin/AdminExports';
 
 // Developer pages only in development builds (not shipped in production).
 const StyleGuide = import.meta.env.DEV ? lazy(() => import('../pages/dev/StyleGuide')) : null;
@@ -57,7 +60,10 @@ export const appRoutes = (
             <Route index element={<AdminOverview />} />
             <Route path="identity" element={<AdminIdentity />} />
             <Route path="evidence" element={<AdminEvidence />} />
+            <Route path="users" element={<AdminUsers />} />
             <Route path="audit" element={<AdminAudit />} />
+            <Route path="templates" element={<AdminTemplates />} />
+            <Route path="exports" element={<AdminExports />} />
           </Route>
         </Route>
 

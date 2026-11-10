@@ -211,7 +211,7 @@ describe('admin Evidence review', () => {
     return screen.findByRole('dialog', { name: /House wiring/ });
   }
 
-  test('the drawer shows the image, the possible duplicate side by side, and b, d, u, E with the method', async () => {
+  test('the drawer shows the image, the possible duplicate in a compare slider, and b, d, u, E with the method', async () => {
     mockApi(routes());
     renderAt('/admin/evidence');
     const user = userEvent.setup();
@@ -221,8 +221,10 @@ describe('admin Evidence review', () => {
     expect(within(drawer).getByText(/Looks like another worker's photo/)).toBeInTheDocument();
     expect(within(drawer).getByText('uncertainty u')).toBeInTheDocument();
     expect(within(drawer).getByText(/How this is computed/)).toBeInTheDocument();
-    await user.click(within(drawer).getAllByRole('button', { name: 'Zoom to full size' })[0]);
-    expect(within(drawer).getByRole('button', { name: 'Fit to panel' })).toHaveAttribute('aria-pressed', 'true');
+    // Batch 4 (feature 34): the two photos lie on top of each other with a slider, or side by side.
+    expect(within(drawer).getByRole('slider', { name: 'Slide to compare this upload with the earlier photo' })).toBeInTheDocument();
+    await user.click(within(drawer).getByRole('button', { name: 'Side by side' }));
+    expect(within(drawer).getAllByRole('figure')).toHaveLength(2);
   });
 
   test.each([

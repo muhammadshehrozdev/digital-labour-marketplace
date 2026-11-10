@@ -3,7 +3,8 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  overflow: hidden;
+  /* a table wider than its card scrolls sideways inside the card: nothing is ever cut off */
+  overflow-x: auto;
   box-shadow: var(--shadow-sm);
 }
 .table { inline-size: 100%; border-collapse: collapse; font-size: var(--text-small); }
