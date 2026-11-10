@@ -360,7 +360,10 @@ live at `/dev/themes` and `/dev/styleguide` (development builds only).
 
 ---
 
-## D-018 — Logo v2: "Stitched Nut" (Batch 3, 10 Nov 2026)
+## D-018 — Logo v2: "Stitched Nut" (Batch 3, 10 Nov 2026) — REPLACED by D-021
+
+> Rejected by the team after Batch 3; see D-021. The text below is kept as a record. The file names it
+> mentions have changed: the concepts are now `docs/design/logo-concepts/*` (see the README there).
 
 **Decision (Claude Code, for the team to confirm; Part 4.3):** three logomark concepts were drawn on a
 32 × 32 grid (`frontend/src/components/brand/logoMarks.jsx`, SVG copies in
@@ -424,3 +427,52 @@ Roman Urdu (`ur-Latn`, left to right).
   the server, so the view shows the new data at once.
 - `/worker/skills` was removed as an editing place; old links redirect to the editor (`?proof=<id>` opens
   "Proof of skills" with that skill chosen). Onboarding stays the guided first-time path.
+
+---
+
+## D-021 — Logo v3: back to the shield, wrench and check (Batch 4, 10 Nov 2026)
+
+**Replaces D-018.** The team's feedback after Batch 3 (Batch 4 prompt, Part 0): *"The new logo
+('Stitched Nut') is not good. The earlier logo was right (the Batch 1 shield with a wrench and a
+check). Bring it back, then refine and enhance it."* So "Stitched Nut" and the two other Batch 3
+concepts are **rejected** (kept in `docs/design/logo-concepts/` as a record), and the Batch 1 idea is the
+brand again: **a rounded shield (trust) holding a check (verified) whose long arm is a wrench (skilled
+work).**
+
+What was refined (same concept, not a new one):
+
+- **Proportions.** The shield is redrawn symmetric with rounded corners that follow the UI radius scale;
+  the check's elbow sits on the optical centre; the wrench head is an open "C" (an open-end spanner), not
+  a ring with a notch, so it stays a tool when small.
+- **One stroke weight** for check, handle and head, round caps and joins. From 24 px up the stroke is
+  2.8 units of 32; at 20 px and below a second, bolder drawing (3.3 units, larger head) is used.
+- **Versions.** Two-tone (emerald + saffron), one colour (`mono`: the shield in the text colour with the
+  check-wrench cut out), on light and on dark. Colours are bound to theme tokens, so the mark follows
+  light and dark mode by itself.
+- **Depth** only for the large hero size (96 px and up): a soft gradient and highlight. Small sizes are flat.
+
+Three refinements were drawn and screenshotted at 16/24/32/64/128 px, in one colour, on light and dark,
+in the header at 360 and 1280 px, and as true 16/32 px favicons (`v3-compare-*.png`):
+
+| | Refinement | Result |
+|---|---|---|
+| A | Balanced: filled shield, white check-wrench | Clean and closest to Batch 1, but at 16 px the white wrench head melts into the check: it reads as "shield + tick", like many security apps. |
+| **B** | **Two-tone: the wrench head in saffron, set into the shield's shoulder** | **Chosen.** |
+| C | Outline: stroked shield | Elegant when large; at 16 px the lines clog and it looks weak next to the bold wordmark. |
+
+**Why B (decision by Claude Code from the screenshots, for the team to confirm):** it is the only one
+where the *tool* survives at 16 px (the saffron "C" is still visible in a browser tab); it uses both
+brand colours, so the mark belongs to the same palette as the interface (emerald for trust, one saffron
+accent); the cut-out around the head gives it a recognisable outline; and it is still exactly the Batch 1
+idea. Honest limit: saffron on a white page has low contrast (about 2:1), so on light backgrounds the head
+is carried by its hue and shape; the one-colour version exists for places where that is not enough.
+
+Icon set (written by `npm run icons`, `frontend/scripts/make-icons.mjs`, from the same numbers and the
+default theme's colours): `favicon.svg` (follows the browser's light or dark tab colour), `favicon-32.png`,
+`apple-touch-icon.png` (180 px), `icons/icon-192.png`, `icons/icon-512.png`, and **maskable**
+`icons/icon-maskable-192.png` and `-512.png` (full-bleed background, the mark inside the middle 80%).
+
+Animated version (landing hero, language chooser; `Logo animated`): the shield outline draws, the shield
+fills, the wrench rotates gently into place, the check draws last, the wordmark slides in (about 2.6 s,
+once). Everywhere else, and with reduced motion, the logo is static. Frames:
+`docs/design/logo/animation-frames.png`.

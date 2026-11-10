@@ -1,7 +1,11 @@
 // Test setup (Vitest + React Testing Library + jsdom).
 import '@testing-library/jest-dom/vitest';
-import { cleanup } from '@testing-library/react';
+import { cleanup, configure } from '@testing-library/react';
 import { afterEach, beforeEach, expect, vi } from 'vitest';
+
+// findBy... and waitFor wait up to 5 s (the default is 1 s). On a busy machine (all test files run
+// at once, next to the dev servers) a 1 s wait sometimes ended before an async image check did.
+configure({ asyncUtilTimeout: 5000 });
 
 // jsdom has <dialog> but not showModal()/close(); browsers have both.
 if (!HTMLDialogElement.prototype.showModal) {

@@ -1,8 +1,8 @@
-// Development only (/dev/themes): compare the three themes (D-017) and the three logo concepts
-// (D-018) live. Switching here changes the whole page until reload.
+// Development only (/dev/themes): compare the three themes (D-017) and the three logo refinements
+// (D-021) live. Switching here changes the whole page until reload.
 import { ArrowRight, BadgeCheck, Hammer } from 'lucide-react';
 import Logo, { LogoMark } from '../../components/brand/Logo';
-import { LOGO_CONCEPTS, LOGO_CONCEPT_IDS } from '../../components/brand/logoMarks';
+import { LOGO_REFINEMENT, LOGO_REFINEMENTS, LOGO_REFINEMENT_IDS } from '../../components/brand/logoGeometry';
 import { Alert, Badge, Button, Card, PageHeader, ProgressRing, Section, StatusChip } from '../../components/ui';
 import ThemePicker from './ThemePicker';
 import styles from './ThemeLab.module.css';
@@ -16,35 +16,44 @@ const ROLES = [
 export default function ThemeLab() {
   return (
     <div className={styles.page}>
-      <PageHeader eyebrow="Development only" title="Theme lab" description="Switch the three design v2 themes and compare the logo concepts. The default is DEFAULT_THEME in src/styles/theme.js." />
+      <PageHeader eyebrow="Development only" title="Theme lab" description="Switch the colour themes and compare the logo refinements. The default theme is DEFAULT_THEME in src/styles/theme.js." />
       <ThemePicker />
 
-      <Section title="Logo concepts (D-018)">
+      <Section title="Logo refinements (D-021)" id="logo-refinements">
         <div className={styles.logoGrid}>
-          {LOGO_CONCEPT_IDS.map((id) => (
-            <Card key={id} className={styles.logoCard}>
-              <p className={styles.logoName}>{LOGO_CONCEPTS[id].name}</p>
+          {LOGO_REFINEMENT_IDS.map((id) => (
+            <Card key={id} className={styles.logoCard} data-refinement={id}>
+              <p className={styles.logoName}>{LOGO_REFINEMENTS[id].name}{id === LOGO_REFINEMENT && <em> (chosen)</em>}</p>
+              <p className={styles.logoNote}>{LOGO_REFINEMENTS[id].note}</p>
               <div className={styles.logoRow}>
-                {[16, 24, 32, 64].map((size) => <LogoMark key={size} concept={id} size={size} title={`${LOGO_CONCEPTS[id].name}, ${size} px`} />)}
-                <span className={styles.mono}><LogoMark concept={id} size={32} mono /></span>
+                {[16, 24, 32, 64, 128].map((size) => <LogoMark key={size} refinement={id} size={size} title={`${LOGO_REFINEMENTS[id].name}, ${size} px`} />)}
+                <span className={styles.mono}><LogoMark refinement={id} size={32} mono title="one colour" /></span>
               </div>
               <div className={`${styles.logoRow} ${styles.onDark} dark-section`}>
-                {[16, 32, 64].map((size) => <LogoMark key={size} concept={id} size={size} tone="dark" />)}
-                <LogoMark concept={id} size={64} tone="dark" animated />
+                {[16, 24, 32, 64].map((size) => <LogoMark key={size} refinement={id} size={size} tone="dark" />)}
+                <LogoMark refinement={id} size={96} tone="dark" animated hero />
+                <span className={styles.monoDark}><LogoMark refinement={id} size={32} mono /></span>
               </div>
             </Card>
           ))}
         </div>
       </Section>
 
-      <Section title="Logo concepts in the header">
+      <Section title="Logo refinements in the header" id="logo-headers">
         <div className={styles.headerPreviews}>
-          {LOGO_CONCEPT_IDS.map((id) => (
-            <div key={id} className={styles.headerPreview} data-concept={id}>
-              <Logo size={34} concept={id} compact />
-              <span className={styles.headerSpacer} />
-              <Button size="sm" variant="ghost">Log in</Button>
-              <Button size="sm">Create account</Button>
+          {LOGO_REFINEMENT_IDS.map((id) => (
+            <div key={id} className={styles.headerPair}>
+              <div className={styles.headerPreview} data-refinement={id}>
+                <Logo size={34} refinement={id} compact />
+                <span className={styles.headerSpacer} />
+                <Button size="sm" variant="ghost">Log in</Button>
+                <Button size="sm">Create account</Button>
+              </div>
+              <div className={`${styles.headerPreview} ${styles.headerDark} dark-section`} data-refinement={id}>
+                <Logo size={34} refinement={id} tone="dark" compact />
+                <span className={styles.headerSpacer} />
+                <Button size="sm" variant="ghost">Log in</Button>
+              </div>
             </div>
           ))}
         </div>

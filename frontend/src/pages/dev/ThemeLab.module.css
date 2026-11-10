@@ -46,3 +46,8 @@
   padding-inline: var(--gutter); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md);
 }
 .headerSpacer { flex: 1; }
+
+.logoNote { font-size: var(--text-small); color: var(--color-text-secondary); }
+.monoDark { color: var(--color-on-dark); }
+.headerPair { display: grid; gap: var(--space-2); }
+.headerDark { background: var(--color-dark-bg); border-color: var(--color-dark-border); }

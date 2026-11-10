@@ -5,28 +5,32 @@
   color: var(--color-text);
 }
 
+/* Colours of the mark. "light" follows the page theme (in dark mode the primary is brighter and
+   the ink is dark, so the mark inverts by itself). */
 .mark {
   flex-shrink: 0;
   overflow: visible;
-  --logo-fill-start: var(--primary-500);
-  --logo-fill-end: var(--primary-700);
-  --logo-detail: oklch(1 0 0);
+  --logo-flat: var(--color-primary);
+  --logo-shield-a: var(--primary-500);
+  --logo-shield-b: var(--primary-700);
+  --logo-ink: var(--color-on-primary);
   --logo-accent: var(--accent-500);
+  --logo-line: var(--color-primary);
+  --logo-soft: var(--color-primary-soft);
 }
 
+/* On the always-dark hero and footer. */
 .dark {
   color: var(--color-on-dark);
   &.mark, & .mark {
-    --logo-fill-start: var(--color-dark-primary);
-    --logo-fill-end: var(--primary-500);
-    --logo-detail: var(--color-dark-bg);
+    --logo-flat: var(--color-dark-primary);
+    --logo-shield-a: var(--color-dark-primary);
+    --logo-shield-b: var(--primary-500);
+    --logo-ink: var(--color-dark-bg);
     --logo-accent: var(--color-dark-accent);
+    --logo-line: var(--color-dark-primary);
+    --logo-soft: color-mix(in oklch, var(--color-dark-primary) 14%, transparent);
   }
-}
-
-.mono {
-  --logo-detail: var(--color-surface);
-  --logo-accent: currentColor;
 }
 
 .wordmark {
@@ -49,26 +53,39 @@
   .compact .wordmark { display: none; }
 }
 
-/* Animated logo: outline draws (stroke-dashoffset 1 -> 0), the fill and details fade in,
-   then the wordmark slides in. Transform and opacity only, except the one stroke. */
+/* Animated logo (hero, language chooser): 1 the shield outline draws, 2 the shield fills,
+   3 the wrench rotates gently into place, 4 the check draws last, 5 the wordmark slides in.
+   Transform and opacity only, plus two short stroke draws. Static with reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
   .animated .outline {
-    stroke: var(--logo-fill-start);
-    stroke-width: 1.2;
+    stroke: var(--logo-line);
+    stroke-width: 1.3;
     stroke-linejoin: round;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: draw 1.1s var(--ease-in-out) 0.1s forwards, fade-out 0.4s ease 1.3s forwards;
+    animation: draw 0.9s var(--ease-in-out) 0.1s forwards, fade-out 0.35s ease 1.05s forwards;
   }
-  .animated .shape { opacity: 0; animation: fade-in 0.5s var(--ease-out) 0.9s forwards; }
-  .animated .details { opacity: 0; transform-origin: center; animation: pop-in 0.5s var(--ease-spring) 1.2s forwards; }
-  .animatedLogo .wordmark { opacity: 0; animation: slide-in 0.6s var(--ease-out) 1.1s forwards; }
+  .animated .shield { opacity: 0; animation: fade-in 0.45s var(--ease-out) 0.8s forwards; }
+  .animated .wrench {
+    opacity: 0;
+    transform-box: view-box;
+    animation: wrench-in 0.75s var(--ease-spring) 1.15s forwards;
+  }
+  .animated .check {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 0.35s var(--ease-out) 1.8s forwards;
+  }
+  .animatedLogo .wordmark { opacity: 0; animation: slide-in 0.6s var(--ease-out) 2s forwards; }
   :root[dir='rtl'] .animatedLogo .wordmark { animation-name: slide-in-rtl; }
 }
 
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes fade-in { to { opacity: 1; } }
 @keyframes fade-out { to { opacity: 0; } }
-@keyframes pop-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+@keyframes wrench-in {
+  from { opacity: 0; transform: rotate(-42deg); }
+  to { opacity: 1; transform: none; }
+}
 @keyframes slide-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
 @keyframes slide-in-rtl { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
