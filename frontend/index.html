@@ -9,6 +9,22 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Digital Labour Marketplace</title>
+    <!-- Night mode without a flash (Batch 4, D-022): set light or dark and the text size on <html>
+         before anything is drawn. The same rules live in src/theme/mode.js (a test compares them). -->
+    <style>html{background:#f9fcfa}html[data-mode=dark]{background:#0b1512}</style>
+    <script>
+      (function () {
+        var root = document.documentElement, theme = null, size = null, dark = false;
+        try { theme = localStorage.getItem('dlm.theme'); size = localStorage.getItem('dlm.textSize'); } catch (e) { /* storage blocked */ }
+        try { dark = theme === 'dark' || (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches); } catch (e) { /* very old browser */ }
+        root.setAttribute('data-theme', 'emerald-night');
+        root.setAttribute('data-mode', dark ? 'dark' : 'light');
+        root.style.colorScheme = dark ? 'dark' : 'light';
+        if (size === 'small' || size === 'large') root.setAttribute('data-text-size', size);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta && dark) meta.setAttribute('content', '#0a1512');
+      })();
+    </script>
   </head>
   <body>
     <noscript>Please turn on JavaScript to use Digital Labour Marketplace.</noscript>

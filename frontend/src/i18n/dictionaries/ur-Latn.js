@@ -208,7 +208,7 @@ export default {
     sourceText: 'Text', skillIds: 'Hunar', skillId: 'Hunar', title: 'Unwaan', note: 'Note', page: 'Safha',
     limit: 'Had', status: 'Haalat', action: 'Amal', from: 'Tareekh se', to: 'Tareekh tak', type: 'Qisam',
     identity: 'Shanakht ka filter', skills: 'Hunar ka filter', duplicates: 'Milti julti tasveeron ka filter', consent: 'Ijazat',
-    inputMode: 'Likhne ka tareeqa', addedVia: 'Kaise shamil kiya', reasonCode: 'Wajah', preferredLanguage: 'Zabaan', id: 'ID',
+    inputMode: 'Likhne ka tareeqa', addedVia: 'Kaise shamil kiya', reasonCode: 'Wajah', preferredLanguage: 'Zabaan', preferredTheme: 'Theme', preferredTextSize: 'Likhai ka size', id: 'ID',
     workerIdCode: 'Karigar ID',
   },
 
@@ -248,6 +248,9 @@ export default {
     PASSWORD_ONLY_SPACES: 'Password sirf khaali jagahon ka nahi ho sakta',
     ROLE_INVALID: 'Kirdar sirf karigar ya customer ho sakta hai',
     LANGUAGE_INVALID: 'Zabaan en, ur ya ur-Latn honi chahiye',
+    THEME_INVALID: 'Theme light, dark ya system hona chahiye',
+    TEXT_SIZE_INVALID: 'Likhai ka size small, normal ya large hona chahiye',
+    PREFERENCES_EMPTY: 'Kam az kam aik setting bhejein',
     EMAIL_TAKEN: 'Yeh email pehle se register hai. Meharbani karke log in karein.',
     LOGIN_FAILED: 'Email ya password ghalat hai. 5 ghalat koshishon ke baad login 15 minute ke liye ruk jata hai.',
     NOT_LOGGED_IN: 'Meharbani karke pehle log in karein.',
@@ -856,5 +859,27 @@ export default {
       emptyTitle: 'Koi entry nahi',
       emptyText: 'In filter ke mutabiq kuch nahi.',
     },
+  },
+
+  theme: {
+    toggle: 'Dark mode',
+    toggleHint: 'Light aur dark ke darmiyan badlein. Mazeed intikhab ke liye daba kar rakhein (ya right-click karein).',
+    options: 'Theme ke intikhab',
+    menuLabel: 'Theme',
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System',
+    systemHint: 'Aap ke phone ya computer ke mutabiq',
+    nowLight: 'Light mode on hai',
+    nowDark: 'Dark mode on hai',
+    chosen: { light: 'Light mode on hai', dark: 'Dark mode on hai', system: 'Theme ab aap ke phone ya computer ke mutabiq hai' },
+    footerTitle: 'Zahiri shakal',
+  },
+
+  textSize: {
+    label: 'Likhai ka size',
+    small: 'Chhoti likhai',
+    normal: 'Aam likhai',
+    large: 'Bari likhai',
   },
 };

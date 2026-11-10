@@ -1,6 +1,8 @@
 import Logo from '../brand/Logo';
 import { useT } from '../../i18n';
 import LanguageSwitcher from './LanguageSwitcher';
+import TextSizeControl from './TextSizeControl';
+import ThemeToggle from './ThemeToggle';
 import styles from './Footer.module.css';
 
 // People's names are written as the team writes them (Latin letters) in every language.
@@ -19,6 +21,13 @@ export default function Footer() {
         <div className={styles.langCol}>
           <p className={styles.colTitle}>{t('footer.languageTitle')}</p>
           <LanguageSwitcher tone="dark" placement="above" />
+        </div>
+        <div className={styles.langCol}>
+          <p className={styles.colTitle}>{t('theme.footerTitle')}</p>
+          <div className={styles.appearance}>
+            <ThemeToggle tone="dark" placement="above" />
+            <TextSizeControl tone="dark" />
+          </div>
         </div>
         <div className={styles.credit}>
           <p>{t('footer.project')}</p>

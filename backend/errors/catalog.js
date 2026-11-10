@@ -40,6 +40,9 @@ export const ERRORS = Object.freeze({
   PASSWORD_ONLY_SPACES: 'Password cannot be only spaces',
   ROLE_INVALID: 'Role must be worker or customer',
   LANGUAGE_INVALID: 'Language must be en, ur or ur-Latn',
+  THEME_INVALID: 'Theme must be light, dark or system',
+  TEXT_SIZE_INVALID: 'Text size must be small, normal or large',
+  PREFERENCES_EMPTY: 'Send at least one setting to change',
   EMAIL_TAKEN: 'This email is already registered. Please log in instead.',
   LOGIN_FAILED: 'Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes.',
   NOT_LOGGED_IN: 'Please log in first.',
@@ -148,7 +151,7 @@ export const FIELD_LABELS = Object.freeze({
   sourceText: 'Text', skillIds: 'Skill', skillId: 'Skill', title: 'Title', note: 'Note', page: 'Page',
   limit: 'Limit', status: 'Status', action: 'Action', from: 'From date', to: 'To date', type: 'Type',
   identity: 'identity', skills: 'skills', duplicates: 'duplicates', consent: 'Consent', inputMode: 'inputMode',
-  addedVia: 'addedVia', reasonCode: 'Reason', preferredLanguage: 'Language', id: 'Id', workerIdCode: 'Worker ID',
+  addedVia: 'addedVia', reasonCode: 'Reason', preferredLanguage: 'Language', preferredTheme: 'Theme', preferredTextSize: 'Text size', id: 'Id', workerIdCode: 'Worker ID',
 });
 
 export const isErrorCode = (value) => typeof value === 'string' && Object.prototype.hasOwnProperty.call(ERRORS, value);

@@ -1,6 +1,6 @@
 // Auth and routing: Register (M1-1, D-005), login redirects (D-011), 401 handling (M1-11), 404.
 import { describe, test, expect } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { mockApi, me, onboarding, PROFILE, full } from './mockApi';
 import { renderAt, pathname } from './renderApp';
@@ -14,7 +14,8 @@ describe('Register', () => {
     const { container } = renderAt('/register');
     expect(await screen.findByRole('radio', { name: /I want to find work/ })).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: /I want to hire a worker/ })).toBeInTheDocument();
-    expect(screen.getAllByRole('radio')).toHaveLength(2);
+    // Only two roles can be chosen (the footer's text-size buttons are radios too, outside <main>).
+    expect(within(screen.getByRole('main')).getAllByRole('radio')).toHaveLength(2);
     await userEvent.setup().click(screen.getByRole('radio', { name: /I want to find work/ }));
     expect(container.textContent).not.toMatch(/admin/i);
   });

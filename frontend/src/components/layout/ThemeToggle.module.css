@@ -1,0 +1,145 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.toggle {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--touch-target);
+  block-size: var(--touch-target);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  /* a long press must not select text or open the phone's own menu */
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: color-mix(in oklch, var(--color-accent) 14%, var(--color-surface));
+    border-color: color-mix(in oklch, var(--color-accent) 55%, var(--color-border));
+  }
+  &:active { transform: scale(0.92); }
+  &[aria-pressed='true']:hover {
+    background: color-mix(in oklch, var(--color-primary) 14%, var(--color-surface));
+    border-color: color-mix(in oklch, var(--color-primary) 50%, var(--color-border));
+  }
+}
+
+/* The small arrow: for keyboard and mouse users. On touch screens a long press does the same,
+   so the arrow only appears when it has keyboard focus. */
+.more {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 20px;
+  block-size: var(--touch-target);
+  margin-inline-start: -2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  .wrap:hover &, &:focus-visible, &[aria-expanded='true'] { opacity: 1; }
+  &:hover { color: var(--color-text); }
+}
+@media (hover: none) {
+  .more:not(:focus-visible):not([aria-expanded='true']) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+.dark .toggle {
+  background: color-mix(in oklch, var(--color-on-dark) 8%, transparent);
+  border-color: color-mix(in oklch, var(--color-on-dark) 28%, transparent);
+  color: var(--color-on-dark);
+  &:hover { background: color-mix(in oklch, var(--color-on-dark) 16%, transparent); }
+}
+.dark .more { color: var(--color-on-dark-muted); }
+
+/* ---- the sun that becomes a moon ---- */
+.icon { overflow: visible; }
+.disc, .cut, .rays, .star { transform-box: view-box; transform-origin: 12px 12px; }
+.disc { transition: transform 520ms var(--ease-spring); }
+.cut { transition: transform 520ms var(--ease-out); }
+.rays { transition: transform 520ms var(--ease-spring), opacity 260ms var(--ease-out); }
+.star { opacity: 0; transform: scale(0); transform-origin: 19.2px 5.2px; }
+.starTwo { transform-origin: 21.4px 10.85px; }
+
+.icon[data-mode='dark'] {
+  & .disc { transform: scale(1.62); }
+  & .cut { transform: translate(-8.2px, 6.2px); }
+  & .rays { transform: rotate(-70deg) scale(0.2); opacity: 0; }
+  & .star { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .icon[data-mode='dark'] .star { animation: twinkle 1.5s var(--ease-in-out) 0.35s 2 both; }
+  .icon[data-mode='dark'] .starTwo { animation-delay: 0.7s; }
+  .icon[data-mode='light'] .rays { animation: rays-in 620ms var(--ease-spring); }
+}
+@keyframes twinkle {
+  0% { opacity: 0; transform: scale(0) rotate(-30deg); }
+  45% { opacity: 1; transform: scale(1.35) rotate(10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes rays-in {
+  from { transform: rotate(-70deg) scale(0.2); opacity: 0; }
+}
+
+/* ---- the Light / Dark / System menu ---- */
+.menu {
+  position: absolute;
+  inset-inline-end: 0;
+  z-index: 40;
+  min-inline-size: 12.5rem;
+  padding: var(--space-1);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: pop var(--duration-base) var(--ease-out);
+}
+.below { inset-block-start: calc(100% + var(--space-2)); transform-origin: top; }
+.above { inset-block-end: calc(100% + var(--space-2)); transform-origin: bottom; }
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  inline-size: 100%;
+  min-block-size: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover, &:focus-visible { background: var(--color-surface-muted); }
+  &[aria-checked='true'] { color: var(--color-primary-text); background: var(--color-primary-soft); }
+}
+.optionText { flex: 1; display: grid; }
+.optionText small { font-weight: 500; color: var(--color-text-secondary); }
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+}

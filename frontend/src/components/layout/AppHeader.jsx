@@ -7,6 +7,8 @@ import { useAuth } from '../../context/auth';
 import { useT } from '../../i18n';
 import { homePathFor } from '../../utils/roles';
 import LanguageSwitcher from './LanguageSwitcher';
+import TextSizeControl from './TextSizeControl';
+import ThemeToggle from './ThemeToggle';
 import { NAV_LINKS } from './navLinks';
 import styles from './AppHeader.module.css';
 
@@ -61,6 +63,7 @@ export default function AppHeader() {
         )}
 
         <div className={styles.end}>
+          <ThemeToggle />
           <LanguageSwitcher compact />
           {user ? (
             <>
@@ -77,6 +80,10 @@ export default function AppHeader() {
                       {t('header.signedInAs')} <strong>{user.name}</strong>
                       <span>{t(`roles.${user.role}`)} · <span dir="ltr">{user.email}</span></span>
                     </p>
+                    <div className={styles.menuRow}>
+                      <span>{t('textSize.label')}</span>
+                      <TextSizeControl />
+                    </div>
                     <button type="button" className={styles.menuItem} onClick={handleLogout}>
                       <LogOut size={18} aria-hidden="true" /> {t('header.logout')}
                     </button>
@@ -105,6 +112,10 @@ export default function AppHeader() {
           {links.map((l) => (
             <NavLink key={l.to} to={l.to} end={l.end} className={linkClass(styles.mobileLink)}>{t(l.label)}</NavLink>
           ))}
+          <div className={styles.menuRow}>
+            <span>{t('textSize.label')}</span>
+            <TextSizeControl />
+          </div>
           <p className={styles.mobileSignedIn}>{t('header.signedInAs')} <strong>{user.name}</strong></p>
           <button type="button" className={styles.mobileLink} onClick={handleLogout}>
             <LogOut size={18} aria-hidden="true" /> {t('header.logout')}

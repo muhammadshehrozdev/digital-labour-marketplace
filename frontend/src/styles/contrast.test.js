@@ -1,20 +1,28 @@
-// WCAG 2.2 AA contrast for every colour pair used for text or UI parts, in all three design v2
-// themes (Batch 3, D-017). Reads the real themes.css, so a colour change that breaks contrast
-// fails this test. OKLCH values are converted with the OKLab formulas in utils/contrast.js.
+// WCAG 2.2 AA contrast for every colour pair used for text or UI parts, in every theme and in
+// both modes, light and dark (Batch 3 D-017, Batch 4 D-022). Reads the real themes.css, so a
+// colour change that breaks contrast fails this test. OKLCH values are converted with the OKLab formulas in utils/contrast.js.
 import { describe, test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
-import { contrastRatio, inSrgbGamut } from '../utils/contrast';
+import { contrastRatio, inSrgbGamut, relativeLuminance } from '../utils/contrast';
 import { AVATAR_COLORS } from '../utils/avatarColor';
 import { THEMES, DEFAULT_THEME } from './theme';
 
 // Vitest runs from the frontend folder.
 const css = readFileSync(resolvePath(process.cwd(), 'src/styles/themes.css'), 'utf8');
+// One entry per theme and mode: "emerald-night" (light) and "emerald-night (dark)". The dark block
+// only overrides tokens, so its full set is the light set with the dark values on top.
 const THEME_TOKENS = {};
-for (const [, name, body] of css.matchAll(/data-theme='([a-z-]+)'\]\s*\{([\s\S]*?)\n\}/g)) {
+const DARK_NAMES = [];
+for (const [, name, darkMode, body] of css.matchAll(/data-theme='([a-z-]+)'\](\[data-mode='dark'\])?\s*\{([\s\S]*?)\n\}/g)) {
   const tokens = {};
   for (const [, key, value] of body.matchAll(/--([a-z0-9-]+):\s*([^;]+);/g)) tokens[key] = value.trim();
-  THEME_TOKENS[name] = tokens;
+  if (darkMode) {
+    THEME_TOKENS[`${name} (dark)`] = { ...THEME_TOKENS[name], ...tokens };
+    DARK_NAMES.push(name);
+  } else {
+    THEME_TOKENS[name] = tokens;
+  }
 }
 
 function resolver(tokens) {
@@ -34,6 +42,14 @@ const PAIRS = [
   ['color-text', 'color-bg', TEXT, 'body text on the page'],
   ['color-text', 'color-surface-muted', TEXT, 'text on muted panels'],
   ['color-text', 'color-bg-subtle', TEXT, 'text on tinted bands'],
+  ['color-text', 'color-surface-elevated', TEXT, 'text in menus, dialogs and toasts'],
+  ['color-text-secondary', 'color-surface-elevated', TEXT, 'secondary text in menus and dialogs'],
+  ['color-primary', 'color-surface-elevated', TEXT, 'links in menus and dialogs'],
+  ['color-primary-text', 'color-surface', TEXT, 'emphasised brand text on cards'],
+  ['color-accent-text', 'color-surface', TEXT, 'accent text on cards'],
+  ['color-success', 'color-surface', TEXT, 'success text on cards'],
+  ['color-warning', 'color-surface', TEXT, 'warning text on cards'],
+  ['color-info', 'color-surface', TEXT, 'info text on cards'],
   ['color-text-secondary', 'color-surface', TEXT, 'secondary text on cards'],
   ['color-text-secondary', 'color-bg', TEXT, 'secondary text on the page'],
   ['color-text-secondary', 'color-surface-muted', TEXT, 'secondary text on muted panels'],
@@ -68,16 +84,28 @@ const PAIRS = [
   ['color-dark-accent', 'color-dark-bg', TEXT, 'accent words in the hero'],
   ['color-dark-primary', 'color-dark-surface', TEXT, 'links on dark cards'],
   ['color-border-input', 'color-surface', UI, 'input, checkbox and radio borders'],
+  ['color-border-input', 'color-surface-elevated', UI, 'input borders inside dialogs'],
+  ['color-focus', 'color-surface-elevated', UI, 'focus outline in menus and dialogs'],
   ['color-focus', 'color-surface', UI, 'focus outline on cards'],
   ['color-focus', 'color-bg', UI, 'focus outline on the page'],
   ['color-focus-on-dark', 'color-dark-bg', UI, 'focus outline in dark sections'],
   ['color-primary', 'color-surface', UI, 'checked checkbox / switch / progress'],
 ];
 
-describe('design v2 themes exist', () => {
-  test('themes.css defines exactly the themes listed in theme.js, and the default is one of them', () => {
-    expect(Object.keys(THEME_TOKENS).sort()).toEqual(THEMES.map((t) => t.id).sort());
-    expect(THEMES.map((t) => t.id)).toContain(DEFAULT_THEME);
+describe('themes exist', () => {
+  test('themes.css defines exactly the themes listed in theme.js, each with a dark mode, and the default is one of them', () => {
+    const ids = THEMES.map((t) => t.id).sort();
+    expect(Object.keys(THEME_TOKENS).filter((k) => !k.endsWith('(dark)')).sort()).toEqual(ids);
+    expect(DARK_NAMES.sort()).toEqual(ids);
+    expect(ids).toContain(DEFAULT_THEME);
+  });
+
+  test.each(DARK_NAMES)('%s: dark mode is really dark (page darker than its text) and has three elevation levels', (name) => {
+    const resolve = resolver(THEME_TOKENS[`${name} (dark)`]);
+    const L = (token) => relativeLuminance(resolve(token));
+    expect(L('color-bg')).toBeLessThan(L('color-surface'));
+    expect(L('color-surface')).toBeLessThan(L('color-surface-elevated'));
+    expect(L('color-text')).toBeGreaterThan(L('color-bg') * 10);
   });
 
   test.each(Object.keys(THEME_TOKENS))('%s defines every role used in the pairs', (theme) => {

@@ -39,7 +39,7 @@ describe('GET /api/auth/session', () => {
     const { cookie } = await registerUser(app, { role: 'customer' });
     const res = await api(app, cookie).get('/api/auth/session');
     expect(res.status).toBe(200);
-    expect(Object.keys(res.body.user).sort()).toEqual(['_id', 'email', 'name', 'phone', 'preferredLanguage', 'role']);
+    expect(Object.keys(res.body.user).sort()).toEqual(['_id', 'email', 'name', 'phone', 'preferredLanguage', 'preferredTextSize', 'preferredTheme', 'role']);
     expect(res.body.user.preferredLanguage).toBeNull(); // not chosen yet
     expect(JSON.stringify(res.body)).not.toMatch(/password|tokenVersion|failedLogin|lockUntil/);
   });
@@ -76,6 +76,38 @@ describe('preferred language', () => {
     expect((await api(app, cookie).get('/api/auth/session')).body.user.preferredLanguage).toBe(lang);
   });
 
+  test.each(['light', 'dark', 'system'])('saves the theme "%s" (Batch 4) and sends it back with the session', async (theme) => {
+    const { cookie, user } = await registerUser(app);
+    const res = await api(app, cookie).patch('/api/users/me/preferences').send({ preferredTheme: theme });
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ preferredTheme: theme });
+    expect((await User.findById(user._id).lean()).preferredTheme).toBe(theme);
+    expect((await api(app, cookie).get('/api/auth/session')).body.user.preferredTheme).toBe(theme);
+  });
+
+  test.each(['small', 'normal', 'large'])('saves the text size "%s" (Batch 4)', async (size) => {
+    const { cookie } = await registerUser(app);
+    const res = await api(app, cookie).patch('/api/users/me/preferences').send({ preferredTextSize: size });
+    expect(res.body).toEqual({ preferredTextSize: size });
+    expect((await api(app, cookie).get('/api/auth/me')).body.preferredTextSize).toBe(size);
+  });
+
+  test('changing one setting leaves the others as they were', async () => {
+    const { cookie } = await registerUser(app);
+    await api(app, cookie).patch('/api/users/me/preferences').send({ preferredLanguage: 'ur', preferredTheme: 'dark', preferredTextSize: 'large' });
+    const res = await api(app, cookie).patch('/api/users/me/preferences').send({ preferredTheme: 'light' });
+    expect(res.body).toEqual({ preferredTheme: 'light' });
+    const { user } = (await api(app, cookie).get('/api/auth/session')).body;
+    expect(user).toMatchObject({ preferredLanguage: 'ur', preferredTheme: 'light', preferredTextSize: 'large' });
+  });
+
+  test('a new account has no saved theme or text size (null), so the device setting is used', async () => {
+    const { cookie } = await registerUser(app);
+    const { user } = (await api(app, cookie).get('/api/auth/session')).body;
+    expect(user.preferredTheme).toBeNull();
+    expect(user.preferredTextSize).toBeNull();
+  });
+
   test('works for customers and admins too', async () => {
     const { cookie } = await registerUser(app, { role: 'customer' });
     expect((await api(app, cookie).patch('/api/users/me/preferences').send({ preferredLanguage: 'ur-Latn' })).status).toBe(200);
@@ -87,7 +119,11 @@ describe('preferred language', () => {
     const cases = [
       [{ preferredLanguage: 'urdu' }, 'LANGUAGE_INVALID'],
       [{ preferredLanguage: { $ne: 'en' } }, 'LANGUAGE_INVALID'],
-      [{}, 'LANGUAGE_INVALID'],
+      [{}, 'PREFERENCES_EMPTY'],
+      [{ preferredTheme: 'pink' }, 'THEME_INVALID'],
+      [{ preferredTheme: ['dark'] }, 'THEME_INVALID'],
+      [{ preferredTextSize: 'huge' }, 'TEXT_SIZE_INVALID'],
+      [{ preferredTextSize: 2 }, 'TEXT_SIZE_INVALID'],
       [{ preferredLanguage: 'en', role: 'admin' }, 'UNKNOWN_FIELD'],
     ];
     for (const [body, code] of cases) {

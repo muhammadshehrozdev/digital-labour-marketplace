@@ -12,6 +12,8 @@ import { findSessionUser } from '../middleware/authMiddleware.js';
 export const ownUser = (u) => ({
   _id: u._id, name: u.name, email: u.email, phone: u.phone, role: u.role,
   preferredLanguage: u.preferredLanguage ?? null,
+  preferredTheme: u.preferredTheme ?? null,
+  preferredTextSize: u.preferredTextSize ?? null,
 });
 
 // The English text lives in errors/catalog.js (the website shows it in the chosen language).

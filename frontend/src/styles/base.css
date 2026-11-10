@@ -10,6 +10,11 @@ html {
   scroll-padding-block-start: calc(var(--header-height) + var(--space-4));
   color-scheme: light;
 }
+:root[data-mode='dark'] { color-scheme: dark; }
+
+/* Text size (A−, A, A+; Batch 4): everything is sized in rem, so the whole page follows. */
+:root[data-text-size='small'] { font-size: 93.75%; }
+:root[data-text-size='large'] { font-size: 112.5%; }
 
 body {
   min-block-size: 100vh;
@@ -158,6 +163,22 @@ a:hover { color: var(--color-primary-hover); }
   ::view-transition-new(root) { animation: vt-in 260ms var(--ease-out) both; }
   :root[data-transition='language']::view-transition-old(root) { animation: vt-fade-out 220ms ease both; }
   :root[data-transition='language']::view-transition-new(root) { animation: vt-fade-in 320ms ease both; }
+}
+/* Light <-> dark (theme/reveal.js): the old page stays still and the new one grows as a circle
+   out of the night-mode button (the clip-path is animated from JavaScript, which knows where the
+   button is). */
+:root[data-transition='theme']::view-transition-old(root),
+:root[data-transition='theme']::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+:root[data-transition='theme']::view-transition-old(root) { z-index: 0; }
+:root[data-transition='theme']::view-transition-new(root) { z-index: 1; }
+/* Browsers without View Transitions: a short cross-fade of the colours instead. */
+@media (prefers-reduced-motion: no-preference) {
+  :root.mode-fade, :root.mode-fade *, :root.mode-fade *::before, :root.mode-fade *::after {
+    transition: background-color 360ms ease, color 360ms ease, border-color 360ms ease, fill 360ms ease, stroke 360ms ease, box-shadow 360ms ease !important;
+  }
 }
 @keyframes vt-out { to { opacity: 0; transform: translateY(-6px); } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }

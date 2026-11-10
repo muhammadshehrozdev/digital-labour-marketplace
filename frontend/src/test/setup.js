@@ -30,7 +30,11 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  // A language chosen in one test must not leak into the next one (Batch 3).
+  // A language, theme or text size chosen in one test must not leak into the next one.
+  delete document.documentElement.dataset.mode;
+  delete document.documentElement.dataset.textSize;
+  delete document.documentElement.dataset.transition;
+  document.documentElement.classList.remove('mode-fade');
   try {
     window.localStorage.clear();
   } catch {

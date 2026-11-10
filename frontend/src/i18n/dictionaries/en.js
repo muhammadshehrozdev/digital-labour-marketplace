@@ -209,7 +209,7 @@ export default {
     sourceText: 'Text', skillIds: 'Skill', skillId: 'Skill', title: 'Title', note: 'Note', page: 'Page',
     limit: 'Limit', status: 'Status', action: 'Action', from: 'From date', to: 'To date', type: 'Type',
     identity: 'Identity filter', skills: 'Skills filter', duplicates: 'Duplicates filter', consent: 'Consent',
-    inputMode: 'Input mode', addedVia: 'Added via', reasonCode: 'Reason', preferredLanguage: 'Language', id: 'Id',
+    inputMode: 'Input mode', addedVia: 'Added via', reasonCode: 'Reason', preferredLanguage: 'Language', preferredTheme: 'Theme', preferredTextSize: 'Text size', id: 'Id',
     workerIdCode: 'Worker ID',
   },
 
@@ -250,6 +250,9 @@ export default {
     PASSWORD_ONLY_SPACES: 'Password cannot be only spaces',
     ROLE_INVALID: 'Role must be worker or customer',
     LANGUAGE_INVALID: 'Language must be en, ur or ur-Latn',
+    THEME_INVALID: 'Theme must be light, dark or system',
+    TEXT_SIZE_INVALID: 'Text size must be small, normal or large',
+    PREFERENCES_EMPTY: 'Send at least one setting to change',
     EMAIL_TAKEN: 'This email is already registered. Please log in instead.',
     LOGIN_FAILED: 'Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes.',
     NOT_LOGGED_IN: 'Please log in first.',
@@ -858,5 +861,27 @@ export default {
       emptyTitle: 'No entries',
       emptyText: 'Nothing matches these filters.',
     },
+  },
+
+  theme: {
+    toggle: 'Dark mode',
+    toggleHint: 'Switch between light and dark. Hold (or right-click) for more choices.',
+    options: 'Theme options',
+    menuLabel: 'Theme',
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System',
+    systemHint: 'Follows your device',
+    nowLight: 'Light mode is on',
+    nowDark: 'Dark mode is on',
+    chosen: { light: 'Light mode is on', dark: 'Dark mode is on', system: 'The theme now follows your device' },
+    footerTitle: 'Appearance',
+  },
+
+  textSize: {
+    label: 'Text size',
+    small: 'Smaller text',
+    normal: 'Normal text',
+    large: 'Larger text',
   },
 };

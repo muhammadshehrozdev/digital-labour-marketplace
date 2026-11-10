@@ -1,34 +1,38 @@
-/* Design v2 colour themes (Batch 3, D-017). One block per theme, selected by
-   <html data-theme="...">. The default is set in src/styles/theme.js (one line).
-   Every colour is OKLCH inside the sRGB gamut; every text pair is checked by
+/* Colour themes (design v3, Batch 4). One block per theme and mode:
+     :root[data-theme='emerald-night']                      light mode
+     :root[data-theme='emerald-night'][data-mode='dark']    dark mode (D-022)
+   <html data-theme> is set in src/styles/theme.js (one line), <html data-mode> by the theme
+   toggle (src/theme/mode.js) and, before React loads, by the small script in index.html.
+   Every colour is OKLCH inside the sRGB gamut; every text pair is checked for both modes by
    src/styles/contrast.test.js (WCAG 2.2 AA). Components use only the role tokens
-   (--color-*), never the scales directly, so a theme is a pure swap. */
+   (--color-*), never the scales directly, so a theme or mode is a pure swap. */
 
 /* ---------------- 1. Emerald Night: deep green-black, vivid emerald, saffron ---------------- */
 :root[data-theme='emerald-night'] {
-  --primary-50: oklch(0.975 0.02 162); --primary-100: oklch(0.945 0.045 162);
-  --primary-200: oklch(0.89 0.085 162); --primary-300: oklch(0.82 0.13 162);
-  --primary-400: oklch(0.74 0.15 162); --primary-500: oklch(0.63 0.135 162);
-  --primary-600: oklch(0.52 0.112 162); --primary-700: oklch(0.45 0.098 162);
-  --primary-800: oklch(0.38 0.083 162); --primary-900: oklch(0.3 0.064 162);
+  /* v3: a richer emerald (close to the edge of what screens can show) and a warmer saffron */
+  --primary-50: oklch(0.975 0.022 160); --primary-100: oklch(0.945 0.05 160);
+  --primary-200: oklch(0.89 0.095 160); --primary-300: oklch(0.82 0.145 160);
+  --primary-400: oklch(0.74 0.155 160); --primary-500: oklch(0.64 0.138 160);
+  --primary-600: oklch(0.525 0.115 160); --primary-700: oklch(0.455 0.1 160);
+  --primary-800: oklch(0.38 0.082 160); --primary-900: oklch(0.3 0.064 160);
   --secondary-100: oklch(0.945 0.018 175); --secondary-300: oklch(0.78 0.035 175);
   --secondary-500: oklch(0.5 0.045 175); --secondary-700: oklch(0.32 0.04 175); --secondary-900: oklch(0.21 0.03 175);
-  --accent-100: oklch(0.96 0.04 85); --accent-300: oklch(0.87 0.11 80);
-  --accent-500: oklch(0.8 0.155 72); --accent-700: oklch(0.54 0.11 60);
+  --accent-100: oklch(0.96 0.036 82); --accent-300: oklch(0.87 0.105 76);
+  --accent-500: oklch(0.79 0.148 66); --accent-600: oklch(0.7 0.145 62); --accent-700: oklch(0.53 0.112 56);
 
-  --color-bg: oklch(0.985 0.005 160);
-  --color-bg-subtle: oklch(0.965 0.01 160);
+  --color-bg: oklch(0.984 0.006 150);
+  --color-bg-subtle: oklch(0.964 0.011 155);
   --color-surface: oklch(1 0 0);
-  --color-surface-subtle: oklch(0.99 0.004 160);
-  --color-surface-muted: oklch(0.955 0.012 160);
+  --color-surface-subtle: oklch(0.99 0.004 155);
+  --color-surface-muted: oklch(0.953 0.013 158);
   --color-surface-elevated: oklch(1 0 0);
-  --color-text: oklch(0.23 0.02 165);
-  --color-text-secondary: oklch(0.45 0.022 165);
-  --color-text-muted: oklch(0.52 0.02 165);
+  --color-text: oklch(0.225 0.022 165);
+  --color-text-secondary: oklch(0.44 0.024 165);
+  --color-text-muted: oklch(0.52 0.022 165);
   --color-text-disabled: oklch(0.7 0.012 165);
-  --color-border: oklch(0.91 0.01 160);
-  --color-border-strong: oklch(0.83 0.015 160);
-  --color-border-input: oklch(0.58 0.02 165);
+  --color-border: oklch(0.912 0.012 158);
+  --color-border-strong: oklch(0.83 0.016 160);
+  --color-border-input: oklch(0.58 0.022 165);
   --color-primary: var(--primary-600);
   --color-primary-hover: var(--primary-700);
   --color-primary-pressed: var(--primary-800);
@@ -52,26 +56,77 @@
   --color-focus-halo: var(--primary-300);
   --color-overlay: oklch(0.19 0.03 168 / 0.55);
 
-  --color-dark-bg: oklch(0.19 0.032 168);
-  --color-dark-bg-2: oklch(0.235 0.038 168);
-  --color-dark-surface: oklch(0.27 0.042 168);
-  --color-dark-border: oklch(0.37 0.045 168);
+  --color-dark-bg: oklch(0.185 0.034 168);
+  --color-dark-bg-2: oklch(0.235 0.04 166);
+  --color-dark-surface: oklch(0.27 0.044 166);
+  --color-dark-border: oklch(0.37 0.046 166);
   --color-on-dark: oklch(0.97 0.01 160);
   --color-on-dark-muted: oklch(0.8 0.03 160);
-  --color-dark-primary: oklch(0.8 0.14 162);
-  --color-dark-accent: oklch(0.85 0.14 80);
-  --color-focus-on-dark: oklch(0.86 0.12 162);
+  --color-dark-primary: oklch(0.8 0.15 160);
+  --color-dark-accent: oklch(0.84 0.135 76);
+  --color-focus-on-dark: oklch(0.86 0.12 160);
 
   --gradient-hero:
-    radial-gradient(120% 90% at 85% 0%, oklch(0.42 0.1 162 / 0.55), transparent 60%),
-    radial-gradient(80% 70% at 0% 100%, oklch(0.55 0.12 75 / 0.22), transparent 60%),
+    radial-gradient(120% 90% at 85% 0%, oklch(0.42 0.1 160 / 0.55), transparent 60%),
+    radial-gradient(80% 70% at 0% 100%, oklch(0.55 0.12 70 / 0.22), transparent 60%),
     linear-gradient(160deg, var(--color-dark-bg-2), var(--color-dark-bg));
   --gradient-primary: linear-gradient(135deg, var(--primary-500), var(--primary-700));
   --gradient-accent: linear-gradient(135deg, var(--accent-300), var(--accent-500));
   --gradient-text: linear-gradient(90deg, var(--color-dark-primary), var(--color-dark-accent));
   --gradient-band: linear-gradient(120deg, var(--primary-700), var(--primary-900));
-  --glow: oklch(0.63 0.135 162 / 0.35);
+  --glow: oklch(0.64 0.138 160 / 0.35);
   --theme-color: #0c2a21;
+}
+
+/* Emerald Night, dark mode: three elevation levels (bg < surface < elevated), brand colours lifted for
+   dark backgrounds, softer shadows plus hairline borders (tokens.css). */
+:root[data-theme='emerald-night'][data-mode='dark'] {
+  --color-bg: oklch(0.165 0.016 168);
+  --color-bg-subtle: oklch(0.192 0.018 168);
+  --color-surface: oklch(0.215 0.02 168);
+  --color-surface-subtle: oklch(0.2 0.018 168);
+  --color-surface-muted: oklch(0.25 0.022 168);
+  --color-surface-elevated: oklch(0.262 0.024 168);
+  --color-text: oklch(0.955 0.008 168);
+  --color-text-secondary: oklch(0.79 0.02 168);
+  --color-text-muted: oklch(0.71 0.02 168);
+  --color-text-disabled: oklch(0.5 0.014 168);
+  --color-border: oklch(0.3 0.02 168);
+  --color-border-strong: oklch(0.38 0.024 168);
+  --color-border-input: oklch(0.58 0.028 168);
+  --color-primary: oklch(0.78 0.14 160);
+  --color-primary-hover: oklch(0.84 0.125 160);
+  --color-primary-pressed: oklch(0.72 0.135 160);
+  --color-on-primary: oklch(0.17 0.03 160);
+  --color-primary-soft: oklch(0.26 0.05 160);
+  --color-primary-soft-strong: oklch(0.32 0.066 160);
+  --color-primary-text: oklch(0.85 0.115 160);
+  --color-secondary: oklch(0.8 0.04 175);
+  --color-on-secondary: oklch(0.17 0.02 175);
+  --color-secondary-soft: oklch(0.27 0.03 175);
+  --color-secondary-text: oklch(0.85 0.04 175);
+  --color-accent: oklch(0.82 0.135 76);
+  --color-on-accent: oklch(0.22 0.03 60);
+  --color-accent-soft: oklch(0.29 0.05 76);
+  --color-accent-text: oklch(0.87 0.11 76);
+  --color-success: oklch(0.79 0.15 150); --color-success-soft: oklch(0.26 0.05 150);
+  --color-warning: oklch(0.83 0.12 80); --color-warning-soft: oklch(0.28 0.045 75);
+  --color-danger: oklch(0.75 0.14 25); --color-danger-soft: oklch(0.27 0.06 25);
+  --color-info: oklch(0.77 0.11 250); --color-info-soft: oklch(0.27 0.05 255);
+  --color-focus: oklch(0.86 0.12 160);
+  --color-focus-halo: oklch(0.5 0.1 160);
+  --color-overlay: oklch(0.08 0.015 168 / 0.72);
+
+  /* the always-dark hero and footer sit one step below the page, so they still read as a band */
+  --color-dark-bg: oklch(0.135 0.022 168);
+  --color-dark-bg-2: oklch(0.185 0.032 168);
+  --color-dark-surface: oklch(0.235 0.036 168);
+  --color-dark-border: oklch(0.33 0.04 168);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.8 0.14 160), oklch(0.68 0.14 160));
+  --gradient-band: linear-gradient(120deg, oklch(0.3 0.064 160), oklch(0.2 0.04 160));
+  --glow: oklch(0.7 0.14 160 / 0.28);
+  --theme-color: #0a1512;
 }
 
 /* ---------------- 2. Ink & Marigold: deep ink-navy, marigold and coral ---------------- */
@@ -144,6 +199,57 @@
   --theme-color: #0f1a3a;
 }
 
+/* Ink & Marigold, dark mode: three elevation levels (bg < surface < elevated), brand colours lifted for
+   dark backgrounds, softer shadows plus hairline borders (tokens.css). */
+:root[data-theme='ink-marigold'][data-mode='dark'] {
+  --color-bg: oklch(0.165 0.016 262);
+  --color-bg-subtle: oklch(0.192 0.018 262);
+  --color-surface: oklch(0.215 0.02 262);
+  --color-surface-subtle: oklch(0.2 0.018 262);
+  --color-surface-muted: oklch(0.25 0.022 262);
+  --color-surface-elevated: oklch(0.262 0.024 262);
+  --color-text: oklch(0.955 0.008 262);
+  --color-text-secondary: oklch(0.79 0.02 262);
+  --color-text-muted: oklch(0.71 0.02 262);
+  --color-text-disabled: oklch(0.5 0.014 262);
+  --color-border: oklch(0.3 0.02 262);
+  --color-border-strong: oklch(0.38 0.024 262);
+  --color-border-input: oklch(0.58 0.028 262);
+  --color-primary: oklch(0.78 0.105 262);
+  --color-primary-hover: oklch(0.84 0.074 262);
+  --color-primary-pressed: oklch(0.72 0.108 262);
+  --color-on-primary: oklch(0.17 0.03 262);
+  --color-primary-soft: oklch(0.26 0.04 262);
+  --color-primary-soft-strong: oklch(0.32 0.053 262);
+  --color-primary-text: oklch(0.85 0.07 262);
+  --color-secondary: oklch(0.8 0.04 30);
+  --color-on-secondary: oklch(0.17 0.02 30);
+  --color-secondary-soft: oklch(0.27 0.03 30);
+  --color-secondary-text: oklch(0.85 0.04 30);
+  --color-accent: oklch(0.82 0.135 76);
+  --color-on-accent: oklch(0.22 0.03 60);
+  --color-accent-soft: oklch(0.29 0.05 76);
+  --color-accent-text: oklch(0.87 0.11 76);
+  --color-success: oklch(0.79 0.15 150); --color-success-soft: oklch(0.26 0.05 150);
+  --color-warning: oklch(0.83 0.12 80); --color-warning-soft: oklch(0.28 0.045 75);
+  --color-danger: oklch(0.75 0.14 25); --color-danger-soft: oklch(0.27 0.06 25);
+  --color-info: oklch(0.77 0.11 250); --color-info-soft: oklch(0.27 0.05 255);
+  --color-focus: oklch(0.86 0.064 262);
+  --color-focus-halo: oklch(0.5 0.08 262);
+  --color-overlay: oklch(0.08 0.015 262 / 0.72);
+
+  /* the always-dark hero and footer sit one step below the page, so they still read as a band */
+  --color-dark-bg: oklch(0.135 0.022 262);
+  --color-dark-bg-2: oklch(0.185 0.032 262);
+  --color-dark-surface: oklch(0.235 0.036 262);
+  --color-dark-border: oklch(0.33 0.04 262);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.8 0.1 262), oklch(0.68 0.112 262));
+  --gradient-band: linear-gradient(120deg, oklch(0.3 0.051 262), oklch(0.2 0.032 262));
+  --glow: oklch(0.7 0.112 262 / 0.28);
+  --theme-color: #0d1020;
+}
+
 /* ---------------- 3. Terracotta Craft: warm clay, cream, deep teal ---------------- */
 :root[data-theme='terracotta-craft'] {
   --primary-50: oklch(0.97 0.015 50); --primary-100: oklch(0.935 0.035 45);
@@ -212,4 +318,55 @@
   --gradient-band: linear-gradient(120deg, var(--secondary-700), var(--secondary-900));
   --glow: oklch(0.6 0.14 40 / 0.32);
   --theme-color: #10302f;
+}
+
+/* Terracotta Craft, dark mode: three elevation levels (bg < surface < elevated), brand colours lifted for
+   dark backgrounds, softer shadows plus hairline borders (tokens.css). */
+:root[data-theme='terracotta-craft'][data-mode='dark'] {
+  --color-bg: oklch(0.165 0.016 60);
+  --color-bg-subtle: oklch(0.192 0.018 60);
+  --color-surface: oklch(0.215 0.02 60);
+  --color-surface-subtle: oklch(0.2 0.018 60);
+  --color-surface-muted: oklch(0.25 0.022 60);
+  --color-surface-elevated: oklch(0.262 0.024 60);
+  --color-text: oklch(0.955 0.008 60);
+  --color-text-secondary: oklch(0.79 0.02 60);
+  --color-text-muted: oklch(0.71 0.02 60);
+  --color-text-disabled: oklch(0.5 0.014 60);
+  --color-border: oklch(0.3 0.02 60);
+  --color-border-strong: oklch(0.38 0.024 60);
+  --color-border-input: oklch(0.58 0.028 60);
+  --color-primary: oklch(0.78 0.119 40);
+  --color-primary-hover: oklch(0.84 0.086 40);
+  --color-primary-pressed: oklch(0.72 0.115 40);
+  --color-on-primary: oklch(0.17 0.03 40);
+  --color-primary-soft: oklch(0.26 0.043 40);
+  --color-primary-soft-strong: oklch(0.32 0.056 40);
+  --color-primary-text: oklch(0.85 0.08 40);
+  --color-secondary: oklch(0.8 0.04 200);
+  --color-on-secondary: oklch(0.17 0.02 200);
+  --color-secondary-soft: oklch(0.27 0.03 200);
+  --color-secondary-text: oklch(0.85 0.04 200);
+  --color-accent: oklch(0.82 0.135 78);
+  --color-on-accent: oklch(0.22 0.03 60);
+  --color-accent-soft: oklch(0.29 0.05 78);
+  --color-accent-text: oklch(0.87 0.11 78);
+  --color-success: oklch(0.79 0.15 150); --color-success-soft: oklch(0.26 0.05 150);
+  --color-warning: oklch(0.83 0.12 80); --color-warning-soft: oklch(0.28 0.045 75);
+  --color-danger: oklch(0.75 0.14 25); --color-danger-soft: oklch(0.27 0.06 25);
+  --color-info: oklch(0.77 0.11 250); --color-info-soft: oklch(0.27 0.05 255);
+  --color-focus: oklch(0.86 0.074 40);
+  --color-focus-halo: oklch(0.5 0.085 40);
+  --color-overlay: oklch(0.08 0.015 60 / 0.72);
+
+  /* the always-dark hero and footer sit one step below the page, so they still read as a band */
+  --color-dark-bg: oklch(0.135 0.022 60);
+  --color-dark-bg-2: oklch(0.185 0.032 60);
+  --color-dark-surface: oklch(0.235 0.036 60);
+  --color-dark-border: oklch(0.33 0.04 60);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.8 0.119 40), oklch(0.68 0.119 40));
+  --gradient-band: linear-gradient(120deg, oklch(0.3 0.054 40), oklch(0.2 0.034 40));
+  --glow: oklch(0.7 0.119 40 / 0.28);
+  --theme-color: #15110d;
 }

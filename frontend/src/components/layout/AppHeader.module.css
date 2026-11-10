@@ -211,3 +211,15 @@
   .menuToggle { display: none; }
   .mobileNav { display: none; }
 }
+
+/* A setting inside the account menu (text size). */
+.menuRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}

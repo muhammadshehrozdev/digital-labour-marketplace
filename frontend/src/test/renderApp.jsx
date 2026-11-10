@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { createAppRoutes } from '../routes/appRoutes';
 import { LanguageProvider } from '../i18n';
+import { ThemeProvider } from '../theme';
 
 // The same route tree as the app, in a memory router (data router, like the app).
 let router = null;
@@ -13,8 +14,10 @@ export const currentSearch = () => router?.state.location.search ?? '';
 export function renderAt(path, { language = 'en' } = {}) {
   router = createMemoryRouter(createAppRoutes(), { initialEntries: [path] });
   return render(
-    <LanguageProvider initialLanguage={language ?? undefined}>
-      <RouterProvider router={router} />
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider initialLanguage={language ?? undefined}>
+        <RouterProvider router={router} />
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

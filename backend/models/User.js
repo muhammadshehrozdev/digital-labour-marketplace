@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { LANGUAGES } from '../config/languages.js';
+import { TEXT_SIZES, THEME_PREFERENCES } from '../config/preferences.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -23,6 +24,9 @@ const userSchema = new mongoose.Schema(
     lockUntil: { type: Date, default: null },
     // Website language chosen by the user (Batch 3). null = not chosen yet.
     preferredLanguage: { type: String, enum: [...LANGUAGES, null], default: null },
+    // Light / dark / follow the device, and the text size (Batch 4). null = not chosen yet.
+    preferredTheme: { type: String, enum: [...THEME_PREFERENCES, null], default: null },
+    preferredTextSize: { type: String, enum: [...TEXT_SIZES, null], default: null },
   },
   { timestamps: true }
 );

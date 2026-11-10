@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Logo from '../../components/brand/Logo';
+import ThemeToggle from '../../components/layout/ThemeToggle';
 import { LANGUAGES, useChangeLanguage } from '../../i18n';
 import styles from './LanguageChooser.module.css';
 
@@ -22,6 +23,7 @@ export default function LanguageChooser() {
 
   return (
     <main id="main" className={styles.page}>
+      <div className={styles.corner}><ThemeToggle tone="dark" /></div>
       <div className={styles.inner}>
         <div className={styles.logo}><Logo size={44} animated tone="dark" /></div>
         <h1 className={styles.title}>

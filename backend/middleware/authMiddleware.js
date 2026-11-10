@@ -8,7 +8,7 @@ import { SESSION_COOKIE, readCookie, verifySession } from '../services/session.j
 import { errorBody } from '../utils/httpError.js';
 
 // The fields of the logged-in user that routes may use (never the password).
-const SESSION_USER_FIELDS = 'name email phone role tokenVersion preferredLanguage';
+const SESSION_USER_FIELDS = 'name email phone role tokenVersion preferredLanguage preferredTheme preferredTextSize';
 
 // Reads the session cookie. Returns { user } for a valid session, or { code } that says why not.
 // Used by protect (login required) and by GET /api/auth/session (visitors allowed).

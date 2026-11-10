@@ -476,3 +476,43 @@ Animated version (landing hero, language chooser; `Logo animated`): the shield o
 fills, the wrench rotates gently into place, the check draws last, the wordmark slides in (about 2.6 s,
 once). Everywhere else, and with reduced motion, the logo is static. Frames:
 `docs/design/logo/animation-frames.png`.
+
+---
+
+## D-022 — Dark mode: three choices, circular reveal, saved like the language (Batch 4, 10 Nov 2026)
+
+**What the team asked (Batch 4, Part 0 and 3):** a night-mode button in the top corner of every page,
+with fun animations, not just a switch.
+
+**Decision:**
+
+- **Two attributes on `<html>`.** `data-theme` is the colour theme (Emerald Night, D-017) and
+  `data-mode` is `light` or `dark`. Each theme has a second block in `themes.css`
+  (`[data-theme='…'][data-mode='dark']`) that only overrides role tokens, so components did not change.
+  Dark mode has three elevation levels (page < card < menu/dialog), brand colours lifted for dark
+  backgrounds, black shadows plus a hairline of light on raised surfaces (`tokens.css`).
+- **Three choices:** Light, Dark, System. The default is System (`prefers-color-scheme`), and the page
+  keeps following the device while it is open. One tap on the button switches light and dark. A long
+  press, a right click, the small arrow beside the button (shown on hover and keyboard focus) or the
+  Down arrow key opens a menu with all three.
+- **Where:** in the header (`AppHeader`, used by every page: landing, login, register, onboarding,
+  worker, customer and admin pages), in the footer, and in the top corner of the language chooser (the
+  only screen without the header). One tap on mobile.
+- **Animation:** the icon is one SVG: the sun's rays pull in, a crescent is cut from the disc, two stars
+  twinkle. The page changes with a **circular reveal** that grows out of the button
+  (`document.startViewTransition` + `clip-path: circle()`, `frontend/src/theme/reveal.js`). Browsers
+  without View Transitions get a 0.36 s cross-fade of colours; with reduced motion the change is instant.
+- **Saved** like the language (D-019): `localStorage['dlm.theme']` for visitors (try/catch), and
+  `preferredTheme` on the account (`PATCH /api/users/me/preferences`, validated `light | dark | system`).
+  A choice made during this visit wins and is saved to the account; otherwise the account's setting is
+  used; an account without one takes this browser's.
+- **No flash of the wrong mode:** a small inline script in `index.html` sets `data-mode` (and the text
+  size) before anything is drawn. A test runs that real script against the same cases as the app code.
+  Note for later: if a Content-Security-Policy is added to the website, this script needs a hash.
+- **Text size (A−, A, A+)** uses the same machinery: `data-text-size` on `<html>` changes the root font
+  size (93.75%, 100%, 112.5%); everything is sized in `rem`. Saved as `dlm.textSize` and
+  `preferredTextSize`.
+- **Proof:** `contrast.test.js` checks all 53 colour pairs in both modes of every theme (WCAG 2.2 AA) and
+  that every colour is inside sRGB; `theme.test.jsx` checks the button on every page, persistence, the
+  reveal, the fallback, reduced motion and the account sync; the e2e suite runs axe in dark mode.
+

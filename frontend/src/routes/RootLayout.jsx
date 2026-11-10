@@ -4,6 +4,7 @@ import { Navigate, Outlet, ScrollRestoration, useLocation } from 'react-router-d
 import { AuthProvider } from '../context/AuthContext';
 import { ToastProvider } from '../components/ui';
 import { LanguageSync } from '../i18n';
+import { ThemeSync } from '../theme';
 import LanguageGate from './LanguageGate';
 
 // Old link /worker/skills(?proof=<skillId>) now opens the profile editor (D-020).
@@ -20,6 +21,7 @@ function Providers({ children }) {
     <ToastProvider>
       <AuthProvider>
         <LanguageSync />
+        <ThemeSync />
         <LanguageGate>{children}</LanguageGate>
       </AuthProvider>
     </ToastProvider>

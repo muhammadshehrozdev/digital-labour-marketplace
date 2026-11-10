@@ -4,6 +4,7 @@
 // and in the website's dictionaries). middleware/validate.js adds {field}, {min}, {max}.
 import { z } from 'zod';
 import { LANGUAGES } from '../config/languages.js';
+import { TEXT_SIZES, THEME_PREFERENCES } from '../config/preferences.js';
 
 // Escape every RegExp special character so user text is matched literally (audit M1-3).
 export const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\\-/]/g, '\\$&');
@@ -32,6 +33,9 @@ export const phone = z
 
 // Website language (Batch 3): en, ur or ur-Latn.
 export const preferredLanguage = z.enum(LANGUAGES, { error: 'LANGUAGE_INVALID' });
+// Display settings (Batch 4): light / dark / system, and the text size.
+export const preferredTheme = z.enum(THEME_PREFERENCES, { error: 'THEME_INVALID' });
+export const preferredTextSize = z.enum(TEXT_SIZES, { error: 'TEXT_SIZE_INVALID' });
 
 export const optionalPhone = z.union([z.literal(''), phone]);
 

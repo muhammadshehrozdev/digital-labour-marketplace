@@ -59,11 +59,12 @@ drafts, see `docs/i18n/REVIEW.md`).
 | POST | `/api/auth/login` | anyone | `{ email, password }` | 200 user + cookie |
 | GET | `/api/auth/session` | anyone | — | 200 `{ user }` or `{ user: null }` (never 401; a broken cookie is removed) |
 | GET | `/api/auth/me` | logged in | — | 200 user |
-| PATCH | `/api/users/me/preferences` | logged in (any role) | `{ preferredLanguage }` (`en`, `ur`, `ur-Latn`) | 200 `{ preferredLanguage }` |
+| PATCH | `/api/users/me/preferences` | logged in (any role) | any of `{ preferredLanguage }` (`en`, `ur`, `ur-Latn`), `{ preferredTheme }` (`light`, `dark`, `system`), `{ preferredTextSize }` (`small`, `normal`, `large`); at least one | 200 with exactly the settings that were sent |
 | POST | `/api/auth/logout` | anyone | — | 200; ends every session of this user |
 
-The user object (register, login, session, me) has only `_id, name, email, phone, role, preferredLanguage`
-(`preferredLanguage` is `null` until the user chooses one).
+The user object (register, login, session, me) has only `_id, name, email, phone, role, preferredLanguage,
+preferredTheme, preferredTextSize` (the three settings are `null` until the user chooses; the examples
+below were recorded in Batch 3, before the two display settings were added in Batch 4).
 ```json
 // POST /api/auth/register (customer, with "preferredLanguage":"ur") -> 201
 {"_id":"6af2378c…24c","name":"Example Customer (synthetic)","email":"docs.batch3…@example.com","phone":"03000000032","role":"customer","preferredLanguage":"ur"}
@@ -307,6 +308,9 @@ table lists every code in the catalog.
 | `PASSWORD_ONLY_SPACES` | Password cannot be only spaces |
 | `ROLE_INVALID` | Role must be worker or customer |
 | `LANGUAGE_INVALID` | Language must be en, ur or ur-Latn |
+| `THEME_INVALID` | Theme must be light, dark or system |
+| `TEXT_SIZE_INVALID` | Text size must be small, normal or large |
+| `PREFERENCES_EMPTY` | Send at least one setting to change |
 | `EMAIL_TAKEN` | This email is already registered. Please log in instead. |
 | `LOGIN_FAILED` | Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes. |
 | `NOT_LOGGED_IN` | Please log in first. |

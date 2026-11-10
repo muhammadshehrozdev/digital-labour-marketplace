@@ -55,6 +55,17 @@
   --touch-target: 44px;
 }
 
+/* Dark mode depth: black shadows are hard to see on dark surfaces, so they are stronger and every
+   raised surface also gets a hairline of light on its top edge. */
+:root[data-mode='dark'] {
+  --shadow-color: oklch(0 0 0);
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.35);
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.4), 0 2px 8px oklch(0 0 0 / 0.28), inset 0 1px 0 oklch(1 0 0 / 0.04);
+  --shadow-md: 0 2px 4px oklch(0 0 0 / 0.4), 0 10px 28px oklch(0 0 0 / 0.38), inset 0 1px 0 oklch(1 0 0 / 0.05);
+  --shadow-lg: 0 4px 12px oklch(0 0 0 / 0.45), 0 24px 56px oklch(0 0 0 / 0.5), inset 0 1px 0 oklch(1 0 0 / 0.06);
+  --shadow-glow: 0 10px 34px -8px var(--glow), 0 0 0 1px color-mix(in oklch, var(--color-primary) 30%, transparent);
+}
+
 /* Urdu (exactly "ur", never Roman Urdu "ur-Latn"): every text and heading uses the Urdu stack. */
 :root[lang='ur'] {
   --font-sans: var(--font-urdu);

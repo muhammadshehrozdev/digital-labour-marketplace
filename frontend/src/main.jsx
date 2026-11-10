@@ -9,7 +9,7 @@ import './styles/base.css';
 import { applyTheme, DEFAULT_THEME } from './styles/theme';
 import App from './App.jsx';
 
-applyTheme(DEFAULT_THEME);
+applyTheme(DEFAULT_THEME); // the colour theme; light or dark mode is set in index.html and src/theme
 // Tells the CSS that JavaScript runs (the scroll-reveal fallback only hides content then).
 document.documentElement.classList.add('js-reveal');
 

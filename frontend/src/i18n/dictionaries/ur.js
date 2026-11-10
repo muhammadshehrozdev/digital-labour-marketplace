@@ -208,7 +208,7 @@ export default {
     sourceText: 'متن', skillIds: 'ہنر', skillId: 'ہنر', title: 'عنوان', note: 'نوٹ', page: 'صفحہ',
     limit: 'حد', status: 'حالت', action: 'عمل', from: 'تاریخ سے', to: 'تاریخ تک', type: 'قسم',
     identity: 'شناخت کا فلٹر', skills: 'ہنر کا فلٹر', duplicates: 'ملتی جلتی تصویروں کا فلٹر', consent: 'اجازت',
-    inputMode: 'لکھنے کا طریقہ', addedVia: 'کیسے شامل کیا', reasonCode: 'وجہ', preferredLanguage: 'زبان', id: 'آئی ڈی',
+    inputMode: 'لکھنے کا طریقہ', addedVia: 'کیسے شامل کیا', reasonCode: 'وجہ', preferredLanguage: 'زبان', preferredTheme: 'تھیم', preferredTextSize: 'لکھائی کا سائز', id: 'آئی ڈی',
     workerIdCode: 'کاریگر آئی ڈی',
   },
 
@@ -248,6 +248,9 @@ export default {
     PASSWORD_ONLY_SPACES: 'پاس ورڈ صرف خالی جگہوں کا نہیں ہو سکتا',
     ROLE_INVALID: 'کردار صرف کاریگر یا گاہک ہو سکتا ہے',
     LANGUAGE_INVALID: 'زبان en، ur یا ur-Latn ہونی چاہیے',
+    THEME_INVALID: 'تھیم light، dark یا system ہونی چاہیے',
+    TEXT_SIZE_INVALID: 'لکھائی کا سائز small، normal یا large ہونا چاہیے',
+    PREFERENCES_EMPTY: 'کم از کم ایک سیٹنگ بھیجیں',
     EMAIL_TAKEN: 'یہ ای میل پہلے سے رجسٹرڈ ہے۔ براہ کرم لاگ ان کریں۔',
     LOGIN_FAILED: 'ای میل یا پاس ورڈ غلط ہے۔ 5 غلط کوششوں کے بعد لاگ ان 15 منٹ کے لیے رک جاتا ہے۔',
     NOT_LOGGED_IN: 'براہ کرم پہلے لاگ ان کریں۔',
@@ -856,5 +859,27 @@ export default {
       emptyTitle: 'کوئی اندراج نہیں',
       emptyText: 'ان فلٹر کے مطابق کچھ نہیں۔',
     },
+  },
+
+  theme: {
+    toggle: 'ڈارک موڈ',
+    toggleHint: 'روشن اور ڈارک کے درمیان بدلیں۔ مزید انتخاب کے لیے دبا کر رکھیں (یا رائٹ کلک کریں)۔',
+    options: 'تھیم کے انتخاب',
+    menuLabel: 'تھیم',
+    light: 'روشن',
+    dark: 'ڈارک',
+    system: 'سسٹم',
+    systemHint: 'آپ کے فون یا کمپیوٹر کے مطابق',
+    nowLight: 'روشن موڈ آن ہے',
+    nowDark: 'ڈارک موڈ آن ہے',
+    chosen: { light: 'روشن موڈ آن ہے', dark: 'ڈارک موڈ آن ہے', system: 'تھیم اب آپ کے فون یا کمپیوٹر کے مطابق ہے' },
+    footerTitle: 'ظاہری شکل',
+  },
+
+  textSize: {
+    label: 'لکھائی کا سائز',
+    small: 'چھوٹی لکھائی',
+    normal: 'عام لکھائی',
+    large: 'بڑی لکھائی',
   },
 };
