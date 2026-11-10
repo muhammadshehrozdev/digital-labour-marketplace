@@ -15,6 +15,12 @@ Team: Muhammad Shehroz, Shahzaib Khan, Usama Asif. Supervisor: Ms. Tooba Abdul Q
 | **2 — Experience and Skill Profiler** | A **rule-based (dictionary) skill extractor**: the worker describes their work in Urdu, Roman Urdu or English and gets skill suggestions with the matched words; nothing is saved until the worker ticks and adds. An evaluation harness (precision, recall, F1) for real labelled data. No "AI", no external AI service |
 | **3 — Skill Evidence and Verification** | Workers upload photos of certificates, finished work or reference letters for one skill; an admin approves, rejects, flags as suspected fake or revokes; each skill shows Self-declared / Evidence pending / Verified by evidence / Disputed and a strength word (no percentages) |
 
+Across all modules (Batch 3): the website works in **English, اردو (Urdu, right to left) and Roman
+Urdu** (chooser on the first visit, switcher at the top, the choice is saved to the account); a bold
+design v2 with three colour themes (Emerald Night is the default), a new logo and motion that respects
+"reduce motion"; a read-only "My profile" page with "See what customers see", and one profile editor.
+All Urdu and Roman Urdu texts are drafts for a native reviewer (`docs/i18n/REVIEW.md`).
+
 Deployment (Phase 8) is not done yet.
 
 ## Folders

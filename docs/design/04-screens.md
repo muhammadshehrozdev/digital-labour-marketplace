@@ -1,5 +1,24 @@
 # 04 — Screen specifications (Batch 1, 9 Nov 2026)
 
+## Batch 3 changes (10 Nov 2026)
+Every screen below now exists in English, Urdu (mirrored, right to left) and Roman Urdu, with design v2
+(D-017). Screenshots of every screen at 360 / 768 / 1280 px: `npm run screenshots` (checked set in
+`docs/design/screenshots/`).
+
+| Route | Change |
+|---|---|
+| (first visit, any route) | **Language chooser**: three cards, each written in its own language |
+| `/` | Landing v2: dark hero (animated logo, typewriter headline, illustration, switcher), how-it-works tracks, trust section, trades from the taxonomy, call-to-action band |
+| `/login`, `/register` | Split layout with a dark brand panel on wide screens; role cards with illustrations |
+| `/onboarding/:step` | Restyled; Step 3 continues correctly; "All set" shows a short confetti burst |
+| `/worker` | Overview only (D-020): completion, identity, skill chips, proof counts, next steps; "View my profile", "Edit profile" |
+| `/worker/profile` | **New**: complete profile, read only; Private section for the owner; "See what customers see" |
+| `/worker/profile/edit` | **New**: six sections (About you, Work and rates, Skills, Proof of skills, Work history, Language preference), side navigation / tabs, unsaved-changes protection |
+| `/worker/skills` | Removed as a page; redirects into the editor |
+| `/workers/:id` | Same layout as the worker's own customer preview |
+| `/dev/themes` | **New** (development only): theme lab, logo concepts |
+
+
 Every data screen has four states: **loading** (Skeleton matching the layout), **empty**
 (EmptyState with one action), **error** (Alert with a retry button), **success** (toast and/or
 updated content). Mobile = 360 px single column; desktop = up to 1200 px.

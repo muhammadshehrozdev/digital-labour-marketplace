@@ -25,6 +25,9 @@ const MODULE = {
   // frontend
   'contrast.test.js': 'UI', 'components.test.jsx': 'UI', 'auth.test.jsx': 'Module 1 (UI)', 'pages.test.jsx': 'Module 1 (UI)',
   'onboarding.test.jsx': 'Module 1–2 (UI)', 'evidence.test.jsx': 'Module 3 (UI)',
+  // Batch 3
+  'errorCatalog.test.js': 'Languages (API error codes)', 'preferences.test.js': 'Module 1',
+  'i18n.test.jsx': 'Languages (UI)', 'voice.test.jsx': 'Module 2 (UI)',
 };
 
 const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ').trim();

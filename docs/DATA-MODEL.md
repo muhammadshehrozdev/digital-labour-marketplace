@@ -27,6 +27,7 @@ erDiagram
     number tokenVersion
     number failedLoginCount
     date lockUntil
+    string preferredLanguage
   }
   WORKER_PROFILE {
     ObjectId _id
@@ -96,6 +97,7 @@ erDiagram
 | role | String | `worker` (default) \| `customer` \| `admin` (admins only via `npm run create-admin`) |
 | tokenVersion | Number | in every login token; +1 at logout ends old sessions (D-006) |
 | failedLoginCount, lockUntil | Number, Date | 5 wrong passwords → 15-minute lock |
+| preferredLanguage | String or null | `en`, `ur` or `ur-Latn` (Batch 3, D-019); null until chosen; set at register or by `PATCH /api/users/me/preferences` |
 | createdAt, updatedAt | Date | timestamps |
 
 Indexes: `{ email: 1 }` unique.

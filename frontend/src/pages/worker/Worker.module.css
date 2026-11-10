@@ -35,6 +35,7 @@
 .chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .chipStatus { font-weight: 500; }
 .proofCounts { font-weight: 700; }
+.allDone { display: flex; align-items: center; gap: var(--space-2); }
 .unsavedBadge { animation: nudge var(--duration-slow) var(--ease-spring); }
 .dirtyDot {
   inline-size: 8px;

@@ -37,6 +37,16 @@ are handled, accepted limitations, and incidents. Test files: backend `backend/t
 | M3 | Re-using another worker's photo | SHA-256 (exact) and dHash (look-alike) flags for the admin | `evidence.test.js` "same file from another worker", "look-alike picture … flagged similar" |
 | M3 | Tampering with review history | Every evidence change audited; hash chain checked by `npm run audit:verify` | `evidence.test.js` "audit:verify detects an edited evidence decision" |
 
+### Batch 3 additions
+| Area | Control | Test |
+|---|---|---|
+| `GET /api/auth/session` | Same user fields as `/api/auth/me` (no password, token version, lockout data); 200 with `{ user: null }` for visitors and for a broken or ended session, whose cookie is removed; `Cache-Control: no-store` | `preferences.test.js` |
+| `PATCH /api/users/me/preferences` | Login required; strict schema (only `preferredLanguage`, enum); unknown keys such as `role` → 400; CSRF origin check | `preferences.test.js` |
+| `GET /api/workers/me/full` | Worker only; own data; `publicView` built with the customer endpoint's own query and field list; evidence metadata only (no file ids, no hashes); no CNIC data | `preferences.test.js`, e2e `profile-and-privacy.e2e.js` |
+| Error codes | Every error has a stable `code`; a 500 still sends only `SERVER_ERROR` with a generic message | `errorCatalog.test.js`, `foundation.test.js` |
+| Language storage | `localStorage` holds only the language code, wrapped in try/catch | `i18n.test.jsx` |
+| Browser tests | Headless Chromium only for `127.0.0.1` pages, own servers and own local `dlm_e2e` database; a reset refuses any database that is not local or not named `*_e2e` | `e2e/global-setup.js` |
+
 ## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET)
 
 - Each key is 32 random bytes, written in base64. Make one in PowerShell (in `.\backend`):

@@ -102,7 +102,7 @@ export default function WorkerDashboard() {
         <Reveal as={Card} index={4} className={styles.wideCard}>
           <h2 className={styles.cardTitle}>{t('dashboard.nextTitle')}</h2>
           {allDone ? (
-            <p className={styles.muted}><CheckCircle2 size={18} aria-hidden="true" className={styles.doneIcon} /> {t('dashboard.allDone')}</p>
+            <p className={`${styles.muted} ${styles.allDone}`}><CheckCircle2 size={18} aria-hidden="true" className={styles.doneIcon} /> {t('dashboard.allDone')}</p>
           ) : (
             <ul className={styles.checklist}>
               {nextSteps.map((s) => (

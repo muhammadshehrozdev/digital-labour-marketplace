@@ -2,6 +2,78 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 3 — browser tooling, Step 3 and voice fixes, three languages, design v2, profile view/edit (10 Nov 2026)
+
+Instructions: `BATCH_3_PROMPT.md`. Decisions recorded: D-017 theme (Emerald Night), D-018 logo (Stitched
+Nut), D-019 languages, D-020 profile view/edit.
+
+**Browser tooling**
+- The dev container has a system Chromium (`.devcontainer/Dockerfile`, `CHROMIUM_PATH`); Playwright uses
+  it and never downloads a browser. Used only for `http://127.0.0.1` pages.
+- `npm run e2e` (20 tests) and `npm run screenshots` run on their own servers (5001/5174) and their own
+  local database `dlm_e2e`; the preview and its data are untouched; Atlas is never used.
+
+**Fixes**
+- Step 3 "Your skills": Continue now uses the server's onboarding state (it bounced back before); without
+  a skill it explains why and links to the skill search. Tests: unit + e2e in Urdu, Roman Urdu, English.
+- Voice typing: a specific message for each Web Speech API error (`not-allowed`, `service-not-allowed`,
+  `network`, `language-not-supported`, `no-speech`, `audio-capture`, `aborted`; Stop is not an error);
+  speech language from the switcher (Urdu `ur-PK`, English/Roman Urdu `en-US`); shown only where the
+  browser supports it ("works best in Google Chrome"); Gboard / **Win + H** help always shown; M2-13 notice
+  kept. Tests with a fake `SpeechRecognition`.
+- Found by the new tests: footer jump while a page loads (layout shift 0.16 → below 0.002); the hero
+  typewriter reserves its tallest line; trade cards keep their visible text as link name (WCAG 2.5.3);
+  a new worker's browser no longer requests a profile that does not exist (404 in the console;
+  `profileExists` in the onboarding state); `:lang(ur)` also matched Roman Urdu and gave it the Urdu font;
+  avatar initials skipped non-letters; `create-admin` printed error codes instead of English.
+
+**Languages (D-019)**
+- English, اردو (right to left, Noto Nastaliq Urdu loaded only for Urdu) and Roman Urdu; first-visit
+  chooser; switcher in header, hero and footer; whole page switches without reload, form input stays;
+  choice in `localStorage` and, for logged-in users, `User.preferredLanguage`.
+- Every visible text is in `frontend/src/i18n/dictionaries/` (en, ur, ur-Latn: same keys, tested); trade
+  and skill names in `backend/config/skillTaxonomy.js`; dates with Intl, Western digits everywhere.
+- All Urdu and Roman Urdu texts are drafts for a native reviewer: `docs/i18n/REVIEW.md` (890 texts).
+
+**Design v2 (D-017, D-018)**
+- Three OKLCH themes with contrast tests for all three (42 pairs each), Emerald Night chosen; Bricolage
+  Grotesque headings + Manrope text; fluid sizes; logical properties everywhere (Urdu mirrors);
+  modern CSS (color-mix, nesting, :has, container queries, @property, View Transitions, scroll-driven
+  reveals with fallback, backdrop-filter, reduced motion / more contrast / forced colours).
+- Logo v2 "Stitched Nut" with animated version, new favicon; three concepts kept in
+  `docs/design/logo-concepts/`; theme lab at `/dev/themes` (development only).
+- Motion: hero typewriter (EN → Urdu → Roman Urdu), animated hero illustration, section reveals, button
+  lift/press/shine, card glow, shimmer, stepper fill/pulse/check, confetti on "All set", toasts, dialogs.
+- Landing v2: dark hero, how-it-works tracks, trust section (real features only), trades from the
+  taxonomy API, call-to-action band, dark footer with the FYP credit. Every screen restyled.
+
+**Profile (D-020)**
+- `/worker` overview only; `/worker/profile` read-only with "See what customers see" (the server's
+  public view); `/worker/profile/edit` with six sections, saves per section, unsaved-changes protection
+  (data router + `useBlocker`); `/worker/skills` redirects into the editor.
+
+**Backend**
+- Stable error `code` (+ `params`) on every error (`backend/errors/catalog.js`); `docs/API.md` lists all
+  codes (tested). `GET /api/auth/session` (200 for visitors, no 401 in the console);
+  `User.preferredLanguage`; `PATCH /api/users/me/preferences`; `GET /api/workers/me/full`;
+  `profileExists` in the onboarding state; taxonomy `i18n` names.
+
+**Packages added (Part 8, all approved in the batch)**: `@playwright/test` 1.64.1 (dev),
+`@axe-core/playwright` 4.14.0 (dev), `@fontsource/noto-nastaliq-urdu` 5.3.0,
+`@fontsource-variable/bricolage-grotesque` 5.3.0 (display font for headings, OFL-1.1).
+
+**Real results (10 Nov 2026)**
+- Backend `npm test`: 380/380 passed, 22 files (Vitest JSON report; `docs/TEST-CASES.md` regenerated).
+- Frontend `npm test`: 450/450 passed, 9 files (includes 142 contrast checks across the three themes).
+- E2E `npm run e2e`: 20/20 passed in 3.7 min (production build, own servers and `dlm_e2e` database).
+- Axe (inside the e2e run): 17 pages in each of the three languages, 0 serious or critical violations.
+- Layout shift on the landing page: below 0.002 in all three languages (limit 0.1).
+- Lint (`oxlint`): 145 files, 0 errors, 0 warnings. Build: OK; main JS 182.01 kB gzip (limit 300 kB),
+  CSS 22.01 kB gzip; Urdu 13.76 kB and Roman Urdu 12.59 kB gzip load on demand; the Nastaliq font
+  (about 158 kB per weight) loads only for Urdu.
+- Screenshots `npm run screenshots`: 252 images (28 screens × 3 languages × 3 widths); a checked set is in
+  `docs/design/screenshots/`.
+
 ## Batch 2 — Module 3 (Phase 5), integration tests (Phase 6), documentation (Phase 7) (9 Nov 2026)
 
 Instructions: `BATCH_2_PROMPT.md`. Decisions recorded: D-013 evidence storage, D-014 skill confidence

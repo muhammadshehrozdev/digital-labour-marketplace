@@ -14,6 +14,8 @@
 }
 .table td { padding: var(--space-3) var(--space-4); border-block-end: 1px solid var(--color-border); vertical-align: top; }
 .table tbody tr:last-child td { border-block-end: 0; }
+/* IDs, dates and numbers stay on one line (they are short and easier to scan whole). */
+.table td :global(.tabular) { white-space: nowrap; }
 .end { text-align: end !important; }
 .sortButton { display: inline-flex; align-items: center; gap: var(--space-1); border: 0; background: none; padding: 0; font-weight: 700; color: inherit; }
 .rowButton { border: 0; background: none; padding: 0; text-align: start; color: var(--color-primary); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
