@@ -67,7 +67,7 @@ export default function AppHeader() {
               <div className={styles.account} ref={accountRef}>
                 <button type="button" className={styles.accountButton} aria-expanded={accountOpen} aria-controls="account-menu" onClick={() => setAccountOpen((o) => !o)}>
                   <Avatar name={user.name} size="sm" />
-                  <span className={styles.accountName}>{user.name}</span>
+                  <span className={styles.accountName} dir="auto">{user.name}</span>
                   <ChevronDown size={16} aria-hidden="true" />
                   <span className="visually-hidden">{t('header.accountMenu')}</span>
                 </button>

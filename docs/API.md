@@ -39,11 +39,15 @@ examples: 10 Nov 2026) with **synthetic** accounts (ids and dates will differ on
 `200 {"ok":true,"db":"connected"}` — answers even when the database is down (then `db` is not `connected`).
 
 ### GET /api/meta/taxonomy
-The one list of categories and skills (no matching terms).
+The one list of categories and skills (no matching terms). Batch 3: each category and skill carries
+`i18n` with the Urdu and Roman Urdu display names (`DISPLAY_NAMES` in `backend/config/skillTaxonomy.js`;
+drafts, see `docs/i18n/REVIEW.md`).
 ```json
 {"version":"2026-11-09-v1",
- "categories":[{"id":"electrical_solar","label":"Electrical & Solar","occupation":"Electrician","iscoCode":null}, …],
- "skills":[{"id":"elec_general","name":"General electrical work","category":"electrical_solar"}, …],
+ "categories":[{"id":"electrical_solar","label":"Electrical & Solar","occupation":"Electrician","iscoCode":null,
+   "i18n":{"ur":{"label":"بجلی اور سولر","occupation":"الیکٹریشن"},"ur-Latn":{"label":"Bijli aur Solar","occupation":"Electrician"}}}, …],
+ "skills":[{"id":"elec_general","name":"General electrical work","category":"electrical_solar",
+   "i18n":{"ur":"بجلی کا عام کام","ur-Latn":"Bijli ka aam kaam"}}, …],
  "availability":["Available","Busy","Offline"]}
 ```
 
@@ -113,8 +117,9 @@ Everything the read-only **My profile** page needs, in one call (`Cache-Control:
 404 `PROFILE_NOT_CREATED` until a profile exists; customers 403; visitors 401.
 
 ### GET /api/workers/me/onboarding — worker
-Progress derived from saved data (D-011).
-`200 {"steps":{"about":false,"work":false,"skills":false},"nextStep":"about","complete":false,"completedAt":null}`
+Progress derived from saved data (D-011). `profileExists` (Batch 3) tells the website whether
+`GET /api/workers/me` would answer 404, so a new worker's browser does not request it.
+`200 {"steps":{"about":false,"work":false,"skills":false},"nextStep":"about","complete":false,"completedAt":null,"profileExists":false}`
 
 ## Skills (Module 2) — worker only
 

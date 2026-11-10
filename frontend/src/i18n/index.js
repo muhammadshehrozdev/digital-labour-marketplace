@@ -1,4 +1,4 @@
-// Language system (Batch 3, D-019). See docs/design/06-i18n.md.
+// Language system (Batch 3, D-019). See docs/design/07-i18n.md.
 export { LanguageProvider } from './LanguageProvider';
 export { useLanguage, useT } from './context';
 export { useChangeLanguage } from './useChangeLanguage';

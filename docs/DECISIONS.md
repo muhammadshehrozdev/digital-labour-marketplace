@@ -332,3 +332,95 @@ never a percentage and never b, d, u, E. Admins see b, d, u, E with a method not
   `<canvas>` (max 2000 px, JPEG 0.85) when the browser can, otherwise "The photo is too large. The limit
   is 4 MB." The server checks everything again.
 - Limits: 4 MB per upload (413), 5 items per skill, 30 per worker, 30 uploads per 15 minutes per network.
+
+---
+
+## D-017 — Design v2 colour theme: "Emerald Night" (Batch 3, 10 Nov 2026)
+
+**Decision (Claude Code, for the team to confirm; Batch 3 Part 4.2):** three complete OKLCH theme
+token sets were built (`frontend/src/styles/themes.css`): **Emerald Night** (deep green-black dark
+sections, vivid emerald primary, saffron highlights), **Ink & Marigold** (deep ink-navy, marigold and
+coral), **Terracotta Craft** (warm clay, cream surfaces, deep teal). The landing page, onboarding Step 3,
+the worker profile view and customer search were screenshotted in all three at 1280 and 360 px
+(`docs/design/screenshots/themes/compare-*.png`) and compared side by side. **Emerald Night is the
+default.**
+
+Why:
+- Green carries the product's promise ("checked, verified") together with the check-mark logo, and it is
+  a positive colour in Pakistan without a political tie to any party.
+- Its primary hue (162°) is far from the error red (27°). In Terracotta Craft the clay primary (38°) is
+  close to the error red, so a normal "Edit profile" button can look like a warning.
+- Ink & Marigold is crisp, but navy + orange reads like a generic fintech product.
+- All three pass every contrast pair in `src/styles/contrast.test.js` (WCAG 2.2 AA, OKLCH converted
+  with the OKLab formulas; every colour inside the sRGB gamut). Lowest text ratios: Emerald Night 4.65,
+  Ink & Marigold 4.94, Terracotta Craft 4.57.
+
+How to change: `DEFAULT_THEME` in `frontend/src/styles/theme.js` (one line). All three can be switched
+live at `/dev/themes` and `/dev/styleguide` (development builds only).
+
+---
+
+## D-018 — Logo v2: "Stitched Nut" (Batch 3, 10 Nov 2026)
+
+**Decision (Claude Code, for the team to confirm; Part 4.3):** three logomark concepts were drawn on a
+32 × 32 grid (`frontend/src/components/brand/logoMarks.jsx`, SVG copies in
+`docs/design/logo-concepts/`): **A Shield & Spanner**, **B Hard-hat Check**, **C Stitched Nut**. They were
+screenshotted at 16/24/32/64 px, in one colour and full colour, on light and dark, and in the header at
+360 and 1280 px (`compare-*.png` in the same folder). **C, Stitched Nut, is the logo.**
+
+Why: a hexagon nut is a universal tool sign; the stitched inner ring points to local craft (tiles,
+embroidery); the check says "verified". It fills the square well and still reads as hexagon + check at
+16 px (at 20 px and below the ring is left out: `smallDetails`). A is clear but shields are the most
+common "security app" symbol and the spanner end looks like a bone when small; B is friendly but wide,
+its check is tiny at 16 px and its orange dot looks like a notification badge.
+
+Animated version (landing hero, language chooser): the outline draws itself (stroke-dashoffset), the
+fill and check appear, then the wordmark slides in; with reduced motion the finished logo is shown.
+Favicon (`frontend/public/favicon.svg`, `favicon-32.png`) uses the small version; `theme-color` follows
+the theme. The tab title is translated (`useDocumentTitle`).
+
+---
+
+## D-019 — Three languages without a library (Batch 3, 10 Nov 2026)
+
+**Decision (Batch 3 Part 3; details by Claude Code):** English (`en`), Urdu (`ur`, right to left) and
+Roman Urdu (`ur-Latn`, left to right).
+- Own small system in `frontend/src/i18n/` (no i18n package): `LanguageProvider`, `useT()` with
+  `t(key, params)`, plurals with `Intl.PluralRules`, dates with `Intl.DateTimeFormat` (`en-PK`/`ur-PK`)
+  and **Western digits (0–9) everywhere** (`-u-nu-latn`), because phone numbers, CNIC, rates and IDs are
+  typed that way in Pakistan.
+- English is bundled; Urdu and Roman Urdu are separate files loaded the first time they are chosen
+  (about 13 kB gzip each). The Urdu font Noto Nastaliq Urdu (self-hosted) is loaded only for Urdu, only
+  its Arabic-script part; Latin letters and digits in Urdu text use Manrope.
+- The server sends a stable `code` with every error (`backend/errors/catalog.js`, D-019 Part 3.2); the
+  website shows the text for the code in the chosen language. Tests: every code has a text in all three
+  dictionaries, and the dictionaries have exactly the same keys.
+- Trade and skill names in Urdu and Roman Urdu live in `backend/config/skillTaxonomy.js`
+  (`DISPLAY_NAMES`, the one source of truth) and are served by `/api/meta/taxonomy`. Matching terms and
+  the taxonomy version did not change.
+- First visit: a language chooser screen. The choice is kept in `localStorage` (try/catch) and, for a
+  logged-in user, in `User.preferredLanguage` (`PATCH /api/users/me/preferences`).
+- **Which language wins after login:** a language picked during this visit (chooser or switcher) wins
+  and is saved to the account; otherwise the account's saved language is used (so it follows the user to
+  another device); an account without a saved language gets the browser's choice.
+- All Urdu and Roman Urdu texts are **drafts that need a native reviewer** (`docs/i18n/REVIEW.md`).
+
+---
+
+## D-020 — Worker profile: one view, one editor (Batch 3, 10 Nov 2026)
+
+**Decision (Batch 3 Part 5):**
+- `/worker` is an overview only (greeting, completion, identity, skill chips, proof counts, next steps)
+  with "View my profile" and "Edit profile"; no forms.
+- `/worker/profile` is the complete profile, read only, with a Private section only for the owner and a
+  **"See what customers see"** switch. That preview shows `publicView` from `GET /api/workers/me/full`,
+  built with **the same query and field list** as the customer endpoint, so it cannot drift from what
+  customers really get.
+- `/worker/profile/edit` holds every change: About you, Work and rates, Skills, Proof of skills, Work
+  history, Language preference (side navigation on desktop, tabs on phones). Each section saves on its
+  own with a toast; "You have unsaved changes" protects switching sections, leaving inside the app
+  (React Router `useBlocker`, which needs a data router: the app moved from `<BrowserRouter>` to
+  `createBrowserRouter`) and closing the tab (`beforeunload`). Every page loads the profile fresh from
+  the server, so the view shows the new data at once.
+- `/worker/skills` was removed as an editing place; old links redirect to the editor (`?proof=<id>` opens
+  "Proof of skills" with that skill chosen). Onboarding stays the guided first-time path.

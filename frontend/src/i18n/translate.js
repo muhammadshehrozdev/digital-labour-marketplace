@@ -3,7 +3,7 @@
 // A value can be:
 //   - a string with {name} placeholders: 'Welcome, {name}'
 //   - a plural object { one, other } (optionally zero): chosen with Intl.PluralRules and {count}
-import { intlLocale } from './languages';
+import { intlLocale } from './languages.js';
 
 const PLURAL_KEYS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 

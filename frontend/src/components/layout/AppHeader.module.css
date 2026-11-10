@@ -48,6 +48,7 @@
   color: var(--color-text-secondary);
   font-weight: 700;
   text-decoration: none;
+  white-space: nowrap;
   transition: color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out);
 
   &:hover {
@@ -196,13 +197,15 @@
 
 /* Phones: no account dropdown (the mobile menu has it). Very small phones: the hero and the
    login card have "Create account", so the header keeps only "Log in". */
-@media (max-width: 767px) {
+/* The full header (links, switcher, account name) needs about 900 px; below 960 px the menu
+   button holds the links and the account. */
+@media (max-width: 959px) {
   .account { display: none; }
 }
 @media (max-width: 459px) {
   .createAccount { display: none; }
 }
-@media (min-width: 768px) {
+@media (min-width: 960px) {
   .desktopNav { display: flex; }
   .accountName { display: inline; }
   .menuToggle { display: none; }

@@ -1,12 +1,15 @@
-// End-to-end tests (Batch 3) with the container's Chromium: never downloads a browser.
+// End-to-end tests (Batch 3). In the dev container they use the system Chromium and never download one.
 // The tests run against their OWN servers and their OWN local database (dlm_e2e), not the
 // preview on 5173/5000 and never Atlas (CLAUDE.md: tests use a separate database):
 //   backend  http://127.0.0.1:5001  (MONGO_URI = E2E_MONGO_URI, default 127.0.0.1:27017/dlm_e2e)
-//   frontend http://127.0.0.1:5174  (Vite, forwards /api to 5001)
+//   frontend http://127.0.0.1:5174  (production build + vite preview, forwards /api to 5001)
 // The local MongoDB must be running (in .\backend: npm run db:local).
+import { existsSync } from 'node:fs';
 import { defineConfig } from '@playwright/test';
 
-const executablePath = process.env.CHROMIUM_PATH || '/usr/bin/chromium';
+// Dev container: the system Chromium (CHROMIUM_PATH). Windows: Playwright's own Chromium
+// (installed once with `npx playwright install chromium`), unless CHROMIUM_PATH points elsewhere.
+const systemChromium = process.env.CHROMIUM_PATH || (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);
 export const E2E_MONGO_URI = process.env.E2E_MONGO_URI || 'mongodb://127.0.0.1:27017/dlm_e2e';
 const FRONTEND = 'http://127.0.0.1:5174';
 const BACKEND = 'http://127.0.0.1:5001';
@@ -28,7 +31,7 @@ export default defineConfig({
     viewport: { width: 1280, height: 800 },
     screenshot: 'only-on-failure',
     trace: 'off',
-    launchOptions: { executablePath, args: ['--no-sandbox', '--disable-dev-shm-usage'] },
+    launchOptions: { ...(systemChromium ? { executablePath: systemChromium } : {}), args: ['--no-sandbox', '--disable-dev-shm-usage'] },
   },
   webServer: [
     {
@@ -48,10 +51,11 @@ export default defineConfig({
       },
     },
     {
-      command: 'npx vite',
+      // A production build served by vite preview: what users get, and immune to source edits during a run.
+      command: 'npx vite build --outDir ../.local/e2e-dist --emptyOutDir && npx vite preview --outDir ../.local/e2e-dist',
       url: FRONTEND,
       reuseExistingServer: false,
-      timeout: 60_000,
+      timeout: 120_000,
       env: { FRONTEND_PORT: '5174', API_PROXY_TARGET: BACKEND },
     },
   ],

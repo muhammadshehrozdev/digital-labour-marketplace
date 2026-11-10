@@ -89,6 +89,7 @@ for (const lang of LANGS) {
 test('keyboard only: skip link, then log in without a mouse', async ({ page }) => {
   await setLanguage(page, 'en');
   await page.goto('/login');
+  await expect(page.getByRole('heading', { level: 1, name: 'Log in' })).toBeVisible(); // the page is drawn
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
   await page.keyboard.press('Enter');

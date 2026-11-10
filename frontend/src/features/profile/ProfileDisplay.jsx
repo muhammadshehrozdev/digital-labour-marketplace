@@ -39,7 +39,7 @@ export default function ProfileDisplay({ profile, evidence = [], mode = 'public'
         <div className={styles.headerGlow} aria-hidden="true" />
         <Avatar name={name} size="xl" />
         <div className={styles.identity}>
-          <H className={styles.name}>{name}</H>
+          <H className={styles.name} dir="auto">{name}</H>
           <p className={styles.trade}>
             {trade}
             {profile.category && <span className={styles.category}> · {categoryLabel(profile.category)}</span>}

@@ -117,6 +117,27 @@ npm run build
 ```
 The last real results are in `docs/CHANGELOG.md` and `docs/TEST-CASES.md` (generated from the run).
 
+### End-to-end tests and screenshots (Batch 3)
+These open the real website in a headless Chromium. They start their **own** API on port 5001 and
+website on port 5174 with their **own** local database `dlm_e2e` (emptied at the start; only a local
+database whose name ends in `_e2e` is ever emptied). Your preview on 5173/5000 and its data are not
+touched, and Atlas is never used.
+```powershell
+# once, in .\frontend — Playwright's browser (on Windows; the dev container already has Chromium)
+npx playwright install chromium
+# the local MongoDB must be running (dev container: in .\backend run  npm run db:local)
+# in .\frontend — 20 tests: onboarding in 3 languages, language chooser/switcher, RTL, profile
+# view -> edit -> view, customer privacy, admin evidence review, axe accessibility, keyboard,
+# reduced motion, layout shift, clean browser console
+npm run e2e
+# in .\frontend — every main screen, every language, at 360 / 768 / 1280 px, into
+# docs\design\screenshots\all\ (not committed; a checked set is in docs\design\screenshots\)
+npm run screenshots
+```
+In the dev container the browser is the system Chromium (`CHROMIUM_PATH=/usr/bin/chromium`); nothing is
+downloaded. On Windows, Playwright needs its own Chromium once (the `npx playwright install chromium`
+line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
+
 ## Backend scripts (all in `.\backend`)
 
 | Command | What it does |
@@ -136,7 +157,8 @@ The last real results are in `docs/CHANGELOG.md` and `docs/TEST-CASES.md` (gener
 | `docs/USE-CASES.md` | Actors and use cases for Modules 1–3 |
 | `docs/TEST-CASES.md` | Test-case table generated from the real test run |
 | `docs/SECURITY.md` | Threats → mitigations → tests, keys, limitations, incidents |
-| `docs/DECISIONS.md` | Decision records D-001 to D-016 |
-| `docs/design/` | UX requirements, analysis, design system, screens, review, deploy readiness |
+| `docs/DECISIONS.md` | Decision records D-001 to D-020 |
+| `docs/design/` | UX requirements, analysis, design system v2 (themes, fonts, modern CSS, motion), screens, review, deploy readiness, languages (`07-i18n.md`), logo concepts, screenshots |
+| `docs/i18n/REVIEW.md` | Every Urdu and Roman Urdu text next to its English source, for a native reader to check (draft) |
 | `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format) |
 | `docs/CHANGELOG.md` | What changed in each phase |

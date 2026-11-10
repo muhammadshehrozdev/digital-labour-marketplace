@@ -13,6 +13,17 @@
   border-radius: var(--radius-lg);
 }
 
+/* When the row scrolls (phones, tablets), the end edge fades out to show that more tabs follow. */
+@media (max-width: 959px) {
+  .list {
+    scroll-snap-type: x proximity;
+    padding-inline-end: var(--space-8);
+    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    :root[dir='rtl'] & { mask-image: linear-gradient(to left, #000 calc(100% - 40px), transparent); }
+  }
+  .tab { scroll-snap-align: start; }
+}
+
 .tab {
   display: inline-flex;
   align-items: center;

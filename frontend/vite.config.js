@@ -19,6 +19,16 @@ export default defineConfig({
       '/api': { target: apiTarget },
     },
   },
+  // vite preview (used by the e2e tests: a production build, so editing source files during a
+  // run cannot reload the page under test).
+  preview: {
+    host: '127.0.0.1',
+    port,
+    strictPort: true,
+    proxy: {
+      '/api': { target: apiTarget },
+    },
+  },
   // Vitest: run React component tests in a simulated browser (jsdom).
   test: {
     environment: 'jsdom',

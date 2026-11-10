@@ -63,6 +63,17 @@ a:hover { color: var(--color-primary-hover); }
   font-family: var(--font-latin);
 }
 
+/* Latin text (dir="ltr") and user-written text (dir="auto") inside the Urdu layout line up with
+   the page's start edge, next to their Urdu labels; in English nothing changes. Form fields keep
+   their own alignment. */
+:where(p, dd, dt, li, h1, h2, h3, h4, figcaption, div)[dir='ltr'],
+:where(p, dd, dt, li, h1, h2, h3, h4, figcaption, div)[dir='auto'] {
+  text-align: -webkit-match-parent; /* Chromium, Safari */
+  text-align: match-parent; /* Firefox, the standard */
+}
+/* A Latin name or title in an Urdu heading does not need Nastaliq's tall line height. */
+:root[lang='ur'] :is(h1, h2, h3)[dir='auto']:dir(ltr) { line-height: 1.25; }
+
 /* One visible focus style everywhere: 2 px outline + soft halo (D-010). */
 :focus-visible {
   outline: 2px solid var(--color-focus);
