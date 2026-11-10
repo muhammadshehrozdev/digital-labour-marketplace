@@ -3,12 +3,12 @@
 .summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
 .meta { font-size: var(--text-small); color: var(--color-text-secondary); }
 .skillList { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
-.skillCard { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.skillCard { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface); }
 .skillHead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2); }
 .skillName { font-size: var(--text-body); line-height: var(--leading-body); font-weight: 800; }
 .items { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
 .item { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding: var(--space-2); border-radius: var(--radius-md); background: var(--color-surface-subtle); border: 1px solid var(--color-border); }
-.thumb { width: 56px; height: 56px; object-fit: cover; border-radius: var(--radius-sm); background: var(--color-surface-muted); flex: none; }
-.itemText { flex: 1 1 10rem; display: grid; min-width: 0; }
+.thumb { inline-size: 64px; block-size: 64px; object-fit: cover; border-radius: var(--radius-sm); background: var(--color-surface-muted); flex: none; }
+.itemText { flex: 1 1 10rem; display: grid; min-inline-size: 0; }
 .itemTitle { font-weight: 700; overflow-wrap: anywhere; }
 .reason { font-size: var(--text-small); color: var(--color-danger); }

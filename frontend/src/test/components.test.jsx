@@ -128,3 +128,13 @@ describe('Toast', () => {
     expect(screen.queryByText('Saved')).toBeNull();
   });
 });
+
+describe('avatar initials', () => {
+  test('use only words that start with a letter (any script)', async () => {
+    const { initials } = await import('../utils/avatarColor');
+    expect(initials('Demo Worker (synthetic)')).toBe('DW');
+    expect(initials('Rashid Mehmood')).toBe('RM');
+    expect(initials('علی رضا')).toBe('عر');
+    expect(initials('  ')).toBe('?');
+  });
+});

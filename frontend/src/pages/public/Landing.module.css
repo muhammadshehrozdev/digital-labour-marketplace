@@ -64,7 +64,7 @@
     background: none;
   }
 
-  :root:lang(ur) & {
+  :root[lang='ur'] & {
     line-height: 1.6;
     letter-spacing: 0;
   }
@@ -126,7 +126,7 @@
   font-size: var(--text-display);
   line-height: var(--leading-heading);
   letter-spacing: -0.03em;
-  :root:lang(ur) & { line-height: 1.7; letter-spacing: 0; }
+  :root[lang='ur'] & { line-height: 1.7; letter-spacing: 0; }
 }
 
 .sectionLead {
@@ -166,7 +166,7 @@
   font-size: var(--text-small);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  :root:lang(ur) & { text-transform: none; letter-spacing: 0; font-size: var(--text-body); }
+  :root[lang='ur'] & { text-transform: none; letter-spacing: 0; font-size: var(--text-body); }
 }
 
 .steps {
@@ -213,14 +213,14 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-text-secondary);
-  :root:lang(ur) & { text-transform: none; letter-spacing: 0; }
+  :root[lang='ur'] & { text-transform: none; letter-spacing: 0; }
 }
 
 .stepTitle {
   font-family: var(--font-display);
   font-size: var(--text-h3);
   font-weight: 700;
-  :root:lang(ur) & { font-family: var(--font-urdu); }
+  :root[lang='ur'] & { font-family: var(--font-urdu); }
 }
 
 .stepText {
@@ -366,7 +366,7 @@
 .ctaTitle {
   font-size: var(--text-display);
   letter-spacing: -0.03em;
-  :root:lang(ur) & { letter-spacing: 0; line-height: 1.7; }
+  :root[lang='ur'] & { letter-spacing: 0; line-height: 1.7; }
 }
 
 .ctaText {

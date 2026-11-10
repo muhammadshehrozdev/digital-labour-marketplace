@@ -31,7 +31,7 @@
 }
 
 .titleLine {
-  &:lang(ur) {
+  &[lang='ur'] {
     font-family: var(--font-urdu);
     line-height: 1.9;
   }
@@ -97,7 +97,7 @@
 
   &:disabled { cursor: progress; opacity: 0.8; }
 
-  &:lang(ur) {
+  &[lang='ur'] {
     font-family: var(--font-urdu);
     line-height: 2;
   }
@@ -107,7 +107,7 @@
   font-family: var(--font-display);
   font-size: var(--text-h2);
   font-weight: 800;
-  .card:lang(ur) & { font-family: var(--font-urdu); font-weight: 700; }
+  .card[lang='ur'] & { font-family: var(--font-urdu); font-weight: 700; }
 }
 
 .preview {
@@ -133,7 +133,7 @@
   font-size: var(--text-small);
   color: var(--color-on-dark-muted);
 
-  & span:lang(ur) { font-family: var(--font-urdu); line-height: 2; }
+  & span[lang='ur'] { font-family: var(--font-urdu); line-height: 2; }
 }
 
 @keyframes rise {

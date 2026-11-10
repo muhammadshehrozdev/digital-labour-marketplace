@@ -1,22 +1,45 @@
-.group { border: 0; padding: 0; min-width: 0; display: grid; gap: var(--space-3); }
-.legend { font-weight: 700; margin-bottom: var(--space-3); padding: 0; }
+.group { border: 0; padding: 0; min-inline-size: 0; display: grid; gap: var(--space-3); }
+.legend { font-weight: 700; margin-block-end: var(--space-3); padding: 0; }
 .grid { display: grid; gap: var(--space-3); }
-@media (min-width: 640px) { .two { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 480px) { .two { grid-template-columns: 1fr 1fr; } }
 .card {
-  position: relative; display: flex; align-items: flex-start; gap: var(--space-3);
-  min-height: 72px; padding: var(--space-4);
-  background: var(--color-surface); border: 1px solid var(--color-border-input); border-radius: var(--radius-lg);
-  cursor: pointer; transition: border-color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out);
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-block-size: 76px;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out), transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
+
+  &:hover { border-color: var(--color-primary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 }
-.card:hover { border-color: var(--color-primary); }
-.checked { border: 2px solid var(--color-primary); background: var(--color-primary-soft); padding: calc(var(--space-4) - 1px); }
-.disabled { opacity: 0.6; cursor: not-allowed; }
-.input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.card:has(.input:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-focus-halo) 55%, transparent); }
-.icon { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: var(--radius-md); background: var(--color-primary-soft-strong); color: var(--color-primary-text); }
-.text { display: grid; gap: var(--space-1); flex: 1; min-width: 0; }
+/* Cards with an illustration (Create account): picture on top. */
+.card:has(.art) { flex-direction: column; }
+.checked {
+  border: 2px solid var(--color-primary);
+  background: var(--color-primary-soft);
+  padding: calc(var(--space-4) - 1px);
+  box-shadow: 0 8px 22px -12px var(--glow);
+}
+.disabled { opacity: 0.6; cursor: not-allowed; &:hover { transform: none; box-shadow: none; } }
+.input { position: absolute; opacity: 0; inline-size: 1px; block-size: 1px; }
+.card:has(.input:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; box-shadow: 0 0 0 5px color-mix(in oklch, var(--color-focus-halo) 55%, transparent); }
+.icon { display: grid; place-items: center; inline-size: 44px; block-size: 44px; flex: none; border-radius: var(--radius-md); background: var(--color-primary-soft-strong); color: var(--color-primary-text); }
+.art { display: block; transition: transform var(--duration-base) var(--ease-spring); }
+.card:hover .art, .checked .art { transform: rotate(-3deg) scale(1.05); }
+.text { display: grid; gap: var(--space-1); flex: 1; min-inline-size: 0; }
 .title { font-weight: 700; }
 .description { font-size: var(--text-small); line-height: var(--leading-small); color: var(--color-text-secondary); }
-.dot { width: 20px; height: 20px; flex: none; border-radius: var(--radius-full); border: 2px solid var(--color-border-input); background: var(--color-surface); margin-top: 2px; }
+.dot {
+  inline-size: 20px; block-size: 20px; flex: none; border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-input); background: var(--color-surface); margin-block-start: 2px;
+  transition: border-width var(--duration-fast) var(--ease-out);
+}
+.card:has(.art) .dot { position: absolute; inset-block-start: var(--space-4); inset-inline-end: var(--space-4); }
 .checked .dot { border: 6px solid var(--color-primary); }
 .error { color: var(--color-danger); font-size: var(--text-small); font-weight: 600; }
+:root[lang='ur'] :is(.description, .title) { line-height: 2; }

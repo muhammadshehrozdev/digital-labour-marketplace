@@ -15,8 +15,10 @@ export function avatarColor(name = '') {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
+// First letters of the first and last word that start with a letter (any script), so
+// "Demo Worker (synthetic)" gives "DW", not "D(".
 export function initials(name = '') {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const parts = name.trim().split(/\s+/).filter((w) => /^\p{L}/u.test(w));
   if (!parts.length) return '?';
   const first = [...parts[0]][0] ?? '';
   const last = parts.length > 1 ? [...parts[parts.length - 1]][0] ?? '' : '';

@@ -29,7 +29,8 @@ export function LanguageProvider({ children, initialLanguage }) {
   const [state, setState] = useState(() => {
     const start = isLanguage(initialLanguage) ? initialLanguage : readStoredLanguage();
     const lang = start ?? DEFAULT_LANGUAGE;
-    return { lang, chosen: Boolean(start), dict: cachedDictionary(lang) };
+    // choseThisVisit: the user picked a language on this page load (chooser or switcher).
+    return { lang, chosen: Boolean(start), choseThisVisit: false, dict: cachedDictionary(lang) };
   });
 
   // A saved Urdu or Roman Urdu choice: fetch that dictionary once at start.
@@ -59,14 +60,18 @@ export function LanguageProvider({ children, initialLanguage }) {
   }, [state.lang]);
 
   // Resolves when the new language is on screen. Rejects only if its file could not be loaded.
-  const setLanguage = useCallback(async (code, { remember = true } = {}) => {
+  // byUser: the person picked it (chooser, switcher). false when the account's language is applied.
+  const setLanguage = useCallback(async (code, { remember = true, byUser = true } = {}) => {
     if (!isLanguage(code)) return;
     if (remember) storeLanguage(code);
     const dict = await loadDictionary(code);
     if (code === 'ur') loadUrduFont();
     const current = latest.current;
-    if (current.lang === code && current.chosen) return; // nothing to change
-    withTransition(() => setState({ lang: code, chosen: true, dict }));
+    if (current.lang === code && current.chosen) {
+      if (byUser && !current.choseThisVisit) setState((s) => ({ ...s, choseThisVisit: true }));
+      return; // nothing to change on screen
+    }
+    withTransition(() => setState({ lang: code, chosen: true, choseThisVisit: byUser || current.choseThisVisit, dict }));
   }, []);
 
   const value = useMemo(() => {
@@ -77,13 +82,14 @@ export function LanguageProvider({ children, initialLanguage }) {
       dir: languageInfo(state.lang).dir,
       info: languageInfo(state.lang),
       chosen: state.chosen,
+      choseThisVisit: state.choseThisVisit,
       setLanguage,
       t,
       te: (error) => translateError(t, error),
       formatDate: (date, options = { dateStyle: 'medium' }) => (date ? new Intl.DateTimeFormat(locale, options).format(new Date(date)) : ''),
       formatNumber: (n) => new Intl.NumberFormat(locale).format(Number(n) || 0),
     };
-  }, [state.lang, state.dict, state.chosen, setLanguage]);
+  }, [state.lang, state.dict, state.chosen, state.choseThisVisit, setLanguage]);
 
   // Until the saved language's file is here, show a quiet placeholder (no English flash).
   if (!state.dict) return <div className="app-loading" aria-busy="true" />;

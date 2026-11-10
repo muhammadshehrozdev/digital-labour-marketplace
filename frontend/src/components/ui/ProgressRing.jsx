@@ -11,7 +11,7 @@ export default function ProgressRing({ value, size = 96, label }) {
         <circle cx={size / 2} cy={size / 2} r={r} className={styles.track} strokeWidth={stroke} fill="none" />
         <circle
           cx={size / 2} cy={size / 2} r={r} className={styles.value} strokeWidth={stroke} fill="none"
-          strokeDasharray={c} strokeDashoffset={c * (1 - v / 100)} strokeLinecap="round" transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          strokeDasharray={c} strokeDashoffset={c * (1 - v / 100)} strokeLinecap="round" style={{ '--ring-full': c }} transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
       </svg>
       <span className={`${styles.number} tabular`}>{v}%</span>

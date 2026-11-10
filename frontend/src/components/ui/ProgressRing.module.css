@@ -1,5 +1,11 @@
+/* The ring fills from 0 to its value when it appears (stroke-dashoffset). */
 .ring { position: relative; display: inline-grid; place-items: center; flex: none; }
 .ring svg { position: absolute; inset: 0; }
 .track { stroke: var(--color-surface-muted); }
-.value { stroke: var(--color-primary); transition: stroke-dashoffset var(--duration-slow) var(--ease-out); }
-.number { position: relative; font-weight: 800; font-size: var(--text-h3); }
+.value {
+  stroke: var(--color-primary);
+  transition: stroke-dashoffset var(--duration-reveal) var(--ease-out);
+  animation: ring-in 1.1s var(--ease-out) both;
+}
+.number { position: relative; font-weight: 800; font-size: var(--text-h3); font-family: var(--font-latin); }
+@keyframes ring-in { from { stroke-dashoffset: var(--ring-full); } }

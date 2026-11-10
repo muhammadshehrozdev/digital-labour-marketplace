@@ -49,7 +49,7 @@ export default function AppHeader() {
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link to={user ? homePathFor(user.role) : '/'} className={styles.brand} aria-label={t('app.home')}>
-          <Logo size={34} />
+          <Logo size={34} compact />
         </Link>
 
         {user && (

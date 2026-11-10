@@ -1,4 +1,4 @@
-.page { min-height: 100vh; display: grid; place-items: center; padding: var(--space-4); }
-.card { display: grid; justify-items: center; gap: var(--space-3); max-width: 440px; padding: var(--space-8); text-align: center; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+.page { min-block-size: 100vh; display: grid; place-items: center; padding: var(--space-4); }
+.card { display: grid; justify-items: center; gap: var(--space-3); max-inline-size: 440px; padding: var(--space-8); text-align: center; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
 .icon { color: var(--color-warning); }
 .card p { color: var(--color-text-secondary); }

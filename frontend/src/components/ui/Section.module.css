@@ -1,6 +1,7 @@
-.section { display: grid; gap: var(--space-4); min-width: 0; }
+.section { display: grid; gap: var(--space-4); min-inline-size: 0; }
 .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--space-3); }
-.titles { display: grid; gap: var(--space-1); min-width: 0; }
+.titles { display: grid; gap: var(--space-1); min-inline-size: 0; }
 .title { font-size: var(--text-h3); line-height: var(--leading-h3); }
-.description { color: var(--color-text-secondary); font-size: var(--text-small); line-height: var(--leading-small); }
-.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.description { color: var(--color-text-secondary); font-size: var(--text-small); line-height: var(--leading-small); max-inline-size: 70ch; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+:root[lang='ur'] .description { line-height: 2; }

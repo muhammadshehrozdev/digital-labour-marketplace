@@ -45,22 +45,22 @@ a { color: var(--color-primary); text-underline-offset: 3px; }
 a:hover { color: var(--color-primary-hover); }
 
 /* Urdu: Nastaliq needs more line height; letter spacing would break the joined letters. */
-:root:lang(ur) body,
+:root[lang='ur'] body,
 .urdu,
 [lang='ur'] {
   font-family: var(--font-urdu);
   line-height: var(--leading-urdu);
   letter-spacing: 0;
 }
-:root:lang(ur) :is(h1, h2, h3, h4) {
+:root[lang='ur'] :is(h1, h2, h3, h4) {
   font-family: var(--font-urdu);
   line-height: 1.9;
   letter-spacing: 0;
   font-weight: 700;
 }
 /* Digits, phone numbers, CNIC and IDs stay in the Latin font and left-to-right. */
-:root:lang(ur) :is(.tabular, input[type='tel'], input[type='email'], code) {
-  font-family: var(--font-sans);
+:root[lang='ur'] :is(.tabular, input[type='tel'], input[type='email'], code, [dir='ltr']) {
+  font-family: var(--font-latin);
 }
 
 /* One visible focus style everywhere: 2 px outline + soft halo (D-010). */

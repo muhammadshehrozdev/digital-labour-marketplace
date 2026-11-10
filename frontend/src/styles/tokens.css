@@ -3,9 +3,12 @@
 :root {
   /* Typography. Display = headings (Bricolage Grotesque), sans = everything else (Manrope).
      Urdu uses Noto Nastaliq Urdu (loaded only when Urdu is chosen) with line height 2. */
-  --font-sans: 'Manrope Variable', 'Manrope Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  --font-display: 'Bricolage Grotesque Variable', 'Bricolage Fallback', var(--font-sans);
-  --font-urdu: 'Noto Nastaliq Urdu', 'Nastaliq Fallback', 'Noto Naskh Arabic', 'Jameel Noori Nastaleeq', serif;
+  --font-latin: 'Manrope Variable', 'Manrope Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-sans: var(--font-latin);
+  --font-display: 'Bricolage Grotesque Variable', 'Bricolage Fallback', var(--font-latin);
+  /* Nastaliq covers only Urdu letters (unicode-range), so Latin letters and digits inside Urdu
+     text fall through to Manrope; the local Arabic fonts are used only while Nastaliq loads. */
+  --font-urdu: 'Noto Nastaliq Urdu', 'Manrope Variable', 'Nastaliq Fallback', 'Noto Naskh Arabic', 'Jameel Noori Nastaleeq', serif;
 
   /* Fluid sizes: grow smoothly between phone (360 px) and desktop (1280 px). */
   --text-hero: clamp(2.5rem, 1.6rem + 4.2vw, 4.75rem);
@@ -21,6 +24,7 @@
   --leading-heading: 1.2;
   --leading-body: 1.55;
   --leading-urdu: 2;
+  --leading-h1: 1.2; --leading-h2: 1.3; --leading-h3: 1.35; --leading-small: 1.45; --leading-caption: 1.35;
 
   /* Space (4 px grid) and fluid section spacing. */
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px;
@@ -49,6 +53,12 @@
   --content-max: 1200px;
   --header-height: 68px;
   --touch-target: 44px;
+}
+
+/* Urdu (exactly "ur", never Roman Urdu "ur-Latn"): every text and heading uses the Urdu stack. */
+:root[lang='ur'] {
+  --font-sans: var(--font-urdu);
+  --font-display: var(--font-urdu);
 }
 
 /* Animatable custom properties (@property): the progress ring and the gradient border can

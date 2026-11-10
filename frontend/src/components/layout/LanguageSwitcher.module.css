@@ -33,7 +33,7 @@
   transition: rotate var(--duration-fast) var(--ease-out);
 }
 
-.current:lang(ur) {
+.current[lang='ur'] {
   font-family: var(--font-urdu);
   line-height: 1.6;
 }
@@ -106,7 +106,7 @@
     color: var(--color-primary-text);
   }
 
-  &:lang(ur) {
+  &[lang='ur'] {
     font-family: var(--font-urdu);
     line-height: 2;
   }

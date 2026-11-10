@@ -1,4 +1,9 @@
-.avatar { display: inline-grid; place-items: center; flex: none; border-radius: var(--radius-full); font-weight: 800; letter-spacing: 0.02em; }
-.sm { width: 32px; height: 32px; font-size: var(--text-caption); }
-.md { width: 44px; height: 44px; font-size: var(--text-small); }
-.lg { width: 64px; height: 64px; font-size: var(--text-h3); }
+.avatar {
+  display: inline-grid; place-items: center; flex: none; border-radius: var(--radius-full);
+  font-family: var(--font-latin); font-weight: 800; letter-spacing: 0.02em;
+  box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 3px color-mix(in oklch, var(--color-text) 10%, transparent);
+}
+.sm { inline-size: 32px; block-size: 32px; font-size: var(--text-caption); }
+.md { inline-size: 44px; block-size: 44px; font-size: var(--text-small); }
+.lg { inline-size: 64px; block-size: 64px; font-size: var(--text-h3); }
+.xl { inline-size: clamp(72px, 12vw, 104px); block-size: clamp(72px, 12vw, 104px); font-size: clamp(1.5rem, 1rem + 2vw, 2.25rem); }

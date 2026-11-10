@@ -1,19 +1,78 @@
+/* The progress line fills smoothly (--progress from the component), the current step pulses
+   once, a finished step shows its check mark popping in. */
 .nav { display: grid; gap: var(--space-3); }
 .compact { font-size: var(--text-small); color: var(--color-text-secondary); }
 .compact strong { color: var(--color-text); }
-.list { display: flex; gap: var(--space-2); list-style: none; padding: 0; margin: 0; }
-.item { flex: 1; display: flex; align-items: center; gap: var(--space-2); min-width: 0; color: var(--color-text-secondary); }
-.item:not(:last-child)::after { content: ''; flex: 1; height: 2px; min-width: var(--space-2); background: var(--color-border); border-radius: 2px; }
-.done:not(:last-child)::after { background: var(--color-primary); }
+.list {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  /* track and fill, behind the markers */
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 15px;
+    inset-inline: 16px;
+    block-size: 3px;
+    border-radius: 3px;
+    background: var(--color-border);
+  }
+  &::after {
+    background: var(--gradient-primary);
+    transform: scaleX(var(--progress, 0));
+    transform-origin: left;
+    transition: transform var(--duration-reveal) var(--ease-out);
+  }
+  :root[dir='rtl'] &::after { transform-origin: right; }
+}
+.item {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  flex: 1;
+  color: var(--color-text-secondary);
+  &:first-child { justify-items: start; }
+  &:last-child { justify-items: end; }
+}
 .marker {
-  display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: var(--radius-full);
-  border: 2px solid var(--color-border-input); background: var(--color-surface); font-size: var(--text-small); font-weight: 700;
+  display: grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  flex: none;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-input);
+  background: var(--color-surface);
+  font-size: var(--text-small);
+  font-weight: 800;
+  transition: background-color var(--duration-base) var(--ease-out), border-color var(--duration-base) var(--ease-out);
+
+  & svg { animation: check-in var(--duration-slow) var(--ease-spring) both; }
 }
 .done .marker { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
-.current .marker { border-color: var(--color-primary); color: var(--color-primary-text); background: var(--color-primary-soft); }
+.current .marker {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+  background: var(--color-primary-soft);
+  animation: pulse 1.2s var(--ease-out) 1;
+}
 .current { color: var(--color-text); font-weight: 700; }
-.label { font-size: var(--text-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: none; }
+.label { font-size: var(--text-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-inline-size: 100%; display: none; }
+:root[lang='ur'] .label { line-height: 2; }
 @media (min-width: 768px) {
   .compact { display: none; }
-  .label { display: inline; }
+  .label { display: block; }
 }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--color-primary) 45%, transparent); }
+  100% { box-shadow: 0 0 0 12px transparent; }
+}
+@keyframes check-in { from { transform: scale(0.3) rotate(-20deg); opacity: 0; } }

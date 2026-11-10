@@ -42,11 +42,12 @@ export function LogoMark({ size = 32, title, concept = LOGO_CONCEPT, tone = 'lig
 
 // variant "full": mark + wordmark (the second word hides on very small screens).
 // variant "mark": the mark only (needs a title for screen readers).
-export default function Logo({ size = 32, variant = 'full', tone = 'light', animated = false, concept }) {
+// compact: on very small screens only the mark is shown (the header).
+export default function Logo({ size = 32, variant = 'full', tone = 'light', animated = false, concept, compact = false }) {
   const { t } = useT();
   if (variant === 'mark') return <LogoMark size={size} title={t('app.name')} tone={tone} concept={concept} animated={animated} />;
   return (
-    <span className={[styles.logo, styles[tone], animated && styles.animatedLogo].filter(Boolean).join(' ')}>
+    <span className={[styles.logo, styles[tone], animated && styles.animatedLogo, compact && styles.compact].filter(Boolean).join(' ')}>
       <LogoMark size={size} tone={tone} concept={concept} animated={animated} />
       <span className={styles.wordmark}>
         <span className={styles.primary}>{t('app.nameFirst')}</span>

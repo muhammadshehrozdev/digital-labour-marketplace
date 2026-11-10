@@ -181,3 +181,29 @@ describe('language chooser and switcher', () => {
     await waitFor(() => expect(document.title).toBe('Log in · Digital Labour Marketplace'));
   });
 });
+
+describe('language and login (D-019: the latest choice wins)', () => {
+  test('choosing Urdu on the chooser, then logging in with an account saved as English: Urdu stays and is saved', async () => {
+    const user = userEvent.setup();
+    const calls = mockApi({
+      'GET /auth/me': { status: 401, data: {} },
+      'POST /auth/login': me('customer', { preferredLanguage: 'en' }),
+      'GET /workers': { status: 200, data: { workers: [], page: 1, limit: 12, total: 0 } },
+    });
+    renderAt('/login', { language: null });
+    await user.click(await screen.findByRole('button', { name: /اردو میں جاری رکھیں/ }));
+    await user.type(await screen.findByLabelText(/^ای میل/), 'customer@example.com');
+    await user.type(screen.getByLabelText(/^پاس ورڈ/, { selector: 'input' }), 'some long pass phrase');
+    await user.click(screen.getByRole('button', { name: 'لاگ ان کریں' }));
+    expect(await screen.findByRole('heading', { name: 'کاریگر تلاش کریں' })).toBeInTheDocument();
+    await waitFor(() => expect(calls.some((c) => c.key === 'PATCH /users/me/preferences' && c.body.preferredLanguage === 'ur')).toBe(true));
+  });
+
+  test('a language remembered from an earlier visit gives way to the language saved on the account', async () => {
+    window.localStorage.setItem('dlm.language', 'ur');
+    const calls = mockApi({ 'GET /auth/me': me('customer', { preferredLanguage: 'ur-Latn' }), 'GET /workers': { status: 200, data: { workers: [], page: 1, limit: 12, total: 0 } } });
+    renderAt('/find', { language: null });
+    expect(await screen.findByRole('heading', { name: 'Karigar dhoondein' })).toBeInTheDocument();
+    expect(calls.some((c) => c.key === 'PATCH /users/me/preferences')).toBe(false);
+  });
+});

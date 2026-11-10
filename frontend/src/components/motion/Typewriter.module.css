@@ -6,7 +6,7 @@
   display: inline-block;
   min-block-size: 1.15em;
 
-  &:lang(ur) {
+  &[lang='ur'] {
     font-family: var(--font-urdu);
     line-height: 1.8;
     font-size: 0.82em;

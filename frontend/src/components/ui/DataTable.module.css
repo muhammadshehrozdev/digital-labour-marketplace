@@ -1,17 +1,31 @@
-.wrap { width: 100%; }
-.table { width: 100%; border-collapse: collapse; font-size: var(--text-small); }
-.table th { text-align: left; font-weight: 700; color: var(--color-text-secondary); padding: var(--space-3); background: var(--color-surface-subtle); border-bottom: 1px solid var(--color-border); white-space: nowrap; }
-.table td { padding: var(--space-3); border-bottom: 1px solid var(--color-border); vertical-align: top; }
-.end { text-align: right !important; }
+.wrap {
+  inline-size: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.table { inline-size: 100%; border-collapse: collapse; font-size: var(--text-small); }
+.table th {
+  text-align: start; font-weight: 700; color: var(--color-text-secondary);
+  padding: var(--space-3) var(--space-4); background: var(--color-surface-subtle);
+  border-block-end: 1px solid var(--color-border); white-space: nowrap;
+}
+.table td { padding: var(--space-3) var(--space-4); border-block-end: 1px solid var(--color-border); vertical-align: top; }
+.table tbody tr:last-child td { border-block-end: 0; }
+.end { text-align: end !important; }
 .sortButton { display: inline-flex; align-items: center; gap: var(--space-1); border: 0; background: none; padding: 0; font-weight: 700; color: inherit; }
-.rowButton { border: 0; background: none; padding: 0; text-align: left; color: var(--color-primary); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-.clickable:hover td { background: var(--color-surface-subtle); }
+.rowButton { border: 0; background: none; padding: 0; text-align: start; color: var(--color-primary); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.clickable { transition: background-color var(--duration-fast) var(--ease-out); }
+.clickable:hover td { background: color-mix(in oklch, var(--color-primary-soft) 60%, var(--color-surface)); }
 
-/* Mobile: stacked cards */
+/* Phones: stacked cards */
 @media (max-width: 767px) {
-  .table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
-  .table tr { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); margin-bottom: var(--space-3); padding: var(--space-2) 0; }
-  .table td { display: grid; grid-template-columns: 7.5rem 1fr; gap: var(--space-3); border-bottom: 0; padding: var(--space-2) var(--space-4); text-align: left !important; }
+  .wrap { background: none; border: 0; box-shadow: none; border-radius: 0; overflow: visible; }
+  .table thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .table, .table tbody, .table tr, .table td { display: block; inline-size: 100%; }
+  .table tr { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); margin-block-end: var(--space-3); padding-block: var(--space-2); box-shadow: var(--shadow-xs); }
+  .table td { display: grid; grid-template-columns: 7.5rem 1fr; gap: var(--space-3); border-block-end: 0 !important; padding: var(--space-2) var(--space-4); text-align: start !important; }
   .table td::before { content: attr(data-label); font-weight: 700; color: var(--color-text-secondary); }
 }
