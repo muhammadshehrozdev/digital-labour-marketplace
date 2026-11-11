@@ -93,7 +93,7 @@ export function LogoMark({ size = 32, title, refinement = LOGO_REFINEMENT, tone 
   );
 }
 
-// variant "full": mark + wordmark (the second word hides on very small screens).
+// variant "full": mark + wordmark (the full name at every width).
 // variant "mark": the mark only (needs a title for screen readers).
 // compact: on very small screens only the mark is shown (the header).
 export default function Logo({ size = 32, variant = 'full', tone = 'light', animated = false, refinement, compact = false, hero = false }) {
@@ -102,10 +102,8 @@ export default function Logo({ size = 32, variant = 'full', tone = 'light', anim
   return (
     <span className={[styles.logo, styles[tone], animated && styles.animatedLogo, compact && styles.compact].filter(Boolean).join(' ')}>
       <LogoMark size={size} tone={tone} refinement={refinement} animated={animated} hero={hero} />
-      <span className={styles.wordmark}>
-        <span className={styles.primary}>{t('app.nameFirst')}</span>
-        <span className={styles.secondary}> {t('app.nameSecond')}</span>
-      </span>
+      {/* one name, one weight, one colour (the logo's text colour on its surface) */}
+      <span className={styles.wordmark} data-wordmark>{t('app.name')}</span>
     </span>
   );
 }

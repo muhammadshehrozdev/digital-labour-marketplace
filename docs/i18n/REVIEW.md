@@ -10,15 +10,13 @@ What to check: simple, everyday words for a worker with basic reading skills; sh
 spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders such as `{name}` and
 `{count}` must stay exactly as they are. Digits stay Western (0-9).
 
-1429 texts in total (generated from the source files; not hand-copied).
+1427 texts in total (generated from the source files; not hand-copied).
 
 ## Website texts: `app`
 
 | Key | English | اردو (Urdu) | Roman Urdu | Checked by |
 |---|---|---|---|---|
 | app.name | Digital Labour Marketplace | ڈیجیٹل لیبر مارکیٹ پلیس | Digital Labour Marketplace | |
-| app.nameFirst | Digital Labour | ڈیجیٹل لیبر | Digital Labour | |
-| app.nameSecond | Marketplace | مارکیٹ پلیس | Marketplace | |
 | app.home | Digital Labour Marketplace, home | ڈیجیٹل لیبر مارکیٹ پلیس، ہوم پیج | Digital Labour Marketplace, home page | |
 | app.skipToContent | Skip to content | سیدھا مواد پر جائیں | Seedha content par jayein | |
 | app.loading | Loading… | لوڈ ہو رہا ہے… | Load ho raha hai… | |

@@ -2,8 +2,9 @@
 import { describe, test, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import Logo, { LogoMark } from '../components/brand/Logo';
+import { LanguageProvider } from '../i18n';
 import { GEOMETRY, LOGO_REFINEMENT, LOGO_REFINEMENT_IDS, geometryFor } from '../components/brand/logoGeometry';
 
 const pub = (file) => resolve(process.cwd(), 'public', file);
@@ -24,7 +25,7 @@ describe('logo', () => {
 
   test('the mark is decorative next to the wordmark and named when it stands alone', () => {
     const { container, rerender } = render(<Logo />);
-    expect(screen.getByText('Digital Labour')).toBeInTheDocument();
+    expect(screen.getByText('Digital Labour Marketplace')).toBeInTheDocument();
     expect(container.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
     rerender(<Logo variant="mark" />);
     expect(screen.getByRole('img', { name: 'Digital Labour Marketplace' })).toBeInTheDocument();
@@ -79,5 +80,33 @@ describe('icon set (made by npm run icons)', () => {
     const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8');
     expect(html).toContain('href="/favicon.svg"');
     expect(html).toContain('rel="apple-touch-icon" href="/apple-touch-icon.png"');
+  });
+});
+
+// The team's request after Batch 4: "Digital Labour Marketplace" in one weight and one colour everywhere
+// (before, "Marketplace" was lighter, grey, and hidden on phones).
+describe('wordmark: one name, one weight, one colour', () => {
+  const NAMES = { en: 'Digital Labour Marketplace', ur: 'ڈیجیٹل لیبر مارکیٹ پلیس', 'ur-Latn': 'Digital Labour Marketplace' };
+  for (const [lang, name] of Object.entries(NAMES)) {
+    test(`${lang}: the whole name is one element with no inner parts, on light and dark surfaces`, async () => {
+      for (const tone of ['light', 'dark']) {
+        const { container, unmount } = render(<LanguageProvider initialLanguage={lang}><Logo tone={tone} /></LanguageProvider>);
+        // Urdu and Roman Urdu dictionaries load on demand
+        await waitFor(() => expect(container.querySelector('[data-wordmark]')?.textContent).toBe(name));
+        const words = container.querySelectorAll('[data-wordmark]');
+        expect(words).toHaveLength(1);
+        expect(words[0].children).toHaveLength(0);
+        unmount();
+      }
+    });
+  }
+
+  test('the stylesheet gives the wordmark one weight, the surface colour, and never hides part of it', () => {
+    const css = readFileSync(resolve(process.cwd(), 'src/components/brand/Logo.module.css'), 'utf8');
+    const rule = css.match(/\.wordmark \{([\s\S]*?)\n\}/)[1];
+    expect(rule).toMatch(/font-weight:\s*700/);
+    expect(rule).toMatch(/color:\s*inherit/);
+    expect(css).not.toMatch(/\.(primary|secondary)\b/);
+    expect(css.match(/font-weight/g)).toHaveLength(1); // no other weight anywhere in the logo
   });
 });

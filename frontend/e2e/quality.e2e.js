@@ -1,7 +1,7 @@
 // Batch 3, Part 7.3-7.5: accessibility (axe), keyboard, reduced motion, layout shift, console.
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { LANGS, PASSWORD, T, completeStep3, completeSteps1and2, login, logout, registerUser, setLanguage, setMode, skipTour, uniqueEmail, watchConsole } from './helpers.js';
+import { LANGS, PASSWORD, T, checkWordmarks, completeStep3, completeSteps1and2, login, logout, registerUser, setLanguage, setMode, skipTour, uniqueEmail, watchConsole } from './helpers.js';
 
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
@@ -41,6 +41,11 @@ for (const lang of LANGS) for (const mode of MODES) {
       // the night-mode button is on every page (Batch 4, Part 3)
       await expect(page.locator('[data-testid="theme-toggle"]').first()).toBeVisible();
       problems.push(...(await axe(page, `${lang} ${mode} ${label}`)));
+      // the wordmark: one name, one weight, one colour, at phone, tablet and desktop width
+      for (const width of [360, 768, 1280]) {
+        await page.setViewportSize({ width, height: 800 });
+        await checkWordmarks(page, lang, `${lang} ${mode} ${label} ${width}px`);
+      }
     };
 
     // Visitor pages (and the chooser, which has no saved language)

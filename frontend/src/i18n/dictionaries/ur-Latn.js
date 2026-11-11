@@ -4,8 +4,6 @@
 export default {
   app: {
     name: 'Digital Labour Marketplace',
-    nameFirst: 'Digital Labour',
-    nameSecond: 'Marketplace',
     home: 'Digital Labour Marketplace, home page',
     skipToContent: 'Seedha content par jayein',
     loading: 'Load ho raha hai…',

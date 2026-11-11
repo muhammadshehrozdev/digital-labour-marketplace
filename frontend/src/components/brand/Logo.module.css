@@ -35,6 +35,8 @@
 
 .wordmark {
   font-family: var(--font-display);
+  font-weight: 700;
+  color: inherit;
   font-size: 1.125rem;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -42,13 +44,6 @@
   :root[lang='ur'] & { font-family: var(--font-urdu); letter-spacing: 0; line-height: 1.8; font-size: 1rem; }
 }
 
-.primary { font-weight: 800; }
-.secondary { font-weight: 500; color: var(--color-text-secondary); }
-.dark .secondary { color: var(--color-on-dark-muted); }
-
-@media (max-width: 400px) {
-  .secondary { display: none; }
-}
 @media (max-width: 419px) {
   .compact .wordmark { display: none; }
 }

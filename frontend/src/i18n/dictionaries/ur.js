@@ -4,8 +4,6 @@
 export default {
   app: {
     name: 'ڈیجیٹل لیبر مارکیٹ پلیس',
-    nameFirst: 'ڈیجیٹل لیبر',
-    nameSecond: 'مارکیٹ پلیس',
     home: 'ڈیجیٹل لیبر مارکیٹ پلیس، ہوم پیج',
     skipToContent: 'سیدھا مواد پر جائیں',
     loading: 'لوڈ ہو رہا ہے…',

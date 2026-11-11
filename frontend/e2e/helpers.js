@@ -149,3 +149,17 @@ export async function uploadProof(page, { skillId = 'elec_wiring', seed = 1, typ
   expect(res.status(), await res.text()).toBe(201);
   return (await res.json()).evidence._id;
 }
+
+// The wordmark (after Batch 4): the full name as one element, one weight (700), and the colour of its
+// logo (dark text on light surfaces, light text on dark ones). Checks every visible wordmark on the page.
+export async function checkWordmarks(page, lang, label) {
+  const name = T(lang)('app.name');
+  const found = await page.evaluate(() => [...document.querySelectorAll('[data-wordmark]')]
+    .filter((el) => getComputedStyle(el).display !== 'none' && el.getClientRects().length > 0)
+    .map((el) => ({ text: el.textContent, children: el.childElementCount, weight: getComputedStyle(el).fontWeight, color: getComputedStyle(el).color, logoColor: getComputedStyle(el.parentElement).color })));
+  expect(found.length, `${label}: at least one visible wordmark`).toBeGreaterThan(0);
+  for (const word of found) {
+    expect(word, label).toMatchObject({ text: name, children: 0, weight: '700' });
+    expect(word.color, `${label}: wordmark colour = logo colour`).toBe(word.logoColor);
+  }
+}
