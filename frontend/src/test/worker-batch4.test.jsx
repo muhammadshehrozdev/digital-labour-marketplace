@@ -134,6 +134,9 @@ describe('dashboard: strength, potential skills, copy ID, count-up (features 10,
     renderAt('/worker');
     const meter = await screen.findByRole('region', { name: 'Profile strength' });
     expect(within(meter).getByText('Strong')).toBeInTheDocument();
+    // the ring is labelled as the checklist, so "100%" is not read as the strength level
+    expect(within(meter).getByRole('progressbar', { name: 'Profile filled in' })).toBeInTheDocument();
+    expect(within(meter).getByText('Profile filled in', { selector: 'figcaption' })).toBeInTheDocument();
     expect(within(meter).getByText(/Skills with approved proof: 0/)).toBeInTheDocument();
     expect(within(meter).getByRole('link', { name: /Add a past job/ })).toHaveAttribute('href', '/worker/profile/edit?section=history');
     // "How this is counted" shows the checklist with its weights (no hidden scoring)

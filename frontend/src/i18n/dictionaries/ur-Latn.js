@@ -1239,6 +1239,7 @@ export default {
     copy: { button: 'Worker ID copy karein', copied: 'Worker ID copy ho gayi', failed: 'Copy nahi ho saki. ID ko chun kar copy karein.' },
     strength: {
       title: 'Profile ki mazbooti',
+      ringCaption: 'Profile kitna bhara hai',
       levels: { starting: 'Abhi shuruaat', good: 'Acha', strong: 'Mazboot', complete: 'Mukammal' },
       leads: {
         starting: 'Kuch bunyadi cheezein rehti hain. Gahak mukammal profile wale karigar chunte hain.',

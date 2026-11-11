@@ -33,7 +33,11 @@ export default function StrengthMeter({ strength }) {
   return (
     <section className={styles.strength} aria-labelledby="strength-title" data-tour="strength">
       <div className={styles.strengthHead}>
-        <ProgressRing value={strength.percent} size={112} label={t('workerx.strength.title')} />
+        {/* the ring is the completion checklist; the level word below the title is the strength */}
+        <figure className={styles.ringFigure}>
+          <ProgressRing value={strength.percent} size={112} label={t('workerx.strength.ringCaption')} />
+          <figcaption className={styles.ringCaption}>{t('workerx.strength.ringCaption')}</figcaption>
+        </figure>
         <div className={styles.strengthText}>
           <h2 id="strength-title" className={styles.cardTitle}>{t('workerx.strength.title')}</h2>
           <p className={styles.level} data-level={strength.level}>{t(`workerx.strength.levels.${strength.level}`)}</p>

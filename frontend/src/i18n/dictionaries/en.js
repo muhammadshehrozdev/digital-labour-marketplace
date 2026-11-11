@@ -1241,6 +1241,7 @@ export default {
     copy: { button: 'Copy worker ID', copied: 'Worker ID copied', failed: 'Could not copy. Please select the ID and copy it.' },
     strength: {
       title: 'Profile strength',
+      ringCaption: 'Profile filled in',
       levels: { starting: 'Getting started', good: 'Good', strong: 'Strong', complete: 'Complete' },
       leads: {
         starting: 'A few basics are missing. Customers choose workers with a full profile.',

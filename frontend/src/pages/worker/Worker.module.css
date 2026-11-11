@@ -51,7 +51,10 @@
 .page { gap: var(--space-2); }
 .bento { display: grid; gap: var(--space-4); }
 @media (min-width: 900px) {
-  .bento { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-5); align-items: start; }
+  /* tiles stretch, so cards side by side end on one line (no hole under a short card when the
+     strength card has several next steps) */
+  .bento { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-5); align-items: stretch; }
+  .strengthCell > *, .potentialCell > * { block-size: 100%; }
   .strengthCell { grid-column: 1 / span 7; grid-row: span 2; }
   .identityCell { grid-column: 8 / span 5; }
   .proofCell { grid-column: 8 / span 5; }

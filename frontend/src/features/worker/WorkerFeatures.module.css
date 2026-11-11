@@ -68,3 +68,7 @@
   & svg { color: var(--color-primary); }
 }
 .honest { font-size: var(--text-caption); color: var(--color-text-secondary); }
+
+/* the ring's own caption, so "100%" (filled in) is not read as the strength level */
+.ringFigure { margin: 0; display: grid; justify-items: center; gap: var(--space-1); flex-shrink: 0; }
+.ringCaption { font-size: var(--text-small); color: var(--color-text-secondary); text-align: center; max-inline-size: 9rem; }
