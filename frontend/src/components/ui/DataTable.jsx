@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import styles from './DataTable.module.css';
 
@@ -6,8 +6,21 @@ import styles from './DataTable.module.css';
 //   minWidth: a CSS length, so names do not break into one word per line;
 //   sub: a second, quieter line under the value (outside the row button, so its name stays short).
 // Below 768 px every row becomes a stacked card with the column names as labels.
+// When the table is wider than its box, the box scrolls sideways and becomes a named, focusable region,
+// so keyboard users can scroll it too (axe: scrollable-region-focusable).
 export default function DataTable({ columns, rows, rowKey, caption, empty, onRowClick, rowLabel }) {
   const [sort, setSort] = useState(null); // { key, dir }
+  const wrapRef = useRef(null);
+  const [scrolls, setScrolls] = useState(false);
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    // the observer reports once at the start and again whenever the box or the table changes size
+    const observer = new ResizeObserver(() => setScrolls(el.scrollWidth > el.clientWidth + 1));
+    observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
+    return () => observer.disconnect();
+  }, []);
   const sorted = useMemo(() => {
     if (!sort) return rows;
     const col = columns.find((c) => c.key === sort.key);
@@ -24,7 +37,7 @@ export default function DataTable({ columns, rows, rowKey, caption, empty, onRow
 
   if (!rows.length) return empty ?? null;
   return (
-    <div className={styles.wrap}>
+    <div ref={wrapRef} className={styles.wrap} {...(scrolls ? { tabIndex: 0, role: 'region', 'aria-label': caption } : {})}>
       <table className={styles.table}>
         {caption && <caption className="visually-hidden">{caption}</caption>}
         <thead>

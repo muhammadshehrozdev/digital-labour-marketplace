@@ -1,6 +1,6 @@
 // Design v3 (Batch 4, Part 2): the illustration system, the bento landing page, the 404 page.
 import { describe, test, expect } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { readFileSync } from 'node:fs';
 import { SceneArt, TradeArt, SCENE_IDS, TRADE_ART_IDS } from '../components/illustrations';
@@ -209,5 +209,29 @@ describe('form controls keep one height', () => {
   test('a field never stretches its control to fill a taller row', () => {
     const css = readFileSync('src/components/ui/Field.module.css', 'utf8');
     expect(css.match(/\.field \{([^}]*)\}/)[1]).toMatch(/align-content:\s*start/);
+  });
+});
+
+// Found by the final e2e axe run: with the new minimum column widths the audit table scrolls sideways at
+// 1280 px, and a scroll box with nothing focusable inside cannot be scrolled with the keyboard.
+describe('a table wider than its box', () => {
+  test('becomes a focusable region named by its caption; a table that fits stays out of the tab order', () => {
+    const observers = [];
+    const original = window.ResizeObserver;
+    window.ResizeObserver = class { constructor(cb) { observers.push(cb); } observe() {} disconnect() {} };
+    try {
+      const columns = [{ key: 'name', header: 'Name' }];
+      const { container } = render(<DataTable caption="Audit entries" columns={columns} rows={[{ id: 1, name: 'A' }]} rowKey={(r) => r.id} />);
+      const box = container.firstChild;
+      Object.defineProperty(box, 'clientWidth', { configurable: true, value: 600 });
+      Object.defineProperty(box, 'scrollWidth', { configurable: true, value: 600 });
+      act(() => observers.forEach((cb) => cb([])));
+      expect(box).not.toHaveAttribute('tabindex');
+      Object.defineProperty(box, 'scrollWidth', { configurable: true, value: 900 });
+      act(() => observers.forEach((cb) => cb([])));
+      expect(screen.getByRole('region', { name: 'Audit entries' })).toHaveAttribute('tabindex', '0');
+    } finally {
+      window.ResizeObserver = original;
+    }
   });
 });
