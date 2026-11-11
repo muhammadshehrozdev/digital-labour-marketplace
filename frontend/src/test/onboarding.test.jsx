@@ -239,6 +239,10 @@ describe('skills step (Module 2)', () => {
     expect(screen.getByText('DLM-2026-000042')).toBeInTheDocument();
     expect(screen.getByText('Identity pending review')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Go to my dashboard/ })).toHaveAttribute('href', '/worker');
+    // Design v3: the next steps are offered as clear choices
+    const next = screen.getByRole('navigation', { name: 'What next?' });
+    expect(within(next).getByRole('link', { name: 'View my profile' })).toHaveAttribute('href', '/worker/profile');
+    expect(within(next).getByRole('link', { name: 'Add proof' })).toHaveAttribute('href', '/worker/profile/edit?section=proof');
   });
 });
 

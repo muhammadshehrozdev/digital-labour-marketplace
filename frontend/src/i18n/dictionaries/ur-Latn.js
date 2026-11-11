@@ -459,6 +459,7 @@ export default {
     },
     addCnic: 'Apni profile par CNIC number likhein taake admin aap ki shanakht check kar sake.',
     goDashboard: 'Mere dashboard par jayein',
+    nextTitle: 'Ab aage kya karein?',
     proof: {
       addTitle: 'Tasveer lagayein',
       addText: 'Aik hunar ke liye aik tasveer. Baad mein apni profile se aur bhi laga sakte hain.',

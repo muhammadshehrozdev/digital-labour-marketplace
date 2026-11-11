@@ -461,6 +461,7 @@ export default {
     },
     addCnic: 'Add your CNIC on your profile so an admin can check your identity.',
     goDashboard: 'Go to my dashboard',
+    nextTitle: 'What next?',
     proof: {
       addTitle: 'Add a photo',
       addText: 'One photo for one skill. You can add more later from your profile.',

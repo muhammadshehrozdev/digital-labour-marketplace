@@ -2,6 +2,7 @@
 import { describe, test, expect } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { readFileSync } from 'node:fs';
 import { SceneArt, TradeArt, SCENE_IDS, TRADE_ART_IDS } from '../components/illustrations';
 import { EmptyState, TextField } from '../components/ui';
 import { destinationsFor, searchDestinations } from '../features/navigation/destinations';
@@ -133,5 +134,16 @@ describe('destinations and the page-not-found search (feature 49)', () => {
     const list = await screen.findByRole('list', { name: 'Pages you can open' });
     expect(within(list).getByRole('link', { name: 'My profile' })).toHaveAttribute('href', '/worker/profile');
     expect(screen.getByRole('link', { name: 'Go to the home page' })).toHaveAttribute('href', '/worker');
+  });
+});
+
+// Critique v2 (screen 11): the step heading is focused by code after each step change; the global focus
+// halo made it look like a text box. jsdom does not apply CSS, so the rule itself is checked.
+describe('onboarding step heading focus', () => {
+  test('the code-focused heading has neither an outline nor the focus halo', () => {
+    const css = readFileSync('src/pages/onboarding/Onboarding.module.css', 'utf8');
+    const rule = css.match(/\.head h1:focus\s*\{([^}]*)\}/)?.[1] ?? '';
+    expect(rule).toMatch(/outline:\s*none/);
+    expect(rule).toMatch(/box-shadow:\s*none/);
   });
 });

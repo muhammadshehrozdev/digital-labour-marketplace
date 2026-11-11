@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, PartyPopper } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Eye, PartyPopper } from 'lucide-react';
 import { Alert, Button, Card, Stepper, StatusChip, useToast } from '../../components/ui';
+import { SceneArt } from '../../components/illustrations';
 import Confetti from '../../components/motion/Confetti';
 import AboutForm from '../../features/profile/AboutForm';
 import WorkForm from '../../features/profile/WorkForm';
@@ -146,9 +147,12 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
         <>
           <Confetti />
           <Card className={styles.doneCard}>
-            <p className={styles.celebrate}>
-              <PartyPopper size={22} aria-hidden="true" /> {t('onboarding.celebrate')}
-            </p>
+            <div className={styles.doneHero}>
+              <SceneArt name="step-done" size={132} />
+              <p className={styles.celebrate}>
+                <PartyPopper size={24} aria-hidden="true" /> {t('onboarding.celebrate')}
+              </p>
+            </div>
             <dl className={styles.summary}>
               <div><dt>{t('onboarding.summary.name')}</dt><dd>{profile?.user?.name ?? user.name}</dd></div>
               <div><dt>{t('onboarding.summary.workerId')}</dt><dd className="tabular" dir="ltr">{profile?.workerIdCode}</dd></div>
@@ -161,6 +165,14 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
               </div>
             </dl>
             {profile?.verificationStatus === 'Unverified' && <Alert tone="info">{t('onboarding.addCnic')}</Alert>}
+            {/* Design v3: the next steps as clear choices, the dashboard as the main one */}
+            <nav className={styles.nextSteps} aria-labelledby="onboarding-next">
+              <h2 id="onboarding-next" className={styles.nextTitle}>{t('onboarding.nextTitle')}</h2>
+              <div className={styles.nextActions}>
+                <Button to="/worker/profile" variant="secondary" icon={Eye}>{t('dashboard.viewProfile')}</Button>
+                <Button to="/worker/profile/edit?section=proof" variant="secondary" icon={Camera}>{t('editor.addProof')}</Button>
+              </div>
+            </nav>
             <div className={styles.footer}>
               {back}
               <Button to="/worker" iconRight={ArrowRight}>{t('onboarding.goDashboard')}</Button>
