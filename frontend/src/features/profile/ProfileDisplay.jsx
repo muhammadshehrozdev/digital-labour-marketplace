@@ -37,7 +37,7 @@ export default function ProfileDisplay({ profile, evidence = [], mode = 'public'
     <div className={styles.layout}>
       <Card className={styles.header} padding="lg">
         <div className={styles.headerGlow} aria-hidden="true" />
-        <Avatar name={name} size="xl" />
+        <Avatar name={name} size="xl" transitionName={profile.workerIdCode ? `worker-${profile.workerIdCode}` : undefined} />
         <div className={styles.identity}>
           <H className={styles.name} dir="auto">{name}</H>
           <p className={styles.trade}>
@@ -54,7 +54,7 @@ export default function ProfileDisplay({ profile, evidence = [], mode = 'public'
             {profile.availability && <Badge tone="neutral">{t(`status.availability.${profile.availability}`)}</Badge>}
           </div>
         </div>
-        {actions && <div className={styles.actions}>{actions}</div>}
+        {actions && <div className={styles.actions} data-print="hide">{actions}</div>}
       </Card>
 
       <div className={styles.grid}>
@@ -98,7 +98,7 @@ export default function ProfileDisplay({ profile, evidence = [], mode = 'public'
         </Reveal>
 
         {owner && (
-          <Reveal as={Card} index={4} className={styles.wide}>
+          <Reveal as={Card} index={4} className={styles.wide} data-print="hide">
             <S className={styles.sectionTitle}>{t('profile.proof')}</S>
             {evidence.length ? (
               <ul className={styles.thumbs}>
@@ -127,7 +127,7 @@ export default function ProfileDisplay({ profile, evidence = [], mode = 'public'
                 <li key={w._id ?? i}>
                   <p className={styles.jobTitle} dir="auto">{w.jobTitle}{w.duration && <span className={styles.muted}> · {w.duration}</span>}</p>
                   {w.description && <p className={styles.muted} dir="auto">{w.description}</p>}
-                  {owner && w.clientOrEmployer && <p className={styles.private} dir="auto"><Lock size={12} aria-hidden="true" /> {t('profile.clientPrivate', { client: w.clientOrEmployer })}</p>}
+                  {owner && w.clientOrEmployer && <p className={styles.private} dir="auto" data-print="hide"><Lock size={12} aria-hidden="true" /> {t('profile.clientPrivate', { client: w.clientOrEmployer })}</p>}
                 </li>
               ))}
             </ol>
@@ -135,7 +135,7 @@ export default function ProfileDisplay({ profile, evidence = [], mode = 'public'
         </Reveal>
 
         {owner && (
-          <Reveal as={Card} index={6} className={`${styles.wide} ${styles.privateCard}`}>
+          <Reveal as={Card} index={6} className={`${styles.wide} ${styles.privateCard}`} data-print="hide">
             <S className={styles.sectionTitle}><Lock size={18} aria-hidden="true" /> {t('profile.private')}</S>
             <p className={styles.help}>{t('profile.privateNote')}</p>
             <dl className={styles.privateFacts}>

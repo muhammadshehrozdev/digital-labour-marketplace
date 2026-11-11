@@ -6,6 +6,7 @@ import styles from './Toast.module.css';
 
 const ICONS = { success: CircleCheck, danger: CircleAlert, info: Info };
 const DURATION = 4000;
+const DURATION_WITH_ACTION = 7000; // time to reach "Undo"
 
 // Toasts appear in one aria-live="polite" region, so screen readers announce them.
 // They close by themselves after 4 s (paused while the mouse is over them).
@@ -20,14 +21,15 @@ export function ToastProvider({ children }) {
     timers.current.delete(id);
   }, []);
 
-  const schedule = useCallback((id) => {
-    timers.current.set(id, setTimeout(() => dismiss(id), DURATION));
+  const schedule = useCallback((id, ms = DURATION) => {
+    timers.current.set(id, setTimeout(() => dismiss(id), ms));
   }, [dismiss]);
 
-  const show = useCallback(({ tone = 'success', title, message }) => {
+  // action: { label, onClick } adds one button to the toast, e.g. "Undo" (Batch 4, feature 17).
+  const show = useCallback(({ tone = 'success', title, message, action }) => {
     const id = `${Date.now()}-${Math.random()}`;
-    setToasts((list) => [...list.slice(-2), { id, tone, title, message }]);
-    schedule(id);
+    setToasts((list) => [...list.slice(-2), { id, tone, title, message, action }]);
+    schedule(id, action ? DURATION_WITH_ACTION : DURATION);
     return id;
   }, [schedule]);
 
@@ -44,13 +46,16 @@ export function ToastProvider({ children }) {
               className={[styles.toast, styles[t.tone]].join(' ')}
               role="status"
               onMouseEnter={() => clearTimeout(timers.current.get(t.id))}
-              onMouseLeave={() => schedule(t.id)}
+              onMouseLeave={() => schedule(t.id, t.action ? DURATION_WITH_ACTION : DURATION)}
             >
               <Icon size={20} strokeWidth={1.75} aria-hidden="true" className={styles.icon} />
               <div className={styles.text}>
                 <p className={styles.title}>{t.title}</p>
                 {t.message && <p className={styles.message}>{t.message}</p>}
               </div>
+              {t.action && (
+                <button type="button" className={styles.action} onClick={() => { dismiss(t.id); t.action.onClick(); }}>{t.action.label}</button>
+              )}
               <button type="button" className={styles.close} aria-label={tr('common.dismiss')} onClick={() => dismiss(t.id)}>
                 <X size={18} aria-hidden="true" />
               </button>

@@ -16,6 +16,8 @@ import WorkerProfileView from '../pages/worker/WorkerProfileView';
 import WorkerProfileEdit from '../pages/worker/WorkerProfileEdit';
 import FindWorkers from '../pages/customer/FindWorkers';
 import WorkerPublicProfile from '../pages/customer/WorkerPublicProfile';
+import SavedWorkers from '../pages/customer/SavedWorkers';
+import CompareWorkers from '../pages/customer/CompareWorkers';
 import AdminOverview from '../pages/admin/AdminOverview';
 import AdminIdentity from '../pages/admin/AdminIdentity';
 import AdminAudit from '../pages/admin/AdminAudit';
@@ -53,6 +55,8 @@ export const appRoutes = (
         <Route element={<RequireRole role="customer" />}>
           <Route path="find" element={<FindWorkers />} />
           <Route path="workers/:workerId" element={<WorkerPublicProfile />} />
+          <Route path="saved" element={<SavedWorkers />} />
+          <Route path="compare" element={<CompareWorkers />} />
         </Route>
 
         <Route element={<RequireRole role="admin" />}>

@@ -5,6 +5,9 @@ export const NAV_LINKS = {
     { to: '/worker', label: 'nav.dashboard', end: true },
     { to: '/worker/profile', label: 'nav.myProfile' },
   ],
-  customer: [{ to: '/find', label: 'nav.findWorkers' }],
+  customer: [
+    { to: '/find', label: 'nav.findWorkers' },
+    { to: '/saved', label: 'nav.saved' },
+  ],
   admin: [{ to: '/admin', label: 'nav.admin' }],
 };

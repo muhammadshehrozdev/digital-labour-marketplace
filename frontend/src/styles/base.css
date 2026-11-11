@@ -243,3 +243,17 @@ a:hover { color: var(--color-primary-hover); }
   :focus-visible { outline: 2px solid CanvasText; box-shadow: none; }
   .dark-section { background: Canvas; color: CanvasText; }
 }
+
+/* Print (Batch 4, feature 47): paper gets the content only. The header, footer, navigation,
+   buttons and everything marked data-print="hide" (private sections, actions) are left out, so a
+   printed profile is always the public view. */
+@media print {
+  :root { color-scheme: light; }
+  body { background: #fff !important; color: #000; }
+  body::before, header, footer, nav, .skip-link, [data-print='hide'], [data-testid='compare-tray'], [data-testid='theme-toggle'], dialog { display: none !important; }
+  main { max-inline-size: none !important; min-block-size: 0 !important; padding: 0 !important; }
+  * { box-shadow: none !important; animation: none !important; transition: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  a { color: inherit; text-decoration: none; }
+  @page { margin: 14mm; }
+}
