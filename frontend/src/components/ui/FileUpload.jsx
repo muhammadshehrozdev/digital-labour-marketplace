@@ -1,6 +1,8 @@
 import { useEffect, useId, useState } from 'react';
-import { ImageUp, X } from 'lucide-react';
+import { Crop, ImageUp, X } from 'lucide-react';
+import Button from './Button';
 import IconButton from './IconButton';
+import ImageEditor from './ImageEditor';
 import Spinner from './Spinner';
 import { prepareImage, formatBytes } from '../../utils/imageCheck';
 import { useT } from '../../i18n/context';
@@ -19,23 +21,29 @@ function Preview({ file }) {
 // Photo picker: a big tap target on phones (opens camera or gallery), drag and drop on desktop.
 // The real <input type="file"> stays in the tab order (visually hidden), so keyboard and screen
 // readers work. Type and size are checked here with the same error codes as the server.
-export default function FileUpload({ label, hint, value, onChange, error, required }) {
+// tip: a short instruction shown above the drop zone (e.g. "Take a clear photo of your certificate").
+// editable: offer "Crop or rotate" once a photo is chosen (Batch 4, feature 15).
+export default function FileUpload({ label, hint, value, onChange, error, required, tip, editable = false }) {
   const { t, te } = useT();
   const id = `u${useId().replace(/:/g, '')}`;
   const [dragging, setDragging] = useState(false);
   const [checking, setChecking] = useState(false);
   const [localError, setLocalError] = useState(null);
+  const [note, setNote] = useState(null); // "made smaller: 3.2 MB to 640 KB"
+  const [editing, setEditing] = useState(false);
 
   const take = async (file) => {
     if (!file) return;
     setChecking(true);
     setLocalError(null);
+    setNote(null);
     const result = await prepareImage(file);
     setChecking(false);
     if (result.error) {
       setLocalError(result.error);
       onChange(null);
     } else {
+      if (result.shrunk) setNote(t('workerx.upload.compressed', { before: formatBytes(result.before), after: formatBytes(result.file.size) }));
       onChange(result.file);
     }
   };
@@ -48,6 +56,7 @@ export default function FileUpload({ label, hint, value, onChange, error, requir
         {label}
         {required && <span className={styles.required}><span aria-hidden="true"> *</span><span className="visually-hidden"> {t('common.required')}</span></span>}
       </span>
+      {tip && <div className={styles.tip}>{tip}</div>}
       {value ? (
         <div className={styles.selected}>
           <Preview key={`${value.name}-${value.size}-${value.lastModified}`} file={value} />
@@ -55,7 +64,8 @@ export default function FileUpload({ label, hint, value, onChange, error, requir
             <span className={styles.fileName}>{value.name}</span>
             <span className={styles.fileSize}>{formatBytes(value.size)}</span>
           </div>
-          <IconButton label={t('ui.file.remove')} icon={X} onClick={() => onChange(null)} />
+          {editable && <Button size="sm" variant="secondary" icon={Crop} onClick={() => setEditing(true)}>{t('workerx.upload.edit')}</Button>}
+          <IconButton label={t('ui.file.remove')} icon={X} onClick={() => { setNote(null); onChange(null); }} />
         </div>
       ) : (
         <label
@@ -66,7 +76,7 @@ export default function FileUpload({ label, hint, value, onChange, error, requir
           onDrop={(e) => { e.preventDefault(); setDragging(false); take(e.dataTransfer.files?.[0]); }}
         >
           {checking ? <Spinner size={28} /> : <ImageUp size={32} strokeWidth={1.75} aria-hidden="true" />}
-          <span className={styles.zoneTitle}>{checking ? t('ui.file.checking') : t('ui.file.choose')}</span>
+          <span className={styles.zoneTitle}>{checking ? t('workerx.upload.compressing') : t('ui.file.choose')}</span>
           <span className={styles.zoneText}>{t('ui.file.help')}</span>
         </label>
       )}
@@ -80,7 +90,15 @@ export default function FileUpload({ label, hint, value, onChange, error, requir
         aria-invalid={shownError ? true : undefined}
         onChange={(e) => { take(e.target.files?.[0]); e.target.value = ''; }}
       />
+      {note && <p className={styles.note} role="status">{note}</p>}
       {hint && <p id={`${id}-hint`} className={styles.hint}>{hint}</p>}
+      {editing && value && (
+        <ImageEditor
+          file={value}
+          onClose={() => setEditing(false)}
+          onApply={(edited) => { setEditing(false); onChange(edited); }}
+        />
+      )}
       {shownError && <p id={`${id}-error`} className={styles.error} role="alert">{te(shownError)}</p>}
     </div>
   );

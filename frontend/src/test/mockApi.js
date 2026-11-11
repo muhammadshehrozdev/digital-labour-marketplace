@@ -43,7 +43,7 @@ export function mockApi(routes) {
     else body = config.data ? JSON.parse(config.data) : undefined;
     calls.push({ key, body, params: config.params });
     let route = routes[key] ?? defaultRoute(key, routes);
-    if (typeof route === 'function') route = route(config, body);
+    if (typeof route === 'function') route = await route(config, body); // a route may answer later (or fail, e.g. a cancelled upload)
     const response = { data: route.data, status: route.status, statusText: String(route.status), headers: route.headers ?? {}, config };
     if (route.status >= 400) {
       throw new AxiosError(`Request failed with status code ${route.status}`, 'ERR_BAD_REQUEST', config, null, response);
@@ -99,11 +99,29 @@ export function publicViewOf(profile) {
   view.workHistory = (profile.workHistory ?? []).map(({ jobTitle, duration, description }) => ({ jobTitle, duration, description }));
   return view;
 }
+// The "strength" block of GET /api/workers/me/full (services/profileStrength.js), in the same shape;
+// for tests the numbers come straight from the profile.
+export function strengthOf(profile) {
+  const skills = profile.skills ?? [];
+  const approved = skills.filter((s) => (s.evidenceSummary?.approved ?? 0) > 0).length;
+  const pending = skills.filter((s) => !(s.evidenceSummary?.approved > 0) && (s.evidenceSummary?.pending ?? 0) > 0).length;
+  const none = skills.length - approved - pending;
+  const tips = [];
+  if (!profile.cnicOnFile) tips.push({ code: 'add_cnic' });
+  for (const s of skills.filter((x) => !(x.evidenceSummary?.approved > 0) && !(x.evidenceSummary?.pending > 0)).slice(0, 2)) tips.push({ code: 'add_proof', params: { skillId: s.skillId, skillName: s.name } });
+  if (!(profile.workHistory ?? []).length) tips.push({ code: 'add_work_history' });
+  const percent = profile.profileCompletion ?? 20;
+  const level = percent === 100 && approved > 0 ? 'complete' : percent >= 80 ? 'strong' : percent >= 50 ? 'good' : 'starting';
+  const checks = ['account', 'trade', 'experienceRate', 'cityAddress', 'contact', 'skills', 'bio', 'workHistory'].map((id, i) => ({ id, weight: [20, 15, 15, 10, 10, 15, 5, 10][i], done: i < 6 }));
+  return { percent, level, checks, proof: { skills: skills.length, approved, pending, none }, tips: tips.slice(0, 5) };
+}
+
 export const full = (profile, evidence = [], extra = {}) => ({
   status: 200,
   data: {
     profile,
     evidence,
+    strength: strengthOf(profile),
     publicView: publicViewOf(profile),
     listedInDirectory: Boolean(profile.occupation && profile.category),
     onboarding: { steps: { about: true, work: true, skills: true }, nextStep: null, complete: true, completedAt: '2026-11-09T10:00:00Z' },

@@ -62,7 +62,7 @@ export default function AppHeader() {
           </nav>
         )}
 
-        <div className={styles.end}>
+        <div className={styles.end} data-tour="header">
           <ThemeToggle />
           <LanguageSwitcher compact />
           {user ? (

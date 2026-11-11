@@ -1,6 +1,17 @@
-import { ArrowRight, CheckCircle2, Circle, Eye, ImagePlus, Pencil } from 'lucide-react';
-import { Alert, Badge, Button, Card, PageHeader, ProgressRing, StatusChip } from '../../components/ui';
+// /worker: an overview only (D-020). No edit forms here: "View my profile" and "Edit profile".
+// Design v3 (Batch 4): a bento of the profile strength with real next steps (feature 10), skills
+// the worker may also do (feature 11), identity, skills and proof. Every number is the worker's
+// own data from GET /api/workers/me/full.
+import { Eye, Pencil } from 'lucide-react';
+import { Alert, Badge, Button, PageHeader, StatusChip } from '../../components/ui';
+import { SceneArt } from '../../components/illustrations';
 import Reveal from '../../components/motion/Reveal';
+import CopyId from '../../features/worker/CopyId';
+import CountUp from '../../features/worker/CountUp';
+import PotentialSkills from '../../features/worker/PotentialSkills';
+import StrengthMeter from '../../features/worker/StrengthMeter';
+import WelcomeTour from '../../features/worker/WelcomeTour';
+import { ShareButton } from '../../features/customer/ShareButtons';
 import { useMyFullProfile } from '../../hooks/useMyFullProfile';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useDocumentTitle, useT } from '../../i18n';
@@ -9,62 +20,75 @@ import styles from './Worker.module.css';
 
 const SKILL_TONE = { verified: 'success', evidence_pending: 'warning', disputed: 'danger' };
 
-// /worker: an overview only (D-020). No edit forms here: "View my profile" and "Edit profile".
 export default function WorkerDashboard() {
-  const { t, te } = useT();
+  const { t, te, formatNumber } = useT();
   useDocumentTitle(t('titles.dashboard'));
-  const { data, error } = useMyFullProfile();
+  const full = useMyFullProfile();
   const { categoryLabel, categoryOccupation, skillName } = useTaxonomy();
-  if (error) return <Alert tone="danger">{te(error)}</Alert>;
-  if (!data) return <PageLoading />;
+  if (full.error) return <Alert tone="danger">{te(full.error)}</Alert>;
+  if (!full.data) return <PageLoading />;
 
-  const { profile, evidence } = data;
+  const { profile, evidence, strength } = full.data;
   const firstName = (profile.user?.name ?? '').split(' ')[0];
   const counts = { approved: 0, pending: 0, rejected: 0 };
   for (const e of evidence) if (e.status in counts) counts[e.status] += 1;
-  const skillWithoutProof = profile.skills.find((sk) => !evidence.some((e) => e.skillId === sk.skillId)) ?? profile.skills[0];
-  const nextSteps = [
-    { id: 'cnic', done: profile.cnicOnFile, to: '/worker/profile/edit?section=about' },
-    { id: 'skills', done: profile.skills.length > 0, to: '/worker/profile/edit?section=skills' },
-    { id: 'job', done: profile.workHistory.length > 0, to: '/worker/profile/edit?section=history' },
-    { id: 'proof', done: evidence.length > 0, to: `/worker/profile/edit?section=proof${skillWithoutProof ? `&skill=${encodeURIComponent(skillWithoutProof.skillId)}` : ''}` },
-  ];
-  const allDone = nextSteps.every((s) => s.done);
+  const trade = categoryOccupation(profile.category) || profile.occupation;
+  // a newly added skill changes the profile at once (and the strength on the next load)
+  const onSkillsChange = (skills) => full.update({ profile: { ...full.data.profile, skills } });
 
   return (
     <div className={styles.page}>
       <PageHeader
-        eyebrow={<span className="tabular" dir="ltr">{t('dashboard.workerId', { id: profile.workerIdCode })}</span>}
+        eyebrow={<CopyId id={profile.workerIdCode} />}
         title={t('dashboard.welcome', { name: firstName })}
-        description={[categoryOccupation(profile.category) || profile.occupation, categoryLabel(profile.category), profile.city].filter(Boolean).join(' · ')}
+        description={[trade, categoryLabel(profile.category), profile.city].filter(Boolean).join(' · ')}
         actions={
           <>
+            {full.data.listedInDirectory && <ShareButton size="md" workerIdCode={profile.workerIdCode} name={profile.user?.name ?? ''} trade={trade} />}
             <Button to="/worker/profile" variant="secondary" icon={Eye}>{t('dashboard.viewProfile')}</Button>
             <Button to="/worker/profile/edit" icon={Pencil}>{t('dashboard.editProfile')}</Button>
           </>
         }
       />
-      <div className={styles.grid}>
-        <Reveal as={Card} index={0} className={styles.completion}>
-          <ProgressRing value={profile.profileCompletion} label={t('ui.profileCompletion')} />
-          <div>
-            <h2 className={styles.cardTitle}>{t('dashboard.completionTitle')}</h2>
-            <p className={styles.muted}>{t('dashboard.completionText')}</p>
-          </div>
-        </Reveal>
+      <div className={styles.bento}>
+        <Reveal className={styles.strengthCell}><StrengthMeter strength={strength} /></Reveal>
 
-        <Reveal as={Card} index={1}>
+        <Reveal index={1} className={`${styles.tile} ${styles.identityCell}`}>
           <h2 className={styles.cardTitle}>{t('dashboard.identityTitle')}</h2>
           <div className={styles.stack}>
             <StatusChip kind="identity" status={profile.verificationStatus} />
             <p className={styles.muted}>{t(`dashboard.identityText.${profile.verificationStatus}`)}</p>
             {profile.verificationStatus === 'Rejected' && profile.identityNote && (
-              <Alert tone="danger" title={t('dashboard.adminReason')}>{profile.identityNote}</Alert>
+              <Alert tone="danger" title={t('dashboard.adminReason')}><span dir="auto">{profile.identityNote}</span></Alert>
             )}
           </div>
         </Reveal>
 
-        <Reveal as={Card} index={2} className={styles.wideCard}>
+        <Reveal index={2} className={`${styles.tile} ${styles.proofCell}`} data-tour="proof" data-art-hover>
+          <div className={styles.proofHead}>
+            <h2 className={styles.cardTitle}>{t('dashboard.proofTitle')}</h2>
+            <Button to="/worker/profile/edit?section=proof" size="sm" variant="secondary">{t('editor.addProof')}</Button>
+          </div>
+          {evidence.length ? (
+            <dl className={styles.counts}>
+              {['approved', 'pending', 'rejected'].map((key) => (
+                <div key={key} data-kind={key}>
+                  <dt>{t(`status.evidence.${key}`)}</dt>
+                  <dd><CountUp value={counts[key]} format={formatNumber} /></dd>
+                </div>
+              ))}
+            </dl>
+          ) : (
+            <div className={styles.proofEmpty}>
+              <SceneArt name="empty-proof" size={120} />
+              <p className={styles.muted}>{t('dashboard.proofEmpty')}</p>
+            </div>
+          )}
+        </Reveal>
+
+        <Reveal index={1} className={styles.potentialCell}><PotentialSkills onSkillsChange={onSkillsChange} /></Reveal>
+
+        <Reveal index={2} className={`${styles.tile} ${styles.skillsCell}`}>
           <div className={styles.cardHead}>
             <h2 className={styles.cardTitle}>{t('dashboard.skillsTitle')}</h2>
             <span className={styles.muted}>{t('dashboard.skillsCount', { count: profile.skills.length })}</span>
@@ -87,46 +111,8 @@ export default function WorkerDashboard() {
             </ul>
           )}
         </Reveal>
-
-        <Reveal as={Card} index={3} className={styles.wideCard}>
-          <h2 className={styles.cardTitle}>{t('dashboard.proofTitle')}</h2>
-          {evidence.length ? (
-            <p className={styles.proofCounts}>
-              <span className="tabular">{t('dashboard.proofCounts', counts)}</span>
-            </p>
-          ) : (
-            <p className={styles.muted}>{t('dashboard.proofEmpty')}</p>
-          )}
-        </Reveal>
-
-        <Reveal as={Card} index={4} className={styles.wideCard}>
-          <h2 className={styles.cardTitle}>{t('dashboard.nextTitle')}</h2>
-          {allDone ? (
-            <p className={`${styles.muted} ${styles.allDone}`}><CheckCircle2 size={18} aria-hidden="true" className={styles.doneIcon} /> {t('dashboard.allDone')}</p>
-          ) : (
-            <ul className={styles.checklist}>
-              {nextSteps.map((s) => (
-                <li key={s.id} className={styles.checkItem}>
-                  {s.done ? (
-                    <CheckCircle2 size={20} className={styles.doneIcon} aria-hidden="true" />
-                  ) : (
-                    <Circle size={20} className={styles.todoIcon} aria-hidden="true" />
-                  )}
-                  <span className={s.done ? styles.doneText : undefined}>
-                    {t(`dashboard.next.${s.id}`)}
-                    <span className="visually-hidden"> {s.done ? t('common.done') : t('common.toDo')}</span>
-                  </span>
-                  {!s.done && (
-                    <Button to={s.to} size="sm" variant="ghost" icon={s.id === 'proof' ? ImagePlus : undefined} iconRight={s.id === 'proof' ? undefined : ArrowRight}>
-                      {t('dashboard.doIt')}
-                    </Button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Reveal>
       </div>
+      <WelcomeTour />
     </div>
   );
 }

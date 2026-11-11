@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Upload } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Camera, Upload, X } from 'lucide-react';
 import API from '../../api';
 import { Alert, Button, Checkbox, FileUpload, ProgressBar, RadioCardGroup, Select, TextField } from '../../components/ui';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
@@ -21,6 +21,7 @@ export default function EvidenceUploadForm({ skills, defaultSkillId = '', onUplo
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [progress, setProgress] = useState(null);
+  const controller = useRef(null); // to cancel a running upload (feature 16)
 
   const typeOptions = EVIDENCE_TYPES.map(({ value, icon }) => ({
     value, icon, title: t(`evidence.types.${value}.title`), description: t(`evidence.types.${value}.description`),
@@ -44,9 +45,11 @@ export default function EvidenceUploadForm({ skills, defaultSkillId = '', onUplo
     form.append('consent', 'true');
     form.append('image', file);
     setProgress(0);
+    controller.current = new AbortController();
     try {
       const { data } = await API.post('/evidence', form, {
         timeout: 120000,
+        signal: controller.current.signal,
         onUploadProgress: (ev) => ev.total && setProgress(Math.round((ev.loaded / ev.total) * 100)),
       });
       setFile(null);
@@ -55,8 +58,10 @@ export default function EvidenceUploadForm({ skills, defaultSkillId = '', onUplo
       setType('');
       onUploaded(data);
     } catch (err) {
-      setFormError(apiError(err, 'evidence.form.failed'));
+      // cancelled by the worker: say so calmly; the server saved nothing (the request never finished)
+      setFormError(err?.code === 'ERR_CANCELED' ? 'workerx.upload.cancelled' : apiError(err, 'evidence.form.failed'));
     } finally {
+      controller.current = null;
       setProgress(null);
     }
   };
@@ -74,13 +79,27 @@ export default function EvidenceUploadForm({ skills, defaultSkillId = '', onUplo
         error={errors.skillId}
       />
       <RadioCardGroup legend={t('evidence.form.kind')} name="evidence-type" value={type} onChange={setType} options={typeOptions} error={errors.type} />
-      <FileUpload label={t('evidence.form.photo')} required value={file} onChange={setFile} error={errors.file} hint={t('evidence.form.photoHint')} />
+      <FileUpload
+        label={t('evidence.form.photo')}
+        required
+        editable
+        value={file}
+        onChange={setFile}
+        error={errors.file}
+        hint={t('evidence.form.photoHint')}
+        tip={<><strong><Camera size={16} aria-hidden="true" /> {t('workerx.upload.tipTitle')}</strong><span>{t('workerx.upload.tip')}</span></>}
+      />
       <TextField label={t('evidence.form.title')} maxLength={80} placeholder={t('evidence.form.titlePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} urdu />
       <div>
         <Checkbox label={t('evidence.consent')} checked={consent} onChange={setConsent} aria-invalid={errors.consent ? true : undefined} />
         {errors.consent && <p className={styles.error} role="alert">{t(errors.consent)}</p>}
       </div>
-      {progress !== null && <ProgressBar value={progress} label={t('evidence.form.uploading')} />}
+      {progress !== null && (
+        <div className={styles.progress}>
+          <ProgressBar value={progress} label={t('evidence.form.uploading')} />
+          <Button size="sm" variant="secondary" icon={X} onClick={() => controller.current?.abort()}>{t('workerx.upload.cancel')}</Button>
+        </div>
+      )}
       <Button type="submit" icon={Upload} loading={progress !== null}>{submitLabel ?? t('evidence.form.submit')}</Button>
     </form>
   );

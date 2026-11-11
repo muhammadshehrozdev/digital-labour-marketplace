@@ -41,19 +41,21 @@ describe('worker navigation and the profile view/edit split (D-011, D-020)', () 
     expect(document.querySelector('header').textContent).not.toMatch(/skill|profiler|\bAI\b/i);
   });
 
-  test('dashboard is an overview only: worker ID, completion ring, identity chip, skill chips, and no edit form', async () => {
+  test('dashboard is an overview only: worker ID, strength ring with next steps, identity chip, skill chips, and no edit form', async () => {
     mockApi(workerRoutes());
     renderAt('/worker');
     expect(await screen.findByRole('heading', { level: 1, name: 'Welcome, Rashid' })).toBeInTheDocument();
     expect(screen.getByText(/DLM-2026-000042/)).toBeInTheDocument();
-    expect(screen.getByRole('progressbar', { name: 'Profile completion' })).toHaveAttribute('aria-valuenow', '80');
+    // Batch 4: the completion ring became the profile strength meter (same documented percentage)
+    expect(screen.getByRole('progressbar', { name: 'Profile strength' })).toHaveAttribute('aria-valuenow', '80');
+    expect(screen.getByText('Strong')).toBeInTheDocument();
     expect(screen.getByText('Identity pending review')).toBeInTheDocument();
-    expect(screen.getByText(/House wiring/)).toHaveTextContent('Self-declared');
+    expect(within(screen.getByRole('heading', { name: 'Your skills' }).closest('div').parentElement).getByText(/House wiring/)).toHaveTextContent('Self-declared');
     expect(screen.getByRole('link', { name: 'View my profile' })).toHaveAttribute('href', '/worker/profile');
     expect(screen.getByRole('link', { name: 'Edit profile' })).toHaveAttribute('href', '/worker/profile/edit');
     expect(screen.queryAllByRole('textbox')).toHaveLength(0); // no edit forms here
-    const proofLink = screen.getAllByRole('link', { name: /Do it/ }).find((l) => l.getAttribute('href').includes('section=proof'));
-    expect(proofLink).toHaveAttribute('href', '/worker/profile/edit?section=proof&skill=elec_wiring');
+    // each next step names one missing thing and links to the place where it is done
+    expect(screen.getByRole('link', { name: /Add proof for House wiring/ })).toHaveAttribute('href', '/worker/profile/edit?section=proof&skill=elec_wiring');
   });
 
   test('a rejected identity shows the admin reason on the dashboard', async () => {

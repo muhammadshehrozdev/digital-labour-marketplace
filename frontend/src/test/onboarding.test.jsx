@@ -196,13 +196,21 @@ describe('skills step (Module 2)', () => {
     await waitFor(() => expect(calls.find((c) => c.key === 'PUT /workers/me')?.body).toEqual({ category: 'electrical_solar', occupation: 'Electrician', experienceYears: 6 }));
   });
 
-  test('tapping an example fills the text box (Urdu, Roman Urdu, English)', async () => {
+  test('example carousel: starts in the website language, moves through all scripts, and fills the box (Batch 4, feature 13)', async () => {
     mockApi(skillsRoutes());
     renderAt('/onboarding/skills');
     const user = userEvent.setup();
-    await user.click(await screen.findByRole('button', { name: 'Roman Urdu example' }));
-    expect(screen.getByLabelText(/what work do you do/)).toHaveValue('Main 5 saal se plumbing, PPRC pipe fitting aur geyser ka kaam karta hoon.');
-    expect(screen.getByRole('button', { name: 'اردو مثال' })).toHaveAttribute('lang', 'ur');
+    const carousel = await screen.findByRole('region', { name: 'Example sentences' });
+    expect(within(carousel).getByText('Example 1 of 9')).toBeInTheDocument();
+    const first = carousel.querySelector('blockquote');
+    expect(first).toHaveAttribute('lang', 'en'); // English website: English examples first
+    for (let i = 0; i < 3; i += 1) await user.click(within(carousel).getByRole('button', { name: 'Next example' }));
+    const urdu = carousel.querySelector('blockquote');
+    expect(urdu).toHaveAttribute('lang', 'ur');
+    expect(urdu).toHaveAttribute('dir', 'rtl');
+    await user.click(within(carousel).getByRole('button', { name: 'Previous example' }));
+    await user.click(within(carousel).getByRole('button', { name: 'Use this example' }));
+    expect(screen.getByLabelText(/what work do you do/)).toHaveValue('I install and service split ACs and repair fridges.');
     expect(screen.getByLabelText(/what work do you do/)).toHaveAttribute('dir', 'auto');
   });
 

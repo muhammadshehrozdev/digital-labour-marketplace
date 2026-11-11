@@ -46,3 +46,25 @@
   box-shadow: 0 0 0 3px var(--color-warning-soft);
 }
 @keyframes nudge { from { transform: scale(0.8); opacity: 0; } }
+
+/* ---- dashboard v3 (Batch 4): bento ---- */
+.page { gap: var(--space-2); }
+.bento { display: grid; gap: var(--space-4); }
+@media (min-width: 900px) {
+  .bento { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-5); align-items: start; }
+  .strengthCell { grid-column: 1 / span 7; grid-row: span 2; }
+  .identityCell { grid-column: 8 / span 5; }
+  .proofCell { grid-column: 8 / span 5; }
+  .potentialCell { grid-column: 1 / span 7; }
+  .skillsCell { grid-column: 8 / span 5; }
+}
+.tile { display: grid; gap: var(--space-3); align-content: start; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--color-surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent); }
+.tile .cardTitle { margin-block-end: 0; }
+.proofHead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.counts { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.counts div { display: grid; gap: 2px; padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-bg-subtle); }
+.counts dt { font-size: var(--text-caption); color: var(--color-text-secondary); }
+.counts dd { margin: 0; font-family: var(--font-latin); font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+.counts [data-kind='approved'] { background: var(--color-success-soft); }
+.counts [data-kind='approved'] dd { color: var(--color-success); }
+.proofEmpty { display: flex; align-items: center; gap: var(--space-3); }

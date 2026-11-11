@@ -1,0 +1,35 @@
+.layer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+/* the highlighted element: a ring and a soft dimming of everything else */
+.spot {
+  position: fixed;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 0 0 3px var(--color-accent), 0 0 0 9999px color-mix(in oklch, oklch(0.15 0.02 168) 45%, transparent);
+  transition: top var(--duration-slow) var(--ease-out), left var(--duration-slow) var(--ease-out), width var(--duration-slow) var(--ease-out), height var(--duration-slow) var(--ease-out);
+}
+.card {
+  position: fixed;
+  pointer-events: auto;
+  inline-size: min(340px, calc(100vw - 24px));
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg), inset 0 0 0 1px var(--color-border);
+  &:focus { outline: none; }
+  &:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card { animation: tour-in 320ms var(--ease-spring); }
+}
+@keyframes tour-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+.head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.position { font-size: var(--text-caption); font-weight: 700; color: var(--color-primary-text); }
+.title { font-size: var(--text-h3); letter-spacing: -0.015em; }
+.text { font-size: var(--text-small); color: var(--color-text-secondary); }
+.dots { display: flex; gap: 6px; }
+.dots span { inline-size: 6px; block-size: 6px; border-radius: 3px; background: var(--color-border-strong); transition: inline-size var(--duration-base) var(--ease-out); }
+.dots span[data-active='true'] { inline-size: 18px; background: var(--color-primary); }
+.actions { display: flex; justify-content: space-between; gap: var(--space-2); margin-block-start: var(--space-2); }
+@media (forced-colors: active) { .spot { box-shadow: 0 0 0 3px Highlight; } }

@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ListChecks, Mic, MicOff, Search, Trash2 } from 'lucide-react';
+import { Mic, MicOff, Search, Trash2 } from 'lucide-react';
 import API from '../../api';
-import { Alert, Badge, Button, Card, Checkbox, Combobox, ConfirmDialog, EmptyState, IconButton, Section, Skeleton, StatusChip, TextArea, useToast } from '../../components/ui';
+import { Alert, Badge, Button, Card, Checkbox, Combobox, ConfirmDialog, EmptyState, IconButton, Section, Skeleton, StatusChip, useToast } from '../../components/ui';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { Rich, useLanguage } from '../../i18n';
 import { apiError } from '../../utils/apiErrors';
-import { EXAMPLES, MAX_TEXT } from './skillsText';
+import { MAX_TEXT } from './skillsText';
+import ExampleCarousel from './ExampleCarousel';
+import HighlightedTextArea from './HighlightedTextArea';
+import PotentialSkills from '../worker/PotentialSkills';
 import { useVoiceTyping } from './useVoiceTyping';
 import styles from './SkillsEditor.module.css';
 
@@ -99,13 +102,27 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
     }
   };
 
+  // Undo (Batch 4, feature 17): adds the same skill back. Offered only when the skill had no
+  // proof, because proof that was waiting is deleted with the skill and cannot come back.
+  const putBack = async (skill) => {
+    try {
+      const { data } = skill.custom
+        ? await API.post('/workers/me/skills/custom', { name: skill.name, category: skill.category })
+        : await API.post('/workers/me/skills', { skillIds: [skill.skillId], addedVia: skill.addedVia ?? 'manual' });
+      update(data.skills, data.onboarding);
+    } catch {
+      toast.show({ tone: 'danger', title: t('workerx.undoFailed') });
+    }
+  };
+
   const remove = async () => {
     const skill = toRemove;
     setBusy('remove');
     try {
       const { data } = await API.delete(`/workers/me/skills/${encodeURIComponent(skill.skillId)}`);
       update(data.skills, data.onboarding);
-      toast.show({ tone: 'info', title: t('skills.removed', { name: skillName(skill) }) });
+      const hadProof = (skill.evidenceSummary?.pending ?? 0) + (skill.evidenceSummary?.approved ?? 0) > 0;
+      toast.show({ tone: 'info', title: t('skills.removed', { name: skillName(skill) }), action: hadProof ? undefined : { label: t('workerx.undo'), onClick: () => putBack(skill) } });
     } catch (err) {
       setError(apiError(err, 'skills.removeFailed'));
     } finally {
@@ -159,26 +176,19 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
       <Card as="section" aria-labelledby="describe-title">
         <form className={styles.describe} onSubmit={findSkills}>
           <h2 id="describe-title" className={styles.h2}>{t('skills.describeTitle')}</h2>
-          <TextArea
+          <HighlightedTextArea
             label={t('skills.describeLabel')}
             hint={t('skills.describeHint')}
             maxLength={MAX_TEXT}
             rows={5}
-            urdu
             value={text}
+            words={result?.skills.flatMap((s) => s.matched) ?? []}
             onChange={(e) => {
               setText(e.target.value);
               setInputMode('text');
             }}
           />
-          <div className={styles.examples}>
-            <span className={styles.examplesLabel}>{t('skills.seeExample')}</span>
-            {EXAMPLES.map((ex) => (
-              <button key={ex.id} type="button" className={styles.example} lang={ex.lang} dir={ex.dir} onClick={() => { setText(ex.text); setInputMode('text'); }}>
-                {t(`skills.examples.${ex.id}`)}
-              </button>
-            ))}
-          </div>
+          <ExampleCarousel onUse={(example) => { setText(example); setInputMode('text'); }} />
           <div className={styles.voice}>
             {voice.supported && (
               <div className={styles.voiceRow}>
@@ -278,12 +288,14 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
         </Card>
       )}
 
+      {saved && saved.length > 0 && <PotentialSkills headingLevel={2} onSkillsChange={update} key={saved.length} />}
+
       <Section title={t('skills.savedTitle')} id="saved-skills" description={t('skills.savedText')}>
         {loadError && <Alert tone="danger">{te(loadError)}</Alert>}
         {saved === null && !loadError ? (
           <div aria-busy="true"><span className="visually-hidden" role="status">{t('common.loading')}</span><Skeleton lines={3} /></div>
         ) : saved && saved.length === 0 ? (
-          <EmptyState icon={ListChecks} headingLevel={3} title={t('skills.noneTitle')} description={t('skills.noneText')} />
+          <EmptyState art="empty-skills" compact headingLevel={3} title={t('skills.noneTitle')} description={t('skills.noneText')} />
         ) : (
           <ul className={styles.savedList}>
             {(saved ?? []).map((s) => (

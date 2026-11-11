@@ -3,6 +3,9 @@
 // this only saves a slow upload. Errors are { code } descriptors, translated where shown.
 export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 export const MAX_SIDE_PX = 2000;
+// Photos above this size are made smaller in the browser before upload (Batch 4, feature 14):
+// faster on slow mobile data. The server re-processes every photo anyway.
+export const COMPRESS_FROM_BYTES = 1024 * 1024;
 export const ERR_NOT_JPG_PNG = { code: 'PHOTO_NOT_JPG_PNG' };
 export const ERR_PDF = { code: 'PHOTO_PDF' };
 export const ERR_NOT_IMAGE = { code: 'PHOTO_NOT_IMAGE' };
@@ -54,13 +57,15 @@ export async function shrinkImage(file) {
   }
 }
 
-// Full check: { file } ready to upload, or { error }.
+// Full check: { file, shrunk?, before? } ready to upload, or { error }.
 export async function prepareImage(file) {
   const typeError = await checkImageType(file);
   if (typeError) return { error: typeError };
+  if (file.size > COMPRESS_FROM_BYTES) {
+    const smaller = await shrinkImage(file);
+    if (smaller && smaller.size < file.size && smaller.size <= MAX_UPLOAD_BYTES) return { file: smaller, shrunk: true, before: file.size };
+  }
   if (file.size <= MAX_UPLOAD_BYTES) return { file };
-  const smaller = await shrinkImage(file);
-  if (smaller && smaller.size <= MAX_UPLOAD_BYTES) return { file: smaller, shrunk: true };
   return { error: ERR_TOO_LARGE };
 }
 

@@ -43,3 +43,24 @@
   100% { box-shadow: 0 0 0 14px transparent; }
 }
 @keyframes item-in { from { opacity: 0; transform: translateY(6px); } }
+
+/* ---- Batch 4: matched words marked inside the text (feature 12) ---- */
+.highlightWrap { position: relative; display: grid; }
+.highlightWrap > * { grid-area: 1 / 1; }
+.mirror {
+  overflow: hidden; white-space: pre-wrap; overflow-wrap: break-word; word-break: normal;
+  color: transparent; pointer-events: none; resize: none;
+  border-color: transparent; box-shadow: none; background: var(--color-surface);
+}
+.mirror mark { color: transparent; background: color-mix(in oklch, var(--color-accent) 42%, transparent); border-radius: 3px; box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-accent) 60%, transparent); }
+.highlightWrap[data-marked] .overMirror { background: transparent; position: relative; }
+
+/* ---- example carousel (feature 13) ---- */
+.carousel { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-lg); background: var(--color-bg-subtle); }
+.slide { margin: 0; display: grid; gap: var(--space-2); min-inline-size: 0; }
+.quote { color: var(--color-accent-text); }
+.exampleText { margin: 0; font-weight: 600; }
+.exampleText[lang='ur'] { font-family: var(--font-urdu); line-height: 2; }
+@media (prefers-reduced-motion: no-preference) { .exampleText { animation: slide-in var(--duration-base) var(--ease-out); } }
+@keyframes slide-in { from { opacity: 0; transform: translateY(4px); } }
+.slideMeta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); font-size: var(--text-caption); color: var(--color-text-secondary); }
