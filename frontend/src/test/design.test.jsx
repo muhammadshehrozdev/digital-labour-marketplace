@@ -203,3 +203,11 @@ describe('toast placement', () => {
     expect(region).toMatch(/@media \(min-width: 640px\)\s*\{[^}]*inset-block:\s*auto var\(--space-6\)/);
   });
 });
+
+// Critique v2 screen 10: next to a field with a hint, a select grew to 60 px (the other controls are 48 px).
+describe('form controls keep one height', () => {
+  test('a field never stretches its control to fill a taller row', () => {
+    const css = readFileSync('src/components/ui/Field.module.css', 'utf8');
+    expect(css.match(/\.field \{([^}]*)\}/)[1]).toMatch(/align-content:\s*start/);
+  });
+});

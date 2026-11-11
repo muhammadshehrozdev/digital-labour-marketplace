@@ -34,6 +34,10 @@ describe('onboarding steps', () => {
     expect(within(stepper).getByText(/Step 1 of 5/)).toBeInTheDocument();
     expect(stepper.querySelector('[aria-current="step"]')).toHaveTextContent('About you');
     expect(screen.getByText('Only verified admins can see your CNIC. It is stored encrypted.')).toBeInTheDocument();
+    // design v3: the step has its own decorative drawing next to the heading
+    const art = document.querySelector('main [data-scene="step-about"]');
+    expect(art).not.toBeNull();
+    expect(art).toHaveAttribute('aria-hidden', 'true');
   });
 
   test('later steps cannot be skipped: /onboarding/skills with work not done -> "Your work"', async () => {

@@ -1,4 +1,6 @@
-.field { display: grid; gap: var(--space-1); min-inline-size: 0; }
+/* align-content: start: in a form row next to a field with a hint, the control keeps its own height
+   (it used to grow to 60 px to fill the row; design critique v2, screen 10) */
+.field { display: grid; gap: var(--space-1); min-inline-size: 0; align-content: start; }
 .label { font-size: var(--text-small); line-height: var(--leading-small); font-weight: 700; color: var(--color-text); }
 .required { color: var(--color-danger); }
 .below { display: flex; justify-content: space-between; gap: var(--space-3); }

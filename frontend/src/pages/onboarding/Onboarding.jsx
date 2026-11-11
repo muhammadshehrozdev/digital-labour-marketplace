@@ -79,8 +79,12 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
     <div className={styles.page}>
       <Stepper steps={steps} current={step} completed={completed} label={t('onboarding.stepperLabel')} />
       <div className={styles.head}>
-        <h1 id="onboarding-title" tabIndex={-1}>{steps[index].label}</h1>
-        <p className={styles.lead}>{t(`onboarding.leads.${step}`)}</p>
+        <div className={styles.headText}>
+          <h1 id="onboarding-title" tabIndex={-1}>{steps[index].label}</h1>
+          <p className={styles.lead}>{t(`onboarding.leads.${step}`)}</p>
+        </div>
+        {/* design v3: each step has its own drawing ("All set" has a bigger one in its card) */}
+        {step !== 'done' && <SceneArt key={step} name={`step-${step}`} size={104} className={styles.stepArt} />}
       </div>
 
       {step === 'about' && (
