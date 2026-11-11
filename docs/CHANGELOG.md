@@ -2,6 +2,17 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## After Batch 4 — the team's answers (11 Nov 2026)
+
+- Deleted the unused `frontend/src/pages/worker/WorkerSkills.jsx` (review R-22).
+- Dependency patch updates from R-12, only versions at least two weeks old (D-029): `dotenv` 18.0.9,
+  `axios` 1.21.0, `react` / `react-dom` 19.3.1, `react-router-dom` 7.18.5, `vite` 8.3.5; `rolldown` pinned
+  to 1.2.15 and `tslib` to 2.8.1 because npm picked versions published the same day. Too new and left for
+  later: `mongoose` 9.12.x, `express-rate-limit` 8.7.2+, `supertest` 7.3.2, newer `vite` / `axios` patches.
+- Real results after the updates: backend 516/516 tests, frontend 940/940 (the 941st was the honesty scan of
+  the deleted file), `oxlint` 0, `npm run build` OK, e2e 34/34 (11.7 min, Chromium),
+  `npm audit --omit=dev` 0 vulnerabilities. No update had to be reverted.
+
 ## Batch 4 — logo v3, dark mode, design v3, 50+ features, admin tools, full review (11 Nov 2026)
 
 Instructions: `BATCH_4_PROMPT.md`. Decisions recorded: D-021 logo, D-022 dark mode, D-023 design v3,

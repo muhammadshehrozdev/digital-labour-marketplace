@@ -610,3 +610,27 @@ to see or save data; offline, the offline banner says so and retries by itself.
   starter set the team must review (the Urdu and Roman Urdu lines were drafted by Claude Code). Inserting a
   template only fills the note; the admin can change the words before saving.
 
+
+---
+
+## D-029 — Dependency updates: two-week age rule and temporary pins (11 Nov 2026)
+
+**What the team asked:** apply the patch updates from review finding R-12, but only versions that are at
+least two weeks old; run every test, build, lint and e2e; revert any update that breaks something.
+
+**Decision:**
+
+- **Age rule:** a version is installed only if it was published at least 14 days earlier (checked with
+  `npm view <package> time`). The rule also applies to the packages that an update pulls in.
+- **Applied (11 Nov 2026):** backend `dotenv` 18.0.7 → 18.0.9; frontend `axios` 1.20.0 → 1.21.0,
+  `react` and `react-dom` 19.3.0 → 19.3.1, `react-router-dom` 7.18.4 → 7.18.5, `vite` 8.3.4 → 8.3.5.
+  R-12 also named `mongoose` 9.12.1, `express-rate-limit` 8.7.4, `axios` 1.21.1 and `vite` 8.3.8: those
+  versions (and `supertest` 7.3.2, `@testing-library/user-event` 14.6.9) were less than two weeks old, so
+  the newest old-enough version was used or the package was left as it was. Minor updates that R-12 did not
+  name (`vitest` 5.1, `@vitest/coverage-v8` 5.1, `oxlint` 1.93, `@vitejs/plugin-react` 6.3, `file-type` 22.3)
+  were not applied.
+- **Temporary pins** (`overrides` in `frontend/package.json`): Vite 8.3.5 accepts any `rolldown` 1.2.x from
+  1.2.14, and npm chose 1.2.19, published the same day. `rolldown` is pinned to **1.2.15** (21 Oct, released
+  with Vite 8.3.5) and `tslib` to **2.8.1** (only used by rolldown's optional WebAssembly helpers; 2.9.1
+  was too new). **Remove both pins at the next update** and check the age rule again.
+- Result: backend 516/516, frontend 940/940, lint 0, build OK, e2e 34/34 (see the change log).
