@@ -21,6 +21,13 @@ design v2 with three colour themes (Emerald Night is the default), a new logo an
 "reduce motion"; a read-only "My profile" page with "See what customers see", and one profile editor.
 All Urdu and Roman Urdu texts are drafts for a native reviewer (`docs/i18n/REVIEW.md`).
 
+Batch 4 adds: the original logo back (refined), a **night-mode button on every page** (Light, Dark,
+System, with a circular reveal), design v3 with in-house illustrations, more than 50 features (profile
+strength with next steps, "You may also do…" skills, notifications, input masks, drafts, crop/rotate before
+upload, saved workers, compare, command palette Ctrl+K, offline banner, installable app, help centre, …),
+and an admin area with charts, a Users page (suspend / reactivate), reason templates and CSV exports.
+**Admins log in at the same `/login` page**; there is no admin sign-up (see `docs/ADMIN-GUIDE.md`).
+
 Deployment (Phase 8) is not done yet.
 
 ## Folders
@@ -154,6 +161,17 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 | `npm run agreement:skills -- --a <file> --b <file>` | Agreement between two annotators (Cohen's kappa, Krippendorff's alpha) |
 | `npm run migrate:cnic` / `migrate:categories` / `migrate:skills` | Data migrations; dry run unless `-- --apply`; local database only unless `--allow-remote` (ask the team first) |
 
+## Frontend scripts added in Batch 4 (in `.\frontend`)
+
+| Command | What it does |
+|---|---|
+| `npm run icons` | Draws the logo files, favicon and app icons from the logo's own numbers (`public/`, `docs/design/logo/`) |
+| `npm run whats-new` | Rebuilds the "What's new" panel from `docs/CHANGELOG.md` |
+| `npm run coverage` | Frontend tests with a coverage report (target: 80% of lines in `src/`) |
+
+In `.\backend`, `npm run coverage` runs the backend tests with a coverage report (target: 90% of lines in
+`services/`, `controllers/`, `middleware/`).
+
 ## Documentation
 | File | Contents |
 |---|---|
@@ -163,7 +181,10 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 | `docs/USE-CASES.md` | Actors and use cases for Modules 1–3 |
 | `docs/TEST-CASES.md` | Test-case table generated from the real test run |
 | `docs/SECURITY.md` | Threats → mitigations → tests, keys, limitations, incidents |
-| `docs/DECISIONS.md` | Decision records D-001 to D-020 |
+| `docs/DECISIONS.md` | Decision records D-001 to D-028 |
+| `docs/ADMIN-GUIDE.md` | For admins: creating the first admin, logging in, every admin page, daily tasks, security rules |
+| `docs/TRACEABILITY.md` | Every requirement (proposal, audit, decisions, the team's requests) → code → test → status |
+| `docs/REVIEW-2026-11.md` | Batch 4 code review: findings, fixes, tests, OWASP and ASVS mapping, dependencies |
 | `docs/design/` | UX requirements, analysis, design system v2 (themes, fonts, modern CSS, motion), screens, review, deploy readiness, languages (`07-i18n.md`), logo concepts, screenshots |
 | `docs/i18n/REVIEW.md` | Every Urdu and Roman Urdu text next to its English source, for a native reader to check (draft) |
 | `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format) |

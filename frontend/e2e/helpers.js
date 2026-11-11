@@ -31,6 +31,8 @@ export function watchConsole(page) {
   const problems = [];
   const failed = [];
   page.on('console', (m) => {
+    // Playwright itself says this when service workers are switched off for a test (config)
+    if (m.text().includes('Service Worker registration blocked by Playwright')) return;
     if (['error', 'warning'].includes(m.type())) problems.push(`${m.type()}: ${m.text()}`);
   });
   page.on('pageerror', (e) => problems.push(`pageerror: ${e.message}`));
@@ -109,4 +111,41 @@ export async function makeJpeg(page, seed = 1) {
     return canvas.toDataURL('image/jpeg', 0.9);
   }, seed);
   return { name: `proof-${seed}.jpg`, mimeType: 'image/jpeg', buffer: Buffer.from(dataUrl.split(',')[1], 'base64') };
+}
+
+// Batch 4: the welcome tour appears once on a worker's first dashboard visit; most tests do not
+// need it (it has its own unit tests), so it is marked as seen for the logged-in account.
+export async function skipTour(page) {
+  await page.evaluate(async () => {
+    const r = await fetch('/api/auth/session');
+    const { user } = await r.json();
+    if (user) localStorage.setItem(`dlm.tour.${user._id}`, 'done');
+  });
+}
+
+// Batch 4: light or dark for this page, as if it had been chosen before.
+export async function setMode(page, mode = 'light') {
+  await page.addInitScript((m) => {
+    try {
+      window.localStorage.setItem('dlm.theme', m);
+    } catch {
+      // about:blank has no storage
+    }
+  }, mode);
+}
+
+// A worker whose onboarding is finished, made through the API after registering (faster than the
+// screens, which have their own tests). Returns { email, name }.
+export async function readyWorker(page, { name = 'E2E Ready Worker (synthetic)', skills = ['elec_wiring'], bio = '' } = {}) {
+  const made = await registerUser(page, { role: 'worker', name, email: uniqueEmail('e2e.ready') });
+  expect((await page.request.put('/api/workers/me', { data: { city: 'Rawalpindi', occupation: 'Electrician', category: 'electrical_solar', experienceYears: 6, dailyRate: 3500, bio } })).ok()).toBe(true);
+  expect((await page.request.post('/api/workers/me/skills', { data: { skillIds: skills, addedVia: 'manual' } })).ok()).toBe(true);
+  return made;
+}
+
+export async function uploadProof(page, { skillId = 'elec_wiring', seed = 1, type = 'work_photo' } = {}) {
+  const file = await makeJpeg(page, seed);
+  const res = await page.request.post('/api/evidence', { multipart: { skillId, type, consent: 'true', image: file } });
+  expect(res.status(), await res.text()).toBe(201);
+  return (await res.json()).evidence._id;
 }

@@ -1,9 +1,12 @@
-// Screenshot run (Batch 3, Part 1 and 7.2). Synthetic accounts in the e2e database only.
+// Screenshot run (Batch 3 Part 7.2; Batch 4 Part 2.3). Synthetic accounts in the e2e database only.
+// SHOTS_OUT chooses the folder (default: the Batch 4 set, docs/design/screenshots/all-v3; the Batch 3
+// "before" set is docs/design/screenshots/all). Light mode for the main set; a dark set of key
+// screens follows.
 import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
-import { LANGS, PASSWORD, T, completeSteps1and2, login, logout, makeJpeg, registerUser, setLanguage, startsWith, uniqueEmail } from './helpers.js';
+import { LANGS, PASSWORD, T, completeSteps1and2, login, logout, makeJpeg, registerUser, setLanguage, setMode, skipTour, startsWith, uniqueEmail } from './helpers.js';
 
-const OUT = '../docs/design/screenshots/all';
+const OUT = process.env.SHOTS_OUT || '../docs/design/screenshots/all-v3';
 const WIDTHS = [360, 768, 1280];
 const SENTENCE = { en: 'I have done house wiring and solar panel work for 5 years', ur: 'میں پانچ سال سے وائرنگ اور سولر پینل کا کام کرتا ہوں۔', 'ur-Latn': 'Main 5 saal se wiring aur solar panel ka kaam karta hoon' };
 
@@ -44,6 +47,12 @@ test('every main screen in every language at 360, 768 and 1280 px', async ({ bro
     await seed.request.post('/api/evidence', { multipart: { skillId, type: i ? 'certificate' : 'work_photo', consent: 'true', image: await makeJpeg(seed, Date.now() + i) } });
   }
   const { workerIdCode } = await (await seed.request.get('/api/workers/me')).json();
+  // a second listed worker, for the comparison screen
+  await seed.request.post('/api/auth/logout');
+  await seed.request.post('/api/auth/register', { data: { name: 'Sana Bibi (synthetic)', email: uniqueEmail('shots.worker2'), phone: '03000000065', password: PASSWORD, role: 'worker' } });
+  await seed.request.put('/api/workers/me', { data: { city: 'Islamabad', occupation: 'Electrician', category: 'electrical_solar', experienceYears: 3, dailyRate: 3000, bio: 'Wiring and UPS work (synthetic profile).' } });
+  await seed.request.post('/api/workers/me/skills', { data: { skillIds: ['elec_wiring', 'elec_ups'], addedVia: 'manual' } });
+  const { workerIdCode: secondIdCode } = await (await seed.request.get('/api/workers/me')).json();
   await seed.close();
   const customerEmail = uniqueEmail('shots.customer');
 
@@ -51,8 +60,9 @@ test('every main screen in every language at 360, 768 and 1280 px', async ({ bro
     mkdirSync(`${OUT}/${lang}`, { recursive: true });
     const t = T(lang);
     // A fresh browser profile per language (no remembered language, no cookies).
-    const context = await browser.newContext({ reducedMotion: 'reduce' });
+    const context = await browser.newContext({ reducedMotion: 'reduce', colorScheme: 'light' });
     const page = await context.newPage();
+    await setMode(page, 'light');
 
     // Visitor
     await go(page, '/');
@@ -68,6 +78,8 @@ test('every main screen in every language at 360, 768 and 1280 px', async ({ bro
     await shoot(page, lang, '04-register-form');
     await go(page, '/no-such-page');
     await shoot(page, lang, '05-not-found');
+    await go(page, '/help');
+    await shoot(page, lang, '06-help-centre');
 
     // Onboarding with a new worker in this language
     await registerUser(page, { role: 'worker', lang });
@@ -90,7 +102,8 @@ test('every main screen in every language at 360, 768 and 1280 px', async ({ bro
 
     // The worker with a full profile
     await login(page, workerEmail, PASSWORD, lang);
-    await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang } });
+    await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: 'light' } });
+    await skipTour(page);
     await go(page, '/worker');
     await shoot(page, lang, '20-worker-dashboard');
     await go(page, '/worker/profile');
@@ -106,16 +119,21 @@ test('every main screen in every language at 360, 768 and 1280 px', async ({ bro
     // Customer
     if (lang === 'en') await registerUser(page, { role: 'customer', lang, email: customerEmail, phone: '03000000064' });
     else await login(page, customerEmail, PASSWORD, lang);
-    await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang } });
+    await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: 'light' } });
     await go(page, '/find');
     await shoot(page, lang, '30-customer-search');
     await go(page, `/workers/${workerIdCode}`);
     await shoot(page, lang, '31-worker-public-profile');
+    await page.request.put(`/api/saved/${workerIdCode}`);
+    await go(page, '/saved');
+    await shoot(page, lang, '32-saved-workers');
+    await go(page, `/compare?ids=${workerIdCode},${secondIdCode}`);
+    await shoot(page, lang, '33-compare');
     await logout(page);
 
     // Admin
     await login(page, 'e2e.admin@example.com', 'local e2e admin pass phrase', lang);
-    await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang } });
+    await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: 'light' } });
     await go(page, '/admin');
     await shoot(page, lang, '40-admin-overview');
     await go(page, '/admin/identity?status=Pending');
@@ -130,6 +148,50 @@ test('every main screen in every language at 360, 768 and 1280 px', async ({ bro
     await shoot(page, lang, '44-admin-evidence-drawer');
     await go(page, '/admin/audit');
     await shoot(page, lang, '45-admin-audit');
+    await go(page, '/admin/users');
+    await shoot(page, lang, '46-admin-users');
+    await go(page, '/admin/templates');
+    await shoot(page, lang, '47-admin-templates');
+    await go(page, '/admin/exports');
+    await shoot(page, lang, '48-admin-exports');
     await context.close();
   }
+
+  // Dark mode: the key screens in English at 360 and 1280 px.
+  const dark = await browser.newContext({ reducedMotion: 'reduce', colorScheme: 'dark' });
+  const page = await dark.newPage();
+  await setLanguage(page, 'en');
+  await setMode(page, 'dark');
+  mkdirSync(`${OUT}/dark`, { recursive: true });
+  const darkShot = async (name) => {
+    for (const width of [360, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.waitForTimeout(250);
+      await page.screenshot({ path: `${OUT}/dark/${name}-${width}.png`, fullPage: true });
+    }
+  };
+  await go(page, '/');
+  await darkShot('01-landing');
+  await go(page, '/login');
+  await darkShot('02-login');
+  await login(page, workerEmail, PASSWORD);
+  await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: 'en', preferredTheme: 'dark' } });
+  await skipTour(page);
+  await go(page, '/worker');
+  await darkShot('20-worker-dashboard');
+  await go(page, '/worker/profile');
+  await darkShot('21-profile-view');
+  await logout(page);
+  await login(page, customerEmail, PASSWORD);
+  await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: 'en', preferredTheme: 'dark' } });
+  await go(page, '/find');
+  await darkShot('30-customer-search');
+  await logout(page);
+  await login(page, 'e2e.admin@example.com', 'local e2e admin pass phrase');
+  await page.request.patch('/api/users/me/preferences', { data: { preferredLanguage: 'en', preferredTheme: 'dark' } });
+  await go(page, '/admin');
+  await darkShot('40-admin-overview');
+  await go(page, '/admin/users');
+  await darkShot('46-admin-users');
+  await dark.close();
 });

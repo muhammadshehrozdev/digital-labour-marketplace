@@ -29,6 +29,9 @@ export default defineConfig({
     baseURL: FRONTEND,
     headless: true,
     viewport: { width: 1280, height: 800 },
+    // The app's service worker (Batch 4) would hide font and API requests from page listeners;
+    // the PWA test turns it on in its own browser context (batch4.e2e.js).
+    serviceWorkers: 'block',
     screenshot: 'only-on-failure',
     trace: 'off',
     launchOptions: { ...(systemChromium ? { executablePath: systemChromium } : {}), args: ['--no-sandbox', '--disable-dev-shm-usage'] },

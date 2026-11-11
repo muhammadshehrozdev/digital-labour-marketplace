@@ -1,7 +1,7 @@
 // Batch 3, Part 7.3-7.5: accessibility (axe), keyboard, reduced motion, layout shift, console.
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { LANGS, PASSWORD, T, completeStep3, completeSteps1and2, login, logout, registerUser, setLanguage, uniqueEmail, watchConsole } from './helpers.js';
+import { LANGS, PASSWORD, T, completeStep3, completeSteps1and2, login, logout, registerUser, setLanguage, setMode, skipTour, uniqueEmail, watchConsole } from './helpers.js';
 
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
@@ -27,22 +27,28 @@ test.beforeAll(async ({ browser }) => {
   await page.close();
 });
 
-for (const lang of LANGS) {
-  test(`axe: no serious or critical problems on the main pages in ${lang}`, async ({ browser }) => {
+// Batch 4: every language in light AND dark mode (contrast is checked by axe in both).
+const MODES = ['light', 'dark'];
+for (const lang of LANGS) for (const mode of MODES) {
+  test(`axe: no serious or critical problems on the main pages in ${lang}, ${mode} mode`, async ({ browser }) => {
     test.setTimeout(180_000);
     const problems = [];
     const visit = async (page, path, label) => {
       await page.goto(path);
       await page.waitForLoadState('networkidle');
       await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
-      problems.push(...(await axe(page, `${lang} ${label}`)));
+      await expect(page.locator('html')).toHaveAttribute('data-mode', mode);
+      // the night-mode button is on every page (Batch 4, Part 3)
+      await expect(page.locator('[data-testid="theme-toggle"]').first()).toBeVisible();
+      problems.push(...(await axe(page, `${lang} ${mode} ${label}`)));
     };
 
     // Visitor pages (and the chooser, which has no saved language)
     const visitorContext = await browser.newContext({ reducedMotion: 'reduce' });
     const visitor = await visitorContext.newPage();
+    await setMode(visitor, mode);
     await visitor.goto('/');
-    problems.push(...(await axe(visitor, `${lang} chooser`)));
+    problems.push(...(await axe(visitor, `${lang} ${mode} chooser`)));
     await visitor.evaluate((l) => localStorage.setItem('dlm.language', l), lang);
     for (const [path, label] of [['/', 'landing'], ['/login', 'login'], ['/register?role=worker', 'register'], ['/no-such-page', '404']]) await visit(visitor, path, label);
     await visitorContext.close();
@@ -52,8 +58,9 @@ for (const lang of LANGS) {
     const workerPage = await workerContext.newPage();
     await setLanguage(workerPage, 'en');
     await login(workerPage, worker.email);
-    await workerPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang } });
-    for (const [path, label] of [['/worker', 'dashboard'], ['/worker/profile', 'profile view'], ['/worker/profile/edit', 'profile edit'], ['/worker/profile/edit?section=skills', 'edit skills'], ['/worker/profile/edit?section=proof', 'edit proof'], ['/onboarding/skills', 'onboarding step 3']]) {
+    await skipTour(workerPage);
+    await workerPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
+    for (const [path, label] of [['/notifications', 'notifications'], ['/worker', 'dashboard'], ['/worker/profile', 'profile view'], ['/worker/profile/edit', 'profile edit'], ['/worker/profile/edit?section=skills', 'edit skills'], ['/worker/profile/edit?section=proof', 'edit proof'], ['/onboarding/skills', 'onboarding step 3']]) {
       await visit(workerPage, path, label);
     }
     await workerContext.close();
@@ -63,12 +70,14 @@ for (const lang of LANGS) {
     const customerPage = await customerContext.newPage();
     await setLanguage(customerPage, 'en');
     await login(customerPage, customer.email);
-    await customerPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang } });
+    await customerPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
     await visit(customerPage, '/find', 'find');
+    await visit(customerPage, '/saved', 'saved workers');
+    await visit(customerPage, '/help', 'help centre');
     const firstCard = customerPage.getByTestId('worker-card').first().getByRole('link');
     await firstCard.click();
     await expect(customerPage).toHaveURL(/\/workers\//);
-    problems.push(...(await axe(customerPage, `${lang} worker public profile`)));
+    problems.push(...(await axe(customerPage, `${lang} ${mode} worker public profile`)));
     await customerContext.close();
 
     // Admin pages
@@ -76,8 +85,8 @@ for (const lang of LANGS) {
     const adminPage = await adminContext.newPage();
     await setLanguage(adminPage, 'en');
     await login(adminPage, 'e2e.admin@example.com', 'local e2e admin pass phrase');
-    await adminPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang } });
-    for (const [path, label] of [['/admin', 'admin overview'], ['/admin/identity?status=All', 'identity review'], ['/admin/evidence?status=all', 'evidence review'], ['/admin/audit', 'audit log']]) {
+    await adminPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
+    for (const [path, label] of [['/admin', 'admin overview'], ['/admin/identity?status=All', 'identity review'], ['/admin/evidence?status=all', 'evidence review'], ['/admin/users', 'users'], ['/admin/audit', 'audit log'], ['/admin/templates', 'reason templates'], ['/admin/exports', 'exports']]) {
       await visit(adminPage, path, label);
     }
     await adminContext.close();
