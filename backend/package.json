@@ -9,6 +9,7 @@
     "test": "vitest run",
     "db:local": "node scripts/localMongo.js",
     "seed:local": "node scripts/seedLocalDemo.js",
+    "demo:reset": "node scripts/resetDemo.js",
     "create-admin": "node scripts/createAdmin.js",
     "list-admins": "node scripts/listAdmins.js",
     "audit:verify": "node scripts/verifyAudit.js",

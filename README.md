@@ -87,7 +87,40 @@ CNIC_HASH_KEY=<a third, different random value>
 `CNIC_ENC_KEY` and `CNIC_HASH_KEY` must be different. **Losing `CNIC_ENC_KEY` makes stored CNICs
 unreadable** — keep a copy in a password manager the team controls (`docs/SECURITY.md`, "Keys").
 
-### 4. Run the local preview (three terminals)
+### Quick start in the dev container: one command
+
+In the **container terminal** (VS Code: Terminal → New Terminal, inside the dev container), type:
+
+```bash
+cd /workspace
+bash scripts/preview.sh start
+```
+
+It starts MongoDB, the API and the website in the background and prints **http://127.0.0.1:5173**
+when everything answers (about 10 seconds; the first time can take longer). The servers keep running when
+you close the terminal. To stop all three:
+
+```bash
+cd /workspace
+bash scripts/preview.sh stop
+```
+
+| Command | What it does |
+|---|---|
+| `bash scripts/preview.sh start` | Normal preview, using the database in `backend/.env` (`dlm_local_preview`, with your own test accounts) |
+| `bash scripts/preview.sh demo` | Defence demo: the same servers, but on a **separate** database `dlm_demo` with only the three synthetic demo accounts (created automatically the first time) |
+| `bash scripts/preview.sh reset-demo` | Wipes `dlm_demo` and puts back the clean demo state, so the demo can be rehearsed again. Your normal preview database is never touched. |
+| `bash scripts/preview.sh status` | Shows what is running and in which mode |
+| `bash scripts/preview.sh stop` | Stops the website, the API and MongoDB |
+
+Demo accounts (synthetic, `dlm_demo` only): `worker.demo@example.com` and `customer.demo@example.com`
+with the password `local-demo-password-123`; `admin.demo@example.com` with the passphrase
+`local admin demo passphrase` (made by the `create-admin` script, like every admin). Logs are in
+`.local/preview/` (`mongo.log`, `backend.log`, `frontend.log`). If you see `bash: warning: setlocale`,
+ignore it: it is about the terminal's language setting, not the project. The demo itself is described step
+by step in `docs/DEMO-SCRIPT.md`.
+
+### 4. Run the local preview by hand (three terminals)
 ```powershell
 # terminal 1, only inside the dev container (on Windows the MongoDB service is already running)
 cd backend
@@ -155,6 +188,7 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 
 | Command | What it does |
 |---|---|
+| `npm run demo:reset` | Wipes the separate demo database (`dlm_demo`, local only, name must end in `_demo`) and creates the three synthetic demo accounts; asks for `yes` (or add `-- --yes`) |
 | `npm run audit:verify` | Checks that nobody changed the audit log (hash chain) |
 | `npm run confidence:sensitivity` | Shows how the Module 3 skill score changes with other weights (formula outputs) |
 | `npm run evaluate:skills -- --file <dataset.csv>` | Module 2 evaluation on a labelled dataset (`docs/evaluation/README.md`) |
