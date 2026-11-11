@@ -1,7 +1,7 @@
 // Shared safety check for scripts that WRITE data.
 // Local database (127.0.0.1 / localhost): allowed.
 // Any other host (Atlas): only with --allow-remote, which the team adds by hand after
-// agreeing to run it (CLAUDE.md: ask before changing data in any real database).
+// agreeing to run it (team rule: ask before changing data in any real database).
 export function dbHost(uri) {
   return String(uri).replace(/^mongodb(\+srv)?:\/\//, '').replace(/^[^@]*@/, '').split(/[/?]/)[0];
 }

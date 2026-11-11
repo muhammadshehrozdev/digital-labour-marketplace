@@ -10,7 +10,7 @@ import { decryptCnic, formatCnic } from '../services/cnic.js';
 import { escapeRegex } from '../validators/common.js';
 import { notify } from '../services/notifications.js';
 
-// Admin may see private contact fields (CLAUDE.md), but never the CNIC data fields:
+// Admin may see private contact fields (security rules, docs/SECURITY.md), but never the CNIC data fields:
 // those are select:false, and toJSON removes them as a second layer. cnicOnFile tells if one exists.
 const ADMIN_USER_FIELDS = 'name email phone role';
 

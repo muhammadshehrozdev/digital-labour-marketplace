@@ -1,4 +1,4 @@
-// Append-only audit log (CLAUDE_CODE_PROMPT.md C4/C6). Entries are never updated or deleted
+// Append-only audit log (docs/DECISIONS.md, docs/SECURITY.md). Entries are never updated or deleted
 // through the app: the hooks below refuse it. Raw database edits are caught by the hash
 // chain (npm run audit:verify). Never store a CNIC number here.
 import mongoose from 'mongoose';

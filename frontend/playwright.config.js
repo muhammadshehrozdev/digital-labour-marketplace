@@ -1,6 +1,6 @@
 // End-to-end tests (Batch 3). In the dev container they use the system Chromium and never download one.
 // The tests run against their OWN servers and their OWN local database (dlm_e2e), not the
-// preview on 5173/5000 and never Atlas (CLAUDE.md: tests use a separate database):
+// preview on 5173/5000 and never Atlas (team rule: tests use a separate database):
 //   backend  http://127.0.0.1:5001  (MONGO_URI = E2E_MONGO_URI, default 127.0.0.1:27017/dlm_e2e)
 //   frontend http://127.0.0.1:5174  (production build + vite preview, forwards /api to 5001)
 // The local MongoDB must be running (in .\backend: npm run db:local).

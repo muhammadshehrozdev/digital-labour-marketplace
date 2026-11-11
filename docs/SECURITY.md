@@ -3,6 +3,30 @@
 Each threat → mitigation → the automated test that proves it (mapped to the audit IDs), how keys
 are handled, accepted limitations, and incidents. Test files: backend `backend/tests/`, frontend `frontend/src/`.
 
+## Project security rules
+
+These rules apply to every change. (They used to live only in the team's internal working notes.)
+
+- Admin accounts are created only by the `create-admin` script. Public registration accepts only `worker`
+  or `customer`.
+- Never send `password`, CNIC data, home address, emergency contact or email to anyone except the owner or
+  an admin. A worker's phone and WhatsApp number never appear in the directory or search results; a
+  customer sees them only after a booking between them is accepted (no booking module yet, so no customer
+  sees them). Every public response uses an explicit field list (projection). Never write a CNIC number into
+  logs or the audit log.
+- Validate every request body, query and URL parameter on the server with the shared validation schemas;
+  reject bad input with 400 and a clear message.
+- Never build a `RegExp` from user text without escaping it. Never pass user objects straight into a
+  MongoDB filter.
+- Never return raw `error.message` from a 500 error: log it on the server, send a generic message.
+- Check roles and ownership on the backend for every protected route. The React route guard is only for
+  user experience.
+- Uploaded files: allow-list types by content (magic bytes), enforce size limits, rename files, strip image
+  metadata, keep files private, and serve them only to the owner and admins.
+- No secrets in code or in Git. Use `.env` (local) and Vercel environment variables; keep `.env.example`
+  updated with placeholder values only.
+- Tests use a separate test database or an in-memory MongoDB, never a real database.
+
 ## Threats, mitigations and tests (Modules 1–3)
 
 | Audit ID | Threat | Mitigation | Test (backend `tests/`, frontend `src/test/`) |

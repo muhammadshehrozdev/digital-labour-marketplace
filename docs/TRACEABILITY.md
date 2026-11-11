@@ -47,7 +47,7 @@ Batch 4 report and `docs/TEST-CASES.md`.
 |---|---|---|---|---|
 | A7.1–A7.3 | Rows 1–3 of Section 7 | — | — | **Not traceable: Doc A is not in the repository** (see the note at the top) |
 
-## 5. Audit findings (`docs/audit/audit-2026-11-06.md`)
+## 5. Audit findings (team's internal audit of 6 Nov 2026, kept outside the repository)
 
 Every audit ID is mapped to its control and test in `docs/SECURITY.md`; the short form is here.
 
@@ -83,7 +83,7 @@ Every audit ID is mapped to its control and test in `docs/SECURITY.md`; the shor
 | M2-12 | Mixed trades: one winner by order | All categories returned, tie reported | `skillExtractor.test.js`, `onboarding.test.jsx` | Done |
 | M2-13 | Voice audio sent to a web service without notice | Notice before use; works only where supported | `voice.test.jsx` | Done |
 | M2-14 | Domestic work has no rules | Domestic work, home maintenance and moving in the taxonomy | `skillTaxonomy.test.js` | Done |
-| M2-15 | No measurement | Labelled synthetic dev set + `npm run evaluate:skills` (precision/recall/F1, Wilson, kappa); results are for development only (synthetic) | `evaluationMetrics.test.js`; `docs/evaluation/` | **Partial:** real labelled data from workers is still needed before any result can be reported (CLAUDE.md: synthetic data is not used to report results) |
+| M2-15 | No measurement | Labelled synthetic dev set + `npm run evaluate:skills` (precision/recall/F1, Wilson, kappa); results are for development only (synthetic) | `evaluationMetrics.test.js`; `docs/evaluation/` | **Partial:** real labelled data from workers is still needed before any result can be reported (academic honesty, `docs/evaluation/README.md`: synthetic data is not used to report results) |
 | P-1 | Module 2 existed only on one laptop | Committed on a baseline branch, then this feature branch | Git history | Done |
 | P-2 | Tests against the real database | In-memory MongoDB for backend tests; `dlm_e2e` local database for e2e (a reset refuses anything else) | `tests/helpers/testDb.js`, `e2e/global-setup.js` | Done |
 | P-3 | "AI" wording for rule-based code | Wording rule; tests that scan the UI and API | `honesty.test.js` (backend, frontend) | Done |

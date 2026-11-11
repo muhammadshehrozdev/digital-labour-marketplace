@@ -1,6 +1,6 @@
 # 05 — Self-review against the Batch 1 quality gates (9 Nov 2026)
 
-Method: every gate in BATCH_1_PROMPT.md Part 9 was checked with an automated test where one is
+Method: every gate in the team's Batch 1 brief (Part 9) was checked with an automated test where one is
 possible, otherwise by reading the code. "Not checked" is written where no check was possible.
 
 ## Problems found during the review and fixed

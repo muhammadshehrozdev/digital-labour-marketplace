@@ -15,7 +15,7 @@ technology choices are not followed.
 **Why:** the existing Modules 1–2 are already MERN; one stack for the whole team.
 
 **Follow-up:** the proposal's Section 7 still names Laravel/MySQL and should be
-revised (see `docs/audit/audit-2026-11-06.md`). **Update 11 Nov 2026:** the supervisor told the team to
+revised (noted in the team's internal audit of 6 Nov 2026). **Update 11 Nov 2026:** the supervisor told the team to
 build in MERN (D-030).
 
 ---
@@ -166,7 +166,7 @@ into Domestic Work and **Moving & Loading** became its own category. Final list:
 
 ## D-009 — Identity verification rules (9 Nov 2026)
 
-**Decision (Claude Code, following CLAUDE_CODE_PROMPT.md C4/C6):**
+**Decision (Claude Code, following the project brief):**
 - `verificationStatus` = identity only: `Unverified` (new) → `Pending` (CNIC saved) →
   `Verified` or `Rejected` by an admin. Skill verification is Module 3.
 - An admin decision always needs a note (5–500 characters, e.g. how the CNIC was checked);
@@ -178,7 +178,7 @@ into Domestic Work and **Moving & Loading** became its own category. Final list:
 
 ## D-010 — Design system (Batch 1, 9 Nov 2026)
 
-**Decision (team brief, BATCH_1_PROMPT.md Part 3; implemented by Claude Code):** one design
+**Decision (team's Batch 1 brief; implemented by Claude Code):** one design
 system for the whole frontend: tokens in `frontend/src/styles/tokens.css` (Trust Green primary,
 Saffron accent, warm stone neutrals, semantic roles), Manrope self-hosted
 (`@fontsource-variable/manrope`, no Google request), lucide-react icons, CSS Modules, a component
@@ -248,7 +248,7 @@ and the test set must be frozen before that.
 
 ## D-013 — Evidence files are stored in MongoDB (Batch 2, 9 Nov 2026)
 
-**Decision (team, BATCH_2_PROMPT.md Part 1):** an `Evidence` document holds metadata only; a separate
+**Decision (team's Batch 2 brief):** an `Evidence` document holds metadata only; a separate
 `EvidenceFile` document holds the processed image bytes (BinData). List endpoints never load bytes.
 Not GridFS and not Vercel Blob in this version.
 

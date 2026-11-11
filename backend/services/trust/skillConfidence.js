@@ -3,7 +3,7 @@
 // Method: Beta-style evidence counting written in subjective-logic form
 // (Jøsang & Ismail 2002, "The Beta Reputation System",
 // https://mn.uio.no/ifi/english/people/aca/josang/publications/ji2002-bled.pdf — the reference
-// used in docs/audit/audit-2026-11-06.md; check the formulas against the paper before quoting).
+// used in the team's internal audit of 6 Nov 2026; check the formulas against the paper before quoting).
 //   r = positive evidence, s = negative evidence, W = prior weight, a = base rate
 //   belief b = r/(r+s+W), disbelief d = s/(r+s+W), uncertainty u = W/(r+s+W), expected E = b + a*u
 // With W = 2 and a = 0.5, E equals the Beta expectation (r+1)/(r+s+2).

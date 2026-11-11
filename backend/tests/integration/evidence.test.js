@@ -1,5 +1,5 @@
 // Module 3 (Phase 5): Skill Evidence and Verification. Every "Phase 5 required test" of
-// CLAUDE_CODE_PROMPT.md is here (with the Batch 2 decisions), plus upload privacy checks.
+// the project brief is here (with the Batch 2 decisions), plus upload privacy checks.
 import { describe, test, expect, beforeAll, afterAll, vi, afterEach } from 'vitest';
 import mongoose from 'mongoose';
 import sharp from 'sharp';

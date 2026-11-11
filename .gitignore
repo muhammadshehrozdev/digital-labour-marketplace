@@ -17,3 +17,12 @@ backend/evaluation/skill-extraction/results/SYNTHETIC-*
 # Full screenshot run (npm run screenshots); only the curated set is committed
 docs/design/screenshots/all/
 docs/design/screenshots/all-v3/
+
+# Internal working notes: kept on disk, not in the repository (supervisor-approved cleanup, 11 Nov 2026)
+CLAUDE.md
+CLAUDE_CODE_PROMPT.md
+BATCH_1_PROMPT.md
+BATCH_2_PROMPT.md
+BATCH_3_PROMPT.md
+BATCH_4_PROMPT.md
+docs/audit/

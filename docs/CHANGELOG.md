@@ -29,7 +29,7 @@ What changed in each phase. Test results are copied from real runs only.
 
 ## Batch 4 — logo v3, dark mode, design v3, 50+ features, admin tools, full review (11 Nov 2026)
 
-Instructions: `BATCH_4_PROMPT.md`. Decisions recorded: D-021 logo, D-022 dark mode, D-023 design v3,
+Instructions: the team's Batch 4 brief (internal note, not in the repository). Decisions recorded: D-021 logo, D-022 dark mode, D-023 design v3,
 D-024 suspension, D-025 notifications, D-026 potential skills / strength / sort, D-027 installable app,
 D-028 exports and reason templates. Review: `docs/REVIEW-2026-11.md`. Traceability: `docs/TRACEABILITY.md`.
 
@@ -80,7 +80,7 @@ D-028 exports and reason templates. Review: `docs/REVIEW-2026-11.md`. Traceabili
 
 ## Batch 3 — browser tooling, Step 3 and voice fixes, three languages, design v2, profile view/edit (10 Nov 2026)
 
-Instructions: `BATCH_3_PROMPT.md`. Decisions recorded: D-017 theme (Emerald Night), D-018 logo (Stitched
+Instructions: the team's Batch 3 brief (internal note). Decisions recorded: D-017 theme (Emerald Night), D-018 logo (Stitched
 Nut), D-019 languages, D-020 profile view/edit.
 
 **Browser tooling**
@@ -152,9 +152,9 @@ Nut), D-019 languages, D-020 profile view/edit.
 
 ## Batch 2 — Module 3 (Phase 5), integration tests (Phase 6), documentation (Phase 7) (9 Nov 2026)
 
-Instructions: `BATCH_2_PROMPT.md`. Decisions recorded: D-013 evidence storage, D-014 skill confidence
+Instructions: the team's Batch 2 brief (internal note). Decisions recorded: D-013 evidence storage, D-014 skill confidence
 method and provisional weights, D-015 review states and deletion rules, D-016 upload processing and
-duplicates. `CLAUDE.md` gained the rule "Reporting to the user".
+duplicates. The team's working rules gained "Reporting to the user".
 
 **Backend (Module 3)**
 - Models `Evidence` (metadata) and `EvidenceFile` (processed WebP bytes); storage service with
@@ -216,7 +216,7 @@ unknown bytes; test flakiness (router path probe, 5 s timeout, race test assumin
 
 ## Batch 1 — UI/UX redesign, guided onboarding, Module 2 / Phase 4 (9 Nov 2026)
 
-Instructions: `BATCH_1_PROMPT.md`. Decisions recorded: D-008 (reason for the category split),
+Instructions: the team's Batch 1 brief (internal note). Decisions recorded: D-008 (reason for the category split),
 D-010 design system, D-011 guided onboarding, D-012 final categories + skill list v1.
 
 **Stages (docs/design/):** 01 UX requirements (personas, FR/NFR, acceptance criteria), 02 analysis
@@ -367,7 +367,7 @@ Decisions given by the team on 9 Nov 2026 and recorded in `docs/DECISIONS.md`: D
 - `backend/.env` (gitignored): local `MONGO_URI`, random `JWT_SECRET`. Never Atlas.
 
 **Other**
-- Phone-number decision recorded (D-002) in `CLAUDE.md`, `CLAUDE_CODE_PROMPT.md`, `docs/DECISIONS.md`.
+- Phone-number decision recorded (D-002) in `docs/DECISIONS.md` and the team's working rules.
 - `.devcontainer/init-firewall.sh`: `fastdl.mongodb.org` added to the allowed domains.
 - `docs/SECURITY.md` created with incident INC-001 (stolen Vercel token, 8–9 Nov 2026).
 - `docs/DECISIONS.md` created (D-001 MERN only, D-002 phone hidden, D-003 Node 24, D-004 nodemon advisory).

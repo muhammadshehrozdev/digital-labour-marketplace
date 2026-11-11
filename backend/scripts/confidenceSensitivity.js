@@ -58,7 +58,7 @@ if (process.argv[1] && process.argv[1].endsWith('confidenceSensitivity.js')) {
     console.log([row.mix.padEnd(36), ...VARIANTS.map(([label]) => row[label].padStart(8))].join(' '));
   }
   const d = (list, opts) => fmt(skillConfidence(list, opts).expected);
-  console.log('\nKnown weak points of the default weights (CLAUDE_CODE_PROMPT.md C6):');
+  console.log('\nKnown weak points of the default weights (decision D-014):');
   console.log(`  1. Certificate + one fake = ${d([A('certificate'), F('certificate')])} (above ${d([])} for no evidence; still shown as Disputed).`);
   console.log(`     If a fake costs its type weight: ${d([A('certificate'), F('certificate')], { fakeCostByType: true })}.`);
   console.log(`  2. Five work photos = ${d(times(5, A('work_photo')))} beat one certificate = ${d([A('certificate')])}.`);

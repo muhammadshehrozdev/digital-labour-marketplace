@@ -96,7 +96,7 @@ const EXPORTS = {
       { header: 'possible_duplicate', value: (e) => e.duplicateKind ?? '' },
     ],
   },
-  // Accounts. Admins may see email and phone (CLAUDE.md); never the password or its hash.
+  // Accounts. Admins may see email and phone (security rules, docs/SECURITY.md); never the password or its hash.
   users: {
     async rows({ status = 'all' }) {
       const filter = {};

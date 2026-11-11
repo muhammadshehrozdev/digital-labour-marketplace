@@ -1,5 +1,5 @@
 # SYNTHETIC — written by the team's tooling to test the evaluation scripts only. Not real workers.
-# Never report numbers computed from this file as results (CLAUDE.md, academic honesty).
+# Never report numbers computed from this file as results (academic honesty, docs/evaluation/README.md).
 id,script,text,gold_skills,gold_category,gold_years,gold_months
 syn-01,roman_urdu,"Main 5 saal se plumbing, PPRC pipe fitting aur geyser ka kaam karta hoon",plumb_general;plumb_pipe;plumb_geyser,plumbing_sanitary,5,
 syn-02,urdu,میں دو سال سے وائرنگ کرتا ہوں,elec_wiring,electrical_solar,2,

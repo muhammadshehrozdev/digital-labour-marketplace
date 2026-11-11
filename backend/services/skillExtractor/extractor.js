@@ -1,4 +1,4 @@
-// Rule-based (dictionary) skill extractor — Module 2 (CLAUDE_CODE_PROMPT.md C5).
+// Rule-based (dictionary) skill extractor — Module 2 (docs/DECISIONS.md).
 // It is NOT machine learning: it looks up taxonomy terms in the worker's text.
 //
 // Rules

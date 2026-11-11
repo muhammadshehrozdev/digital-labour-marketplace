@@ -1,4 +1,4 @@
-// Text normalisation for the rule-based skill extractor (CLAUDE_CODE_PROMPT.md C5).
+// Text normalisation for the rule-based skill extractor (Module 2).
 // The SAME function is applied to the worker's text and to every taxonomy term, so both
 // sides are compared in one form. Pure function, no database.
 

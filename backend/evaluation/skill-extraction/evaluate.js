@@ -3,7 +3,7 @@
 //
 // Prints a table and writes JSON (date + SHA-256 of the dataset file) to results/.
 // A dataset whose file name or header says "synthetic" is marked SYNTHETIC: its numbers only
-// prove that the script works and must NEVER be reported as results (CLAUDE.md).
+// prove that the script works and must NEVER be reported as results (docs/evaluation/README.md).
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';

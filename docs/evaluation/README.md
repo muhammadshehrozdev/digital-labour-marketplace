@@ -4,7 +4,7 @@ The extractor (`backend/services/skillExtractor/`) is a **rule-based (dictionary
 extractor**. It is not machine learning and is never called "AI". Its quality is unknown until
 it is measured on **real, labelled** worker descriptions.
 
-## Rules (academic honesty — CLAUDE.md)
+## Rules (academic honesty)
 1. **Results come only from real descriptions** collected from workers with informed consent
    (`consent-form.md`). The files `dataset.synthetic.*.csv` in the code are **synthetic**: they
    exist only to test the scripts. Their numbers are never reported, in the report, slides or viva.

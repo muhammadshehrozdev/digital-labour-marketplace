@@ -1,4 +1,4 @@
-// Academic honesty (CLAUDE.md, M2-15, M2-8): the UI never calls the rule-based extractor "AI",
+// Academic honesty (docs/evaluation/README.md, M2-15, M2-8): the UI never calls the rule-based extractor "AI",
 // never shows a "confidence %", and shows no invented reviews or ratings.
 import { describe, test, expect } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';

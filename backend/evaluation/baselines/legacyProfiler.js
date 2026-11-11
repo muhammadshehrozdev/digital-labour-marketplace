@@ -1,5 +1,5 @@
 // BASELINE ONLY — the old Module 2 keyword profiler, kept unchanged in its matching logic so the
-// evaluation can compare the new rule-based extractor against it (CLAUDE_CODE_PROMPT.md C5).
+// evaluation can compare the new rule-based extractor against it (Module 2 evaluation, docs/evaluation/README.md).
 // Moved from utils/ in Batch 1; it is no longer used by the live API.
 // It is a keyword dictionary (not "AI"); its old names were renamed, its rules were not changed.
 // Known problems it keeps on purpose (audit M2-4 to M2-8): substring matching for Urdu, everyday

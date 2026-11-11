@@ -1,4 +1,4 @@
-// Academic honesty (CLAUDE.md, M2-15, M2-8): live backend code never calls the rule-based
+// Academic honesty (docs/evaluation/README.md, M2-15, M2-8): live backend code never calls the rule-based
 // extractor "AI" and never produces a confidence score. The old profiler in
 // evaluation/baselines/ is kept unchanged on purpose (it is the evaluation baseline) and is
 // not part of the live API, so it is excluded here.
