@@ -10,7 +10,7 @@ What to check: simple, everyday words for a worker with basic reading skills; sh
 spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders such as `{name}` and
 `{count}` must stay exactly as they are. Digits stay Western (0-9).
 
-890 texts in total (generated from the source files; not hand-copied).
+1424 texts in total (generated from the source files; not hand-copied).
 
 ## Website texts: `app`
 
@@ -78,6 +78,11 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | Key | English | اردو (Urdu) | Roman Urdu | Checked by |
 |---|---|---|---|---|
 | nav.main | Main | مین مینو | Main menu | |
+| nav.home | Home page | ہوم پیج | Home page | |
+| nav.notifications | Notifications | اطلاعات | Ittelaat | |
+| nav.saved | Saved workers | محفوظ کاریگر | Mehfooz karigar | |
+| nav.compare | Compare workers | کاریگروں کا موازنہ | Karigaron ka muwazna | |
+| nav.help | Help centre | مدد | Madad | |
 | nav.dashboard | Dashboard | ڈیش بورڈ | Dashboard | |
 | nav.myProfile | My profile | میری پروفائل | Meri profile | |
 | nav.findWorkers | Find workers | کاریگر تلاش کریں | Karigar dhoondein | |
@@ -135,8 +140,13 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | landing.findWorker | Find a worker | کاریگر ڈھونڈیں | Karigar dhoondein | |
 | landing.joinWorker | Join as a worker | کاریگر کے طور پر شامل ہوں | Karigar ban kar join karein | |
 | landing.heroNote | For electricians, plumbers, painters, masons, carpenters, AC technicians, domestic workers and more. | الیکٹریشن، پلمبر، پینٹر، راج مستری، کارپینٹر، اے سی ٹیکنیشن، گھریلو ملازم اور بہت سے دوسرے۔ | Electrician, plumber, painter, raj mistri, carpenter, AC technician, gharelu mulazim aur bohat se doosray. | |
+| landing.howKicker | Two sides, one website | دو فریق، ایک ویب سائٹ | Do fareeq, aik website | |
 | landing.howTitle | How it works | یہ کیسے کام کرتا ہے | Yeh kaise kaam karta hai | |
 | landing.howLead | Three short steps on each side. | دونوں طرف تین آسان قدم۔ | Dono taraf teen asaan qadam. | |
+| landing.bento.example | Example | مثال | Misaal | |
+| landing.bento.sentence | I do **house wiring** and fit **solar panels**. | میں **گھر کی وائرنگ** کرتا ہوں اور **سولر پینل** لگاتا ہوں۔ | Main **ghar ki wiring** karta hoon aur **solar panel** lagata hoon. | |
+| landing.bento.verifiedMeans | An admin approved a photo as proof of this skill. | ایڈمن نے اس ہنر کے ثبوت کی تصویر منظور کی ہے۔ | Admin ne is hunar ke saboot ki tasveer manzoor ki hai. | |
+| landing.bento.selfMeans | The worker says so. No proof has been checked yet. | کاریگر نے خود بتایا ہے۔ ابھی کوئی ثبوت چیک نہیں ہوا۔ | Karigar ne khud bataya hai. Abhi koi saboot check nahi hua. | |
 | landing.forWorkers | For workers | کاریگروں کے لیے | Karigaron ke liye | |
 | landing.forCustomers | For customers | گاہکوں کے لیے | Customers ke liye | |
 | landing.stepNumber | Step {n} | قدم {n} | Qadam {n} | |
@@ -152,6 +162,7 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | landing.customerSteps.compare.text | Experience, rates, skills, and what an admin has checked. | تجربہ، ریٹ، ہنر، اور یہ کہ ایڈمن نے کیا چیک کیا ہے۔ | Tajurba, rate, hunar, aur yeh ke admin ne kya check kiya hai. | |
 | landing.customerSteps.choose.title | Choose with trust | بھروسے سے چنیں | Bharosay se chunein | |
 | landing.customerSteps.choose.text | See clearly what is checked and what the worker only says about themselves. | صاف دیکھیں کہ کیا چیک ہوا ہے اور کیا صرف کاریگر نے اپنے بارے میں بتایا ہے۔ | Saaf dekhein ke kya check hua hai aur kya sirf karigar ne apne baare mein bataya hai. | |
+| landing.trustKicker | Checked by people | انسانوں کی جانچ | Insanon ki jaanch | |
 | landing.trustTitle | Why you can trust a profile here | یہاں کی پروفائل پر بھروسہ کیوں کریں | Yahan ki profile par bharosa kyun karein | |
 | landing.trustLead | Every badge on a profile means a real check by a person. | پروفائل پر ہر نشان کا مطلب ہے کہ کسی انسان نے اصل میں چیک کیا ہے۔ | Profile par har nishan ka matlab hai ke kisi insaan ne asal mein check kiya hai. | |
 | landing.trust.identity.title | Identity checked by a person | شناخت ایک انسان چیک کرتا ہے | Shanakht aik insaan check karta hai | |
@@ -162,6 +173,7 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | landing.trust.review.text | Admins give a reason for every decision, and each one is written to a log that cannot be changed. | ایڈمن ہر فیصلے کی وجہ لکھتا ہے، اور ہر فیصلہ ایسے ریکارڈ میں جاتا ہے جسے بدلا نہیں جا سکتا۔ | Admin har faislay ki wajah likhta hai, aur har faisla aise record mein jata hai jise badla nahi ja sakta. | |
 | landing.trust.privacy.title | Phone and CNIC stay private | فون اور شناختی کارڈ چھپے رہتے ہیں | Phone aur CNIC chupay rehtay hain | |
 | landing.trust.privacy.text | Phone, WhatsApp, address and CNIC are never shown in search results. Contact details will be shared only after a booking is accepted. | فون، واٹس ایپ، پتہ اور شناختی کارڈ تلاش کے نتائج میں کبھی نہیں دکھائے جاتے۔ رابطے کی معلومات صرف بکنگ قبول ہونے کے بعد دی جائیں گی۔ | Phone, WhatsApp, pata aur CNIC talaash ke nataij mein kabhi nahi dikhaye jatay. Rabtay ki maloomat sirf booking qabool honay ke baad di jayengi. | |
+| landing.tradesKicker | Nine trades | نو پیشے | Nau peshay | |
 | landing.tradesTitle | Trades on the marketplace | مارکیٹ پلیس پر کام | Marketplace par kaam | |
 | landing.tradesLead | From house wiring to house shifting: one place for skilled work. | گھر کی وائرنگ سے گھر کی شفٹنگ تک: ہنر مند کام کے لیے ایک جگہ۔ | Ghar ki wiring se ghar ki shifting tak: hunarmand kaam ke liye aik jagah. | |
 | landing.tradeSkills | one: {count} skill / other: {count} skills | one: {count} ہنر / other: {count} ہنر | one: {count} hunar / other: {count} hunar | |
@@ -286,6 +298,16 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | fields.addedVia | Added via | کیسے شامل کیا | Kaise shamil kiya | |
 | fields.reasonCode | Reason | وجہ | Wajah | |
 | fields.preferredLanguage | Language | زبان | Zabaan | |
+| fields.preferredTheme | Theme | تھیم | Theme | |
+| fields.preferredTextSize | Text size | لکھائی کا سائز | Likhai ka size | |
+| fields.reason | Reason | وجہ | Wajah | |
+| fields.sort | Sort | ترتیب | Tarteeb | |
+| fields.ids | Workers | کاریگر | Karigar | |
+| fields.days | Days | دن | Din | |
+| fields.kind | Kind | قسم | Qisam | |
+| fields.en | English text | انگریزی متن | English matan | |
+| fields.ur | Urdu text | اردو متن | Urdu matan | |
+| fields.ur-Latn | Roman Urdu text | رومن اردو متن | Roman Urdu matan | |
 | fields.id | Id | آئی ڈی | ID | |
 | fields.workerIdCode | Worker ID | کاریگر آئی ڈی | Karigar ID | |
 
@@ -328,6 +350,9 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | errors.PASSWORD_ONLY_SPACES | Password cannot be only spaces | پاس ورڈ صرف خالی جگہوں کا نہیں ہو سکتا | Password sirf khaali jagahon ka nahi ho sakta | |
 | errors.ROLE_INVALID | Role must be worker or customer | کردار صرف کاریگر یا گاہک ہو سکتا ہے | Kirdar sirf karigar ya customer ho sakta hai | |
 | errors.LANGUAGE_INVALID | Language must be en, ur or ur-Latn | زبان en، ur یا ur-Latn ہونی چاہیے | Zabaan en, ur ya ur-Latn honi chahiye | |
+| errors.THEME_INVALID | Theme must be light, dark or system | تھیم light، dark یا system ہونی چاہیے | Theme light, dark ya system hona chahiye | |
+| errors.TEXT_SIZE_INVALID | Text size must be small, normal or large | لکھائی کا سائز small، normal یا large ہونا چاہیے | Likhai ka size small, normal ya large hona chahiye | |
+| errors.PREFERENCES_EMPTY | Send at least one setting to change | کم از کم ایک سیٹنگ بھیجیں | Kam az kam aik setting bhejein | |
 | errors.EMAIL_TAKEN | This email is already registered. Please log in instead. | یہ ای میل پہلے سے رجسٹرڈ ہے۔ براہ کرم لاگ ان کریں۔ | Yeh email pehle se register hai. Meharbani karke log in karein. | |
 | errors.LOGIN_FAILED | Email or password is incorrect. After 5 wrong tries, login is paused for 15 minutes. | ای میل یا پاس ورڈ غلط ہے۔ 5 غلط کوششوں کے بعد لاگ ان 15 منٹ کے لیے رک جاتا ہے۔ | Email ya password ghalat hai. 5 ghalat koshishon ke baad login 15 minute ke liye ruk jata hai. | |
 | errors.NOT_LOGGED_IN | Please log in first. | براہ کرم پہلے لاگ ان کریں۔ | Meharbani karke pehle log in karein. | |
@@ -367,7 +392,7 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | errors.INPUT_MODE_INVALID | inputMode must be text or voice | لکھنے کا طریقہ صرف ٹیکسٹ یا آواز ہو سکتا ہے | Likhne ka tareeqa sirf text ya awaaz ho sakta hai | |
 | errors.SKILL_UNKNOWN | Unknown skill. Choose a skill from the list. | نامعلوم ہنر۔ فہرست میں سے ہنر چنیں۔ | Na-maloom hunar. List mein se hunar chunein. | |
 | errors.SKILL_CHOOSE_ONE | Choose at least one skill | کم از کم ایک ہنر چنیں | Kam az kam aik hunar chunein | |
-| errors.ADDED_VIA_INVALID | addedVia must be extractor or manual | شامل کرنے کا طریقہ درست نہیں | Shamil karne ka tareeqa durust nahi | |
+| errors.ADDED_VIA_INVALID | addedVia must be extractor, manual or related | شامل کرنے کا طریقہ درست نہیں | Shamil karne ka tareeqa durust nahi | |
 | errors.SKILL_ID_INVALID | Invalid skill id | ہنر کی آئی ڈی درست نہیں | Hunar ki ID durust nahi | |
 | errors.SKILL_LIMIT | At most {max} skills per worker | ایک کاریگر کے زیادہ سے زیادہ {max} ہنر ہو سکتے ہیں | Aik karigar ke zyada se zyada {max} hunar ho sakte hain | |
 | errors.CUSTOM_SKILL_LATIN | Please write the skill name in English letters (a-z) for now | ابھی ہنر کا نام انگریزی حروف (a-z) میں لکھیں | Abhi hunar ka naam English huroof (a-z) mein likhein | |
@@ -402,6 +427,27 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | errors.REASON_CODE_ONLY_FOR_REJECT | A reason code is only used to reject | وجہ کی فہرست صرف رد کرتے وقت استعمال ہوتی ہے | Wajah ki list sirf radd karte waqt use hoti hai | |
 | errors.TRANSITION_INVALID | You cannot {verb} an item that is {state}. | جو چیز {state} ہو، اسے {verb} نہیں کر سکتے۔ | Jo cheez {state} ho, usay {verb} nahi kar sakte. | |
 | errors.PROOF_CHANGED | Someone else reviewed this item just now. Please reload. | ابھی کسی اور نے یہ ثبوت چیک کیا ہے۔ صفحہ دوبارہ لوڈ کریں۔ | Abhi kisi aur ne yeh saboot check kiya hai. Safha dobara load karein. | |
+| errors.ACCOUNT_SUSPENDED | This account is suspended. Please contact the admin. | یہ اکاؤنٹ معطل ہے۔ براہ کرم ایڈمن سے رابطہ کریں۔ | Yeh account muattal hai. Barah-e-karam admin se rabta karein. | |
+| errors.USER_NOT_FOUND | User not found | صارف نہیں ملا | User nahi mila | |
+| errors.USER_STATUS_INVALID | Status must be active or suspended | حالت active یا suspended ہونی چاہیے | Status active ya suspended hona chahiye | |
+| errors.USER_STATUS_CHANGED | This account already has that status. Please reload. | اس اکاؤنٹ کی حالت پہلے ہی یہی ہے۔ صفحہ دوبارہ لوڈ کریں۔ | Is account ka status pehle hi yehi hai. Safha dobara load karein. | |
+| errors.CANNOT_SUSPEND_SELF | You cannot suspend your own account. | آپ اپنا اکاؤنٹ معطل نہیں کر سکتے۔ | Aap apna account muattal nahi kar sakte. | |
+| errors.CANNOT_SUSPEND_ADMIN | Admin accounts cannot be suspended from the website. | ایڈمن اکاؤنٹ ویب سائٹ سے معطل نہیں کیے جا سکتے۔ | Admin accounts website se muattal nahi kiye ja sakte. | |
+| errors.ROLE_FILTER_INVALID | Role must be all, worker, customer or admin | کردار all، worker، customer یا admin ہونا چاہیے | Role all, worker, customer ya admin hona chahiye | |
+| errors.REASON_REQUIRED | A reason is required | وجہ لکھنا ضروری ہے | Wajah likhna zaroori hai | |
+| errors.REASON_TOO_SHORT | Write a reason of at least 5 characters | کم از کم 5 حروف کی وجہ لکھیں | Kam az kam 5 huroof ki wajah likhein | |
+| errors.NOTE_HAS_CNIC | Do not write a CNIC number here. Notes are saved in the audit log. | یہاں شناختی کارڈ نمبر نہ لکھیں۔ نوٹ آڈٹ لاگ میں محفوظ ہوتے ہیں۔ | Yahan CNIC number na likhein. Notes audit log mein mehfooz hote hain. | |
+| errors.NOTIFICATION_NOT_FOUND | Notification not found | اطلاع نہیں ملی | Ittela nahi mili | |
+| errors.SAVED_LIMIT | You can save at most {max} workers. Remove one first. | آپ زیادہ سے زیادہ {max} کاریگر محفوظ کر سکتے ہیں۔ پہلے ایک ہٹائیں۔ | Aap zyada se zyada {max} karigar mehfooz kar sakte hain. Pehle aik hatayein. | |
+| errors.SORT_INVALID | Sort must be updated, experience or evidence | ترتیب updated، experience یا evidence ہونی چاہیے | Tarteeb updated, experience ya evidence honi chahiye | |
+| errors.COMPARE_NEEDS_TWO | Choose at least two workers to compare | موازنے کے لیے کم از کم دو کاریگر چنیں | Muwazne ke liye kam az kam do karigar chunein | |
+| errors.COMPARE_MAX_THREE | You can compare at most three workers | آپ زیادہ سے زیادہ تین کاریگروں کا موازنہ کر سکتے ہیں | Aap zyada se zyada teen karigaron ka muwazna kar sakte hain | |
+| errors.COMPARE_SAME_WORKER | Choose different workers to compare | موازنے کے لیے الگ الگ کاریگر چنیں | Muwazne ke liye alag alag karigar chunein | |
+| errors.EXPORT_KIND_UNKNOWN | Export must be audit, identity, evidence or users | ایکسپورٹ audit، identity، evidence یا users ہونا چاہیے | Export audit, identity, evidence ya users hona chahiye | |
+| errors.TEMPLATE_KIND_INVALID | Unknown kind of reason template | سانچے کی قسم درست نہیں | Template ki qisam durust nahi | |
+| errors.TEMPLATE_TEXT_REQUIRED | Write the English text of the template (at least 5 characters) | سانچے کا انگریزی متن لکھیں (کم از کم 5 حروف) | Template ka English matan likhein (kam az kam 5 huroof) | |
+| errors.TEMPLATE_NOT_FOUND | Reason template not found | وجہ کا سانچہ نہیں ملا | Wajah ka template nahi mila | |
+| errors.TEMPLATE_LIMIT | At most {max} reason templates. Delete one first. | زیادہ سے زیادہ {max} سانچے۔ پہلے ایک حذف کریں۔ | Zyada se zyada {max} templates. Pehle aik hazf karein. | |
 | errors.ROUTE_NOT_FOUND | Route not found | یہ راستہ موجود نہیں | Yeh rasta mojood nahi | |
 | errors.DUPLICATE_RECORD | This record already exists | یہ ریکارڈ پہلے سے موجود ہے | Yeh record pehle se mojood hai | |
 | errors.DB_VALIDATION | Invalid value for: {fields} | ان کی قیمت درست نہیں: {fields} | In ki value durust nahi: {fields} | |
@@ -462,8 +508,12 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | Key | English | اردو (Urdu) | Roman Urdu | Checked by |
 |---|---|---|---|---|
 | notFound.title | Page not found | صفحہ نہیں ملا | Safha nahi mila | |
-| notFound.text | This page does not exist. | یہ صفحہ موجود نہیں ہے۔ | Yeh safha mojood nahi hai. | |
+| notFound.text | The link may be old, or the address was typed wrongly. Nothing is broken. | شاید لنک پرانا ہے یا پتہ غلط لکھا گیا ہے۔ کچھ خراب نہیں ہوا۔ | Shayad link purana hai ya pata ghalat likha gaya hai. Kuch kharab nahi hua. | |
 | notFound.home | Go to the home page | ہوم پیج پر جائیں | Home page par jayein | |
+| notFound.searchLabel | Where do you want to go? | آپ کہاں جانا چاہتے ہیں؟ | Aap kahan jana chahte hain? | |
+| notFound.searchPlaceholder | Type a page name, for example profile | صفحے کا نام لکھیں، مثلاً پروفائل | Safhe ka naam likhein, maslan profile | |
+| notFound.places | Pages you can open | وہ صفحات جو آپ کھول سکتے ہیں | Woh safhaat jo aap khol sakte hain | |
+| notFound.noPlace | No page with that name. Try another word. | اس نام کا کوئی صفحہ نہیں۔ کوئی اور لفظ آزمائیں۔ | Is naam ka koi safha nahi. Koi aur lafz azmayein. | |
 
 ## Website texts: `crash`
 
@@ -841,7 +891,10 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | admin.nav.overview | Overview | خلاصہ | Khulasa | |
 | admin.nav.identity | Identity review | شناخت کی جانچ | Shanakht ki jaanch | |
 | admin.nav.evidence | Evidence review | ثبوت کی جانچ | Saboot ki jaanch | |
+| admin.nav.users | Users | صارفین | Users | |
 | admin.nav.audit | Audit log | آڈٹ لاگ | Audit log | |
+| admin.nav.templates | Reason templates | وجوہات کے سانچے | Wajuhaat ke templates | |
+| admin.nav.exports | Exports | ایکسپورٹ | Exports | |
 | admin.overview.title | Admin overview | ایڈمن خلاصہ | Admin khulasa | |
 | admin.overview.lead | Queues and counts for identity and evidence review. Every decision is written to the audit log. | شناخت اور ثبوت کی جانچ کی قطاریں اور گنتی۔ ہر فیصلہ آڈٹ لاگ میں لکھا جاتا ہے۔ | Shanakht aur saboot ki jaanch ki qataarein aur ginti. Har faisla audit log mein likha jata hai. | |
 | admin.overview.loadFailed | Could not load the counts. | گنتی لوڈ نہیں ہو سکی۔ | Ginti load nahi ho saki. | |
@@ -983,6 +1036,527 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | admin.audit.columns.reason | Reason / note | وجہ / نوٹ | Wajah / note | |
 | admin.audit.emptyTitle | No entries | کوئی اندراج نہیں | Koi entry nahi | |
 | admin.audit.emptyText | Nothing matches these filters. | ان فلٹر کے مطابق کچھ نہیں۔ | In filter ke mutabiq kuch nahi. | |
+
+## Website texts: `theme`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| theme.toggle | Dark mode | ڈارک موڈ | Dark mode | |
+| theme.toggleHint | Switch between light and dark. Hold (or right-click) for more choices. | روشن اور ڈارک کے درمیان بدلیں۔ مزید انتخاب کے لیے دبا کر رکھیں (یا رائٹ کلک کریں)۔ | Light aur dark ke darmiyan badlein. Mazeed intikhab ke liye daba kar rakhein (ya right-click karein). | |
+| theme.options | Theme options | تھیم کے انتخاب | Theme ke intikhab | |
+| theme.menuLabel | Theme | تھیم | Theme | |
+| theme.light | Light | روشن | Light | |
+| theme.dark | Dark | ڈارک | Dark | |
+| theme.system | System | سسٹم | System | |
+| theme.systemHint | Follows your device | آپ کے فون یا کمپیوٹر کے مطابق | Aap ke phone ya computer ke mutabiq | |
+| theme.nowLight | Light mode is on | روشن موڈ آن ہے | Light mode on hai | |
+| theme.nowDark | Dark mode is on | ڈارک موڈ آن ہے | Dark mode on hai | |
+| theme.chosen.light | Light mode is on | روشن موڈ آن ہے | Light mode on hai | |
+| theme.chosen.dark | Dark mode is on | ڈارک موڈ آن ہے | Dark mode on hai | |
+| theme.chosen.system | The theme now follows your device | تھیم اب آپ کے فون یا کمپیوٹر کے مطابق ہے | Theme ab aap ke phone ya computer ke mutabiq hai | |
+| theme.footerTitle | Appearance | ظاہری شکل | Zahiri shakal | |
+
+## Website texts: `textSize`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| textSize.label | Text size | لکھائی کا سائز | Likhai ka size | |
+| textSize.small | Smaller text | چھوٹی لکھائی | Chhoti likhai | |
+| textSize.normal | Normal text | عام لکھائی | Aam likhai | |
+| textSize.large | Larger text | بڑی لکھائی | Bari likhai | |
+
+## Website texts: `palette`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| palette.editAbout | Edit: About you | ترمیم: آپ کے بارے میں | Tarmeem: Aap ke baare mein | |
+| palette.editWork | Edit: Work and rates | ترمیم: کام اور ریٹ | Tarmeem: Kaam aur rate | |
+| palette.editSkills | Edit: Skills | ترمیم: ہنر | Tarmeem: Hunar | |
+| palette.editProof | Edit: Proof of skills | ترمیم: ہنر کا ثبوت | Tarmeem: Hunar ka saboot | |
+| palette.editHistory | Edit: Work history | ترمیم: پچھلا کام | Tarmeem: Pichla kaam | |
+| palette.editLanguage | Edit: Language preference | ترمیم: زبان کی ترجیح | Tarmeem: Zabaan ki tarjeeh | |
+
+## Website texts: `adminx`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| adminx.titles.users | Users | صارفین | Users | |
+| adminx.titles.templates | Reason templates | وجوہات کے سانچے | Wajuhaat ke templates | |
+| adminx.titles.exports | Exports | ایکسپورٹ | Exports | |
+| adminx.dash.nowTitle | Needs your attention | آپ کی توجہ درکار ہے | Aap ki tawajjo darkaar hai | |
+| adminx.dash.queueIdentity | Waiting for identity review | شناخت کی جانچ کے منتظر | Shanakht ki jaanch ke muntazir | |
+| adminx.dash.queueProof | Proof waiting for review | جانچ کے منتظر ثبوت | Jaanch ke muntazir saboot | |
+| adminx.dash.queueFake | Proof marked suspected fake | مشکوک قرار دیے گئے ثبوت | Mashkook qarar diye gaye saboot | |
+| adminx.dash.open | Open the queue | قطار کھولیں | Qataar kholein | |
+| adminx.dash.oldest | Oldest: {waiting} | سب سے پرانا: {waiting} | Sab se purana: {waiting} | |
+| adminx.dash.nothingWaiting | Nothing is waiting. Well done. | کچھ بھی منتظر نہیں۔ شاباش۔ | Kuch bhi muntazir nahi. Shabash. | |
+| adminx.dash.waitingLabel | How long they have waited | کتنی دیر سے منتظر ہیں | Kitni der se muntazir hain | |
+| adminx.dash.buckets.under1Day | Under 1 day | 1 دن سے کم | 1 din se kam | |
+| adminx.dash.buckets.days1to3 | 1 to 3 days | 1 سے 3 دن | 1 se 3 din | |
+| adminx.dash.buckets.days4to7 | 4 to 7 days | 4 سے 7 دن | 4 se 7 din | |
+| adminx.dash.buckets.over7Days | Over 7 days | 7 دن سے زیادہ | 7 din se zyada | |
+| adminx.dash.accountsTitle | Accounts | اکاؤنٹس | Accounts | |
+| adminx.dash.accounts.worker | Worker accounts | کاریگروں کے اکاؤنٹ | Karigaron ke accounts | |
+| adminx.dash.accounts.customer | Customer accounts | گاہکوں کے اکاؤنٹ | Gahakon ke accounts | |
+| adminx.dash.accounts.admin | Admin accounts | ایڈمن اکاؤنٹ | Admin accounts | |
+| adminx.dash.accounts.profiles | Worker profiles | کاریگروں کے پروفائل | Karigaron ke profiles | |
+| adminx.dash.trendsTitle | Trends and totals | رجحانات اور مجموعے | Rujhanaat aur majmooay | |
+| adminx.dash.period | Period for new accounts | نئے اکاؤنٹس کی مدت | Naye accounts ki muddat | |
+| adminx.dash.periodDays | one: Last {count} day / other: Last {count} days | one: پچھلا {count} دن / other: پچھلے {count} دن | one: Pichla {count} din / other: Pichle {count} din | |
+| adminx.dash.registrations | New accounts per day | روزانہ نئے اکاؤنٹ | Rozana naye accounts | |
+| adminx.dash.registrationsSub | Days are counted in Pakistan time. Admin accounts are not included. | دن پاکستانی وقت کے مطابق گنے جاتے ہیں۔ ایڈمن اکاؤنٹ شامل نہیں۔ | Din Pakistani waqt ke mutabiq ginay jate hain. Admin accounts shamil nahi. | |
+| adminx.dash.seriesWorkers | Workers | کاریگر | Karigar | |
+| adminx.dash.seriesCustomers | Customers | گاہک | Gahak | |
+| adminx.dash.total | Total | کل | Kul | |
+| adminx.dash.date | Date | تاریخ | Tareekh | |
+| adminx.dash.noRegistrations | No new accounts in this period. | اس مدت میں کوئی نیا اکاؤنٹ نہیں بنا۔ | Is muddat mein koi naya account nahi bana. | |
+| adminx.dash.showTable | Show the numbers as a table | اعداد جدول کی شکل میں دکھائیں | Adaad table ki shakal mein dikhayein | |
+| adminx.dash.identityByStatus | Worker profiles by identity status | شناخت کی حالت کے مطابق کاریگروں کے پروفائل | Shanakht ki halat ke mutabiq karigaron ke profiles | |
+| adminx.dash.evidenceByStatus | Proof items by decision | فیصلے کے مطابق ثبوت | Faislay ke mutabiq saboot | |
+| adminx.dash.skillsByCategory | Skills on profiles, by trade | پیشے کے مطابق پروفائلوں پر ہنر | Peshay ke mutabiq profiles par hunar | |
+| adminx.dash.noData | Nothing to show yet. | ابھی دکھانے کو کچھ نہیں۔ | Abhi dikhane ko kuch nahi. | |
+| adminx.dash.chartsFailed | The charts could not be loaded. | چارٹ لوڈ نہیں ہو سکے۔ | Charts load nahi ho sake. | |
+| adminx.chain.title | Audit log chain | آڈٹ لاگ کی زنجیر | Audit log ki zanjeer | |
+| adminx.chain.checking | Checking every entry… | ہر اندراج چیک ہو رہا ہے… | Har indraaj check ho raha hai… | |
+| adminx.chain.intact | Chain intact | زنجیر سلامت ہے | Zanjeer salamat hai | |
+| adminx.chain.intactText | one: {count} entry checked. Nothing was changed, added or removed. / other: {count} entries checked. Nothing was changed, added or removed. | one: {count} اندراج چیک ہوا۔ کچھ بدلا، بڑھایا یا ہٹایا نہیں گیا۔ / other: {count} اندراجات چیک ہوئے۔ کچھ بدلا، بڑھایا یا ہٹایا نہیں گیا۔ | one: {count} indraaj check hua. Kuch badla, barhaya ya hataya nahi gaya. / other: {count} indraajaat check hue. Kuch badla, barhaya ya hataya nahi gaya. | |
+| adminx.chain.broken | Chain broken at entry {seq} | زنجیر اندراج {seq} پر ٹوٹی ہے | Zanjeer indraaj {seq} par tooti hai | |
+| adminx.chain.problems.entry_missing | An entry is missing before this one. | اس سے پہلے کا ایک اندراج غائب ہے۔ | Is se pehle ka aik indraaj ghaib hai. | |
+| adminx.chain.problems.link_broken | This entry does not link to the one before it. | یہ اندراج پچھلے اندراج سے نہیں جڑتا۔ | Yeh indraaj pichle indraaj se nahi jurta. | |
+| adminx.chain.problems.content_changed | This entry was changed after it was written. | یہ اندراج لکھے جانے کے بعد بدلا گیا ہے۔ | Yeh indraaj likhe jane ke baad badla gaya hai. | |
+| adminx.chain.brokenText | Stop making decisions, tell the team lead, and keep a copy of the database. | مزید فیصلے نہ کریں، ٹیم لیڈ کو بتائیں اور ڈیٹابیس کی کاپی محفوظ رکھیں۔ | Mazeed faislay na karein, team lead ko batayein aur database ki copy mehfooz rakhein. | |
+| adminx.chain.checkedAt | Checked at {time} | {time} پر چیک ہوا | {time} par check hua | |
+| adminx.chain.again | Check again | دوبارہ چیک کریں | Dobara check karein | |
+| adminx.chain.failed | The chain could not be checked. | زنجیر چیک نہیں ہو سکی۔ | Zanjeer check nahi ho saki. | |
+| adminx.feed.title | Latest activity | تازہ سرگرمی | Taza sargarmi | |
+| adminx.feed.empty | No activity yet. | ابھی کوئی سرگرمی نہیں۔ | Abhi koi sargarmi nahi. | |
+| adminx.feed.live | Updates every 30 seconds | ہر 30 سیکنڈ بعد تازہ ہوتی ہے | Har 30 second baad taza hoti hai | |
+| adminx.feed.all | Open the audit log | آڈٹ لاگ کھولیں | Audit log kholein | |
+| adminx.actions.identity_decision | Identity decision | شناخت کا فیصلہ | Shanakht ka faisla | |
+| adminx.actions.cnic_reveal | CNIC viewed | شناختی کارڈ نمبر دیکھا گیا | CNIC dekha gaya | |
+| adminx.actions.cnic_updated | CNIC saved by the worker | کاریگر نے شناختی کارڈ نمبر محفوظ کیا | Karigar ne CNIC mehfooz kiya | |
+| adminx.actions.evidence_uploaded | Proof uploaded | ثبوت اپ لوڈ ہوا | Saboot upload hua | |
+| adminx.actions.evidence_approved | Proof approved | ثبوت منظور ہوا | Saboot manzoor hua | |
+| adminx.actions.evidence_rejected | Proof not accepted | ثبوت قبول نہیں ہوا | Saboot qabool nahi hua | |
+| adminx.actions.evidence_suspected_fake | Proof marked suspected fake | ثبوت مشکوک قرار پایا | Saboot mashkook qarar paya | |
+| adminx.actions.evidence_revoked | Approval withdrawn | منظوری واپس لی گئی | Manzoori wapas li gayi | |
+| adminx.actions.evidence_deleted | Proof deleted | ثبوت حذف ہوا | Saboot hazf hua | |
+| adminx.actions.admin_created | Admin account created | ایڈمن اکاؤنٹ بنا | Admin account bana | |
+| adminx.actions.user_suspended | Account suspended | اکاؤنٹ معطل ہوا | Account muattal hua | |
+| adminx.actions.user_reactivated | Account reactivated | اکاؤنٹ بحال ہوا | Account bahaal hua | |
+| adminx.actions.export_downloaded | Export downloaded | ایکسپورٹ ڈاؤن لوڈ ہوا | Export download hua | |
+| adminx.actions.template_created | Reason template added | وجہ کا سانچہ بنا | Wajah ka template bana | |
+| adminx.actions.template_updated | Reason template changed | وجہ کا سانچہ بدلا | Wajah ka template badla | |
+| adminx.actions.template_deleted | Reason template deleted | وجہ کا سانچہ حذف ہوا | Wajah ka template hazf hua | |
+| adminx.actions.template_starter_set | Starter templates added | ابتدائی سانچے شامل ہوئے | Ibtidai templates shamil hue | |
+| adminx.waiting.today | Waiting since today | آج سے منتظر | Aaj se muntazir | |
+| adminx.waiting.days | one: Waiting {count} day / other: Waiting {count} days | one: {count} دن سے منتظر / other: {count} دن سے منتظر | one: {count} din se muntazir / other: {count} din se muntazir | |
+| adminx.waiting.column | Waiting | انتظار | Intezaar | |
+| adminx.users.title | Users | صارفین | Users | |
+| adminx.users.lead | Find an account, see what belongs to it, and suspend or reactivate it. Every change needs a reason and is written to the audit log. | اکاؤنٹ تلاش کریں، اس سے جڑی چیزیں دیکھیں، اور اسے معطل یا بحال کریں۔ ہر تبدیلی کے لیے وجہ ضروری ہے اور وہ آڈٹ لاگ میں لکھی جاتی ہے۔ | Account talaash karein, is se juri cheezein dekhein, aur isay muattal ya bahaal karein. Har tabdeeli ke liye wajah zaroori hai aur woh audit log mein likhi jati hai. | |
+| adminx.users.search | Search name, email or phone | نام، ای میل یا فون تلاش کریں | Naam, email ya phone talaash karein | |
+| adminx.users.role | Role | کردار | Role | |
+| adminx.users.allRoles | All roles | تمام کردار | Tamam roles | |
+| adminx.users.status | Status | حالت | Status | |
+| adminx.users.statuses.all | All | تمام | Tamam | |
+| adminx.users.statuses.active | Active | فعال | Active | |
+| adminx.users.statuses.suspended | Suspended | معطل | Muattal | |
+| adminx.users.count | one: {count} user / other: {count} users | one: {count} صارف / other: {count} صارفین | one: {count} user / other: {count} users | |
+| adminx.users.caption | User accounts | صارفین کے اکاؤنٹ | Users ke accounts | |
+| adminx.users.columns.name | Name | نام | Naam | |
+| adminx.users.columns.email | Email | ای میل | Email | |
+| adminx.users.columns.phone | Phone | فون | Phone | |
+| adminx.users.columns.role | Role | کردار | Role | |
+| adminx.users.columns.status | Status | حالت | Status | |
+| adminx.users.columns.joined | Joined | شامل ہوئے | Shamil hue | |
+| adminx.users.open | Open {name} | {name} کو کھولیں | {name} ko kholein | |
+| adminx.users.emptyTitle | No users found | کوئی صارف نہیں ملا | Koi user nahi mila | |
+| adminx.users.emptyText | Try another name, or clear the filters. | کوئی اور نام آزمائیں یا فلٹر صاف کریں۔ | Koi aur naam azmayein ya filter saaf karein. | |
+| adminx.users.lockedNow | Login paused (wrong passwords) | لاگ ان عارضی طور پر بند (غلط پاس ورڈ) | Login arzi tor par band (ghalat passwords) | |
+| adminx.users.detailText | Account details. The CNIC is never shown here. | اکاؤنٹ کی تفصیل۔ شناختی کارڈ نمبر یہاں کبھی نہیں دکھایا جاتا۔ | Account ki tafseel. CNIC yahan kabhi nahi dikhaya jata. | |
+| adminx.users.account | Account | اکاؤنٹ | Account | |
+| adminx.users.joined | Joined | شامل ہوئے | Shamil hue | |
+| adminx.users.suspendedOn | Suspended on | معطل کیا گیا | Muattal kiya gaya | |
+| adminx.users.reason | Reason | وجہ | Wajah | |
+| adminx.users.workerSummary | Worker profile | کاریگر کا پروفائل | Karigar ka profile | |
+| adminx.users.noProfile | This worker has not started a profile yet. | اس کاریگر نے ابھی پروفائل شروع نہیں کیا۔ | Is karigar ne abhi profile shuru nahi kiya. | |
+| adminx.users.workerId | Worker ID | کاریگر آئی ڈی | Worker ID | |
+| adminx.users.trade | Trade | پیشہ | Pesha | |
+| adminx.users.identity | Identity | شناخت | Shanakht | |
+| adminx.users.skills | Skills | ہنر | Hunar | |
+| adminx.users.completion | Profile completion | پروفائل کی تکمیل | Profile ki takmeel | |
+| adminx.users.proof | Proof items | ثبوت | Saboot | |
+| adminx.users.proofCounts | Approved {approved} · Waiting {pending} · Not accepted {rejected} · Suspected fake {suspected_fake} · Withdrawn {revoked} | منظور {approved} · منتظر {pending} · قبول نہیں {rejected} · مشکوک {suspected_fake} · واپس {revoked} | Manzoor {approved} · Muntazir {pending} · Qabool nahi {rejected} · Mashkook {suspected_fake} · Wapas {revoked} | |
+| adminx.users.openIdentity | Open in identity review | شناخت کی جانچ میں کھولیں | Shanakht ki jaanch mein kholein | |
+| adminx.users.customerSummary | Customer | گاہک | Gahak | |
+| adminx.users.savedWorkers | one: {count} saved worker / other: {count} saved workers | one: {count} محفوظ کاریگر / other: {count} محفوظ کاریگر | one: {count} mehfooz karigar / other: {count} mehfooz karigar | |
+| adminx.users.activity | Last activity of this account | اس اکاؤنٹ کی تازہ سرگرمی | Is account ki taza sargarmi | |
+| adminx.users.noActivity | No audit entries for this account yet. | اس اکاؤنٹ کے لیے ابھی کوئی آڈٹ اندراج نہیں۔ | Is account ke liye abhi koi audit indraaj nahi. | |
+| adminx.users.suspend | Suspend account | اکاؤنٹ معطل کریں | Account muattal karein | |
+| adminx.users.reactivate | Reactivate account | اکاؤنٹ بحال کریں | Account bahaal karein | |
+| adminx.users.suspendTitle | Suspend {name}? | {name} کو معطل کریں؟ | {name} ko muattal karein? | |
+| adminx.users.suspendText | They will be logged out at once and cannot log in. A suspended worker is hidden from customers. You can reactivate the account later. | وہ فوراً لاگ آؤٹ ہو جائیں گے اور لاگ ان نہیں کر سکیں گے۔ معطل کاریگر گاہکوں کو نظر نہیں آتا۔ آپ بعد میں اکاؤنٹ بحال کر سکتے ہیں۔ | Woh foran logout ho jayenge aur login nahi kar sakenge. Muattal karigar gahakon ko nazar nahi aata. Aap baad mein account bahaal kar sakte hain. | |
+| adminx.users.reactivateTitle | Reactivate {name}? | {name} کو بحال کریں؟ | {name} ko bahaal karein? | |
+| adminx.users.reactivateText | They will be able to log in again. A worker becomes visible to customers again. | وہ دوبارہ لاگ ان کر سکیں گے۔ کاریگر دوبارہ گاہکوں کو نظر آئے گا۔ | Woh dobara login kar sakenge. Karigar dobara gahakon ko nazar aayega. | |
+| adminx.users.reasonLabel | Reason (saved in the audit log) | وجہ (آڈٹ لاگ میں محفوظ ہوگی) | Wajah (audit log mein mehfooz hogi) | |
+| adminx.users.reasonHint | At least 5 characters. Do not write a CNIC number. | کم از کم 5 حروف۔ شناختی کارڈ نمبر نہ لکھیں۔ | Kam az kam 5 huroof. CNIC number na likhein. | |
+| adminx.users.reasonError | Write a reason of at least 5 characters. | کم از کم 5 حروف کی وجہ لکھیں۔ | Kam az kam 5 huroof ki wajah likhein. | |
+| adminx.users.suspended | Account suspended | اکاؤنٹ معطل ہو گیا | Account muattal ho gaya | |
+| adminx.users.reactivated | Account reactivated | اکاؤنٹ بحال ہو گیا | Account bahaal ho gaya | |
+| adminx.users.savedText | Written to the audit log. | آڈٹ لاگ میں لکھ دیا گیا۔ | Audit log mein likh diya gaya. | |
+| adminx.users.adminNote | Admin accounts are managed with the create-admin script, not here. | ایڈمن اکاؤنٹ create-admin اسکرپٹ سے سنبھالے جاتے ہیں، یہاں سے نہیں۔ | Admin accounts create-admin script se sambhalay jate hain, yahan se nahi. | |
+| adminx.users.selfNote | This is your own account. You cannot suspend it. | یہ آپ کا اپنا اکاؤنٹ ہے۔ آپ اسے معطل نہیں کر سکتے۔ | Yeh aap ka apna account hai. Aap isay muattal nahi kar sakte. | |
+| adminx.users.saveFailed | The change could not be saved. | تبدیلی محفوظ نہیں ہو سکی۔ | Tabdeeli mehfooz nahi ho saki. | |
+| adminx.templates.title | Reason templates | وجوہات کے سانچے | Wajuhaat ke templates | |
+| adminx.templates.lead | Sentences you use again and again. In a decision, choose one to fill the note, then change it if needed. | وہ جملے جو آپ بار بار لکھتے ہیں۔ فیصلے میں ایک چنیں، نوٹ بھر جائے گا، پھر ضرورت ہو تو بدل لیں۔ | Woh jumlay jo aap baar baar likhte hain. Faislay mein aik chunein, note bhar jayega, phir zaroorat ho to badal lein. | |
+| adminx.templates.empty | No templates yet | ابھی کوئی سانچہ نہیں | Abhi koi template nahi | |
+| adminx.templates.emptyText | Add your own, or start with a ready set of common reasons in three languages. | اپنا سانچہ بنائیں، یا تین زبانوں میں عام وجوہات کے تیار مجموعے سے شروع کریں۔ | Apna template banayein, ya teen zabanon mein aam wajuhaat ke tayyar majmooay se shuru karein. | |
+| adminx.templates.starter | Add the starter set | ابتدائی مجموعہ شامل کریں | Ibtidai majmooa shamil karein | |
+| adminx.templates.starterAdded | one: {count} template added / other: {count} templates added | one: {count} سانچہ شامل ہوا / other: {count} سانچے شامل ہوئے | one: {count} template shamil hua / other: {count} templates shamil hue | |
+| adminx.templates.starterNone | Every kind already has templates. | ہر قسم کے سانچے پہلے سے موجود ہیں۔ | Har qisam ke templates pehle se mojood hain. | |
+| adminx.templates.add | Add a template | سانچہ شامل کریں | Template shamil karein | |
+| adminx.templates.edit | Edit | ترمیم | Tarmeem | |
+| adminx.templates.remove | Delete | حذف کریں | Hazf karein | |
+| adminx.templates.kind | Used for | کس کے لیے | Kis ke liye | |
+| adminx.templates.kinds.identity_verify | Identity: verified | شناخت: تصدیق شدہ | Shanakht: tasdeeq shuda | |
+| adminx.templates.kinds.identity_reject | Identity: not accepted | شناخت: قبول نہیں | Shanakht: qabool nahi | |
+| adminx.templates.kinds.evidence_reject | Proof: not accepted | ثبوت: قبول نہیں | Saboot: qabool nahi | |
+| adminx.templates.kinds.evidence_fake | Proof: suspected fake | ثبوت: مشکوک | Saboot: mashkook | |
+| adminx.templates.kinds.evidence_revoke | Proof: approval withdrawn | ثبوت: منظوری واپس | Saboot: manzoori wapas | |
+| adminx.templates.kinds.user_suspend | Account: suspend | اکاؤنٹ: معطل | Account: muattal | |
+| adminx.templates.kinds.user_reactivate | Account: reactivate | اکاؤنٹ: بحال | Account: bahaal | |
+| adminx.templates.textEn | English text | انگریزی متن | English matan | |
+| adminx.templates.textUr | Urdu text (optional) | اردو متن (اختیاری) | Urdu matan (ikhtiyari) | |
+| adminx.templates.textRoman | Roman Urdu text (optional) | رومن اردو متن (اختیاری) | Roman Urdu matan (ikhtiyari) | |
+| adminx.templates.textHint | One or two short sentences. Never a CNIC number. | ایک یا دو مختصر جملے۔ شناختی کارڈ نمبر کبھی نہیں۔ | Aik ya do mukhtasar jumlay. CNIC number kabhi nahi. | |
+| adminx.templates.textError | Write the English text (at least 5 characters). | انگریزی متن لکھیں (کم از کم 5 حروف)۔ | English matan likhein (kam az kam 5 huroof). | |
+| adminx.templates.addTitle | Add a reason template | وجہ کا سانچہ شامل کریں | Wajah ka template shamil karein | |
+| adminx.templates.editTitle | Edit the reason template | وجہ کے سانچے میں ترمیم | Wajah ke template mein tarmeem | |
+| adminx.templates.saved | Template saved | سانچہ محفوظ ہو گیا | Template mehfooz ho gaya | |
+| adminx.templates.deleted | Template deleted | سانچہ حذف ہو گیا | Template hazf ho gaya | |
+| adminx.templates.deleteTitle | Delete this template? | یہ سانچہ حذف کریں؟ | Yeh template hazf karein? | |
+| adminx.templates.deleteText | Decisions already made keep their text. Only the template is removed. | پہلے ہو چکے فیصلوں کا متن برقرار رہتا ہے۔ صرف سانچہ ہٹتا ہے۔ | Pehle ho chuke faislon ka matan barqarar rehta hai. Sirf template hatta hai. | |
+| adminx.templates.count | {count} of {max} templates | {max} میں سے {count} سانچے | {max} mein se {count} templates | |
+| adminx.templates.missingLanguage | No text in this language | اس زبان میں متن نہیں | Is zabaan mein matan nahi | |
+| adminx.templates.insert | Insert a saved reason | محفوظ وجہ ڈالیں | Mehfooz wajah daalein | |
+| adminx.templates.insertNone | No saved reasons for this kind yet | اس قسم کی کوئی محفوظ وجہ نہیں | Is qisam ki koi mehfooz wajah nahi | |
+| adminx.templates.manage | Manage templates | سانچے سنبھالیں | Templates sambhalein | |
+| adminx.templates.loadFailed | The templates could not be loaded. | سانچے لوڈ نہیں ہو سکے۔ | Templates load nahi ho sake. | |
+| adminx.exports.title | Exports | ایکسپورٹ | Exports | |
+| adminx.exports.lead | Download a CSV file to open in Excel or Google Sheets. Every download is written to the audit log. | ایکسل یا گوگل شیٹس میں کھولنے کے لیے CSV فائل ڈاؤن لوڈ کریں۔ ہر ڈاؤن لوڈ آڈٹ لاگ میں لکھا جاتا ہے۔ | Excel ya Google Sheets mein kholne ke liye CSV file download karein. Har download audit log mein likha jata hai. | |
+| adminx.exports.privacyTitle | What is never in an export | جو ایکسپورٹ میں کبھی نہیں ہوتا | Jo export mein kabhi nahi hota | |
+| adminx.exports.privacyText | CNIC numbers, passwords, home addresses and photos are never included. The users file contains emails and phone numbers: keep it on your own computer and delete it when you are done. | شناختی کارڈ نمبر، پاس ورڈ، گھر کا پتہ اور تصاویر کبھی شامل نہیں ہوتیں۔ صارفین کی فائل میں ای میل اور فون نمبر ہوتے ہیں: اسے اپنے کمپیوٹر پر رکھیں اور کام ختم ہونے پر حذف کر دیں۔ | CNIC number, passwords, ghar ka pata aur tasaveer kabhi shamil nahi hotin. Users ki file mein emails aur phone numbers hote hain: isay apne computer par rakhein aur kaam khatam hone par hazf kar dein. | |
+| adminx.exports.audit.title | Audit log | آڈٹ لاگ | Audit log | |
+| adminx.exports.audit.text | Every entry with its hash, oldest first. Use the dates to limit the file. | ہر اندراج اپنے ہیش کے ساتھ، پرانا پہلے۔ فائل محدود کرنے کے لیے تاریخیں استعمال کریں۔ | Har indraaj apne hash ke saath, purana pehle. File mehdood karne ke liye tareekhein istemaal karein. | |
+| adminx.exports.identity.title | Identity queue | شناخت کی قطار | Shanakht ki qataar | |
+| adminx.exports.identity.text | Workers by identity status, with request and review dates. | شناخت کی حالت کے مطابق کاریگر، درخواست اور جانچ کی تاریخوں کے ساتھ۔ | Shanakht ki halat ke mutabiq karigar, darkhwast aur jaanch ki tareekhon ke saath. | |
+| adminx.exports.evidence.title | Evidence queue | ثبوت کی قطار | Saboot ki qataar | |
+| adminx.exports.evidence.text | Proof items by decision: skill, kind, dates and reasons. No photos. | فیصلے کے مطابق ثبوت: ہنر، قسم، تاریخیں اور وجوہات۔ تصاویر نہیں۔ | Faislay ke mutabiq saboot: hunar, qisam, tareekhein aur wajuhaat. Tasaveer nahi. | |
+| adminx.exports.users.title | Users | صارفین | Users | |
+| adminx.exports.users.text | Accounts with role and status. | اکاؤنٹ، کردار اور حالت کے ساتھ۔ | Accounts, role aur status ke saath. | |
+| adminx.exports.status | Status | حالت | Status | |
+| adminx.exports.from | From | سے | Se | |
+| adminx.exports.to | To | تک | Tak | |
+| adminx.exports.download | Download CSV | CSV ڈاؤن لوڈ کریں | CSV download karein | |
+| adminx.exports.done | File downloaded: {rows} rows | فائل ڈاؤن لوڈ ہو گئی: {rows} قطاریں | File download ho gayi: {rows} qataarein | |
+| adminx.exports.truncated | Only the first {rows} rows are in the file. Use the filters to get the rest. | فائل میں صرف پہلی {rows} قطاریں ہیں۔ باقی کے لیے فلٹر استعمال کریں۔ | File mein sirf pehli {rows} qataarein hain. Baqi ke liye filter istemaal karein. | |
+| adminx.exports.failed | The file could not be downloaded. | فائل ڈاؤن لوڈ نہیں ہو سکی۔ | File download nahi ho saki. | |
+| adminx.exports.limit | A file has at most 5,000 rows. | ایک فائل میں زیادہ سے زیادہ 5,000 قطاریں ہوتی ہیں۔ | Aik file mein zyada se zyada 5,000 qataarein hoti hain. | |
+| adminx.shortcuts.title | Keyboard shortcuts | کی بورڈ شارٹ کٹ | Keyboard shortcuts | |
+| adminx.shortcuts.open | Keyboard shortcuts | کی بورڈ شارٹ کٹ | Keyboard shortcuts | |
+| adminx.shortcuts.hint | Press ? for keyboard shortcuts | شارٹ کٹ دیکھنے کے لیے ? دبائیں | Shortcuts dekhne ke liye ? dabayein | |
+| adminx.shortcuts.approve | Approve / verified | منظور / تصدیق شدہ | Manzoor / tasdeeq shuda | |
+| adminx.shortcuts.reject | Reject / not accepted | مسترد / قبول نہیں | Mustarad / qabool nahi | |
+| adminx.shortcuts.next | Next item | اگلا | Agla | |
+| adminx.shortcuts.previous | Previous item | پچھلا | Pichla | |
+| adminx.shortcuts.help | Show this list | یہ فہرست دکھائیں | Yeh fehrist dikhayein | |
+| adminx.shortcuts.close | Close the panel | پینل بند کریں | Panel band karein | |
+| adminx.shortcuts.note | Shortcuts do not work while you are typing in a box. | جب آپ کسی خانے میں لکھ رہے ہوں تو شارٹ کٹ کام نہیں کرتے۔ | Jab aap kisi khanay mein likh rahe hon to shortcuts kaam nahi karte. | |
+| adminx.compare.title | Compare the two photos | دونوں تصاویر کا موازنہ | Dono tasaveer ka muwazna | |
+| adminx.compare.slider | Slide to compare this upload with the earlier photo | اس اپ لوڈ کا پہلے والی تصویر سے موازنہ کرنے کے لیے سرکائیں | Is upload ka pehle wali tasveer se muwazna karne ke liye sarkayein | |
+| adminx.compare.thisUpload | This upload | یہ اپ لوڈ | Yeh upload | |
+| adminx.compare.earlier | Earlier photo | پہلے والی تصویر | Pehle wali tasveer | |
+| adminx.compare.sideBySide | Side by side | ساتھ ساتھ | Saath saath | |
+| adminx.compare.overlay | Slider | سلائیڈر | Slider | |
+
+## Website texts: `status_account`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| status_account.active | Active | فعال | Active | |
+| status_account.suspended | Suspended | معطل | Muattal | |
+
+## Website texts: `customerx`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| customerx.titles.saved | Saved workers | محفوظ کاریگر | Mehfooz karigar | |
+| customerx.titles.compare | Compare workers | کاریگروں کا موازنہ | Karigaron ka muwazna | |
+| customerx.instant | Results update as you type. | لکھتے ہی نتائج بدل جاتے ہیں۔ | Likhte hi nataij badal jate hain. | |
+| customerx.sort.label | Sort by | ترتیب | Tarteeb | |
+| customerx.sort.updated | Recently updated | حال ہی میں اپ ڈیٹ ہوئے | Haal hi mein update hue | |
+| customerx.sort.experience | Most experience | سب سے زیادہ تجربہ | Sab se zyada tajurba | |
+| customerx.sort.evidence | Most approved proof | سب سے زیادہ منظور شدہ ثبوت | Sab se zyada manzoor shuda saboot | |
+| customerx.sort.hint | "Most approved proof" counts the photos an admin approved, over all skills of a worker. | "سب سے زیادہ منظور شدہ ثبوت" میں کاریگر کے تمام ہنروں کی وہ تصاویر گنی جاتی ہیں جو ایڈمن نے منظور کیں۔ | "Sab se zyada manzoor shuda saboot" mein karigar ke tamam hunaron ki woh tasaveer gini jati hain jo admin ne manzoor kin. | |
+| customerx.chips.label | Filters in use | لگے ہوئے فلٹر | Lage hue filter | |
+| customerx.chips.remove | Remove filter: {name} | فلٹر ہٹائیں: {name} | Filter hatayein: {name} | |
+| customerx.chips.search | Search: {value} | تلاش: {value} | Talaash: {value} | |
+| customerx.chips.city | City: {value} | شہر: {value} | Shehar: {value} | |
+| customerx.chips.identity | Identity verified | شناخت تصدیق شدہ | Shanakht tasdeeq shuda | |
+| customerx.chips.skills | Verified skills | تصدیق شدہ ہنر | Tasdeeq shuda hunar | |
+| customerx.save | Save {name} | {name} کو محفوظ کریں | {name} ko mehfooz karein | |
+| customerx.unsave | Remove {name} from saved | {name} کو محفوظ فہرست سے ہٹائیں | {name} ko mehfooz fehrist se hatayein | |
+| customerx.savedToast | Saved to your list | آپ کی فہرست میں محفوظ ہو گیا | Aap ki fehrist mein mehfooz ho gaya | |
+| customerx.removedToast | Removed from your list | آپ کی فہرست سے ہٹا دیا گیا | Aap ki fehrist se hata diya gaya | |
+| customerx.saveFailed | Could not change your saved list. Please try again. | محفوظ فہرست نہیں بدل سکی۔ دوبارہ کوشش کریں۔ | Mehfooz fehrist nahi badal saki. Dobara koshish karein. | |
+| customerx.undo | Undo | واپس کریں | Wapas karein | |
+| customerx.saved.title | Saved workers | محفوظ کاریگر | Mehfooz karigar | |
+| customerx.saved.lead | Workers you saved. Only you can see this list. | وہ کاریگر جو آپ نے محفوظ کیے۔ یہ فہرست صرف آپ دیکھ سکتے ہیں۔ | Woh karigar jo aap ne mehfooz kiye. Yeh fehrist sirf aap dekh sakte hain. | |
+| customerx.saved.emptyTitle | No saved workers yet | ابھی کوئی محفوظ کاریگر نہیں | Abhi koi mehfooz karigar nahi | |
+| customerx.saved.emptyText | Tap the heart on a worker to keep them here. | کسی کاریگر کو یہاں رکھنے کے لیے دل کے نشان پر ٹیپ کریں۔ | Kisi karigar ko yahan rakhne ke liye dil ke nishan par tap karein. | |
+| customerx.saved.count | one: {count} saved worker / other: {count} saved workers | one: {count} محفوظ کاریگر / other: {count} محفوظ کاریگر | one: {count} mehfooz karigar / other: {count} mehfooz karigar | |
+| customerx.saved.find | Find workers | کاریگر تلاش کریں | Karigar talaash karein | |
+| customerx.saved.loadFailed | Your saved workers could not be loaded. | آپ کے محفوظ کاریگر لوڈ نہیں ہو سکے۔ | Aap ke mehfooz karigar load nahi ho sake. | |
+| customerx.compare.add | Add {name} to compare | {name} کو موازنے میں شامل کریں | {name} ko muwazne mein shamil karein | |
+| customerx.compare.remove | Remove {name} from compare | {name} کو موازنے سے ہٹائیں | {name} ko muwazne se hatayein | |
+| customerx.compare.label | Compare | موازنہ | Muwazna | |
+| customerx.compare.tray | Workers to compare | موازنے کے لیے کاریگر | Muwazne ke liye karigar | |
+| customerx.compare.trayHint | one: {count} worker chosen. Choose one more. / other: {count} workers chosen. | one: {count} کاریگر چنا گیا۔ ایک اور چنیں۔ / other: {count} کاریگر چنے گئے۔ | one: {count} karigar chuna gaya. Aik aur chunein. / other: {count} karigar chune gaye. | |
+| customerx.compare.open | Compare now | ابھی موازنہ کریں | Abhi muwazna karein | |
+| customerx.compare.clear | Clear | صاف کریں | Saaf karein | |
+| customerx.compare.full | You can compare at most three workers. | آپ زیادہ سے زیادہ تین کاریگروں کا موازنہ کر سکتے ہیں۔ | Aap zyada se zyada teen karigaron ka muwazna kar sakte hain. | |
+| customerx.compare.title | Compare workers | کاریگروں کا موازنہ | Karigaron ka muwazna | |
+| customerx.compare.lead | Side by side: what each worker says, and what an admin has checked. | ساتھ ساتھ: ہر کاریگر کیا کہتا ہے، اور ایڈمن نے کیا چیک کیا ہے۔ | Saath saath: har karigar kya kehta hai, aur admin ne kya check kiya hai. | |
+| customerx.compare.needTwo | Choose two or three workers to compare | موازنے کے لیے دو یا تین کاریگر چنیں | Muwazne ke liye do ya teen karigar chunein | |
+| customerx.compare.needTwoText | On the search page, tick "Compare" on the workers you want to see side by side. | تلاش کے صفحے پر جن کاریگروں کو ساتھ ساتھ دیکھنا ہے ان پر "موازنہ" کا نشان لگائیں۔ | Talaash ke safhe par jin karigaron ko saath saath dekhna hai un par "Muwazna" ka nishan lagayein. | |
+| customerx.compare.missing | Some workers could not be shown. They may no longer be listed. | کچھ کاریگر نہیں دکھائے جا سکے۔ شاید وہ اب فہرست میں نہیں۔ | Kuch karigar nahi dikhaye ja sake. Shayad woh ab fehrist mein nahi. | |
+| customerx.compare.rows.trade | Trade | پیشہ | Pesha | |
+| customerx.compare.rows.city | City | شہر | Shehar | |
+| customerx.compare.rows.experience | Experience | تجربہ | Tajurba | |
+| customerx.compare.rows.perHour | Per hour | فی گھنٹہ | Fi ghanta | |
+| customerx.compare.rows.perDay | Per day | فی دن | Fi din | |
+| customerx.compare.rows.availability | Availability | دستیابی | Dastiyabi | |
+| customerx.compare.rows.identity | Identity | شناخت | Shanakht | |
+| customerx.compare.rows.verifiedSkills | Skills verified by evidence | ثبوت سے تصدیق شدہ ہنر | Saboot se tasdeeq shuda hunar | |
+| customerx.compare.rows.otherSkills | Other skills (self-declared) | دوسرے ہنر (خود بتائے گئے) | Doosre hunar (khud bataye gaye) | |
+| customerx.compare.rows.languages | Languages | زبانیں | Zabanein | |
+| customerx.compare.none | None yet | ابھی کوئی نہیں | Abhi koi nahi | |
+| customerx.compare.viewProfile | View profile | پروفائل دیکھیں | Profile dekhein | |
+| customerx.compare.removeColumn | Remove {name} from this comparison | {name} کو اس موازنے سے ہٹائیں | {name} ko is muwazne se hatayein | |
+| customerx.compare.caption | Comparison of the chosen workers | چنے گئے کاریگروں کا موازنہ | Chune gaye karigaron ka muwazna | |
+| customerx.compare.loadFailed | The comparison could not be loaded. | موازنہ لوڈ نہیں ہو سکا۔ | Muwazna load nahi ho saka. | |
+| customerx.recent.title | Recently viewed | حال ہی میں دیکھے گئے | Haal hi mein dekhe gaye | |
+| customerx.recent.hint | Kept on this device only. | صرف اسی ڈیوائس پر محفوظ۔ | Sirf isi device par mehfooz. | |
+| customerx.recent.clear | Clear the list | فہرست صاف کریں | Fehrist saaf karein | |
+| customerx.share.button | Share | شیئر کریں | Share karein | |
+| customerx.share.text | {name}, {trade}, on Digital Labour Marketplace | {name}، {trade}، ڈیجیٹل لیبر مارکیٹ پلیس پر | {name}, {trade}, Digital Labour Marketplace par | |
+| customerx.share.copied | Link copied | لنک کاپی ہو گیا | Link copy ho gaya | |
+| customerx.share.copyFailed | Could not copy. Copy the address from the browser bar instead. | کاپی نہیں ہو سکا۔ براؤزر کے ایڈریس بار سے پتہ کاپی کریں۔ | Copy nahi ho saka. Browser ke address bar se pata copy karein. | |
+| customerx.share.note | The link opens the public profile for customers who are logged in. Phone and CNIC are never part of it. | یہ لنک لاگ ان گاہکوں کے لیے عوامی پروفائل کھولتا ہے۔ فون اور شناختی کارڈ نمبر اس میں کبھی شامل نہیں۔ | Yeh link login gahakon ke liye public profile kholta hai. Phone aur CNIC is mein kabhi shamil nahi. | |
+| customerx.print | Print | پرنٹ کریں | Print karein | |
+| customerx.matches | matches your search | آپ کی تلاش سے ملتا ہے | aap ki talaash se milta hai | |
+
+## Website texts: `workerx`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| workerx.masks.cnicOk | CNIC format looks right | شناختی کارڈ نمبر کی شکل درست لگتی ہے | CNIC ki shakal durust lagti hai | |
+| workerx.masks.cnicMore | one: {count} more digit / other: {count} more digits | one: {count} ہندسہ اور / other: {count} ہندسے اور | one: {count} hindsa aur / other: {count} hindsay aur | |
+| workerx.masks.mobileOk | Mobile number looks right | موبائل نمبر درست لگتا ہے | Mobile number durust lagta hai | |
+| workerx.masks.mobileStart | A mobile number starts with 03 | موبائل نمبر 03 سے شروع ہوتا ہے | Mobile number 03 se shuru hota hai | |
+| workerx.masks.mobileMore | one: {count} more digit / other: {count} more digits | one: {count} ہندسہ اور / other: {count} ہندسے اور | one: {count} hindsa aur / other: {count} hindsay aur | |
+| workerx.masks.rupees | Rs {amount} | {amount} روپے | Rs {amount} | |
+| workerx.masks.rupeesMax | The highest amount is Rs 1,000,000 | زیادہ سے زیادہ رقم 1,000,000 روپے ہے | Zyada se zyada raqam Rs 1,000,000 hai | |
+| workerx.draft.restored | Draft restored | مسودہ واپس آ گیا | Draft wapas aa gaya | |
+| workerx.draft.restoredText | We put back what you typed last time. It is not saved yet. | پچھلی بار جو آپ نے لکھا تھا وہ واپس رکھ دیا گیا ہے۔ یہ ابھی محفوظ نہیں ہوا۔ | Pichli baar jo aap ne likha tha woh wapas rakh diya gaya hai. Yeh abhi mehfooz nahi hua. | |
+| workerx.draft.discard | Discard draft | مسودہ ہٹا دیں | Draft hata dein | |
+| workerx.draft.note | What you type is kept on this device until you save. Your CNIC is never kept. | جو آپ لکھتے ہیں وہ محفوظ کرنے تک اسی ڈیوائس پر رہتا ہے۔ شناختی کارڈ نمبر کبھی نہیں رکھا جاتا۔ | Jo aap likhte hain woh mehfooz karne tak isi device par rehta hai. CNIC kabhi nahi rakha jata. | |
+| workerx.copy.button | Copy worker ID | کاریگر آئی ڈی کاپی کریں | Worker ID copy karein | |
+| workerx.copy.copied | Worker ID copied | کاریگر آئی ڈی کاپی ہو گئی | Worker ID copy ho gayi | |
+| workerx.copy.failed | Could not copy. Please select the ID and copy it. | کاپی نہیں ہو سکی۔ آئی ڈی کو چن کر کاپی کریں۔ | Copy nahi ho saki. ID ko chun kar copy karein. | |
+| workerx.strength.title | Profile strength | پروفائل کی مضبوطی | Profile ki mazbooti | |
+| workerx.strength.levels.starting | Getting started | ابھی شروعات | Abhi shuruaat | |
+| workerx.strength.levels.good | Good | اچھا | Acha | |
+| workerx.strength.levels.strong | Strong | مضبوط | Mazboot | |
+| workerx.strength.levels.complete | Complete | مکمل | Mukammal | |
+| workerx.strength.leads.starting | A few basics are missing. Customers choose workers with a full profile. | کچھ بنیادی چیزیں رہتی ہیں۔ گاہک مکمل پروفائل والے کاریگر چنتے ہیں۔ | Kuch bunyadi cheezein rehti hain. Gahak mukammal profile wale karigar chunte hain. | |
+| workerx.strength.leads.good | A good start. The steps below make your profile stronger. | اچھی شروعات۔ نیچے کے قدم آپ کے پروفائل کو مضبوط کرتے ہیں۔ | Achi shuruaat. Neeche ke qadam aap ke profile ko mazboot karte hain. | |
+| workerx.strength.leads.strong | Almost there. Approved proof is what customers trust most. | تقریباً مکمل۔ گاہک سب سے زیادہ منظور شدہ ثبوت پر بھروسہ کرتے ہیں۔ | Taqreeban mukammal. Gahak sab se zyada manzoor shuda saboot par bharosa karte hain. | |
+| workerx.strength.leads.complete | Everything is filled in and at least one skill has approved proof. | سب کچھ بھرا ہوا ہے اور کم از کم ایک ہنر کا ثبوت منظور ہے۔ | Sab kuch bhara hua hai aur kam az kam aik hunar ka saboot manzoor hai. | |
+| workerx.strength.tipsTitle | What to do next | اب کیا کریں | Ab kya karein | |
+| workerx.strength.noTips | Nothing left to do. Well done. | کچھ باقی نہیں۔ شاباش۔ | Kuch baqi nahi. Shabash. | |
+| workerx.strength.tips.add_trade | Add your trade | اپنا پیشہ شامل کریں | Apna pesha shamil karein | |
+| workerx.strength.tips.add_skills | Add your skills | اپنے ہنر شامل کریں | Apne hunar shamil karein | |
+| workerx.strength.tips.add_cnic | Add your CNIC for the identity check | شناخت کی جانچ کے لیے شناختی کارڈ نمبر شامل کریں | Shanakht ki jaanch ke liye CNIC shamil karein | |
+| workerx.strength.tips.fix_identity | Your identity check was not accepted: update your details | آپ کی شناخت قبول نہیں ہوئی: اپنی تفصیل درست کریں | Aap ki shanakht qabool nahi hui: apni tafseel durust karein | |
+| workerx.strength.tips.replace_proof | Replace the proof that was not accepted for {skill} | {skill} کا وہ ثبوت بدلیں جو قبول نہیں ہوا | {skill} ka woh saboot badlein jo qabool nahi hua | |
+| workerx.strength.tips.add_proof | Add proof for {skill} | {skill} کا ثبوت شامل کریں | {skill} ka saboot shamil karein | |
+| workerx.strength.tips.add_experience_rate | Add your experience and a rate | اپنا تجربہ اور ریٹ شامل کریں | Apna tajurba aur rate shamil karein | |
+| workerx.strength.tips.add_bio | Write a short bio | اپنے بارے میں چند جملے لکھیں | Apne baare mein chand jumlay likhein | |
+| workerx.strength.tips.add_work_history | Add a past job | کوئی پچھلا کام شامل کریں | Koi pichla kaam shamil karein | |
+| workerx.strength.tips.add_city_address | Add your city and area | اپنا شہر اور علاقہ شامل کریں | Apna shehar aur ilaqa shamil karein | |
+| workerx.strength.tips.add_contact | Add a WhatsApp number or an emergency contact | واٹس ایپ نمبر یا ہنگامی رابطہ شامل کریں | WhatsApp number ya hangami rabta shamil karein | |
+| workerx.strength.proofLine | Skills with approved proof: {approved} · waiting for review: {pending} · without proof: {none} | منظور شدہ ثبوت والے ہنر: {approved} · جانچ کے منتظر: {pending} · بغیر ثبوت: {none} | Manzoor shuda saboot wale hunar: {approved} · jaanch ke muntazir: {pending} · baghair saboot: {none} | |
+| workerx.strength.how | How this is counted | یہ کیسے گنا جاتا ہے | Yeh kaise gina jata hai | |
+| workerx.strength.howText | The percentage is a checklist, not a rating: account 20, trade 15, experience and a rate 15, city and area 10, a contact 10, skills 15, bio 5, a past job 10. "Complete" also needs one skill with approved proof. | یہ فیصد ایک فہرست ہے، درجہ بندی نہیں: اکاؤنٹ 20، پیشہ 15، تجربہ اور ریٹ 15، شہر اور علاقہ 10، رابطہ 10، ہنر 15، تعارف 5، پچھلا کام 10۔ "مکمل" کے لیے ایک ہنر کا منظور شدہ ثبوت بھی ضروری ہے۔ | Yeh feesad aik fehrist hai, darja bandi nahi: account 20, pesha 15, tajurba aur rate 15, shehar aur ilaqa 10, rabta 10, hunar 15, taaruf 5, pichla kaam 10. "Mukammal" ke liye aik hunar ka manzoor shuda saboot bhi zaroori hai. | |
+| workerx.strength.checks.account | Account created | اکاؤنٹ بن گیا | Account ban gaya | |
+| workerx.strength.checks.trade | Trade | پیشہ | Pesha | |
+| workerx.strength.checks.experienceRate | Experience and a rate | تجربہ اور ریٹ | Tajurba aur rate | |
+| workerx.strength.checks.cityAddress | City and area | شہر اور علاقہ | Shehar aur ilaqa | |
+| workerx.strength.checks.contact | WhatsApp or emergency contact | واٹس ایپ یا ہنگامی رابطہ | WhatsApp ya hangami rabta | |
+| workerx.strength.checks.skills | Skills | ہنر | Hunar | |
+| workerx.strength.checks.bio | Short bio | مختصر تعارف | Mukhtasar taaruf | |
+| workerx.strength.checks.workHistory | A past job | پچھلا کام | Pichla kaam | |
+| workerx.strength.done | done | ہو گیا | ho gaya | |
+| workerx.strength.missing | missing | باقی ہے | baqi hai | |
+| workerx.potential.title | You may also do… | آپ یہ کام بھی کرتے ہوں گے… | Aap yeh kaam bhi karte honge… | |
+| workerx.potential.lead | Skills from your trade that are not on your profile yet. Add only what you really do. | آپ کے پیشے کے وہ ہنر جو ابھی آپ کے پروفائل پر نہیں۔ صرف وہی شامل کریں جو آپ واقعی کرتے ہیں۔ | Aap ke peshay ke woh hunar jo abhi aap ke profile par nahi. Sirf wohi shamil karein jo aap waqai karte hain. | |
+| workerx.potential.add | Add {skill} | {skill} شامل کریں | {skill} shamil karein | |
+| workerx.potential.added | {skill} added to your profile | {skill} آپ کے پروفائل میں شامل ہو گیا | {skill} aap ke profile mein shamil ho gaya | |
+| workerx.potential.none | No more suggestions for your trade. | آپ کے پیشے کے لیے مزید تجاویز نہیں۔ | Aap ke peshay ke liye mazeed tajaweez nahi. | |
+| workerx.potential.honest | Suggested only because they belong to the same trade. Nothing is added without your tap. | یہ صرف اس لیے تجویز ہوئے کہ یہ اسی پیشے کے ہیں۔ آپ کے ٹیپ کے بغیر کچھ شامل نہیں ہوتا۔ | Yeh sirf is liye tajweez hue ke yeh isi peshay ke hain. Aap ke tap ke baghair kuch shamil nahi hota. | |
+| workerx.potential.failed | The skill could not be added. Please try again. | ہنر شامل نہیں ہو سکا۔ دوبارہ کوشش کریں۔ | Hunar shamil nahi ho saka. Dobara koshish karein. | |
+| workerx.skillRemoved | {skill} removed | {skill} ہٹا دیا گیا | {skill} hata diya gaya | |
+| workerx.undo | Undo | واپس کریں | Wapas karein | |
+| workerx.undoFailed | The skill could not be put back. Please add it again. | ہنر واپس نہیں آ سکا۔ براہ کرم اسے دوبارہ شامل کریں۔ | Hunar wapas nahi aa saka. Barah-e-karam isay dobara shamil karein. | |
+| workerx.highlight.label | Your text with the matched words marked | آپ کی تحریر جس میں ملنے والے الفاظ نمایاں ہیں | Aap ki tehreer jis mein milne wale alfaaz numayan hain | |
+| workerx.highlight.legend | Marked words are the ones the word list matched. | نمایاں الفاظ وہ ہیں جو الفاظ کی فہرست سے ملے۔ | Numayan alfaaz woh hain jo alfaaz ki fehrist se mile. | |
+| workerx.examples.label | Example sentences | مثال کے جملے | Misaal ke jumlay | |
+| workerx.examples.next | Next example | اگلی مثال | Agli misaal | |
+| workerx.examples.previous | Previous example | پچھلی مثال | Pichli misaal | |
+| workerx.examples.use | Use this example | یہ مثال استعمال کریں | Yeh misaal istemaal karein | |
+| workerx.examples.position | Example {n} of {total} | مثال {n} از {total} | Misaal {n} az {total} | |
+| workerx.upload.tipTitle | Take a clear photo of your certificate | اپنے سرٹیفکیٹ کی صاف تصویر لیں | Apne certificate ki saaf tasveer lein | |
+| workerx.upload.tip | Lay it flat in good light, with all four corners inside the picture. Photos only: for a paper or PDF document, take a photo of it. | اسے اچھی روشنی میں سیدھا رکھیں اور چاروں کونے تصویر میں آئیں۔ صرف تصاویر: کاغذ یا PDF دستاویز کی تصویر لے لیں۔ | Isay achi roshni mein seedha rakhein aur charon konay tasveer mein aayein. Sirf tasaveer: kaghaz ya PDF dastavez ki tasveer le lein. | |
+| workerx.upload.compressing | Making the photo smaller… | تصویر چھوٹی کی جا رہی ہے… | Tasveer chhoti ki ja rahi hai… | |
+| workerx.upload.compressed | Photo made smaller for a faster upload: {before} to {after} | تیز اپ لوڈ کے لیے تصویر چھوٹی کر دی گئی: {before} سے {after} | Tez upload ke liye tasveer chhoti kar di gayi: {before} se {after} | |
+| workerx.upload.edit | Crop or rotate | کاٹیں یا گھمائیں | Kaatein ya ghumayein | |
+| workerx.upload.editorTitle | Crop or rotate the photo | تصویر کاٹیں یا گھمائیں | Tasveer kaatein ya ghumayein | |
+| workerx.upload.editorText | Cut away the edges that are not needed. The admin sees exactly this picture. | غیر ضروری کنارے کاٹ دیں۔ ایڈمن بالکل یہی تصویر دیکھے گا۔ | Ghair zaroori kinare kaat dein. Admin bilkul yehi tasveer dekhega. | |
+| workerx.upload.rotateLeft | Rotate left | بائیں گھمائیں | Baayein ghumayein | |
+| workerx.upload.rotateRight | Rotate right | دائیں گھمائیں | Daayein ghumayein | |
+| workerx.upload.cropLeft | Cut from the left side | بائیں طرف سے کاٹیں | Baayein taraf se kaatein | |
+| workerx.upload.cropRight | Cut from the right side | دائیں طرف سے کاٹیں | Daayein taraf se kaatein | |
+| workerx.upload.cropTop | Cut from the top | اوپر سے کاٹیں | Oopar se kaatein | |
+| workerx.upload.cropBottom | Cut from the bottom | نیچے سے کاٹیں | Neeche se kaatein | |
+| workerx.upload.reset | Start again | دوبارہ شروع کریں | Dobara shuru karein | |
+| workerx.upload.apply | Use this photo | یہی تصویر استعمال کریں | Yehi tasveer istemaal karein | |
+| workerx.upload.previewAlt | The photo as it will be uploaded | تصویر جیسی اپ لوڈ ہوگی | Tasveer jaisi upload hogi | |
+| workerx.upload.editFailed | This browser could not change the photo. You can upload it as it is. | یہ براؤزر تصویر نہیں بدل سکا۔ آپ اسے ویسے ہی اپ لوڈ کر سکتے ہیں۔ | Yeh browser tasveer nahi badal saka. Aap isay waise hi upload kar sakte hain. | |
+| workerx.upload.percent | {percent}% uploaded | {percent}% اپ لوڈ ہو گیا | {percent}% upload ho gaya | |
+| workerx.upload.cancel | Cancel upload | اپ لوڈ منسوخ کریں | Upload mansookh karein | |
+| workerx.upload.cancelled | Upload cancelled. Nothing was saved. | اپ لوڈ منسوخ ہو گیا۔ کچھ محفوظ نہیں ہوا۔ | Upload mansookh ho gaya. Kuch mehfooz nahi hua. | |
+| workerx.setup.chip | Continue setup | سیٹ اپ جاری رکھیں | Setup jaari rakhein | |
+| workerx.setup.label | Continue setting up your profile: step {n} of {total} | اپنا پروفائل مکمل کریں: قدم {n} از {total} | Apna profile mukammal karein: qadam {n} az {total} | |
+| workerx.availability.label | Availability | دستیابی | Dastiyabi | |
+| workerx.availability.Available | Available | دستیاب | Dastiyab | |
+| workerx.availability.Busy | Busy | مصروف | Masroof | |
+| workerx.availability.toggle | I am available for work | میں کام کے لیے دستیاب ہوں | Main kaam ke liye dastiyab hoon | |
+| workerx.availability.saved | Customers now see: {status} | گاہکوں کو اب نظر آتا ہے: {status} | Gahakon ko ab nazar aata hai: {status} | |
+| workerx.availability.failed | Your availability could not be changed. | آپ کی دستیابی نہیں بدل سکی۔ | Aap ki dastiyabi nahi badal saki. | |
+| workerx.shareMine | Share my profile | میرا پروفائل شیئر کریں | Mera profile share karein | |
+| workerx.notifications.bell | Notifications | اطلاعات | Ittelaat | |
+| workerx.notifications.unread | one: {count} unread notification / other: {count} unread notifications | one: {count} نئی اطلاع / other: {count} نئی اطلاعات | one: {count} nayi ittela / other: {count} nayi ittelaat | |
+| workerx.notifications.title | Notifications | اطلاعات | Ittelaat | |
+| workerx.notifications.markAll | Mark all as read | سب کو پڑھا ہوا کریں | Sab ko parha hua karein | |
+| workerx.notifications.empty | No notifications yet | ابھی کوئی اطلاع نہیں | Abhi koi ittela nahi | |
+| workerx.notifications.emptyText | When an admin checks your identity or your proof, you will see it here. | جب ایڈمن آپ کی شناخت یا ثبوت چیک کرے گا تو آپ کو یہاں نظر آئے گا۔ | Jab admin aap ki shanakht ya saboot check karega to aap ko yahan nazar aayega. | |
+| workerx.notifications.newOne | New | نئی | Nayi | |
+| workerx.notifications.seeAll | See all notifications | تمام اطلاعات دیکھیں | Tamam ittelaat dekhein | |
+| workerx.notifications.loadFailed | Your notifications could not be loaded. | آپ کی اطلاعات لوڈ نہیں ہو سکیں۔ | Aap ki ittelaat load nahi ho sakin. | |
+| workerx.notifications.lead | What an admin decided about your identity and your proof. Kept for 180 days. | ایڈمن نے آپ کی شناخت اور ثبوت کے بارے میں کیا فیصلہ کیا۔ 180 دن تک محفوظ۔ | Admin ne aap ki shanakht aur saboot ke baare mein kya faisla kiya. 180 din tak mehfooz. | |
+| workerx.notifications.reason | Reason: {note} | وجہ: {note} | Wajah: {note} | |
+| workerx.notifications.types.identity_verified.title | Your identity is verified | آپ کی شناخت کی تصدیق ہو گئی | Aap ki shanakht ki tasdeeq ho gayi | |
+| workerx.notifications.types.identity_verified.text | Customers now see "Identity verified" on your profile. | گاہکوں کو اب آپ کے پروفائل پر "شناخت تصدیق شدہ" نظر آتا ہے۔ | Gahakon ko ab aap ke profile par "Shanakht tasdeeq shuda" nazar aata hai. | |
+| workerx.notifications.types.identity_rejected.title | Your identity check was not accepted | آپ کی شناخت قبول نہیں ہوئی | Aap ki shanakht qabool nahi hui | |
+| workerx.notifications.types.identity_rejected.text | Please read the reason and update your details. | براہ کرم وجہ پڑھیں اور اپنی تفصیل درست کریں۔ | Barah-e-karam wajah parhein aur apni tafseel durust karein. | |
+| workerx.notifications.types.evidence_approved.title | Proof approved for {skill} | {skill} کا ثبوت منظور ہو گیا | {skill} ka saboot manzoor ho gaya | |
+| workerx.notifications.types.evidence_approved.text | This skill now shows "Verified by evidence". | یہ ہنر اب "ثبوت سے تصدیق شدہ" دکھاتا ہے۔ | Yeh hunar ab "Saboot se tasdeeq shuda" dikhata hai. | |
+| workerx.notifications.types.evidence_rejected.title | Proof not accepted for {skill} | {skill} کا ثبوت قبول نہیں ہوا | {skill} ka saboot qabool nahi hua | |
+| workerx.notifications.types.evidence_rejected.text | You can upload a clearer or more fitting photo. | آپ زیادہ صاف یا مناسب تصویر اپ لوڈ کر سکتے ہیں۔ | Aap zyada saaf ya munasib tasveer upload kar sakte hain. | |
+| workerx.notifications.types.evidence_suspected_fake.title | Proof for {skill} was marked as a suspected fake | {skill} کا ثبوت مشکوک قرار دیا گیا | {skill} ka saboot mashkook qarar diya gaya | |
+| workerx.notifications.types.evidence_suspected_fake.text | Please contact the admin. | براہ کرم ایڈمن سے رابطہ کریں۔ | Barah-e-karam admin se rabta karein. | |
+| workerx.notifications.types.evidence_revoked.title | Approval withdrawn for {skill} | {skill} کی منظوری واپس لے لی گئی | {skill} ki manzoori wapas le li gayi | |
+| workerx.notifications.types.evidence_revoked.text | This proof no longer counts for the skill. | یہ ثبوت اب اس ہنر کے لیے شمار نہیں ہوتا۔ | Yeh saboot ab is hunar ke liye shumar nahi hota. | |
+| workerx.tour.label | Welcome tour | تعارفی دورہ | Taarufi daura | |
+| workerx.tour.position | {n} of {total} | {n} از {total} | {n} az {total} | |
+| workerx.tour.next | Next | اگلا | Agla | |
+| workerx.tour.back | Back | پیچھے | Peeche | |
+| workerx.tour.skip | Skip the tour | دورہ چھوڑ دیں | Daura chhor dein | |
+| workerx.tour.done | Done | ٹھیک ہے | Theek hai | |
+| workerx.tour.steps.strength.title | Your profile strength | آپ کے پروفائل کی مضبوطی | Aap ke profile ki mazbooti | |
+| workerx.tour.steps.strength.text | This shows what is filled in and the next useful step. It is a checklist, not a rating. | یہ دکھاتا ہے کہ کیا بھرا ہے اور اگلا مفید قدم کیا ہے۔ یہ ایک فہرست ہے، درجہ بندی نہیں۔ | Yeh dikhata hai ke kya bhara hai aur agla mufeed qadam kya hai. Yeh aik fehrist hai, darja bandi nahi. | |
+| workerx.tour.steps.potential.title | Skills you may also have | ہنر جو شاید آپ کے پاس بھی ہیں | Hunar jo shayad aap ke paas bhi hain | |
+| workerx.tour.steps.potential.text | One tap adds a skill from your trade. Add only what you really do. | ایک ٹیپ سے آپ کے پیشے کا ہنر شامل ہوتا ہے۔ صرف وہی شامل کریں جو آپ واقعی کرتے ہیں۔ | Aik tap se aap ke peshay ka hunar shamil hota hai. Sirf wohi shamil karein jo aap waqai karte hain. | |
+| workerx.tour.steps.proof.title | Proof makes a skill trusted | ثبوت سے ہنر پر بھروسہ بڑھتا ہے | Saboot se hunar par bharosa barhta hai | |
+| workerx.tour.steps.proof.text | Upload a photo of a certificate or finished work. An admin checks every photo. | سرٹیفکیٹ یا مکمل کام کی تصویر اپ لوڈ کریں۔ ایڈمن ہر تصویر چیک کرتا ہے۔ | Certificate ya mukammal kaam ki tasveer upload karein. Admin har tasveer check karta hai. | |
+| workerx.tour.steps.header.title | Always within reach | ہمیشہ آپ کی پہنچ میں | Hamesha aap ki pohanch mein | |
+| workerx.tour.steps.header.text | Your availability, notifications, dark mode and language are at the top of every page. | آپ کی دستیابی، اطلاعات، ڈارک موڈ اور زبان ہر صفحے کے اوپر ہیں۔ | Aap ki dastiyabi, ittelaat, dark mode aur zabaan har safhe ke oopar hain. | |
+
+## Website texts: `appx`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| appx.offline.banner | You are offline. Your work stays on the screen; we will try again when the connection is back. | آپ آف لائن ہیں۔ آپ کا کام اسکرین پر موجود ہے؛ رابطہ واپس آنے پر ہم دوبارہ کوشش کریں گے۔ | Aap offline hain. Aap ka kaam screen par mojood hai; rabta wapas aane par hum dobara koshish karenge. | |
+| appx.offline.back | You are back online. | آپ دوبارہ آن لائن ہیں۔ | Aap dobara online hain. | |
+| appx.offline.retry | Try now | ابھی کوشش کریں | Abhi koshish karein | |
+| appx.offline.failedRequest | The server could not be reached. Trying again… | سرور تک رسائی نہیں ہو سکی۔ دوبارہ کوشش ہو رہی ہے… | Server tak rasai nahi ho saki. Dobara koshish ho rahi hai… | |
+| appx.install.title | Install the app | ایپ انسٹال کریں | App install karein | |
+| appx.install.text | Add Digital Labour Marketplace to your home screen. It opens faster and works like an app. | ڈیجیٹل لیبر مارکیٹ پلیس کو اپنی ہوم اسکرین پر شامل کریں۔ یہ جلدی کھلتی ہے اور ایپ کی طرح چلتی ہے۔ | Digital Labour Marketplace ko apni home screen par shamil karein. Yeh jaldi khulti hai aur app ki tarah chalti hai. | |
+| appx.install.button | Install | انسٹال کریں | Install karein | |
+| appx.install.later | Not now | ابھی نہیں | Abhi nahi | |
+| appx.palette.open | Search pages and actions | صفحات اور کام تلاش کریں | Safhaat aur kaam talaash karein | |
+| appx.palette.label | Command palette | کمانڈ پیلٹ | Command palette | |
+| appx.palette.placeholder | Type a page or an action… | کسی صفحے یا کام کا نام لکھیں… | Kisi safhe ya kaam ka naam likhein… | |
+| appx.palette.empty | Nothing found. Try another word. | کچھ نہیں ملا۔ کوئی اور لفظ آزمائیں۔ | Kuch nahi mila. Koi aur lafz azmayein. | |
+| appx.palette.hint | Use the arrow keys, Enter to open, Esc to close | تیر کے بٹن استعمال کریں، کھولنے کے لیے Enter، بند کرنے کے لیے Esc | Teer ke button istemaal karein, kholne ke liye Enter, band karne ke liye Esc | |
+| appx.palette.groups.pages | Pages | صفحات | Safhaat | |
+| appx.palette.groups.actions | Actions | کام | Kaam | |
+| appx.palette.actions.theme | Switch between light and dark | روشن اور ڈارک کے درمیان بدلیں | Light aur dark ke darmiyan badlein | |
+| appx.palette.actions.shortcuts | Show keyboard shortcuts | کی بورڈ شارٹ کٹ دکھائیں | Keyboard shortcuts dikhayein | |
+| appx.palette.actions.logout | Log out | لاگ آؤٹ | Logout | |
+| appx.palette.actions.textLarger | Larger text | بڑی لکھائی | Bari likhai | |
+| appx.palette.actions.textNormal | Normal text | عام لکھائی | Aam likhai | |
+| appx.palette.actions.whatsNew | What's new | نیا کیا ہے | Naya kya hai | |
+| appx.shortcuts.title | Keyboard shortcuts | کی بورڈ شارٹ کٹ | Keyboard shortcuts | |
+| appx.shortcuts.note | Shortcuts do not work while you are typing in a box. | جب آپ کسی خانے میں لکھ رہے ہوں تو شارٹ کٹ کام نہیں کرتے۔ | Jab aap kisi khanay mein likh rahe hon to shortcuts kaam nahi karte. | |
+| appx.shortcuts.palette | Open the command palette | کمانڈ پیلٹ کھولیں | Command palette kholein | |
+| appx.shortcuts.help | Show this list | یہ فہرست دکھائیں | Yeh fehrist dikhayein | |
+| appx.shortcuts.home | Go to my home page | میرے ہوم پیج پر جائیں | Mere home page par jayein | |
+| appx.shortcuts.theme | Switch between light and dark | روشن اور ڈارک کے درمیان بدلیں | Light aur dark ke darmiyan badlein | |
+| appx.shortcuts.search | Jump to the search box | تلاش کے خانے پر جائیں | Talaash ke khanay par jayein | |
+| appx.shortcuts.top | Back to the top of the page | صفحے کے اوپر جائیں | Safhe ke oopar jayein | |
+| appx.shortcuts.then | then | پھر | phir | |
+| appx.session.title | Your session ends in 2 minutes | آپ کا سیشن 2 منٹ میں ختم ہو جائے گا | Aap ka session 2 minute mein khatam ho jayega | |
+| appx.session.text | Save your work now. For your safety, a login lasts 8 hours; after that you log in again. | اپنا کام ابھی محفوظ کریں۔ آپ کی حفاظت کے لیے لاگ ان 8 گھنٹے رہتا ہے؛ اس کے بعد دوبارہ لاگ ان کرنا ہوتا ہے۔ | Apna kaam abhi mehfooz karein. Aap ki hifazat ke liye login 8 ghante rehta hai; is ke baad dobara login karna hota hai. | |
+| appx.session.ok | OK, I will save | ٹھیک ہے، میں محفوظ کرتا ہوں | Theek hai, main mehfooz karta hoon | |
+| appx.session.ended | Your session has ended. Please log in again. | آپ کا سیشن ختم ہو گیا ہے۔ براہ کرم دوبارہ لاگ ان کریں۔ | Aap ka session khatam ho gaya hai. Barah-e-karam dobara login karein. | |
+| appx.scrollTop | Back to top | اوپر جائیں | Oopar jayein | |
+| appx.whatsNew.title | What's new | نیا کیا ہے | Naya kya hai | |
+| appx.whatsNew.lead | The latest changes to the website. | ویب سائٹ کی تازہ تبدیلیاں۔ | Website ki taza tabdeeliyan. | |
+| appx.whatsNew.empty | Nothing new to show. | دکھانے کو کچھ نیا نہیں۔ | Dikhane ko kuch naya nahi. | |
+| appx.whatsNew.source | Taken from the project change log. | منصوبے کے تبدیلیوں کے ریکارڈ سے لیا گیا۔ | Mansoobay ke tabdeeliyon ke record se liya gaya. | |
+| appx.help.title | Help centre | مدد | Madad | |
+| appx.help.lead | Short guides for the most common tasks. | عام کاموں کے لیے مختصر رہنمائی۔ | Aam kaamon ke liye mukhtasar rehnumai. | |
+| appx.help.search | Search the guides | رہنمائی تلاش کریں | Rehnumai talaash karein | |
+| appx.help.none | No guide matches. Try another word. | کوئی رہنمائی نہیں ملی۔ کوئی اور لفظ آزمائیں۔ | Koi rehnumai nahi mili. Koi aur lafz azmayein. | |
+| appx.help.forRole.worker | For workers | کاریگروں کے لیے | Karigaron ke liye | |
+| appx.help.forRole.customer | For customers | گاہکوں کے لیے | Gahakon ke liye | |
+| appx.help.forRole.everyone | For everyone | سب کے لیے | Sab ke liye | |
+| appx.help.guides.profile.title | Make a strong profile | مضبوط پروفائل بنائیں | Mazboot profile banayein | |
+| appx.help.guides.profile.steps | Open "Edit profile".\|Fill in your trade, experience and a rate.\|Add your skills: write what you do and choose from the suggestions.\|Add a photo of a certificate or finished work for each skill. | "پروفائل میں ترمیم" کھولیں۔\|اپنا پیشہ، تجربہ اور ریٹ بھریں۔\|اپنے ہنر شامل کریں: لکھیں کہ آپ کیا کرتے ہیں اور تجاویز میں سے چنیں۔\|ہر ہنر کے لیے سرٹیفکیٹ یا مکمل کام کی تصویر شامل کریں۔ | "Profile mein tarmeem" kholein.\|Apna pesha, tajurba aur rate bharein.\|Apne hunar shamil karein: likhein ke aap kya karte hain aur tajaweez mein se chunein.\|Har hunar ke liye certificate ya mukammal kaam ki tasveer shamil karein. | |
+| appx.help.guides.proof.title | Add proof for a skill | ہنر کا ثبوت شامل کریں | Hunar ka saboot shamil karein | |
+| appx.help.guides.proof.steps | Open "Edit profile" and choose "Proof of skills".\|Choose the skill and the kind of proof.\|Take a clear photo: flat, good light, all four corners.\|Crop or rotate if needed, tick the consent box and upload.\|An admin checks it. You get a notification with the result. | "پروفائل میں ترمیم" کھولیں اور "ہنر کا ثبوت" چنیں۔\|ہنر اور ثبوت کی قسم چنیں۔\|صاف تصویر لیں: سیدھی، اچھی روشنی، چاروں کونے۔\|ضرورت ہو تو کاٹیں یا گھمائیں، رضامندی کا خانہ نشان زد کریں اور اپ لوڈ کریں۔\|ایڈمن اسے چیک کرتا ہے۔ نتیجے کی اطلاع آپ کو ملتی ہے۔ | "Profile mein tarmeem" kholein aur "Hunar ka saboot" chunein.\|Hunar aur saboot ki qisam chunein.\|Saaf tasveer lein: seedhi, achi roshni, charon konay.\|Zaroorat ho to kaatein ya ghumayein, razamandi ka khana nishan zad karein aur upload karein.\|Admin isay check karta hai. Nateeje ki ittela aap ko milti hai. | |
+| appx.help.guides.identity.title | Get your identity verified | اپنی شناخت کی تصدیق کروائیں | Apni shanakht ki tasdeeq karwayein | |
+| appx.help.guides.identity.steps | Add your CNIC number in "About you". It is stored encrypted and never shown to customers.\|An admin checks your original card in person or on a video call.\|When it is accepted, customers see "Identity verified". | "آپ کے بارے میں" میں شناختی کارڈ نمبر شامل کریں۔ یہ خفیہ شکل میں محفوظ ہوتا ہے اور گاہکوں کو کبھی نہیں دکھایا جاتا۔\|ایڈمن آپ کا اصل کارڈ سامنے یا ویڈیو کال پر دیکھتا ہے۔\|قبول ہونے پر گاہکوں کو "شناخت تصدیق شدہ" نظر آتا ہے۔ | "Aap ke baare mein" mein CNIC number shamil karein. Yeh khufia shakal mein mehfooz hota hai aur gahakon ko kabhi nahi dikhaya jata.\|Admin aap ka asal card samne ya video call par dekhta hai.\|Qabool hone par gahakon ko "Shanakht tasdeeq shuda" nazar aata hai. | |
+| appx.help.guides.find.title | Find and compare workers | کاریگر تلاش کریں اور موازنہ کریں | Karigar talaash karein aur muwazna karein | |
+| appx.help.guides.find.steps | Type a trade or skill in the search box.\|Use the filters for city, availability and verified workers.\|Tap the heart to save a worker.\|Tick "Compare" on two or three workers and open the comparison. | تلاش کے خانے میں پیشہ یا ہنر لکھیں۔\|شہر، دستیابی اور تصدیق شدہ کاریگروں کے فلٹر استعمال کریں۔\|کاریگر کو محفوظ کرنے کے لیے دل پر ٹیپ کریں۔\|دو یا تین کاریگروں پر "موازنہ" کا نشان لگائیں اور موازنہ کھولیں۔ | Talaash ke khanay mein pesha ya hunar likhein.\|Shehar, dastiyabi aur tasdeeq shuda karigaron ke filter istemaal karein.\|Karigar ko mehfooz karne ke liye dil par tap karein.\|Do ya teen karigaron par "Muwazna" ka nishan lagayein aur muwazna kholein. | |
+| appx.help.guides.badges.title | What the badges mean | نشانات کا مطلب | Nishanaat ka matlab | |
+| appx.help.guides.badges.steps | "Identity verified": an admin checked the worker's CNIC card.\|"Verified by evidence": an admin approved a photo as proof of that skill.\|"Self-declared": the worker says so; no proof has been checked yet. | "شناخت تصدیق شدہ": ایڈمن نے کاریگر کا شناختی کارڈ دیکھا۔\|"ثبوت سے تصدیق شدہ": ایڈمن نے اس ہنر کے ثبوت کی تصویر منظور کی۔\|"خود بتایا گیا": کاریگر نے خود کہا ہے؛ ابھی کوئی ثبوت چیک نہیں ہوا۔ | "Shanakht tasdeeq shuda": admin ne karigar ka CNIC card dekha.\|"Saboot se tasdeeq shuda": admin ne is hunar ke saboot ki tasveer manzoor ki.\|"Khud bataya gaya": karigar ne khud kaha hai; abhi koi saboot check nahi hua. | |
+| appx.help.guides.display.title | Dark mode, text size and language | ڈارک موڈ، لکھائی کا سائز اور زبان | Dark mode, likhai ka size aur zabaan | |
+| appx.help.guides.display.steps | The moon or sun button at the top switches dark and light. Hold it for "System".\|Text size (A−, A, A+) is in your account menu and at the bottom of every page.\|The globe button changes the language: English, Urdu or Roman Urdu. | اوپر چاند یا سورج کا بٹن ڈارک اور روشن بدلتا ہے۔ "سسٹم" کے لیے اسے دبا کر رکھیں۔\|لکھائی کا سائز (A−، A، A+) آپ کے اکاؤنٹ مینو میں اور ہر صفحے کے نیچے ہے۔\|گلوب کا بٹن زبان بدلتا ہے: انگریزی، اردو یا رومن اردو۔ | Oopar chaand ya sooraj ka button dark aur light badalta hai. "System" ke liye isay daba kar rakhein.\|Likhai ka size (A−, A, A+) aap ke account menu mein aur har safhe ke neeche hai.\|Globe ka button zabaan badalta hai: English, Urdu ya Roman Urdu. | |
+| appx.help.guides.install.title | Install the website like an app | ویب سائٹ کو ایپ کی طرح انسٹال کریں | Website ko app ki tarah install karein | |
+| appx.help.guides.install.steps | On Android in Chrome, open the menu and choose "Install app" or "Add to Home screen".\|The app opens without the browser bar. You still need the internet to see and save data. | اینڈرائیڈ پر کروم میں مینو کھولیں اور "ایپ انسٹال کریں" یا "ہوم اسکرین میں شامل کریں" چنیں۔\|ایپ براؤزر بار کے بغیر کھلتی ہے۔ ڈیٹا دیکھنے اور محفوظ کرنے کے لیے انٹرنیٹ پھر بھی ضروری ہے۔ | Android par Chrome mein menu kholein aur "Install app" ya "Add to Home screen" chunein.\|App browser bar ke baghair khulti hai. Data dekhne aur mehfooz karne ke liye internet phir bhi zaroori hai. | |
 
 ## Language chooser (shown in all three languages at once)
 

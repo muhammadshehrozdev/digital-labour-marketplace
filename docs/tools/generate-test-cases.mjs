@@ -28,6 +28,12 @@ const MODULE = {
   // Batch 3
   'errorCatalog.test.js': 'Languages (API error codes)', 'preferences.test.js': 'Module 1',
   'i18n.test.jsx': 'Languages (UI)', 'voice.test.jsx': 'Module 2 (UI)',
+  // Batch 4
+  'batch4-features.test.js': 'Batch 4 features', 'batch4-admin.test.js': 'Admin (Batch 4)',
+  'batch4-services.test.js': 'Batch 4 features', 'indexes.test.js': 'Infrastructure', 'middleware.test.js': 'Infrastructure',
+  'brand.test.jsx': 'UI (logo)', 'theme.test.jsx': 'UI (dark mode)', 'design.test.jsx': 'UI (design v3)',
+  'admin-batch4.test.jsx': 'Admin (Batch 4, UI)', 'customer-batch4.test.jsx': 'Customer (Batch 4, UI)',
+  'worker-batch4.test.jsx': 'Worker (Batch 4, UI)', 'app-batch4.test.jsx': 'App-wide (Batch 4, UI)',
 };
 
 const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ').trim();
