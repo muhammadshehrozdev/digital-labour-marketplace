@@ -52,4 +52,7 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+// Admin Users page: filter by role and status, newest first (Batch 4 review R-05).
+userSchema.index({ role: 1, status: 1, createdAt: -1 });
+
 export default mongoose.model('User', userSchema);

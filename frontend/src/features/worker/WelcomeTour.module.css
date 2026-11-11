@@ -3,7 +3,7 @@
 .spot {
   position: fixed;
   border-radius: var(--radius-xl);
-  box-shadow: 0 0 0 3px var(--color-accent), 0 0 0 9999px color-mix(in oklch, oklch(0.15 0.02 168) 45%, transparent);
+  box-shadow: 0 0 0 3px var(--color-accent), 0 0 0 9999px var(--color-overlay);
   transition: top var(--duration-slow) var(--ease-out), left var(--duration-slow) var(--ease-out), width var(--duration-slow) var(--ease-out), height var(--duration-slow) var(--ease-out);
 }
 .card {

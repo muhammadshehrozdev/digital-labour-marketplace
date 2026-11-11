@@ -23,6 +23,10 @@ const auditLogSchema = new mongoose.Schema(
 );
 
 auditLogSchema.index({ targetType: 1, targetId: 1, seq: 1 });
+// "last activity of this account" on the admin Users page (Batch 4 review R-04)
+auditLogSchema.index({ actor: 1, seq: -1 });
+// filter by action on the audit page and in the export
+auditLogSchema.index({ action: 1, seq: -1 });
 
 const refuse = function () {
   throw new Error('AuditLog is append-only: updates and deletes are not allowed');

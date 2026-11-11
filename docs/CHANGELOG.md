@@ -2,6 +2,50 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 4 — logo v3, dark mode, design v3, 50+ features, admin tools, full review (11 Nov 2026)
+
+Instructions: `BATCH_4_PROMPT.md`. Decisions recorded: D-021 logo, D-022 dark mode, D-023 design v3,
+D-024 suspension, D-025 notifications, D-026 potential skills / strength / sort, D-027 installable app,
+D-028 exports and reason templates. Review: `docs/REVIEW-2026-11.md`. Traceability: `docs/TRACEABILITY.md`.
+
+**Logo and dark mode**
+- The Batch 1 shield with a wrench and a check is back, refined (two-tone, one-colour, light/dark), with an
+  animated version and a full icon set made by `npm run icons` (D-021).
+- A night-mode button on every page: Light, Dark or System; the sun turns into a moon; the new mode grows
+  as a circle from the button; saved in the browser and on the account; no flash on load (D-022).
+- Text size A−, A, A+ in the account menu and the footer.
+
+**Design v3**
+- 28 screens scored before the redesign (`docs/design/07-critique-v2.md`); in-house illustrations for every
+  trade and 15 scenes; bento landing page, worker dashboard and admin overview; layered surfaces (D-023).
+
+**Workers**
+- Profile strength with real next steps; "You may also do…" (same-trade skills, one tap, Undo); matched
+  words marked inside the typed text; example sentences in the website language; CNIC, mobile and rupee
+  masks; drafts kept until saved (never the CNIC); upload tip "Take a clear photo of your certificate",
+  compression, crop and rotate, progress with Cancel; notifications bell; Available/Busy switch; copy ID;
+  welcome tour; confetti for milestones.
+
+**Customers**
+- Search, filters, sort and page in the address; results as you type with matched words marked; sort by
+  experience or approved proof; saved workers; compare two or three workers; recently viewed; share and
+  print a profile.
+
+**Admins**
+- Overview with queues and waiting times, audit-chain status, charts from real counts, live activity;
+  Users page with suspend / reactivate; reason templates in three languages; CSV exports (audited, no CNIC,
+  formula-safe); keyboard shortcuts in the review panels; duplicate-photo compare slider (D-024, D-028).
+  Guide: `docs/ADMIN-GUIDE.md`.
+
+**Everywhere**
+- Command palette (Ctrl+K), keyboard shortcuts (?), offline banner with automatic retry, installable app
+  with a static-only service worker (D-027), scroll to top, session-ending warning, What's new, Help centre.
+
+**Quality**
+- Notes, reasons and templates refuse CNIC numbers (they would reach the audit log); new indexes; first
+  download 754 kB → 402 kB by loading rarely used pages on demand; contrast checked in both modes; e2e axe in
+  light and dark for every language; coverage measured (`npm run coverage`).
+
 ## Batch 3 — browser tooling, Step 3 and voice fixes, three languages, design v2, profile view/edit (10 Nov 2026)
 
 Instructions: `BATCH_3_PROMPT.md`. Decisions recorded: D-017 theme (Emerald Night), D-018 logo (Stitched

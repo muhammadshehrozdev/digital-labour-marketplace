@@ -47,6 +47,21 @@ are handled, accepted limitations, and incidents. Test files: backend `backend/t
 | Language storage | `localStorage` holds only the language code, wrapped in try/catch | `i18n.test.jsx` |
 | Browser tests | Headless Chromium only for `127.0.0.1` pages, own servers and own local `dlm_e2e` database; a reset refuses any database that is not local or not named `*_e2e` | `e2e/global-setup.js` |
 
+### Batch 4 additions
+| Area | Control | Test |
+|---|---|---|
+| Account suspension | Admin only; reason (5–300, no CNIC) required; cannot suspend yourself or another admin; `tokenVersion` +1 ends every session at once; the session check also refuses a suspended account; login says "suspended" only after the correct password (no account guessing); suspended workers hidden from directory, profile, compare, saved lists; audited | `batch4-features.test.js` "admin user management" |
+| User list | Explicit field list (no password, token version or failed-login count); search text escaped; strict query schema | `batch4-features.test.js`, `admin.test.js` |
+| Notifications | Created only by the server on real decisions; params allow-list (no CNIC, no contact data); every read and update filtered by the logged-in user (someone else's id → 404) | `batch4-features.test.js` "notifications", `unit/batch4-services.test.js` |
+| Saved workers, compare | Customer only (workers 403); public field list only; suspended or unlisted workers left out; at most 100 saved | `batch4-features.test.js` "saved workers and compare" |
+| CSV exports | Admin only; audited **before** the file is sent; explicit columns (no CNIC fields, no password, no address, no images); any CNIC-like number in a free-text cell replaced; spreadsheet formula injection neutralised (`=`, `+`, `-`, `@`, tab, return → leading apostrophe); 5,000 rows at most; `no-store` | `batch4-admin.test.js` "CSV exports", `unit/batch4-services.test.js` "csv" |
+| Audit chain check | `GET /api/admin/audit/verify` (admin only) runs the same check as `npm run audit:verify`; a raw database edit is reported with its entry number | `batch4-admin.test.js` "audit-chain status" |
+| Notes and reasons | Identity notes, evidence notes, suspension reasons and templates refuse CNIC-like numbers (`NOTE_HAS_CNIC`), so the audit log never receives one | `batch4-features.test.js` "a decision note with a CNIC number is refused" |
+| Preferences | `preferredTheme` and `preferredTextSize` validated (enums); at least one setting; unknown keys → 400 | `preferences.test.js` |
+| Service worker | Caches static files only; never looks at `/api/` requests; skips any answer marked `no-store` or `private`; registered only in production builds | `app-batch4.test.jsx` "installable app" |
+| Browser storage | Only per-device conveniences: language, theme, text size, drafts (never the CNIC field), recently viewed (public card fields), compare list (worker ID and public name, per tab), tour/milestone flags; every access in try/catch | `worker-batch4.test.jsx` "drafts", `customer-batch4.test.jsx` "recently viewed" |
+| No-flash script | The only inline script (`index.html`) reads two keys and sets two attributes; no user data. A future Content-Security-Policy needs its hash | `theme.test.jsx` "no flash" |
+
 ## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET)
 
 - Each key is 32 random bytes, written in base64. Make one in PowerShell (in `.\backend`):

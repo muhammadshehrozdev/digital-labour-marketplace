@@ -159,6 +159,8 @@ workerProfileSchema.pre('save', function () {
 });
 workerProfileSchema.index({ approvedEvidenceCount: -1, _id: -1 });
 workerProfileSchema.index({ experienceYears: -1, _id: -1 });
+// the identity queue: by status, longest waiting first (Batch 4 review R-05)
+workerProfileSchema.index({ verificationStatus: 1, identityRequestedAt: 1 });
 
 // Worker ID from an atomic counter, never random (audit M1-8).
 workerProfileSchema.pre('save', async function () {

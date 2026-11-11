@@ -1,4 +1,4 @@
-# Data model (MongoDB, after Batch 2, 9 Nov 2026)
+# Data model (MongoDB, after Batch 4, 11 Nov 2026)
 
 Source of truth: `backend/models/*.js` (Mongoose 9). Field lists below were read from the schemas.
 `*` = required. Collections are created by Mongoose with these names.
@@ -98,6 +98,10 @@ erDiagram
 | tokenVersion | Number | in every login token; +1 at logout ends old sessions (D-006) |
 | failedLoginCount, lockUntil | Number, Date | 5 wrong passwords → 15-minute lock |
 | preferredLanguage | String or null | `en`, `ur` or `ur-Latn` (Batch 3, D-019); null until chosen; set at register or by `PATCH /api/users/me/preferences` |
+| preferredTheme | String or null | `light`, `dark` or `system` (Batch 4, D-022); null until chosen |
+| preferredTextSize | String or null | `small`, `normal` or `large` (Batch 4); null until chosen |
+| status | String | `active` (default) \| `suspended` (Batch 4, D-024); a suspended user cannot log in |
+| suspendedAt, suspendedBy, suspensionReason | Date, ObjectId → users, String ≤ 300 | set when an admin suspends; cleared on reactivation; the reason is also in the audit log |
 | createdAt, updatedAt | Date | timestamps |
 
 Indexes: `{ email: 1 }` unique.
@@ -107,6 +111,8 @@ Indexes: `{ email: 1 }` unique.
 |---|---|---|
 | user* | ObjectId → users | unique (one profile per worker) |
 | workerIdCode | String | unique; `DLM-<year>-<6 digits>` from `counters` (M1-8) |
+| identityRequestedAt | Date or null | Batch 4: when the worker last saved a CNIC (asked for an identity check); the admin queue shows "waiting N days" from it |
+| approvedEvidenceCount | Number | Batch 4: sum of approved proof items over all skills; the directory's "most approved proof" sort key; kept in step by a save hook and by `recomputeSkillSummary` |
 | occupation | String | ≤ 60; empty = not filled in yet |
 | category | String | taxonomy id or null (D-012) |
 | skills | [Skill] | embedded, one entry per skill (below) |
@@ -176,12 +182,40 @@ Reached only through `services/evidence/storage.js` (`save`, `read`, `remove`); 
 |---|---|---|
 | seq* | Number | unique, 1, 2, 3 … (one chain) |
 | actor, actorRole | ObjectId → users, String | `system` for scripts |
-| action* | String | `admin.created`, `cnic.updated`, `cnic.reveal`, `identity.decision`, `evidence.uploaded`, `evidence.approved`, `evidence.rejected`, `evidence.suspected_fake`, `evidence.revoked`, `evidence.deleted` |
+| action* | String | `admin.created`, `cnic.updated`, `cnic.reveal`, `identity.decision`, `evidence.uploaded`, `evidence.approved`, `evidence.rejected`, `evidence.suspected_fake`, `evidence.revoked`, `evidence.deleted`; Batch 4: `user.suspended`, `user.reactivated`, `export.downloaded`, `template.created`, `template.updated`, `template.deleted`, `template.starter_set` |
 | targetType, targetId | String | e.g. `Evidence`, its id |
 | fromState, toState, reason, details | | never a CNIC number |
 | createdAt* | Date | |
 | prevHash*, hash* | String | hash = SHA-256(prevHash + canonical JSON of the entry); checked by `npm run audit:verify` |
 Update and delete operations are refused by schema hooks. Indexes: `{ seq: 1 }` unique; `{ targetType: 1, targetId: 1, seq: 1 }`.
+
+## notifications (Batch 4, D-025)
+| Field | Type | Notes |
+|---|---|---|
+| user* | ObjectId → users | the only person who can read or mark it |
+| type* | String | `identity_verified`, `identity_rejected`, `evidence_approved`, `evidence_rejected`, `evidence_suspected_fake`, `evidence_revoked` |
+| params | Object | only `skillId`, `skillName`, `evidenceId`, `reasonCode`, `note` (≤ 500 characters each); never a CNIC |
+| readAt | Date or null | null = unread |
+| createdAt | Date | a TTL index removes notifications after 180 days |
+Indexes: `{ user: 1, createdAt: -1 }`, `{ user: 1, readAt: 1 }`, `{ createdAt: 1 }` TTL. The text is not stored: the website builds it from `type` and `params` in the user's language.
+
+## savedworkers (Batch 4)
+| Field | Type | Notes |
+|---|---|---|
+| customer* | ObjectId → users | the customer who saved |
+| profile* | ObjectId → workerprofiles | the saved worker |
+| createdAt | Date | |
+Indexes: `{ customer: 1, profile: 1 }` unique (saving twice keeps one row), `{ customer: 1, createdAt: -1 }`. At most 100 per customer.
+
+## reasontemplates (Batch 4)
+| Field | Type | Notes |
+|---|---|---|
+| kind* | String | `identity_verify`, `identity_reject`, `evidence_reject`, `evidence_fake`, `evidence_revoke`, `user_suspend`, `user_reactivate` |
+| text.en* | String | 5–300 characters |
+| text.ur, text.ur-Latn | String | optional, ≤ 300 |
+| createdBy, updatedBy | ObjectId → users | the admin |
+| createdAt, updatedAt | Date | timestamps |
+At most 60 templates. Texts are checked for CNIC-like numbers before they are saved.
 
 ## counters
 `{ _id: "workerId-<year>", seq }`, increased with an atomic `$inc` (year = Pakistan time).

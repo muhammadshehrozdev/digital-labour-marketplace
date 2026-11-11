@@ -263,6 +263,16 @@ files above 16 MB) is not needed.
 (5 items per skill, 30 per worker, 4 MB upload, re-encoding) keep usage small. Real sizes are to be
 measured during user testing; the synthetic test images are tiny and say nothing about real sizes.
 
+**Images only (Batch 4 note, Part 6.1).** The proposal's Module 3 text says "upload of certificates, work
+samples, photographs and other skill evidence". We accept **photos only** (JPEG, PNG, WebP) for all of them:
+a certificate or a reference letter is uploaded as a **photo of the paper**, not as a PDF or Word file.
+Why: every upload is decoded and re-encoded by sharp, which removes hidden content and metadata (EXIF, GPS);
+PDF and Office files can carry scripts, links and embedded files that we cannot clean safely without more
+packages; and workers mostly have phones, not scanners. The upload screen now says so before the worker
+chooses a file: **"Take a clear photo of your certificate"** — lay it flat in good light, all four corners in
+the picture; for a paper or PDF document, take a photo of it. A PDF is refused with a specific message
+(`PHOTO_PDF`). Recorded in `docs/TRACEABILITY.md` (M3 bullet 1) as "done, with this limitation".
+
 ---
 
 ## D-014 — Skill confidence method, provisional weights and strength labels (Batch 2, 9 Nov 2026)
@@ -515,4 +525,88 @@ with fun animations, not just a switch.
 - **Proof:** `contrast.test.js` checks all 53 colour pairs in both modes of every theme (WCAG 2.2 AA) and
   that every colour is inside sRGB; `theme.test.jsx` checks the button on every page, persistence, the
   reveal, the fallback, reduced motion and the account sync; the e2e suite runs axe in dark mode.
+
+---
+
+## D-023 — Design v3 and the in-house illustration system (Batch 4, 11 Nov 2026)
+
+**Why:** the team's feedback after Batch 3: *"The design is still nothing special. Improve and refine it
+a lot."* Before changing anything, all 28 screens were scored on ten criteria (`docs/design/07-critique-v2.md`).
+The biggest gaps were imagery (almost none), flat white cards with borders everywhere, short pages
+floating above a heavy footer, equal weight everywhere, small grey text carrying important facts, and
+admin tables wider than their cards.
+
+**Decision:**
+- **Illustrations:** one in-house SVG system (`frontend/src/components/illustrations/`): a drawing per trade
+  (9) and 15 scenes for empty states, errors, onboarding steps and features. One grid, one line weight (2.5),
+  five colours taken from the theme (so every drawing works in light and dark), a soft blob and a ground
+  shadow, small hover animations that stop with reduced motion. No stock photos of people.
+- **Layout:** bento grids on the landing page, the worker dashboard and the admin overview; fewer borders
+  (inset hairlines plus layered shadows); a frosted sticky header; grain and a slow mesh only on dark
+  surfaces; one clear main action per screen.
+- **Colour:** Emerald Night kept and refined (richer emerald scale, warmer saffron), with a full dark mode (D-022).
+- **Type:** Bricolage Grotesque display with tighter tracking, Manrope text, `text-wrap: balance/pretty`;
+  captions raised from 12 to 13 px.
+- **Pointer effects** (desktop only, off with reduced motion): cursor spotlight on cards, magnetic hero
+  buttons, parallax in the hero drawing, an animated gradient ring on the main call to action.
+- **Honesty kept:** vignettes on the landing page show skeleton lines and the product's real status words;
+  no invented people, numbers, ratings or reviews (a test checks this).
+
+## D-024 — Admin user management and account suspension (Batch 4, 11 Nov 2026)
+
+Admins needed a place to see accounts and to stop misuse. **Decision:** a Users page (search by name, email
+or phone; filter by role and status; one account with what belongs to it and its last audit entries) and
+**suspend / reactivate** with a required reason (5–300 characters, no CNIC number). Rules, all checked on
+the server: an admin cannot suspend their own account or another admin (admins are managed only with
+`npm run create-admin`); suspending increases `tokenVersion`, so every open session ends at once, and the
+session check refuses a suspended account as a second lock; a suspended user is told so only after the
+correct password (a wrong password gets the usual answer, so nobody learns which emails exist); a suspended
+worker is hidden from customers everywhere (directory, profile, compare, saved lists). Both actions are
+written to the audit log (`user.suspended`, `user.reactivated`).
+
+## D-025 — Notifications by polling, text built in the browser (Batch 4, 11 Nov 2026)
+
+Workers did not know when an admin had decided. **Decision:** a `notifications` collection, written by the
+server only when a real decision happens (identity verified / not accepted; proof approved / not accepted /
+suspected fake / approval withdrawn). The website asks for the unread count **once a minute while the page
+is visible** (no websockets: simpler, works on Vercel serverless, enough for this use). The text is not
+stored: the website writes it from `type` + `params` in the user's language, so a worker who changes
+language sees old notifications in the new language. Params are an allow-list (skill, evidence id, reason
+code, the review note the worker can already see); never a CNIC. Notifications delete themselves after
+180 days (TTL index). A failed notification never fails the decision (logged only).
+
+## D-026 — Potential skills, profile strength and directory sort: rule-based and documented (Batch 4, 11 Nov 2026)
+
+- **Potential skills** (proposal Module 2: "identification of potential skills that can be added to the
+  worker profile"): taxonomy skills from the worker's main trade category, then from the categories of the
+  skills already added, that are not on the profile; at most 8; in taxonomy order. No learning, no score.
+  A skill is added only by the worker's tap (`addedVia: "related"`), with Undo.
+- **Profile strength:** the documented completion checklist (unchanged weights) + a level word
+  (`starting` < 50, `good` 50–79, `strong` 80–99 or 100 without approved proof, `complete` = 100 and at least
+  one skill with approved proof) + up to five next steps that each name one missing thing. The website shows
+  the checklist and its weights ("How this is counted"). It is not a rating of the worker.
+- **Sort keys** of the directory: `updated` (default), `experience` (years, highest first), `evidence` (sum of
+  approved proof items over all skills, stored as `approvedEvidenceCount` and kept in step on every save and
+  decision). `_id` is the last key, so pages are stable.
+
+## D-027 — Installable app with a static-only service worker (Batch 4, 11 Nov 2026)
+
+**Decision:** our own `manifest.webmanifest` (normal and maskable icons from `npm run icons`) and our own
+small service worker (`public/sw.js`, no library). It caches **static files only** (built assets with hashed
+names, icons, fonts, the manifest) and serves the cached app shell when a page is opened offline. It never
+looks at `/api/` requests and skips any answer marked `no-store` or `private`, so no private data can end
+up in the browser cache. It is registered only in production builds. On Android an "Install the app" hint
+appears when Chrome offers installation; "Not now" hides it for 30 days. The app still needs the internet
+to see or save data; offline, the offline banner says so and retries by itself.
+
+## D-028 — CSV exports and reason templates for admins (Batch 4, 11 Nov 2026)
+
+- **Exports:** four files (audit log with hashes, identity queue, evidence queue, users). Admin only; every
+  download is written to the audit log **before** the file is sent (no audit entry, no file). Columns are an
+  explicit list; a CNIC is never included, and any CNIC-like number typed into a free-text note is replaced;
+  spreadsheet formulas are neutralised (OWASP "CSV injection"); at most 5,000 rows per file; UTF-8 with a
+  byte-order mark so Excel shows Urdu correctly.
+- **Reason templates:** reusable sentences per decision kind, in three languages (English required), with a
+  starter set the team must review (the Urdu and Roman Urdu lines were drafted by Claude Code). Inserting a
+  template only fills the note; the admin can change the words before saving.
 

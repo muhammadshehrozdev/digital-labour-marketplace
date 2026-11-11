@@ -2,6 +2,19 @@
   "generatedFrom": "docs/CHANGELOG.md",
   "sections": [
     {
+      "title": "Batch 4 — logo v3, dark mode, design v3, 50+ features, admin tools, full review (11 Nov 2026)",
+      "points": [
+        "The Batch 1 shield with a wrench and a check is back, refined (two-tone, one-colour, light/dark), with an animated version and a full icon set made by npm run icons (D-021).",
+        "A night-mode button on every page: Light, Dark or System; the sun turns into a moon; the new mode grows as a circle from the button; saved in the browser and on the account; no flash on load (D-022).",
+        "Text size A−, A, A+ in the account menu and the footer.",
+        "28 screens scored before the redesign (docs/design/07-critique-v2.md); in-house illustrations for every trade and 15 scenes; bento landing page, worker dashboard and admin overview; layered surfaces (D-023).",
+        "Profile strength with real next steps; \"You may also do…\" (same-trade skills, one tap, Undo); matched words marked inside the typed text; example sentences in the website language; CNIC, mobile and rupee masks; drafts kept until saved (never the CNIC); upload tip \"Take a clear photo of your certificate\", compression, crop and rotate, progress with Cancel; notifications bell; Available/Busy switch; copy ID; welcome tour; confetti for milestones.",
+        "Search, filters, sort and page in the address; results as you type with matched words marked; sort by experience or approved proof; saved workers; compare two or three workers; recently viewed; share and print a profile.",
+        "Overview with queues and waiting times, audit-chain status, charts from real counts, live activity; Users page with suspend / reactivate; reason templates in three languages; CSV exports (audited, no CNIC, formula-safe); keyboard shortcuts in the review panels; duplicate-photo compare slider (D-024, D-028). Guide: docs/ADMIN-GUIDE.md.",
+        "Command palette (Ctrl+K), keyboard shortcuts (?), offline banner with automatic retry, installable app with a static-only service worker (D-027), scroll to top, session-ending warning, What's new, Help centre."
+      ]
+    },
+    {
       "title": "Batch 3 — browser tooling, Step 3 and voice fixes, three languages, design v2, profile view/edit (10 Nov 2026)",
       "points": [
         "The dev container has a system Chromium (.devcontainer/Dockerfile, CHROMIUM_PATH); Playwright uses it and never downloads a browser. Used only for http://127.0.0.1 pages.",
@@ -25,19 +38,6 @@
         "Public directory/profile show the chip, approved count and strength only; skills=verified filter.",
         "A skill with reviewed proof cannot be removed (no hiding a suspected fake).",
         "npm run confidence:sensitivity (formula outputs, with the two documented weak points)."
-      ]
-    },
-    {
-      "title": "Batch 1 — UI/UX redesign, guided onboarding, Module 2 / Phase 4 (9 Nov 2026)",
-      "points": [
-        "Taxonomy v1: 9 categories (Cleaning & Shifting split into Domestic Work + Moving & Loading) and 50 skills with strong/weak terms in English, Roman Urdu and Urdu.",
-        "services/skillExtractor/: normalisation (NFC, Urdu/Arabic digits, letter variants, punctuation), whole-token matching, weak-term rule, experience in years + months (number words in three languages, over 60 ignored), all matching categories with ties reported, negative phrases only explain an empty result. No confidence, level or score.",
-        "New endpoints: POST /api/workers/me/skills/extract (saves nothing), GET/POST/DELETE /api/workers/me/skills, POST /api/workers/me/skills/custom, GET /api/workers/me/onboarding, GET /api/admin/stats, GET /api/admin/audit, q search on GET /api/admin/workers.",
-        "One skills array of objects; old fields (categorizedSkills, recommendedSkills, skillStrengthScore, aiSkillSummary, …) removed; npm run migrate:skills.",
-        "Old profiler moved to evaluation/baselines/legacyProfiler.js (git history kept); old /api/worker/* routes and controllers/workerController.js, routes/workerRoutes.js deleted.",
-        "Evaluation harness: npm run evaluate:skills (micro/macro P/R/F1, Wilson and bootstrap intervals, per category, per script, ablation, legacy + naive baselines, paired bootstrap), npm run agreement:skills (Cohen's kappa, Krippendorff's alpha), SYNTHETIC sample files (tests only, never reported), docs/evaluation/ (format, annotation guide, consent form English/Urdu, data handling).",
-        "Design tokens, base styles, Manrope (self-hosted), lucide-react icons, new logomark and favicon.",
-        "Component library (31 files in components/ui/), app shell with landmarks and skip link, admin sidebar layout, error boundary, development-only /dev/styleguide."
       ]
     }
   ]
