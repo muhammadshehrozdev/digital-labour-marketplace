@@ -294,6 +294,191 @@ Average **5.3**, lowest single score **1**.
 6. **Tables are wider than their cards** on the admin pages at 1280 px.
 7. **Little feedback:** no undo, no drafts, no progress, toasts that cover the form on phones.
 
-## After: design v3
+## After: design v3 (Batch 4)
 
-Not scored yet: this section is added when the redesign is finished and the screens are captured again.
+Average **8.7**, lowest single score **6**.
+
+| Screen | Width | Hierarchy | Type | Spacing | Colour | Imagery | Depth | Consistency | Motion | Microcopy | Layout | Lowest |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| **Language chooser** | 1280 | 9 | 9 | 8 | 9 | 8 | 8 | 9 | 8 | 9 | 8 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 8 | 8 | 9 | 8 | 9 | 9 | 8 |
+| **Landing** | 1280 | 8 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 8 |
+|  | 360 | 8 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 8 |
+| **Log in** | 1280 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 8 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+| **Create account: role** | 1280 | 8 | 9 | 8 | 9 | 7 | 9 | 9 | 8 | 9 | 8 | 7 |
+|  | 360 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 8 | 9 | 9 | 7 |
+| **Create account: form** | 1280 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 8 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 8 | 9 | 9 | 7 |
+| **Page not found** | 1280 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 |
+|  | 360 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 |
+| **Onboarding 1: About you** | 1280 | 9 | 9 | 9 | 8 | 8 | 8 | 9 | 8 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 8 | 8 | 8 | 9 | 8 | 9 | 9 | 8 |
+| **Onboarding 2: Your work** | 1280 | 9 | 9 | 9 | 8 | 8 | 8 | 9 | 8 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 8 | 8 | 8 | 9 | 8 | 9 | 9 | 8 |
+| **Onboarding 3: Your skills** | 1280 | 9 | 9 | 8 | 9 | 8 | 8 | 9 | 9 | 9 | 8 | 8 |
+|  | 360 | 9 | 9 | 8 | 9 | 8 | 8 | 9 | 9 | 9 | 9 | 8 |
+| **Onboarding 4: Proof** | 1280 | 9 | 9 | 8 | 9 | 8 | 8 | 9 | 8 | 9 | 8 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 8 | 8 | 9 | 8 | 9 | 9 | 8 |
+| **Onboarding 5: All set** | 1280 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 |
+|  | 360 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 9 |
+| **Worker dashboard** | 1280 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 9 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 9 | 9 | 9 | 8 |
+| **My profile** | 1280 | 8 | 9 | 9 | 9 | 7 | 9 | 9 | 8 | 9 | 9 | 7 |
+|  | 360 | 8 | 9 | 9 | 9 | 7 | 9 | 9 | 8 | 9 | 9 | 7 |
+| **My profile: customer view** | 1280 | 8 | 9 | 9 | 9 | 7 | 9 | 9 | 8 | 9 | 9 | 7 |
+|  | 360 | 8 | 9 | 9 | 9 | 7 | 9 | 9 | 8 | 9 | 9 | 7 |
+| **Edit profile: About** | 1280 | 9 | 9 | 9 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+|  | 360 | 9 | 9 | 9 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+| **Edit profile: Work and rates** | 1280 | 9 | 9 | 9 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+|  | 360 | 9 | 9 | 9 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+| **Edit profile: Skills** | 1280 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 9 | 9 | 9 | 7 |
+|  | 360 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 9 | 9 | 9 | 7 |
+| **Edit profile: Proof** | 1280 | 9 | 9 | 8 | 9 | 8 | 8 | 9 | 8 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 8 | 8 | 9 | 8 | 9 | 9 | 8 |
+| **Edit profile: Work history** | 1280 | 9 | 9 | 8 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+|  | 360 | 9 | 9 | 9 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+| **Edit profile: Language** | 1280 | 9 | 9 | 8 | 9 | 7 | 8 | 9 | 8 | 9 | 8 | 7 |
+|  | 360 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 8 | 9 | 9 | 7 |
+| **Find workers** | 1280 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 9 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 9 | 9 | 9 | 8 |
+| **Worker public profile** | 1280 | 9 | 9 | 9 | 9 | 7 | 9 | 9 | 8 | 9 | 9 | 7 |
+|  | 360 | 8 | 9 | 9 | 9 | 7 | 9 | 9 | 8 | 9 | 9 | 7 |
+| **Admin overview** | 1280 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 9 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 9 | 9 | 9 | 8 |
+| **Admin identity review** | 1280 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 8 | 9 | 9 | 7 |
+|  | 360 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 8 | 9 | 9 | 7 |
+| **Admin identity drawer** | 1280 | 9 | 9 | 9 | 9 | 7 | 9 | 9 | 8 | 9 | 9 | 7 |
+|  | 360 | 9 | 9 | 9 | 9 | 7 | 9 | 9 | 8 | 9 | 9 | 7 |
+| **Admin evidence review** | 1280 | 9 | 9 | 9 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+|  | 360 | 9 | 9 | 9 | 9 | 6 | 8 | 9 | 8 | 9 | 9 | 6 |
+| **Admin evidence drawer** | 1280 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 8 |
+|  | 360 | 9 | 9 | 9 | 9 | 9 | 9 | 9 | 8 | 9 | 9 | 8 |
+| **Admin audit log** | 1280 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 8 | 8 | 9 | 7 |
+|  | 360 | 9 | 9 | 9 | 9 | 7 | 8 | 9 | 8 | 8 | 9 | 7 |
+
+| Criterion | Average before | Average after | Lowest after |
+|---|---:|---:|---:|
+| Hierarchy | 5.8 | 8.9 | 8 |
+| Type | 6.0 | 9.0 | 9 |
+| Spacing | 5.6 | 8.9 | 8 |
+| Colour | 5.7 | 8.9 | 8 |
+| Imagery | 2.7 | 7.5 | 6 |
+| Depth | 5.0 | 8.4 | 8 |
+| Consistency | 6.6 | 9.0 | 9 |
+| Motion | 4.6 | 8.3 | 8 |
+| Microcopy | 6.0 | 9.0 | 8 |
+| Layout | 5.5 | 8.9 | 8 |
+
+**Not yet at 9** (52 rows):
+
+- Language chooser at 1280 px: Spacing 8, Imagery 8, Depth 8, Motion 8, Layout 8 — the drawings are small on purpose (first visit, must load fast); on desktop the block still sits in a tall page with space around it; motion is the logo, a slow bob and hover only
+- Language chooser at 360 px: Imagery 8, Depth 8, Motion 8 — the drawings are small on purpose (first visit, must load fast); on desktop the block still sits in a tall page with space around it; motion is the logo, a slow bob and hover only
+- Landing at 1280 px: Hierarchy 8 — the hero still opens with a small animated logo chip right under the header logo (kept as the logo-animation moment, but it repeats the brand)
+- Landing at 360 px: Hierarchy 8 — the hero still opens with a small animated logo chip right under the header logo (kept as the logo-animation moment, but it repeats the brand)
+- Log in at 1280 px: Imagery 8, Motion 8 — on phones the illustrated panel is left out so the form comes first; motion is limited to focus and button feedback
+- Log in at 360 px: Imagery 6, Depth 8, Motion 8 — on phones the illustrated panel is left out so the form comes first; motion is limited to focus and button feedback
+- Create account: role at 1280 px: Hierarchy 8, Spacing 8, Imagery 7, Motion 8, Layout 8 — on desktop the two role cards are still small for the main decision and their drawings are small
+- Create account: role at 360 px: Imagery 7, Depth 8, Motion 8 — on desktop the two role cards are still small for the main decision and their drawings are small
+- Create account: form at 1280 px: Imagery 8, Motion 8 — on phones only the small role drawings remain; no animation beyond focus and selection
+- Create account: form at 360 px: Imagery 7, Depth 8, Motion 8 — on phones only the small role drawings remain; no animation beyond focus and selection
+- Onboarding 1: About you at 1280 px: Colour 8, Imagery 8, Depth 8, Motion 8 — a form stays calm on purpose: little colour and one flat card
+- Onboarding 1: About you at 360 px: Colour 8, Imagery 8, Depth 8, Motion 8 — a form stays calm on purpose: little colour and one flat card
+- Onboarding 2: Your work at 1280 px: Colour 8, Imagery 8, Depth 8, Motion 8 — a form stays calm on purpose: little colour and one flat card
+- Onboarding 2: Your work at 360 px: Colour 8, Imagery 8, Depth 8, Motion 8 — a form stays calm on purpose: little colour and one flat card
+- Onboarding 3: Your skills at 1280 px: Spacing 8, Imagery 8, Depth 8, Layout 8 — the step is still one long column (describe, voice, suggestions, list), so on desktop the path is long
+- Onboarding 3: Your skills at 360 px: Spacing 8, Imagery 8, Depth 8 — the step is still one long column (describe, voice, suggestions, list), so on desktop the path is long
+- Onboarding 4: Proof at 1280 px: Spacing 8, Imagery 8, Depth 8, Motion 8, Layout 8 — on desktop the three kinds of proof, the drop zone and the form still form one long column
+- Onboarding 4: Proof at 360 px: Imagery 8, Depth 8, Motion 8 — on desktop the three kinds of proof, the drop zone and the form still form one long column
+- Worker dashboard at 1280 px: Imagery 8 — imagery is limited to the empty-proof drawing and the ring
+- Worker dashboard at 360 px: Imagery 8 — imagery is limited to the empty-proof drawing and the ring
+- My profile at 1280 px: Hierarchy 8, Imagery 7, Motion 8 — skills are still rows with small grey 'Evidence' and 'Strength' words, so strength is hard to compare at a glance; no worker photo (by design: no face photos are collected)
+- My profile at 360 px: Hierarchy 8, Imagery 7, Motion 8 — skills are still rows with small grey 'Evidence' and 'Strength' words, so strength is hard to compare at a glance; no worker photo (by design: no face photos are collected)
+- My profile: customer view at 1280 px: Hierarchy 8, Imagery 7, Motion 8 — same skill rows as My profile
+- My profile: customer view at 360 px: Hierarchy 8, Imagery 7, Motion 8 — same skill rows as My profile
+- Edit profile: About at 1280 px: Imagery 6, Depth 8, Motion 8 — editor sections have no drawings; depth is one card
+- Edit profile: About at 360 px: Imagery 6, Depth 8, Motion 8 — editor sections have no drawings; depth is one card
+- Edit profile: Work and rates at 1280 px: Imagery 6, Depth 8, Motion 8 — editor sections have no drawings; depth is one card
+- Edit profile: Work and rates at 360 px: Imagery 6, Depth 8, Motion 8 — editor sections have no drawings; depth is one card
+- Edit profile: Skills at 1280 px: Imagery 7, Depth 8 — only the empty state has a drawing
+- Edit profile: Skills at 360 px: Imagery 7, Depth 8 — only the empty state has a drawing
+- Edit profile: Proof at 1280 px: Spacing 8, Imagery 8, Depth 8, Motion 8 — on desktop the upload form and the list still stack in one long column
+- Edit profile: Proof at 360 px: Imagery 8, Depth 8, Motion 8 — on desktop the upload form and the list still stack in one long column
+- Edit profile: Work history at 1280 px: Spacing 8, Imagery 6, Depth 8, Motion 8 — a job is still a bordered box inside the card; no drawing
+- Edit profile: Work history at 360 px: Imagery 6, Depth 8, Motion 8 — a job is still a bordered box inside the card; no drawing
+- Edit profile: Language at 1280 px: Spacing 8, Imagery 7, Depth 8, Motion 8, Layout 8 — on desktop the short list leaves space below; only globe icons as imagery
+- Edit profile: Language at 360 px: Imagery 7, Depth 8, Motion 8 — on desktop the short list leaves space below; only globe icons as imagery
+- Find workers at 1280 px: Imagery 8 — cards use initials, not photos (no face photos are collected)
+- Find workers at 360 px: Imagery 8 — cards use initials, not photos (no face photos are collected)
+- Worker public profile at 1280 px: Imagery 7, Motion 8 — on phones the action buttons come before the name; no photos by design
+- Worker public profile at 360 px: Hierarchy 8, Imagery 7, Motion 8 — on phones the action buttons come before the name; no photos by design
+- Admin overview at 1280 px: Imagery 8 — icons and charts, no drawings: right for a work tool
+- Admin overview at 360 px: Imagery 8 — icons and charts, no drawings: right for a work tool
+- Admin identity review at 1280 px: Imagery 7, Depth 8, Motion 8 — a work tool: no drawings, flat table
+- Admin identity review at 360 px: Imagery 7, Depth 8, Motion 8 — a work tool: no drawings, flat table
+- Admin identity drawer at 1280 px: Imagery 7, Motion 8 — no imagery besides icons
+- Admin identity drawer at 360 px: Imagery 7, Motion 8 — no imagery besides icons
+- Admin evidence review at 1280 px: Imagery 6, Depth 8, Motion 8 — still no thumbnail in the list: an item must be opened to see its photo
+- Admin evidence review at 360 px: Imagery 6, Depth 8, Motion 8 — still no thumbnail in the list: an item must be opened to see its photo
+- Admin evidence drawer at 1280 px: Motion 8 — motion is the slider and the drawer only
+- Admin evidence drawer at 360 px: Motion 8 — motion is the slider and the drawer only
+- Admin audit log at 1280 px: Imagery 7, Depth 8, Motion 8, Microcopy 8 — the Target column still shows the record id, which is needed to trace an entry but is not friendly
+- Admin audit log at 360 px: Imagery 7, Depth 8, Motion 8, Microcopy 8 — the Target column still shows the record id, which is needed to trace an entry but is not friendly
+
+### What changed on each screen
+
+**Language chooser:** A row of five trade drawings under the title shows who the website is for; the logo draws itself; the cards lift on hover; the night-mode button is in the corner.
+
+**Landing:** Mesh hero with depth layers, a typewriter headline and magnetic buttons; bento 'How it works' with a drawing in every cell; trust section with layered cards; trade grid with in-house drawings; pointer spotlight; the language switcher was removed from the hero.
+
+**Log in:** Form card and an illustrated dark panel side by side, fields with icons and a show-password button, the night-mode button, a calmer footer.
+
+**Create account: role:** Role cards with their own drawings and a clear selected state; the same illustrated panel as Log in.
+
+**Create account: form:** Mobile number with an example, password rule shown as a sentence under the field, role kept as cards above the form.
+
+**Page not found:** A 'plug pulled out' drawing, a calmer message ('Nothing is broken'), and a search over the website's pages with suggested places to go.
+
+**Onboarding 1: About you:** Step drawing next to the title; every private field says who can see it; CNIC and mobile masks with a live check; one height for every control; drafts kept on the device (never the CNIC).
+
+**Onboarding 2: Your work:** No focus box on the step title; rates with an Rs prefix and a live 'Rs 4,000' line; step drawing; the Availability select no longer grows taller than the other fields; 'Draft restored' with Discard.
+
+**Onboarding 3: Your skills:** Matched words are marked inside the typed text; an example carousel in the chosen language; suggestions grouped by trade; toasts on phones drop in under the header instead of covering Back / Continue; step drawing.
+
+**Onboarding 4: Proof:** A tip box 'Take a clear photo of your certificate', crop and rotate before upload, compression of large photos, an upload progress bar with Cancel, step drawing.
+
+**Onboarding 5: All set:** Confetti, a celebration drawing with a large headline, the summary, and clear next steps: View my profile, Add proof, Go to my dashboard.
+
+**Worker dashboard:** Bento: profile strength with a ring captioned 'Profile filled in', a level word and real next steps; 'You may also do' with one-tap skills and Undo; identity, proof counts that count up, skills; tiles end on one line; share and copy ID.
+
+**My profile:** A layered header with avatar, name, chips and the 'See what customers see' switch; About / Work and rates / Languages as a row of cards; proof as larger thumbnails; a clearly marked Private section.
+
+**My profile: customer view:** The switch shows exactly what the server sends to customers; a clear note at the top; no private section and no proof photos.
+
+**Edit profile: About:** Side menu with icons and a strong active state (tabs on phones); masks and live checks; 'Saved (hidden)' for the CNIC; drafts with a 'Not saved yet' badge and a leave warning.
+
+**Edit profile: Work and rates:** Rs prefix, thousands separator and a live amount line; the explanation is a normal-size lead; save button with a saved state.
+
+**Edit profile: Skills:** 'You may also do' suggestions from the same trade, removing a skill can be undone, example carousel, matched words marked.
+
+**Edit profile: Proof:** Proof grouped under each skill with 'Add proof' per skill, larger thumbnails, status chips, the clear-photo tip, crop and rotate, progress with Cancel.
+
+**Edit profile: Work history:** 'Add a past job' is a real button; the client field says it is never shown to customers.
+
+**Edit profile: Language:** Each language card previews a sentence in that language and script; theme and text size are one tap away in the header and footer on every page.
+
+**Find workers:** Results as you type with matched words marked, filter chips, sort, save (heart) and compare on every card, filters and page kept in the address, an illustrated empty state, recently viewed.
+
+**Worker public profile:** Actions for the customer (save, compare, share, print), a layered header, the contact note moved to the end and written as a plain explanation.
+
+**Admin overview:** 'Needs your attention' tiles with waiting-time buckets, audit-chain status, charts from real counts (with a table view and keyboard reading), live activity in plain words, totals last.
+
+**Admin identity review:** The table fits its card; the worker ID sits under the name and names no longer break into one word per line; a 'Waiting' column; search by name, ID or trade.
+
+**Admin identity drawer:** Waiting badge, keyboard shortcuts (A, R, J, K, ?), saved reasons ('Insert a saved reason'), decision cards, the drawer as a raised layer.
+
+**Admin evidence review:** Filters wrap above the table; the worker ID moved under the name so every column fits at 1280 px; waiting time; 'Possible duplicates only'.
+
+**Admin evidence drawer:** Photo with zoom, a compare slider (or side by side) for a possible duplicate, the numbers b, d, u, E in one card with the method, 'Suspected fake' visually quieter than Approve.
+
+**Admin audit log:** Actions in plain words (with the code under them), the role under the actor's name, chain status with 'Check again', a link to Exports, the table fits.

@@ -1,4 +1,27 @@
-# Screenshots (Batch 3, 10 Nov 2026)
+# Screenshots
+
+## Batch 4 (11 Nov 2026): design v3, dark mode, admin guide
+
+Taken by `npm run screenshots` (in `.\frontend`) from the separate e2e database (synthetic
+`@example.com` accounts only), headless Chromium, reduced motion, full-page captures taken from the top
+of the page. The full run (34 screens × 3 languages × 360 / 768 / 1280 px, plus a dark-mode set of key
+screens) is written to `all-v3/` and is not committed. Every committed picture below was looked at.
+
+| Folder / file | What it shows |
+|---|---|
+| `v3/<screen>-before-1280.png`, `v3/<screen>-before-360.png` | The Batch 3 screen (commit 253a5af), English, light |
+| `v3/<screen>-after-1280.png`, `v3/<screen>-after-360.png` | The same screen after design v3, English, light |
+| `v3/dark/<screen>-1280.png`, `v3/dark/<screen>-360.png` | Key screens in dark mode |
+| `admin/01-overview.png` … `admin/07-exports.png` | The seven admin pages used in `docs/ADMIN-GUIDE.md` (English, light, 1280 px) |
+
+The eight before/after pairs: `01-landing`, `02-login`, `12-onboarding-3-skills`, `20-worker-dashboard`,
+`21-profile-view`, `30-customer-search`, `40-admin-overview`, `44-admin-evidence-drawer`. Scores for all 28
+screens, before and after, are in `docs/design/07-critique-v2.md`.
+
+Note: in a full-page picture, fixed things (toasts, the compare tray, the sticky phone action bar) are drawn
+where they were on the screen at the moment of capture, which can be the middle of a long page.
+
+## Batch 3 (10 Nov 2026)
 
 Taken by `npm run screenshots` (in `.\frontend`) with headless Chromium, synthetic accounts in the e2e
 database, reduced motion on (static headline, no confetti), full-page captures. The full run is 252
