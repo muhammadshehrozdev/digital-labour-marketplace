@@ -44,7 +44,13 @@ D-028 exports and reason templates. Review: `docs/REVIEW-2026-11.md`. Traceabili
 **Quality**
 - Notes, reasons and templates refuse CNIC numbers (they would reach the audit log); new indexes; first
   download 754 kB → 402 kB by loading rarely used pages on demand; contrast checked in both modes; e2e axe in
-  light and dark for every language; coverage measured (`npm run coverage`).
+  light and dark for every language; coverage measured (`npm run coverage`): backend 98.09 % lines
+  (middleware 100 %), frontend 89.95 % lines.
+- Found by the full e2e run and fixed, each with a test that fails without the fix: losing the connection
+  while a page was still downloading showed "Something went wrong" for good (now a calm message that loads
+  again when the connection is back); the offline banner kept "could not be reached" after reconnecting.
+- Onboarding "All set": a drawing and clear next steps (view profile, add proof); the step heading no
+  longer shows a focus box.
 
 ## Batch 3 — browser tooling, Step 3 and voice fixes, three languages, design v2, profile view/edit (10 Nov 2026)
 
