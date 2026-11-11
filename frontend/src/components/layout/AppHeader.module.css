@@ -230,6 +230,7 @@
   padding-inline: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-surface); color: var(--color-text-secondary); cursor: pointer;
   &:hover { background: var(--color-surface-muted); color: var(--color-text); }
 }
-.paletteKbd { display: none; font-family: var(--font-latin); font-size: var(--text-caption); font-weight: 700; padding: 1px 6px; border-radius: 6px; background: var(--color-surface-muted); }
-@media (min-width: 1200px) { .paletteKbd { display: inline; } }
+.paletteKbd { display: none; white-space: nowrap; font-family: var(--font-latin); font-size: var(--text-caption); font-weight: 700; padding: 1px 6px; border-radius: 6px; background: var(--color-surface-muted); }
+/* the Ctrl K hint only where there is room for it next to everything else */
+@media (min-width: 1440px) { .paletteKbd { display: inline; } }
 @media (max-width: 639px) { .paletteButton { display: none; } }
