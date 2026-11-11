@@ -53,7 +53,8 @@ export default function FindWorkers() {
   const value = {
     q: params.get('q') ?? '',
     city: params.get('city') ?? '',
-    category: categories.some((c) => c.id === params.get('category')) ? params.get('category') : 'All',
+    // a known trade; before the trade list has loaded, any id-like value (the server checks it too)
+    category: (categories.length ? categories.some((c) => c.id === params.get('category')) : /^[a-z_]{2,40}$/.test(params.get('category') ?? '')) ? params.get('category') : 'All',
     availability: AVAILABILITY.includes(params.get('availability')) ? params.get('availability') : 'All',
     identity: params.get('identity') === 'verified',
     skills: params.get('skills') === 'verified',

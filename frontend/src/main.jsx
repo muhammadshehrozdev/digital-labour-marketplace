@@ -13,6 +13,12 @@ applyTheme(DEFAULT_THEME); // the colour theme; light or dark mode is set in ind
 // Tells the CSS that JavaScript runs (the scroll-reveal fallback only hides content then).
 document.documentElement.classList.add('js-reveal');
 
+// Installable app (Batch 4, feature 6): the service worker caches static files only (public/sw.js).
+// Production builds only, so the development server never serves old files.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import API from '../api';
 import { useLanguage } from '../i18n/context';
+import { onRetry } from '../features/app/connectivity';
 
 let cache = null;
 let pending = null;
@@ -41,6 +42,13 @@ export function useTaxonomy() {
       active = false;
     };
   }, []);
+  // Failed (for example offline): try again when the connection is back (Batch 4, feature 5).
+  useEffect(() => {
+    if (!error) return undefined;
+    return onRetry(() => {
+      loadTaxonomy().then((t) => { setError(null); setTaxonomy(t); }).catch(() => {});
+    });
+  }, [error]);
   const localCategory = (c) => (lang === 'en' ? c : { ...c, label: c.i18n?.[lang]?.label || c.label, occupation: c.i18n?.[lang]?.occupation || c.occupation });
   const localSkill = (s) => (lang === 'en' ? s : { ...s, name: s.i18n?.[lang] || s.name });
   const categories = (taxonomy?.categories || []).map(localCategory);

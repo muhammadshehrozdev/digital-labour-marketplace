@@ -10,10 +10,12 @@ import Landing from '../pages/public/Landing';
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
 import NotFound from '../pages/public/NotFound';
+import HelpCentre from '../pages/public/HelpCentre';
 import Onboarding from '../pages/onboarding/Onboarding';
 import WorkerDashboard from '../pages/worker/WorkerDashboard';
 import WorkerProfileView from '../pages/worker/WorkerProfileView';
 import WorkerProfileEdit from '../pages/worker/WorkerProfileEdit';
+import Notifications from '../pages/worker/Notifications';
 import FindWorkers from '../pages/customer/FindWorkers';
 import WorkerPublicProfile from '../pages/customer/WorkerPublicProfile';
 import SavedWorkers from '../pages/customer/SavedWorkers';
@@ -35,6 +37,7 @@ const ThemeLab = import.meta.env.DEV ? lazy(() => import('../pages/dev/ThemeLab'
 export const appRoutes = (
   <Route element={<RootLayout />} errorElement={<CrashScreen />}>
       <Route element={<AppShell />}>
+        <Route path="help" element={<HelpCentre />} />
         <Route element={<GuestOnly />}>
           <Route index element={<Landing />} />
           <Route path="login" element={<Login />} />
@@ -44,6 +47,7 @@ export const appRoutes = (
         <Route element={<RequireRole role="worker" />}>
           <Route path="onboarding" element={<Navigate to="/onboarding/about" replace />} />
           <Route path="onboarding/:step" element={<Onboarding />} />
+          <Route path="notifications" element={<Notifications />} />
           <Route element={<RequireOnboarding />}>
             <Route path="worker" element={<WorkerDashboard />} />
             <Route path="worker/profile" element={<WorkerProfileView />} />

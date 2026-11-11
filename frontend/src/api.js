@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { reportNetworkFailure, reportRequestSuccess } from './features/app/connectivity';
 
 // The API address. Locally this is "/api" on the same origin as the page: Vite forwards
 // it to the backend (vite.config.js), so the login cookie is first-party.
@@ -19,8 +20,14 @@ export function setUnauthorizedHandler(handler) {
 const NO_REDIRECT = ['/auth/session', '/auth/me', '/auth/login', '/auth/register', '/auth/logout'];
 
 API.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    reportRequestSuccess();
+    return response;
+  },
   (error) => {
+    // No answer at all (offline, server down, timeout) - not a cancelled request, not an HTTP error.
+    if (!error.response && error.code !== 'ERR_CANCELED') reportNetworkFailure();
+    else if (error.response) reportRequestSuccess(); // the server answered, so it is reachable
     const url = error.config?.url || '';
     if (error.response?.status === 401 && !NO_REDIRECT.some((path) => url.endsWith(path)) && onUnauthorized) {
       onUnauthorized();

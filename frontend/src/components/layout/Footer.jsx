@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import Logo from '../brand/Logo';
+import { OPEN_WHATS_NEW } from '../../features/app/AppCommands';
 import { useT } from '../../i18n';
 import LanguageSwitcher from './LanguageSwitcher';
 import TextSizeControl from './TextSizeControl';
@@ -17,6 +19,10 @@ export default function Footer() {
         <div className={styles.brandCol}>
           <Logo size={36} tone="dark" />
           <p className={styles.description}>{t('footer.description')}</p>
+          <p className={styles.links}>
+            <Link to="/help">{t('nav.help')}</Link>
+            <button type="button" className={styles.linkButton} onClick={() => window.dispatchEvent(new Event(OPEN_WHATS_NEW))}>{t('appx.whatsNew.title')}</button>
+          </p>
         </div>
         <div className={styles.langCol}>
           <p className={styles.colTitle}>{t('footer.languageTitle')}</p>

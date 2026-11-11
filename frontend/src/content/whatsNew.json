@@ -1,0 +1,44 @@
+{
+  "generatedFrom": "docs/CHANGELOG.md",
+  "sections": [
+    {
+      "title": "Batch 3 — browser tooling, Step 3 and voice fixes, three languages, design v2, profile view/edit (10 Nov 2026)",
+      "points": [
+        "The dev container has a system Chromium (.devcontainer/Dockerfile, CHROMIUM_PATH); Playwright uses it and never downloads a browser. Used only for http://127.0.0.1 pages.",
+        "npm run e2e (20 tests) and npm run screenshots run on their own servers (5001/5174) and their own local database dlm_e2e; the preview and its data are untouched; Atlas is never used.",
+        "Step 3 \"Your skills\": Continue now uses the server's onboarding state (it bounced back before); without a skill it explains why and links to the skill search. Tests: unit + e2e in Urdu, Roman Urdu, English.",
+        "Voice typing: a specific message for each Web Speech API error (not-allowed, service-not-allowed, network, language-not-supported, no-speech, audio-capture, aborted; Stop is not an error); speech language from the switcher (Urdu ur-PK, English/Roman Urdu en-US); shown only where the browser supports it (\"works best in Google Chrome\"); Gboard / Win + H help always shown; M2-13 notice kept. Tests with a fake SpeechRecognition.",
+        "Found by the new tests: footer jump while a page loads (layout shift 0.16 → below 0.002); the hero typewriter reserves its tallest line; trade cards keep their visible text as link name (WCAG 2.5.3); a new worker's browser no longer requests a profile that does not exist (404 in the console; profileExists in the onboarding state); :lang(ur) also matched Roman Urdu and gave it the Urdu font; avatar initials skipped non-letters; create-admin printed error codes instead of English.",
+        "English, اردو (right to left, Noto Nastaliq Urdu loaded only for Urdu) and Roman Urdu; first-visit chooser; switcher in header, hero and footer; whole page switches without reload, form input stays; choice in localStorage and, for logged-in users, User.preferredLanguage.",
+        "Every visible text is in frontend/src/i18n/dictionaries/ (en, ur, ur-Latn: same keys, tested); trade and skill names in backend/config/skillTaxonomy.js; dates with Intl, Western digits everywhere.",
+        "All Urdu and Roman Urdu texts are drafts for a native reviewer: docs/i18n/REVIEW.md (890 texts)."
+      ]
+    },
+    {
+      "title": "Batch 2 — Module 3 (Phase 5), integration tests (Phase 6), documentation (Phase 7) (9 Nov 2026)",
+      "points": [
+        "Models Evidence (metadata) and EvidenceFile (processed WebP bytes); storage service with save/read/remove (Vercel Blob could replace it later).",
+        "Upload POST /api/evidence: login and role checked before the file is read; multer in memory, 4 MB (413); type from the bytes (JPEG/PNG/WebP; HEIC \"Please upload a JPG or PNG photo.\"; PDF refused); sharp auto-rotate, fit 2000 px, WebP q80, no metadata (EXIF/GPS removed); SHA-256 of the processed file (same worker + skill → 409); dHash look-alikes and exact copies from other workers flagged for the admin; consent required; 5 per skill, 30 per worker, 30 uploads per 15 minutes per network.",
+        "Worker: GET /api/evidence/mine, GET /api/evidence/:id/file (owner or admin; others 404, customers 403), DELETE /api/evidence/:id (pending/rejected only).",
+        "Admin: GET /api/admin/evidence (queue + filters), GET /api/admin/evidence/:id (duplicate side by side, b/d/u/E as opinion), PATCH /api/admin/evidence/:id (approve, reject with code, suspected fake with reason, revoke with reason), atomic with 409, all audited; stats include evidence.",
+        "services/trust/skillConfidence.js (pure; W = 2, a = 0.5; provisional weights) and a per-skill evidenceSummary (status, approved, pending, strength word) recomputed after every change.",
+        "Public directory/profile show the chip, approved count and strength only; skills=verified filter.",
+        "A skill with reviewed proof cannot be removed (no hiding a suspected fake).",
+        "npm run confidence:sensitivity (formula outputs, with the two documented weak points)."
+      ]
+    },
+    {
+      "title": "Batch 1 — UI/UX redesign, guided onboarding, Module 2 / Phase 4 (9 Nov 2026)",
+      "points": [
+        "Taxonomy v1: 9 categories (Cleaning & Shifting split into Domestic Work + Moving & Loading) and 50 skills with strong/weak terms in English, Roman Urdu and Urdu.",
+        "services/skillExtractor/: normalisation (NFC, Urdu/Arabic digits, letter variants, punctuation), whole-token matching, weak-term rule, experience in years + months (number words in three languages, over 60 ignored), all matching categories with ties reported, negative phrases only explain an empty result. No confidence, level or score.",
+        "New endpoints: POST /api/workers/me/skills/extract (saves nothing), GET/POST/DELETE /api/workers/me/skills, POST /api/workers/me/skills/custom, GET /api/workers/me/onboarding, GET /api/admin/stats, GET /api/admin/audit, q search on GET /api/admin/workers.",
+        "One skills array of objects; old fields (categorizedSkills, recommendedSkills, skillStrengthScore, aiSkillSummary, …) removed; npm run migrate:skills.",
+        "Old profiler moved to evaluation/baselines/legacyProfiler.js (git history kept); old /api/worker/* routes and controllers/workerController.js, routes/workerRoutes.js deleted.",
+        "Evaluation harness: npm run evaluate:skills (micro/macro P/R/F1, Wilson and bootstrap intervals, per category, per script, ablation, legacy + naive baselines, paired bootstrap), npm run agreement:skills (Cohen's kappa, Krippendorff's alpha), SYNTHETIC sample files (tests only, never reported), docs/evaluation/ (format, annotation guide, consent form English/Urdu, data handling).",
+        "Design tokens, base styles, Manrope (self-hosted), lucide-react icons, new logomark and favicon.",
+        "Component library (31 files in components/ui/), app shell with landmarks and skip link, admin sidebar layout, error boundary, development-only /dev/styleguide."
+      ]
+    }
+  ]
+}

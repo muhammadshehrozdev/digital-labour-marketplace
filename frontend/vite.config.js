@@ -35,6 +35,9 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.js'],
     // Tests that simulate typing many characters can take a few seconds on a busy machine.
     testTimeout: 15000,
+    // At most 3 test files at once: with the dev servers running on a 4-core machine, more
+    // parallel files made some page tests slow enough to time out (seen in Batch 4).
+    maxWorkers: 3,
     exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
     // Code coverage (Batch 4, Part 6.3): npm run coverage. Target: at least 80% of lines in src/.
     // Not counted: the tests themselves, the entry file, and the development-only pages

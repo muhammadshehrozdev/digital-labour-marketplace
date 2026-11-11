@@ -58,9 +58,18 @@ export function AuthProvider({ children }) {
 
   const updateUser = useCallback((changes) => setUser((u) => (u ? { ...u, ...changes } : u)), []);
 
+  // The 8-hour login has ended (SessionWatch): back to Log in with a message. The cookie has
+  // expired by itself; asking for the session removes it from the browser too.
+  const expire = useCallback(() => {
+    API.get('/auth/session').catch(() => {});
+    setNotice('auth.sessionEnded');
+    setUser(null);
+    navigate('/login', { replace: true });
+  }, [navigate]);
+
   const value = useMemo(
-    () => ({ user, loading, notice, login, register, logout, updateUser }),
-    [user, loading, notice, login, register, logout, updateUser]
+    () => ({ user, loading, notice, login, register, logout, updateUser, expire }),
+    [user, loading, notice, login, register, logout, updateUser, expire]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

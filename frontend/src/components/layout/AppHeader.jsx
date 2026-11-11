@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDown, LogOut, Menu, X } from 'lucide-react';
+import { ChevronDown, LogOut, Menu, Search, X } from 'lucide-react';
+import { OPEN_PALETTE } from '../../features/app/AppCommands';
 import Logo from '../brand/Logo';
 import { Avatar, Button, IconButton } from '../ui';
 import { useAuth } from '../../context/auth';
@@ -9,6 +10,7 @@ import { homePathFor } from '../../utils/roles';
 import LanguageSwitcher from './LanguageSwitcher';
 import TextSizeControl from './TextSizeControl';
 import ThemeToggle from './ThemeToggle';
+import WorkerHeaderTools from '../../features/worker/WorkerHeaderTools';
 import { NAV_LINKS } from './navLinks';
 import styles from './AppHeader.module.css';
 
@@ -63,6 +65,11 @@ export default function AppHeader() {
         )}
 
         <div className={styles.end} data-tour="header">
+          <button type="button" className={styles.paletteButton} onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE))} aria-label={t('appx.palette.open')} aria-keyshortcuts="Control+K" title={t('appx.palette.open')}>
+            <Search size={18} aria-hidden="true" />
+            <kbd className={styles.paletteKbd} aria-hidden="true">Ctrl K</kbd>
+          </button>
+          {user?.role === 'worker' && <WorkerHeaderTools />}
           <ThemeToggle />
           <LanguageSwitcher compact />
           {user ? (

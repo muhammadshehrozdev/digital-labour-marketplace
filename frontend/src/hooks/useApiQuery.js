@@ -7,15 +7,17 @@
 import { useEffect, useState } from 'react';
 import API from '../api';
 import { apiError } from '../utils/apiErrors';
+import { onRetry } from '../features/app/connectivity';
 
-export function useApiQuery(url, params, { keepPrevious = false } = {}) {
+// options.refreshKey: any value; when it changes, the data is asked for again (it is not sent).
+export function useApiQuery(url, params, { keepPrevious = false, refreshKey = '' } = {}) {
   const [nonce, setNonce] = useState(0);
-  const key = `${JSON.stringify([url, params ?? null])}#${nonce}`;
+  const key = `${JSON.stringify([url, params ?? null])}#${nonce}#${refreshKey}`;
   const [result, setResult] = useState({ key: null, data: null, error: null, status: null });
 
   useEffect(() => {
     let active = true;
-    const [u, p] = JSON.parse(key.slice(0, key.lastIndexOf('#')));
+    const [u, p] = JSON.parse(key.slice(0, key.indexOf('#')));
     if (u === null) return undefined;
     API.get(u, p ? { params: p } : undefined)
       .then((res) => active && setResult({ key, data: res.data, error: null, status: res.status }))
@@ -24,6 +26,10 @@ export function useApiQuery(url, params, { keepPrevious = false } = {}) {
       active = false;
     };
   }, [key]);
+
+  // A request that got no answer at all (status 0) is asked again when the connection is back.
+  const failedOffline = result.key === key && result.status === 0;
+  useEffect(() => (failedOffline ? onRetry(() => setNonce((n) => n + 1)) : undefined), [failedOffline]);
 
   const loading = url !== null && result.key !== key;
   const stale = keepPrevious && loading && result.data !== null;

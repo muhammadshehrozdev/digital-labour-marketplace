@@ -1,0 +1,10 @@
+.page { display: grid; gap: var(--space-6); }
+.search { max-inline-size: 520px; }
+.none { color: var(--color-text-secondary); }
+.group { display: grid; gap: var(--space-4); }
+.groupTitle { font-size: var(--text-h3); }
+.guides { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.guide { display: grid; gap: var(--space-3); align-content: start; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--color-surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent); }
+.guideTitle { font-size: var(--text-h3); letter-spacing: -0.015em; }
+.steps { margin: 0; padding-inline-start: var(--space-5); display: grid; gap: var(--space-2); color: var(--color-text-secondary); }
+.steps li::marker { color: var(--color-primary); font-weight: 800; }
