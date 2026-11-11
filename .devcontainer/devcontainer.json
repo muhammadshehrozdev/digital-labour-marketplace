@@ -1,5 +1,5 @@
 {
-  "name": "Claude Code Sandbox",
+  "name": "Digital Labour Marketplace",
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
