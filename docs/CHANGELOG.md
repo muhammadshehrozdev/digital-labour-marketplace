@@ -2,6 +2,20 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Mid-defence preparation (11 Nov 2026, feature freeze: bug fixes only)
+
+- `bash scripts/preview.sh start | demo | reset-demo | status | stop`: one command for the whole local
+  preview (MongoDB, API, website) in the dev container; `demo` uses a separate database `dlm_demo`.
+- `npm run demo:reset` (backend): wipes only a local `_demo` database and creates the three synthetic demo
+  accounts (the admin through the create-admin script). The normal preview database is never touched.
+- Decisions D-030 (MERN on the supervisor's instruction) and D-031 (Urdu and Roman Urdu texts reviewed by
+  the team), both reported on 11 Nov 2026.
+- `docs/DEMO-SCRIPT.md`: the 7-minute demo of Modules 1-3, with a drawn synthetic proof photo
+  (`docs/demo/work-photo-synthetic.jpg`) and `frontend/e2e/demo-script.e2e.js`, which runs the same clicks.
+- **Bug fixed** (found by rehearsing the demo): onboarding Step 4 offered no skill for the proof photo until
+  the page was reloaded. Test: `onboarding.test.jsx` (fails without the fix) and the demo e2e test.
+- Real results: backend 521/521, frontend 941/941, e2e 35/35 (12.6 min, Chromium), `oxlint` 0.
+
 ## After Batch 4 — the team's answers (11 Nov 2026)
 
 - Deleted the unused `frontend/src/pages/worker/WorkerSkills.jsx` (review R-22).

@@ -98,7 +98,8 @@ bash scripts/preview.sh start
 
 It starts MongoDB, the API and the website in the background and prints **http://127.0.0.1:5173**
 when everything answers (about 10 seconds; the first time can take longer). The servers keep running when
-you close the terminal. To stop all three:
+you close the terminal, but not a restart of the laptop or the container: after a restart, run the start
+command again. To stop all three:
 
 ```bash
 cd /workspace
