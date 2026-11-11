@@ -1368,6 +1368,11 @@ export default {
       retry: 'Abhi koshish karein',
       failedRequest: 'Server tak rasai nahi ho saki. Dobara koshish ho rahi hai…',
     },
+    pageLoad: {
+      title: 'Yeh safha khul nahi saka',
+      text: 'Apna internet connection check karein. Connection wapas aane par safha khud khul jayega.',
+      retry: 'Dobara koshish karein',
+    },
     install: { title: 'App install karein', text: 'Digital Labour Marketplace ko apni home screen par shamil karein. Yeh jaldi khulti hai aur app ki tarah chalti hai.', button: 'Install karein', later: 'Abhi nahi' },
     palette: {
       open: 'Safhaat aur kaam talaash karein',

@@ -1,8 +1,10 @@
 # Admin guide
 
 For the people who check identities and proof on Digital Labour Marketplace. Written for beginners:
-every step says where to click. Screenshots are in `docs/design/screenshots/admin/` (synthetic
-accounts on the local preview; light mode, English, 1280 px wide).
+every step says where to click. Screenshots are in `docs/design/screenshots/admin/` (taken by
+`npm run screenshots` from the separate e2e database, which holds only synthetic `@example.com` accounts;
+light mode, English, 1280 px wide). They are not taken from the preview database, because it may hold
+accounts that people typed in by hand.
 
 > **Two rules before anything else**
 > 1. Never write a CNIC number into a note, a reason or a template. The website refuses it, because every

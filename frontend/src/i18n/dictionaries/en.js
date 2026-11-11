@@ -1370,6 +1370,11 @@ export default {
       retry: 'Try now',
       failedRequest: 'The server could not be reached. Trying again…',
     },
+    pageLoad: {
+      title: 'This page could not be loaded',
+      text: 'Check your internet connection. The page loads by itself when the connection is back.',
+      retry: 'Try again',
+    },
     install: { title: 'Install the app', text: 'Add Digital Labour Marketplace to your home screen. It opens faster and works like an app.', button: 'Install', later: 'Not now' },
     palette: {
       open: 'Search pages and actions',

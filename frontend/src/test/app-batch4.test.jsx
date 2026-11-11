@@ -11,6 +11,11 @@ import { parseChangelog } from '../../scripts/make-whats-new.mjs';
 import whatsNew from '../content/whatsNew.json';
 import { mockApi, me, onboarding, PROFILE, full } from './mockApi';
 import { renderAt, pathname } from './renderApp';
+import { render } from '@testing-library/react';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { LanguageProvider } from '../i18n';
+import { CrashScreen } from '../components/layout/ErrorBoundary';
+import { lazyPage } from '../routes/lazyPage';
 
 afterEach(() => {
   vi.useRealTimers();
@@ -238,6 +243,52 @@ describe('offline banner and automatic retry (feature 5)', () => {
     act(() => { window.dispatchEvent(new Event('online')); });
     expect(getConnectivity()).toEqual({ online: true, serverDown: false });
     await waitFor(() => expect(screen.getByTestId('offline-banner')).toHaveTextContent('You are back online.'));
+  });
+});
+
+// Bug found by the Batch 4 e2e run: when the connection dropped while an on-demand page was still
+// downloading, the whole website showed "Something went wrong" and stayed there.
+describe('a page whose code could not be downloaded', () => {
+  const renderLazy = (Page) => {
+    const router = createMemoryRouter([{ path: '/', element: <Page />, errorElement: <CrashScreen /> }]);
+    return render(<LanguageProvider initialLanguage="en"><RouterProvider router={router} /></LanguageProvider>);
+  };
+
+  test('a calm message instead of the crash screen; the page loads when the connection is back', async () => {
+    let fail = true;
+    const load = vi.fn(() => (fail
+      ? Promise.reject(new TypeError('Failed to fetch dynamically imported module'))
+      : Promise.resolve({ default: () => <h1>Loaded page</h1> })));
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    renderLazy(lazyPage(load));
+    expect(await screen.findByRole('heading', { level: 1, name: 'This page could not be loaded' })).toBeInTheDocument();
+    expect(screen.queryByText('Something went wrong')).toBeNull();
+    fail = false;
+    act(() => { window.dispatchEvent(new Event('online')); });
+    expect(await screen.findByRole('heading', { level: 1, name: 'Loaded page' })).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(2);
+    // React reports the caught error; it is only the download problem
+    expect(logged.mock.calls.flat().filter((a) => a instanceof Error).every((e) => e.pageLoadFailed)).toBe(true);
+    logged.mockRestore();
+  });
+
+  test('"Try again" loads again; after a second failure "Reload page" is offered too', async () => {
+    const load = vi.fn(() => Promise.reject(new TypeError('Failed to fetch dynamically imported module')));
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    renderLazy(lazyPage(load));
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Try again' }));
+    await waitFor(() => expect(load).toHaveBeenCalledTimes(2));
+    expect(await screen.findByRole('button', { name: 'Reload page' })).toBeInTheDocument();
+    logged.mockRestore();
+  });
+
+  test('a crash inside a page that did load still reaches the crash screen', async () => {
+    const quiet = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const Broken = () => { throw new Error('bug in the page'); };
+    renderLazy(lazyPage(() => Promise.resolve({ default: Broken })));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Something went wrong' })).toBeInTheDocument();
+    quiet.mockRestore();
   });
 });
 
