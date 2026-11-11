@@ -159,6 +159,8 @@ test.describe('notifications, duplicate compare, saved workers and compare (feat
     // the original: approve with the keyboard shortcut A
     await admin.getByRole('button', { name: /E2E Notify Worker/ }).first().click();
     await expect(admin.getByRole('dialog', { name: /House wiring/ })).toBeVisible();
+    // the shortcut works only once the item has loaded (nobody approves a photo before seeing it)
+    await expect(admin.getByRole('dialog', { name: /House wiring/ }).getByRole('button', { name: en('admin.evidence.actions.approve.label'), exact: true })).toBeVisible();
     await admin.keyboard.press('a');
     const confirm = admin.getByRole('dialog', { name: en('admin.evidence.actions.approve.title') });
     await confirm.getByRole('button', { name: en('admin.evidence.actions.approve.label') }).click();
