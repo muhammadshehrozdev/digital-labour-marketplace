@@ -2,7 +2,11 @@
 // Design v3 (Batch 4): a bento of the profile strength with real next steps (feature 10), skills
 // the worker may also do (feature 11), identity, skills and proof. Every number is the worker's
 // own data from GET /api/workers/me/full.
+import { useEffect, useState } from 'react';
 import { Eye, Pencil } from 'lucide-react';
+import Confetti from '../../components/motion/Confetti';
+import { useAuth } from '../../context/auth';
+import { markCelebrated, milestoneToCelebrate } from '../../features/worker/milestones';
 import { Alert, Badge, Button, PageHeader, StatusChip } from '../../components/ui';
 import { SceneArt } from '../../components/illustrations';
 import Reveal from '../../components/motion/Reveal';
@@ -25,6 +29,19 @@ export default function WorkerDashboard() {
   useDocumentTitle(t('titles.dashboard'));
   const full = useMyFullProfile();
   const { categoryLabel, categoryOccupation, skillName } = useTaxonomy();
+  const { user } = useAuth();
+  const [party, setParty] = useState(null);
+  const level = full.data?.strength?.level;
+  const approvedCount = (full.data?.evidence ?? []).filter((e) => e.status === 'approved').length;
+  // a milestone reached since the last visit is celebrated once (feature 52)
+  useEffect(() => {
+    if (!level) return undefined;
+    const milestone = milestoneToCelebrate(user?._id, { level, approved: approvedCount });
+    if (!milestone) return undefined;
+    markCelebrated(user._id, milestone.id);
+    const timer = window.setTimeout(() => setParty(milestone.variant), 400);
+    return () => window.clearTimeout(timer);
+  }, [level, approvedCount, user]);
   if (full.error) return <Alert tone="danger">{te(full.error)}</Alert>;
   if (!full.data) return <PageLoading />;
 
@@ -113,6 +130,7 @@ export default function WorkerDashboard() {
         </Reveal>
       </div>
       <WelcomeTour />
+      {party && <Confetti key={party} variant={party} />}
     </div>
   );
 }

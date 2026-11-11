@@ -354,3 +354,25 @@ describe('Undo after removing a skill (feature 17)', () => {
 
 // keep the act import used (React warns otherwise in some versions)
 void act;
+
+describe('milestone confetti (feature 52)', () => {
+  test('each milestone is celebrated once per account, with its own look', async () => {
+    const { milestoneToCelebrate, markCelebrated } = await import('../features/worker/milestones');
+    expect(milestoneToCelebrate('u9', { level: 'strong', approved: 0 })).toBeNull();
+    expect(milestoneToCelebrate('u9', { level: 'strong', approved: 1 })).toEqual({ id: 'firstApproved', variant: 'ribbons' });
+    markCelebrated('u9', 'firstApproved');
+    expect(milestoneToCelebrate('u9', { level: 'strong', approved: 2 })).toBeNull();
+    expect(milestoneToCelebrate('u9', { level: 'complete', approved: 2 })).toEqual({ id: 'complete', variant: 'stars' });
+    markCelebrated('u9', 'complete');
+    expect(milestoneToCelebrate('u9', { level: 'complete', approved: 2 })).toBeNull();
+    expect(milestoneToCelebrate(undefined, { level: 'complete', approved: 1 })).toBeNull();
+  });
+
+  test('the confetti draws nothing with reduced motion', async () => {
+    window.matchMedia = () => ({ matches: true, addEventListener() {}, removeEventListener() {} });
+    const { default: Confetti } = await import('../components/motion/Confetti');
+    const { container } = render(<Confetti variant="stars" />);
+    expect(container.querySelector('canvas')).toBeNull();
+    delete window.matchMedia;
+  });
+});
