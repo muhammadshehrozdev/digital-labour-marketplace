@@ -72,12 +72,14 @@ for (const lang of LANGS) for (const mode of MODES) {
     await login(customerPage, customer.email);
     await customerPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
     await visit(customerPage, '/find', 'find');
-    await visit(customerPage, '/saved', 'saved workers');
-    await visit(customerPage, '/help', 'help centre');
+    // open a profile from the results first (the cards are only on /find), then the other pages
     const firstCard = customerPage.getByTestId('worker-card').first().getByRole('link');
     await firstCard.click();
     await expect(customerPage).toHaveURL(/\/workers\//);
+    await expect(customerPage.getByRole('heading', { level: 1 }).first()).toBeVisible();
     problems.push(...(await axe(customerPage, `${lang} ${mode} worker public profile`)));
+    await visit(customerPage, '/saved', 'saved workers');
+    await visit(customerPage, '/help', 'help centre');
     await customerContext.close();
 
     // Admin pages

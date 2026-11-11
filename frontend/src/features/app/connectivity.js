@@ -31,8 +31,10 @@ export function retryAll() {
 }
 
 if (typeof window !== 'undefined') {
+  // A request that failed while offline failed because of that, not because the server is down:
+  // back online, start clean and load again (a new failure sets serverDown again).
   window.addEventListener('online', () => {
-    set({ online: true });
+    set({ online: true, serverDown: false });
     retryAll();
   });
   window.addEventListener('offline', () => set({ online: false }));

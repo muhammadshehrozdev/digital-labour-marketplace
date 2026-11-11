@@ -223,6 +223,22 @@ describe('offline banner and automatic retry (feature 5)', () => {
     act(() => { window.dispatchEvent(new Event('online')); });
     await waitFor(() => expect(screen.getByTestId('offline-banner')).toHaveTextContent('You are back online.'));
   });
+
+  // Bug found by the Batch 4 e2e run: a poll that failed while offline kept "could not be reached"
+  // on screen after the connection came back.
+  test('a request that failed while offline does not keep the error after coming back online', async () => {
+    mockApi({});
+    renderAt('/login');
+    await screen.findByRole('heading', { level: 1, name: 'Log in' });
+    act(() => {
+      window.dispatchEvent(new Event('offline'));
+      resetConnectivity({ online: false, serverDown: true });
+    });
+    expect(await screen.findByTestId('offline-banner')).toHaveTextContent('You are offline.');
+    act(() => { window.dispatchEvent(new Event('online')); });
+    expect(getConnectivity()).toEqual({ online: true, serverDown: false });
+    await waitFor(() => expect(screen.getByTestId('offline-banner')).toHaveTextContent('You are back online.'));
+  });
 });
 
 describe('installable app (feature 6)', () => {
