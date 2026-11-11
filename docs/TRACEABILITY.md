@@ -135,7 +135,7 @@ Every audit ID is mapped to its control and test in `docs/SECURITY.md`; the shor
 | 3 | Three languages (English, Urdu RTL, Roman Urdu) | `src/i18n/*` | `i18n.test.jsx`, e2e | Done |
 | 3 | Design v2 "bold, premium, alive" | themes, landing v2 | `contrast.test.js` | Superseded by Batch 4 design v3 |
 | 3 | One profile view, one editor | D-020 | `pages.test.jsx` | Done |
-| 4 | Better design ("nothing special") | D-023, critique with scores before/after | `docs/design/07-critique-v2.md`, `design.test.jsx` | Done |
+| 4 | Better design ("nothing special"); target 9 or more on every criterion | D-023, critique with scores before/after | `docs/design/07-critique-v2.md`, `design.test.jsx` | **Partial:** average 5.3 → 8.7; 414 of 560 scores are 9 or more, 4 of 56 screen rows reach 9 everywhere; every score below 9 has its reason in the critique ("Not yet at 9") |
 | 4 | Bring back the earlier logo, refine it | D-021 | `brand.test.jsx` | Done |
 | 4 | Night-mode button on every page, with fun animation | D-022 | `theme.test.jsx` "the night-mode button is on every page", e2e dark-mode axe | Done |
 | 4 | At least 50 delightful features | Part 4 features 1–55 (see the Batch 4 report, section 5) | the Batch 4 test files | Done (see report for any feature not built) |

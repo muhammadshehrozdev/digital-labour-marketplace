@@ -47,7 +47,7 @@ describe('worker navigation and the profile view/edit split (D-011, D-020)', () 
     expect(await screen.findByRole('heading', { level: 1, name: 'Welcome, Rashid' })).toBeInTheDocument();
     expect(screen.getByText(/DLM-2026-000042/)).toBeInTheDocument();
     // Batch 4: the completion ring became the profile strength meter (same documented percentage)
-    expect(screen.getByRole('progressbar', { name: 'Profile strength' })).toHaveAttribute('aria-valuenow', '80');
+    expect(screen.getByRole('progressbar', { name: 'Profile filled in' })).toHaveAttribute('aria-valuenow', '80');
     expect(screen.getByText('Strong')).toBeInTheDocument();
     expect(screen.getByText('Identity pending review')).toBeInTheDocument();
     expect(within(screen.getByRole('heading', { name: 'Your skills' }).closest('div').parentElement).getByText(/House wiring/)).toHaveTextContent('Self-declared');
