@@ -46,7 +46,7 @@ D-028 exports and reason templates. Review: `docs/REVIEW-2026-11.md`. Traceabili
   download 753.8 kB → 685.6 kB of JavaScript (228 → 215 kB gzip, about 9 % less) by loading rarely used
   pages on demand; contrast checked in both modes; e2e axe in
   light and dark for every language; coverage measured (`npm run coverage`): backend 98.09 % lines
-  (middleware 100 %), frontend 89.95 % lines.
+  (middleware 100 %), frontend 90.00 % lines.
 - Found by the full e2e run and fixed, each with a test that fails without the fix: losing the connection
   while a page was still downloading showed "Something went wrong" for good (now a calm message that loads
   again when the connection is back); the offline banner kept "could not be reached" after reconnecting.
