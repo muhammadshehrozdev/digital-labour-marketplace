@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import API from '../../api';
-import { Alert, Button, IconButton, Select, TextArea, TextField } from '../../components/ui';
+import { Alert, Button, IconButton, MaskedField, Select, TextArea, TextField } from '../../components/ui';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useT } from '../../i18n';
 import { apiError, apiFieldErrors } from '../../utils/apiErrors';
@@ -75,8 +75,8 @@ export default function WorkForm({ values, onChange, onSaved, submitLabel, secon
               onChange={set('availability')}
               error={errors.availability}
             />
-            <TextField label={t('work.hourly')} inputMode="decimal" dir="ltr" placeholder="800" value={values.hourlyRate} onChange={set('hourlyRate')} error={errors.hourlyRate} />
-            <TextField label={t('work.daily')} inputMode="decimal" dir="ltr" placeholder="4000" value={values.dailyRate} onChange={set('dailyRate')} error={errors.dailyRate} hint={t('work.dailyHint')} />
+            <MaskedField mask="rupees" prefix="Rs" label={t('work.hourly')} inputMode="numeric" placeholder="800" value={values.hourlyRate} onChange={set('hourlyRate')} error={errors.hourlyRate} />
+            <MaskedField mask="rupees" prefix="Rs" label={t('work.daily')} inputMode="numeric" placeholder="4,000" value={values.dailyRate} onChange={set('dailyRate')} error={errors.dailyRate} hint={t('work.dailyHint')} />
           </div>
           <TextArea label={t('work.bio')} maxLength={500} rows={3} value={values.bio} onChange={set('bio')} error={errors.bio} placeholder={t('work.bioPlaceholder')} urdu />
         </>

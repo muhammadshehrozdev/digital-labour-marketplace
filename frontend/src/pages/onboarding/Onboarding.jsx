@@ -12,6 +12,7 @@ import { useAuth } from '../../context/auth';
 import { useDocumentTitle, useT } from '../../i18n';
 import { useOnboarding, allowedStep, STEP_IDS, DATA_STEPS } from '../../hooks/useOnboarding';
 import { useMyProfile } from '../../hooks/useMyProfile';
+import { useDraft } from '../../hooks/useDraft';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { PageLoading } from '../../routes/guards';
 import ProofStep from './ProofStep';
@@ -45,6 +46,9 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
   const [about, setAbout] = useState(() => aboutValuesFrom(profile, user));
   const [work, setWork] = useState(() => workValuesFrom(profile));
   const [skillCount, setSkillCount] = useState(profile?.skills?.length ?? 0);
+  // What is typed is kept on this device until it is saved (never the CNIC).
+  const aboutDraft = useDraft('onboarding-about', about, setAbout, { exclude: ['cnicNumber'] });
+  const workDraft = useDraft('onboarding-work', work, setWork);
 
   useEffect(() => {
     document.getElementById('onboarding-title')?.focus();
@@ -88,6 +92,7 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
             onSaved={(data) => {
               updateUser({ name: data.profile.user?.name, phone: data.profile.user?.phone });
               setAbout((v) => ({ ...v, cnicNumber: '' }));
+              aboutDraft.clear(aboutValuesFrom(data.profile, user));
               afterSave(data, 'work');
             }}
           />
@@ -96,7 +101,7 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
 
       {step === 'work' && (
         <Card>
-          <WorkForm values={work} onChange={setWork} submitLabel={t('onboarding.saveContinue')} secondary={back} onSaved={(data) => afterSave(data, 'skills')} />
+          <WorkForm values={work} onChange={setWork} submitLabel={t('onboarding.saveContinue')} secondary={back} onSaved={(data) => { workDraft.clear(workValuesFrom(data.profile)); afterSave(data, 'skills'); }} />
         </Card>
       )}
 

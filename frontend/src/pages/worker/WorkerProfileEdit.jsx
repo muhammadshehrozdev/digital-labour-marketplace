@@ -13,6 +13,7 @@ import SkillProofList from '../../features/evidence/SkillProofList';
 import { useAuth } from '../../context/auth';
 import { useMyFullProfile } from '../../hooks/useMyFullProfile';
 import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
+import { useDraft } from '../../hooks/useDraft';
 import { LANGUAGES, useChangeLanguage, useDocumentTitle, useLanguage } from '../../i18n';
 import { apiError } from '../../utils/apiErrors';
 import { PageLoading } from '../../routes/guards';
@@ -53,6 +54,9 @@ function Editor({ full }) {
   const [aboutBase, setAboutBase] = useState(about);
   const [work, setWork] = useState(() => workValuesFrom(profile));
   const [workBase, setWorkBase] = useState(work);
+  // Drafts stay on this device until the section is saved (never the CNIC).
+  const aboutDraft = useDraft('edit-about', about, setAbout, { exclude: ['cnicNumber'] });
+  const workDraft = useDraft('edit-work', work, setWork);
   const dirty = {
     about: !same(about, aboutBase),
     work: ['occupation', 'category', 'experienceYears', 'hourlyRate', 'dailyRate', 'availability', 'bio'].some((k) => String(work[k]) !== String(workBase[k])),
@@ -68,8 +72,8 @@ function Editor({ full }) {
     else openSection(id);
   };
   const discardAndOpen = () => {
-    if (section === 'about') setAbout(aboutBase);
-    if (section === 'work' || section === 'history') setWork(workBase);
+    if (section === 'about') { setAbout(aboutBase); aboutDraft.clear(); }
+    if (section === 'work' || section === 'history') { setWork(workBase); workDraft.clear(); }
     openSection(pendingSection);
     setPendingSection(null);
   };
@@ -82,11 +86,13 @@ function Editor({ full }) {
       const next = { ...aboutValuesFrom(data.profile, user), cnicNumber: '' };
       setAbout(next);
       setAboutBase(next);
+      aboutDraft.clear(next);
     } else {
       const next = workValuesFrom(data.profile);
       // keep the other part's draft, so saving "Work and rates" does not drop unsaved history
       const merged = part === 'work' ? { ...next, workHistory: work.workHistory } : { ...work, workHistory: next.workHistory };
       setWork(merged);
+      workDraft.clear(part === 'work' ? { ...next, workHistory: workBase.workHistory } : { ...workBase, workHistory: next.workHistory });
       setWorkBase((base) => (part === 'work' ? { ...next, workHistory: base.workHistory } : { ...base, workHistory: next.workHistory }));
     }
     toast.show({ title: t('editor.saved'), message: t('editor.savedText') });

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import API from '../../api';
-import { Alert, Button, TextField } from '../../components/ui';
+import { Alert, Button, MaskedField, TextField } from '../../components/ui';
 import { useT } from '../../i18n';
 import { apiError, apiFieldErrors } from '../../utils/apiErrors';
 import { aboutPayload, validateAbout } from './aboutForm';
@@ -37,13 +37,13 @@ export default function AboutForm({ values, onChange, cnicOnFile, onSaved, submi
       {formError && <Alert tone="danger">{te(formError)}</Alert>}
       <div className={styles.grid}>
         <TextField label={t('about.fullName')} required autoComplete="name" value={values.name} onChange={set('name')} error={errors.name} urdu />
-        <TextField label={t('about.phone')} required type="tel" inputMode="tel" autoComplete="tel" dir="ltr" placeholder="0300 1234567" value={values.phone} onChange={set('phone')} error={errors.phone} hint={t('about.phoneHint')} />
-        <TextField label={t('about.whatsapp')} type="tel" inputMode="tel" dir="ltr" placeholder="0300 1234567" value={values.whatsappNumber} onChange={set('whatsappNumber')} error={errors.whatsappNumber} />
-        <TextField
+        <MaskedField mask="mobile" label={t('about.phone')} required type="tel" inputMode="tel" autoComplete="tel" placeholder="0300-1234567" value={values.phone} onChange={set('phone')} error={errors.phone} hint={t('about.phoneHint')} />
+        <MaskedField mask="mobile" label={t('about.whatsapp')} type="tel" inputMode="tel" placeholder="0300-1234567" value={values.whatsappNumber} onChange={set('whatsappNumber')} error={errors.whatsappNumber} />
+        <MaskedField
+          mask="cnic"
           label={t('about.cnic')}
           inputMode="numeric"
           autoComplete="off"
-          dir="ltr"
           placeholder={cnicOnFile ? t('about.cnicSavedPlaceholder') : '12345-1234567-1'}
           value={values.cnicNumber}
           onChange={set('cnicNumber')}

@@ -13,6 +13,7 @@ export { default as Drawer } from './Drawer';
 export { default as EmptyState } from './EmptyState';
 export { default as FileUpload } from './FileUpload';
 export { default as IconButton } from './IconButton';
+export { default as MaskedField } from './MaskedField';
 export { default as PageHeader } from './PageHeader';
 export { default as Pagination } from './Pagination';
 export { default as PasswordField } from './PasswordField';

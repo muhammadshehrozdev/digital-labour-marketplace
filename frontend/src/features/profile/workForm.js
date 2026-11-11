@@ -1,8 +1,11 @@
+import { formatRupees, plainNumber } from '../../utils/masks';
+
 // Values, checks and request body for "Your work" (same rules as the server).
 // parts: 'work' (trade, experience, rates, availability, bio) and/or 'history' (past jobs).
 // The profile editor saves them as separate sections; onboarding saves both at once.
 // Checks return dictionary keys (translated where they are shown).
-const numberText = (v) => (v === null || v === undefined || v === 0 ? '' : String(v));
+// Rates are shown grouped ("4,500") and sent as plain numbers.
+const numberText = (v) => (v === null || v === undefined || v === 0 ? '' : formatRupees(v));
 export const ALL_PARTS = ['work', 'history'];
 
 export function workValuesFrom(profile) {
@@ -20,7 +23,7 @@ export function workValuesFrom(profile) {
   };
 }
 
-const toNumber = (v) => (String(v).trim() === '' ? 0 : Number(v));
+const toNumber = (v) => (plainNumber(v).trim() === '' ? 0 : Number(plainNumber(v)));
 
 export function validateWork(v, parts = ALL_PARTS) {
   const e = {};
@@ -30,7 +33,7 @@ export function validateWork(v, parts = ALL_PARTS) {
     const years = String(v.experienceYears).trim();
     if (years === '' || !/^\d{1,2}$/.test(years) || Number(years) > 60) e.experienceYears = 'validation.experience';
     for (const key of ['hourlyRate', 'dailyRate']) {
-      const raw = String(v[key]).trim();
+      const raw = plainNumber(v[key]).trim();
       if (raw && (!/^\d+(\.\d+)?$/.test(raw) || Number(raw) > 1000000)) e[key] = 'validation.rate';
     }
     if (!e.hourlyRate && !e.dailyRate && toNumber(v.hourlyRate) <= 0 && toNumber(v.dailyRate) <= 0) {

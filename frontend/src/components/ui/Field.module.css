@@ -62,3 +62,8 @@
 .padStart { padding-inline-start: 44px; }
 .padEnd { padding-inline-end: 56px; }
 .shell:focus-within .adornStart { color: var(--color-primary); }
+
+/* live line of a masked field: progress in grey, "looks right" in green with a check */
+.live { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+.ok { color: var(--color-success); }
+.problem { color: var(--color-danger); }
