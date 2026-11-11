@@ -181,9 +181,8 @@ export default function AdminIdentity() {
   };
 
   const columns = [
-    { key: 'name', header: t('admin.identity.columns.worker'), sortable: true, sortValue: (w) => w.user?.name ?? '', render: (w) => w.user?.name ?? t('common.empty') },
-    { key: 'id', header: t('admin.identity.columns.id'), render: (w) => <span className="tabular" dir="ltr">{w.workerIdCode}</span> },
-    { key: 'trade', header: t('admin.identity.columns.trade'), sortable: true, sortValue: (w) => w.occupation, render: (w) => (w.occupation ? `${w.occupation} · ${categoryLabel(w.category)}` : t('common.empty')) },
+    { key: 'name', header: t('admin.identity.columns.worker'), sortable: true, sortValue: (w) => w.user?.name ?? '', minWidth: '11rem', render: (w) => w.user?.name ?? t('common.empty'), sub: (w) => <span className="tabular" dir="ltr">{w.workerIdCode}</span> },
+    { key: 'trade', header: t('admin.identity.columns.trade'), minWidth: '10rem', sortable: true, sortValue: (w) => w.occupation, render: (w) => (w.occupation ? `${w.occupation} · ${categoryLabel(w.category)}` : t('common.empty')) },
     { key: 'city', header: t('admin.identity.columns.city'), sortable: true, sortValue: (w) => w.city, render: (w) => w.city || t('common.empty') },
     { key: 'cnic', header: t('admin.identity.columns.cnic'), render: (w) => (w.cnicOnFile ? <Badge tone="primary">{t('admin.identity.onFile')}</Badge> : <Badge>{t('admin.identity.notSaved')}</Badge>) },
     { key: 'status', header: t('admin.identity.columns.identity'), render: (w) => <StatusChip kind="identity" status={w.verificationStatus} /> },

@@ -4,7 +4,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { readFileSync } from 'node:fs';
 import { SceneArt, TradeArt, SCENE_IDS, TRADE_ART_IDS } from '../components/illustrations';
-import { EmptyState, TextField } from '../components/ui';
+import { DataTable, EmptyState, TextField } from '../components/ui';
 import { destinationsFor, searchDestinations } from '../features/navigation/destinations';
 import { mockApi, me, TAXONOMY } from './mockApi';
 import { renderAt } from './renderApp';
@@ -145,5 +145,61 @@ describe('onboarding step heading focus', () => {
     const rule = css.match(/\.head h1:focus\s*\{([^}]*)\}/)?.[1] ?? '';
     expect(rule).toMatch(/outline:\s*none/);
     expect(rule).toMatch(/box-shadow:\s*none/);
+  });
+});
+
+// Batch 4 screenshot review: names broke into one word per line, and the evidence table hid its last
+// column at 1280 px. Columns can now keep a minimum width and show the worker ID under the name.
+describe('admin tables: minimum width and a second line', () => {
+  const columns = [
+    { key: 'name', header: 'Worker', minWidth: '11rem', render: (r) => r.name, sub: (r) => r.id },
+    { key: 'city', header: 'City', sub: () => null },
+  ];
+  const rows = [{ id: 'DLM-2026-000042', name: 'Rashid Mehmood', city: 'Rawalpindi' }];
+
+  test('the second line is outside the row button, so the button keeps a short name', async () => {
+    const opened = [];
+    render(<DataTable columns={columns} rows={rows} rowKey={(r) => r.id} onRowClick={(r) => opened.push(r.id)} />);
+    const button = screen.getByRole('button', { name: 'Rashid Mehmood' });
+    expect(button.closest('td')).toHaveTextContent('DLM-2026-000042');
+    expect(button).not.toHaveTextContent('DLM-2026-000042');
+    await userEvent.setup().click(button);
+    expect(opened).toEqual(['DLM-2026-000042']);
+  });
+
+  test('minWidth is set on the header and the cells; an empty second line is not drawn', () => {
+    const { container } = render(<DataTable columns={columns} rows={rows} rowKey={(r) => r.id} />);
+    expect(screen.getByRole('columnheader', { name: 'Worker' }).style.minInlineSize).toBe('11rem');
+    expect(screen.getByRole('cell', { name: /Rashid Mehmood/ }).style.minInlineSize).toBe('11rem');
+    expect(within(screen.getByRole('cell', { name: 'Rawalpindi' })).queryAllByText(/./).length).toBeLessThanOrEqual(1);
+    expect(container.querySelectorAll('td span').length).toBe(1);
+  });
+});
+
+// Bug found in the Batch 4 phone screenshots: a screen-reader-only label (position: absolute) inside the
+// compare table escaped its sideways-scrolling box and made the whole page 464 px wide at 360 px.
+describe('sideways-scrolling boxes keep everything inside', () => {
+  test('every rule with overflow-x: auto also sets position: relative', async () => {
+    const { readdirSync, statSync } = await import('node:fs');
+    const files = [];
+    const walk = (dir) => readdirSync(dir).forEach((f) => { const p = `${dir}/${f}`; if (statSync(p).isDirectory()) walk(p); else if (p.endsWith('.css')) files.push(p); });
+    walk('src');
+    const missing = [];
+    for (const file of files) {
+      for (const [, selector, body] of readFileSync(file, 'utf8').matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+        if (/overflow-x:\s*auto/.test(body) && !/position:\s*(relative|absolute|fixed|sticky)/.test(body)) missing.push(`${file} ${selector.trim()}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+});
+
+// Critique v2 screen 12: on phones the toasts covered the sticky Back / Continue bar.
+describe('toast placement', () => {
+  test('phones: under the header; wider screens: bottom corner', () => {
+    const css = readFileSync('src/components/ui/Toast.module.css', 'utf8');
+    const region = css.match(/\.region \{([\s\S]*?)\n\}/)[1];
+    expect(region).toMatch(/inset-block-start:\s*calc\(var\(--header-height\)/);
+    expect(region).toMatch(/@media \(min-width: 640px\)\s*\{[^}]*inset-block:\s*auto var\(--space-6\)/);
   });
 });

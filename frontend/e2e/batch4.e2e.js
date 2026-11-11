@@ -214,6 +214,9 @@ test.describe('notifications, duplicate compare, saved workers and compare (feat
     await expect(table).toContainText('E2E Compare One');
     await expect(table).toContainText('E2E Compare Two');
     await expect(table).not.toContainText(/03000000041|@example\.com/); // no contact data
+    // on a phone the table scrolls inside its box; the page itself never scrolls sideways
+    await page.setViewportSize({ width: 360, height: 800 });
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
     browserConsole.assertClean();
     await c.close();
   });

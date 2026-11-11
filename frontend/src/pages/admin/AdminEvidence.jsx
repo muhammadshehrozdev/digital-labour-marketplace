@@ -248,8 +248,7 @@ export default function AdminEvidence() {
   };
 
   const columns = [
-    { key: 'worker', header: t('admin.evidence.columns.worker'), render: (e) => e.worker?.name ?? t('common.empty') },
-    { key: 'id', header: t('admin.evidence.columns.id'), render: (e) => <span className="tabular" dir="ltr">{e.workerIdCode}</span> },
+    { key: 'worker', header: t('admin.evidence.columns.worker'), minWidth: '11rem', render: (e) => e.worker?.name ?? t('common.empty'), sub: (e) => <span className="tabular" dir="ltr">{e.workerIdCode}</span> },
     { key: 'skill', header: t('admin.evidence.columns.skill'), sortable: true, sortValue: (e) => e.skillName, render: (e) => e.skillName },
     { key: 'type', header: t('admin.evidence.columns.type'), render: (e) => t(`evidence.types.${e.type}.title`) },
     { key: 'uploaded', header: t('admin.evidence.columns.uploaded'), sortable: true, sortValue: (e) => e.createdAt, render: (e) => <span className="tabular">{formatDate(e.createdAt)}</span> },

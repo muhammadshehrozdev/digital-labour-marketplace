@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import styles from './DataTable.module.css';
 
-// columns: [{ key, header, render?(row), sortValue?(row), sortable?, align? }]
+// columns: [{ key, header, render?(row), sortValue?(row), sortable?, align?, minWidth?, sub?(row) }]
+//   minWidth: a CSS length, so names do not break into one word per line;
+//   sub: a second, quieter line under the value (outside the row button, so its name stays short).
 // Below 768 px every row becomes a stacked card with the column names as labels.
 export default function DataTable({ columns, rows, rowKey, caption, empty, onRowClick, rowLabel }) {
   const [sort, setSort] = useState(null); // { key, dir }
@@ -31,7 +33,7 @@ export default function DataTable({ columns, rows, rowKey, caption, empty, onRow
               const active = sort?.key === c.key;
               const Icon = !active ? ArrowUpDown : sort.dir === 'asc' ? ArrowUp : ArrowDown;
               return (
-                <th key={c.key} scope="col" aria-sort={active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : undefined} className={c.align === 'end' ? styles.end : undefined}>
+                <th key={c.key} scope="col" aria-sort={active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : undefined} className={c.align === 'end' ? styles.end : undefined} style={c.minWidth ? { minInlineSize: c.minWidth } : undefined}>
                   {c.sortable ? (
                     <button type="button" className={styles.sortButton} onClick={() => toggle(c.key)}>
                       {c.header}
@@ -49,7 +51,7 @@ export default function DataTable({ columns, rows, rowKey, caption, empty, onRow
           {sorted.map((row) => (
             <tr key={rowKey(row)} className={onRowClick ? styles.clickable : undefined}>
               {columns.map((c, i) => (
-                <td key={c.key} data-label={c.header} className={c.align === 'end' ? styles.end : undefined}>
+                <td key={c.key} data-label={c.header} className={c.align === 'end' ? styles.end : undefined} style={c.minWidth ? { minInlineSize: c.minWidth } : undefined}>
                   {i === 0 && onRowClick ? (
                     <button type="button" className={styles.rowButton} onClick={() => onRowClick(row)} aria-label={rowLabel ? rowLabel(row) : undefined}>
                       {c.render ? c.render(row) : row[c.key]}
@@ -59,6 +61,7 @@ export default function DataTable({ columns, rows, rowKey, caption, empty, onRow
                   ) : (
                     row[c.key]
                   )}
+                  {c.sub && c.sub(row) != null && <span className={styles.sub}>{c.sub(row)}</span>}
                 </td>
               ))}
             </tr>

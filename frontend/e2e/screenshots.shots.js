@@ -13,6 +13,8 @@ const SENTENCE = { en: 'I have done house wiring and solar panel work for 5 year
 async function shoot(page, lang, name) {
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 900 });
+    // from the top: a full-page picture of a scrolled page draws the sticky header in the middle
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(250);
     await page.screenshot({ path: `${OUT}/${lang}/${name}-${width}.png`, fullPage: true });
   }
@@ -166,6 +168,7 @@ test('every main screen in every language at 360, 768 and 1280 px', async ({ bro
   const darkShot = async (name) => {
     for (const width of [360, 1280]) {
       await page.setViewportSize({ width, height: 900 });
+      await page.evaluate(() => window.scrollTo(0, 0));
       await page.waitForTimeout(250);
       await page.screenshot({ path: `${OUT}/dark/${name}-${width}.png`, fullPage: true });
     }

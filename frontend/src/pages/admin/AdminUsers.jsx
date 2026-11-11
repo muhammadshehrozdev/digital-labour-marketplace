@@ -201,7 +201,7 @@ export default function AdminUsers() {
   const { data, error, reload } = useApiQuery('/admin/users', query);
 
   const columns = [
-    { key: 'name', header: t('adminx.users.columns.name'), sortable: true, sortValue: (u) => u.name, render: (u) => <span dir="auto">{u.name}</span> },
+    { key: 'name', header: t('adminx.users.columns.name'), minWidth: '10rem', sortable: true, sortValue: (u) => u.name, render: (u) => <span dir="auto">{u.name}</span> },
     { key: 'email', header: t('adminx.users.columns.email'), render: (u) => <span dir="ltr" className={styles.wrapAnywhere}>{u.email}</span> },
     { key: 'phone', header: t('adminx.users.columns.phone'), render: (u) => <span className="tabular" dir="ltr">{u.phone}</span> },
     { key: 'role', header: t('adminx.users.columns.role'), sortable: true, sortValue: (u) => u.role, render: (u) => t(`roles.${u.role}`) },
