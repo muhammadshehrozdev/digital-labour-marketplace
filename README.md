@@ -204,6 +204,7 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 | `npm run icons` | Draws the logo files, favicon and app icons from the logo's own numbers (`public/`, `docs/design/logo/`) |
 | `npm run whats-new` | Rebuilds the "What's new" panel from `docs/CHANGELOG.md` |
 | `npm run coverage` | Frontend tests with a coverage report (target: 80% of lines in `src/`) |
+| `npm run demo:video` | Records the demo (`docs/DEMO-SCRIPT.md`) as `docs/demo/demo-video.webm` (not in Git) and writes `docs/demo/NARRATION.md`; start with `bash scripts/preview.sh demo` and `reset-demo` |
 
 In `.\backend`, `npm run coverage` runs the backend tests with a coverage report (target: 90% of lines in
 `services/`, `controllers/`, `middleware/`).

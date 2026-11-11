@@ -21,6 +21,25 @@ npx playwright test e2e/demo-script.e2e.js
 
 ---
 
+## Recorded video (backup and practice)
+
+`docs/demo/demo-video.webm` (1280×720, about 4 minutes 50 seconds, no sound) shows the same demo on the demo
+database, with a visible cursor and a label saying which window you are looking at. The English voice-over
+with a time for every line is in `docs/demo/NARRATION.md`. If the live demo fails on the day, you can play
+the video and read the narration.
+
+The video is not in Git (it is large). To record it again (in the container terminal):
+
+```bash
+cd /workspace
+bash scripts/preview.sh demo
+bash scripts/preview.sh reset-demo
+cd frontend
+npm run demo:video
+```
+
+---
+
 ## Before the panel arrives (10 minutes earlier)
 
 **1. Start the preview on a clean demo database.** In the container terminal:

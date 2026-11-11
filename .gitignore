@@ -26,3 +26,6 @@ BATCH_2_PROMPT.md
 BATCH_3_PROMPT.md
 BATCH_4_PROMPT.md
 docs/audit/
+
+# Recorded demo video (docs/demo/demo-video.webm, made by npm run demo:video in ./frontend): large, not in Git
+docs/demo/demo-video.webm
