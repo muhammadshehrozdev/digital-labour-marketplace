@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Logo from '../../components/brand/Logo';
+import { TradeArt } from '../../components/illustrations';
 import ThemeToggle from '../../components/layout/ThemeToggle';
 import { LANGUAGES, useChangeLanguage } from '../../i18n';
 import styles from './LanguageChooser.module.css';
+
+const CHOOSER_TRADES = ['electrical_solar', 'plumbing_sanitary', 'construction_masonry', 'carpentry_woodwork', 'painting_renovation'];
 
 export default function LanguageChooser() {
   const changeLanguage = useChangeLanguage();
@@ -31,6 +34,10 @@ export default function LanguageChooser() {
             <span key={l.code} lang={l.htmlLang} dir={l.dir} className={styles.titleLine}>{l.chooserTitle}</span>
           ))}
         </h1>
+        {/* Design v3: who the website is for, before any word is read (decorative) */}
+        <div className={styles.trades} aria-hidden="true" data-testid="chooser-trades">
+          {CHOOSER_TRADES.map((c) => <TradeArt key={c} category={c} size={64} tone="dark" className={styles.trade} />)}
+        </div>
         <ul className={styles.cards}>
           {LANGUAGES.map((l, i) => (
             <li key={l.code} style={{ '--i': i }}>

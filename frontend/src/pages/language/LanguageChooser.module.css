@@ -147,3 +147,18 @@
   inset-block-start: var(--space-4);
   inset-inline-end: var(--gutter);
 }
+
+/* Design v3: a row of trade drawings; a slow bob, one after another (none with reduced motion) */
+.trades { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); margin-block-start: calc(-1 * var(--space-3)); }
+.trade { inline-size: 64px; block-size: 64px; }
+@media (prefers-reduced-motion: no-preference) {
+  .trade { animation: trade-bob 4.8s ease-in-out infinite; }
+  .trade:nth-child(2) { animation-delay: 0.3s; }
+  .trade:nth-child(3) { animation-delay: 0.6s; }
+  .trade:nth-child(4) { animation-delay: 0.9s; }
+  .trade:nth-child(5) { animation-delay: 1.2s; }
+}
+@media (max-width: 479px) {
+  .trade { inline-size: 52px; block-size: 52px; }
+}
+@keyframes trade-bob { 50% { transform: translateY(-5px); } }

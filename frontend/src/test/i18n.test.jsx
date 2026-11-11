@@ -129,6 +129,10 @@ describe('language chooser and switcher', () => {
     const urdu = cards.find((c) => c.getAttribute('lang') === 'ur');
     expect(urdu).toHaveAttribute('dir', 'rtl');
     expect(within(urdu).getByText(LANGUAGES[1].preview)).toBeInTheDocument();
+    // design v3: five trade drawings, decorative only (no words to translate, hidden from screen readers)
+    const trades = screen.getByTestId('chooser-trades');
+    expect(trades).toHaveAttribute('aria-hidden', 'true');
+    expect(trades.querySelectorAll('svg[data-art]')).toHaveLength(5);
   });
 
   test('choosing Urdu shows the site in Urdu, right to left, and remembers the choice', async () => {
