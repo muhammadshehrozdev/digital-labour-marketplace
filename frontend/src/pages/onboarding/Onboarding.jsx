@@ -115,6 +115,9 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
           <SkillsEditor
             onSkillsChange={(list, serverState) => {
               setSkillCount(list.length);
+              // Step 4 offers these skills for proof; without this it showed none until a reload
+              // (found by the defence-demo rehearsal, 11 Nov 2026).
+              if (profile) setProfile({ ...profile, skills: list });
               // Use the server's onboarding state (complete, nextStep), so Continue is allowed (Batch 3 fix).
               if (serverState) setState(serverState);
             }}

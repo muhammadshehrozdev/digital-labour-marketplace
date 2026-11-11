@@ -178,6 +178,24 @@ describe('skills step (Module 2)', () => {
     expect(pathname()).toBe('/onboarding/proof');
   });
 
+  // Found by the defence-demo rehearsal (11 Nov 2026): Step 4 offered no skill for the photo until the
+  // page was reloaded, because the skills added in Step 3 never reached it.
+  test('the skills added in Step 3 are offered for proof in Step 4 at once (no reload)', async () => {
+    mockApi(skillsRoutes({
+      'POST /workers/me/skills': (cfg, body) => ({ status: 201, data: { skills: body.skillIds.map((id) => ({ skillId: id, name: id === 'elec_wiring' ? 'House wiring' : 'Solar panel installation', category: 'electrical_solar', addedVia: 'extractor', custom: false })), onboarding: onboarding({ ...WORK_DONE, skills: true }).data } }),
+      'GET /evidence/mine': { status: 200, data: { evidence: [] } },
+    }));
+    renderAt('/onboarding/skills');
+    const user = userEvent.setup();
+    await user.type(await screen.findByLabelText(/what work do you do/), '6 saal se wiring aur solar');
+    await user.click(screen.getByRole('button', { name: 'Find my skills' }));
+    await user.click(await screen.findByRole('button', { name: /Add selected skills/ }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    const select = await screen.findByRole('combobox', { name: /Which skill does this photo prove/ });
+    const options = within(select).getAllByRole('option').map((o) => o.textContent);
+    expect(options).toEqual(expect.arrayContaining(['House wiring', 'Solar panel installation']));
+  });
+
   test('no silent dead end: without a skill, Continue explains why and links to the skill search', async () => {
     mockApi(skillsRoutes());
     renderAt('/onboarding/skills');
