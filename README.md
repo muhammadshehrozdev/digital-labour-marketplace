@@ -189,6 +189,7 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 
 | Command | What it does |
 |---|---|
+| `npm run db:indexes` | Builds every database index (safe to repeat, changes no data); used once on the new production database |
 | `npm run demo:reset` | Wipes the separate demo database (`dlm_demo`, local only, name must end in `_demo`) and creates the three synthetic demo accounts; asks for `yes` (or add `-- --yes`) |
 | `npm run audit:verify` | Checks that nobody changed the audit log (hash chain) |
 | `npm run confidence:sensitivity` | Shows how the Module 3 skill score changes with other weights (formula outputs) |
@@ -216,7 +217,9 @@ In `.\backend`, `npm run coverage` runs the backend tests with a coverage report
 | `docs/USE-CASES.md` | Actors and use cases for Modules 1–3 |
 | `docs/TEST-CASES.md` | Test-case table generated from the real test run |
 | `docs/SECURITY.md` | Threats → mitigations → tests, keys, limitations, incidents |
-| `docs/DECISIONS.md` | Decision records D-001 to D-028 |
+| `docs/DECISIONS.md` | Decision records D-001 to D-032 |
+| `docs/DEPLOY-RUNBOOK.md` | Going live on Vercel + MongoDB Atlas, step by step (fresh start, first admin, checks, rollback) |
+| `docs/DEMO-SCRIPT.md` | The 7-minute defence demo of Modules 1–3 |
 | `docs/ADMIN-GUIDE.md` | For admins: creating the first admin, logging in, every admin page, daily tasks, security rules |
 | `docs/TRACEABILITY.md` | Every requirement (proposal, audit, decisions, the team's requests) → code → test → status |
 | `docs/REVIEW-2026-11.md` | Batch 4 code review: findings, fixes, tests, OWASP and ASVS mapping, dependencies |

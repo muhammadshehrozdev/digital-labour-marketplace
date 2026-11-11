@@ -45,8 +45,12 @@ const envSchema = z.object({
   CLIENT_ORIGIN: z.string().transform(toOriginList),
   CNIC_ENC_KEY: key32,
   CNIC_HASH_KEY: key32,
-  // Number of proxies in front of the app (Vercel). 0 = none (local). Measured in Phase 8.
+  // Number of proxies in front of the app. 0 = none (local); 1 on Vercel (required in production,
+  // checked after deployment, docs/DEPLOY-RUNBOOK.md).
   TRUST_PROXY: z.coerce.number().int().min(0).max(5).default(0),
+  // 1 = /api/health also shows the caller their own IP as the server sees it (one-off check after
+  // deployment; turn it off again). Never shows anyone else's data.
+  SHOW_CLIENT_IP: z.enum(['0', '1']).default('0'),
   // Failed login/register attempts allowed per IP address per 15 minutes.
   AUTH_RATE_LIMIT: z.coerce.number().int().min(1).max(100000).default(10),
   // Evidence uploads allowed per IP address per 15 minutes.
@@ -54,15 +58,51 @@ const envSchema = z.object({
   DB_TIMEOUT_MS: z.coerce.number().int().min(100).max(60000).default(5000),
 });
 
-// Pure function: easy to test with any object.
+// The live site (Vercel production, or NODE_ENV=production anywhere) gets stricter checks, so a
+// half-configured deployment refuses to start instead of running with local or unsafe settings.
+const isProduction = (source) => source.NODE_ENV === 'production' || source.VERCEL_ENV === 'production';
+const LOCAL_MONGO = /^mongodb(\+srv)?:\/\/(?:[^@/]*@)?(127\.0\.0\.1|localhost)(:\d+)?(\/|$)/;
+
+function productionProblems(data, source) {
+  const problems = [];
+  if (source.VERCEL_ENV === 'production' && source.NODE_ENV !== 'production') {
+    problems.push('NODE_ENV: must be "production" on the live site');
+  }
+  if (LOCAL_MONGO.test(data.MONGO_URI)) {
+    problems.push('MONGO_URI: points at this computer; the live site needs the Atlas address (mongodb+srv://...)');
+  }
+  const notHttps = data.CLIENT_ORIGIN.filter((origin) => !origin.startsWith('https://'));
+  if (notHttps.length) problems.push(`CLIENT_ORIGIN: the live site accepts https:// origins only (not ${notHttps.join(', ')})`);
+  if (source.TRUST_PROXY === undefined || source.TRUST_PROXY === '') {
+    problems.push('TRUST_PROXY: missing (required on the live site; 1 on Vercel)');
+  }
+  return problems;
+}
+
+function configError(source, lines) {
+  const where = isProduction(source)
+    ? 'on Vercel: Project -> Settings -> Environment Variables, then redeploy'
+    : 'backend/.env';
+  return new Error(`Configuration error: the server will not start. Fix these environment variables (${where}):\n${lines.map((l) => `  - ${l}`).join('\n')}`);
+}
+
+// Pure function: easy to test with any object. Secret values are never put into a message.
 export function loadEnv(source = process.env) {
   const result = envSchema.safeParse(source);
   if (!result.success) {
-    const lines = result.error.issues.map((i) => `  - ${i.path.join('.') || 'env'}: ${i.message}`);
-    throw new Error(`Configuration error in environment variables (backend/.env):\n${lines.join('\n')}`);
+    const lines = result.error.issues.map((i) => {
+      const key = i.path.join('.') || 'env';
+      const missing = source[key] === undefined || source[key] === '';
+      return `${key}: ${missing ? 'missing (required)' : i.message}`;
+    });
+    throw configError(source, lines);
   }
   if (result.data.CNIC_ENC_KEY === result.data.CNIC_HASH_KEY) {
-    throw new Error('Configuration error: CNIC_ENC_KEY and CNIC_HASH_KEY must be two different keys.');
+    throw configError(source, ['CNIC_ENC_KEY and CNIC_HASH_KEY must be two different keys']);
+  }
+  if (isProduction(source)) {
+    const problems = productionProblems(result.data, source);
+    if (problems.length) throw configError(source, problems);
   }
   return Object.freeze(result.data);
 }

@@ -2,6 +2,20 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Go-live kit and cleanup (11 Nov 2026)
+
+- Wordmark: "Digital Labour Marketplace" is one element, weight 700, in the logo's colour, the full name at
+  every width (before: two weights, the second word grey and hidden on phones).
+- Internal working notes (`CLAUDE.md`, the batch briefs, `docs/audit/`) are no longer tracked (kept on disk,
+  in `.gitignore`); every reference now points to a tracked document. `docs/SECURITY.md` lists the project
+  security rules.
+- Go-live (D-032, `docs/DEPLOY-RUNBOOK.md`): `backend/api/index.js` as the one Vercel function, a modern
+  `backend/vercel.json` (no legacy `builds`; only `public/` served), `frontend/vercel.json` passes
+  `/api/:path*` to the backend before the app fallback; production settings check (missing variable,
+  local database, non-https origin, missing `TRUST_PROXY` -> the server refuses to start); optional
+  `SHOW_CLIENT_IP` check; `npm run db:indexes`; `scripts/atlas-create-admin.sh` (first admin from Ubuntu
+  in a throwaway `node:24-bookworm` container, secrets from a file outside the repository).
+
 ## Mid-defence preparation (11 Nov 2026, feature freeze: bug fixes only)
 
 - `bash scripts/preview.sh start | demo | reset-demo | status | stop`: one command for the whole local

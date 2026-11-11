@@ -1,0 +1,3 @@
+# The backend serves the API only. This folder is the only static output, so no source file is ever served.
+User-agent: *
+Disallow: /

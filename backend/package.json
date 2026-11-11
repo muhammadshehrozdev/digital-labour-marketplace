@@ -11,6 +11,7 @@
     "seed:local": "node scripts/seedLocalDemo.js",
     "demo:reset": "node scripts/resetDemo.js",
     "create-admin": "node scripts/createAdmin.js",
+    "db:indexes": "node scripts/createIndexes.js",
     "list-admins": "node scripts/listAdmins.js",
     "audit:verify": "node scripts/verifyAudit.js",
     "migrate:cnic": "node scripts/migrateCnic.js",

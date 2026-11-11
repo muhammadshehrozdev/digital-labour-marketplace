@@ -40,7 +40,13 @@ export function createApp() {
   app.get('/', (req, res) => res.json({ message: 'Digital Labour Marketplace API' }));
 
   // Health check works even when the database is down, and reports its state.
-  app.get('/api/health', (req, res) => res.json({ ok: true, db: dbState() }));
+  // SHOW_CLIENT_IP=1 (one-off check after deployment): also the caller's own IP as the server sees it,
+  // so TRUST_PROXY can be set right (docs/DEPLOY-RUNBOOK.md). Only the caller's own data.
+  app.get('/api/health', (req, res) => res.json({
+    ok: true,
+    db: dbState(),
+    ...(env.SHOW_CLIENT_IP === '1' ? { client: { ip: req.ip, forwardedFor: req.headers['x-forwarded-for'] ?? null, realIp: req.headers['x-real-ip'] ?? null } } : {}),
+  }));
   app.use('/api/meta', metaRoutes); // taxonomy: no database needed
 
   // Every other /api route needs the database; if it is unreachable -> 503.

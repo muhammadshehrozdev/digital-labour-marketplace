@@ -664,3 +664,33 @@ README and the admin guide). The review list in `docs/i18n/REVIEW.md` was genera
 `onboarding.nextTitle` ("What next?"), `workerx.strength.ringCaption` ("Profile filled in"),
 `appx.pageLoad.title`, `appx.pageLoad.text` and `appx.pageLoad.retry` (the "page could not be loaded"
 message). Any text added or changed after this date needs the same check before release.
+
+---
+
+## D-032 — Go-live setup: two Vercel projects, a same-origin rewrite, a fresh Atlas database (11 Nov 2026)
+
+**Decision (Claude Code, for the team to apply with `docs/DEPLOY-RUNBOOK.md`):**
+
+- **Two Vercel projects from the same repository:** `backend` (root directory `backend`) and `frontend`
+  (root directory `frontend`). The frontend sends `/api/:path*` to the backend with a rewrite, and every
+  other path to `index.html` after it (`frontend/vercel.json`). The browser only ever talks to the frontend
+  address, so the login cookie stays first-party and unchanged: `HttpOnly`, `Secure`, `SameSite=Strict`,
+  `Path=/api`. No CORS is needed in the browser, and local and production code are the same.
+- **Backend = one Vercel function**, `backend/api/index.js`, which exports the app from `server.js`. Every
+  path is rewritten to it; Express routes on the original path. `framework: null` and
+  `outputDirectory: "public"` make sure nothing else is served (without them Vercel would serve the source
+  files of the folder). The legacy `builds` file is gone (Vercel advises against it). Install with
+  `npm ci --omit=dev`; Node 24 from `engines`.
+- **Rejected:** one combined project (custom install, build and routing for two package folders: more
+  moving parts); the browser calling the backend address directly (a cross-site cookie would need
+  `SameSite=None`, CORS with credentials and changes to the CSRF check).
+- **Fresh start:** a new, empty Atlas database; no migrations; the old databases and the three old Vercel
+  projects are left untouched (the old projects are frozen with "Don't build anything"). New secrets only.
+  `npm run db:indexes` builds every index before the first admin is created.
+- **Production settings check:** in production the server refuses to start with a clear list when a
+  variable is missing, when `MONGO_URI` points at this computer, when `CLIENT_ORIGIN` is not `https://`,
+  or when `TRUST_PROXY` is not set (`config/env.js`).
+- **Visitor IP:** Vercel may replace `X-Forwarded-For` when one Vercel project proxies to another, which
+  would make every visitor look like one IP to the login rate limit. This cannot be checked locally, so
+  `SHOW_CLIENT_IP=1` lets the team check it once after deployment (runbook step 9) and set `TRUST_PROXY`,
+  or raise `AUTH_RATE_LIMIT` if the visitor IP is not available (the per-account lockout still applies).
