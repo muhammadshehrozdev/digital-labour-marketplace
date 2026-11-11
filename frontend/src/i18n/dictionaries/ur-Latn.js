@@ -1,4 +1,4 @@
-// Roman Urdu — draft translation (Batch 3). Needs a native reviewer: see docs/i18n/REVIEW.md.
+// Roman Urdu — written in Batch 3, reviewed by the team on 11 Nov 2026 (D-031). New texts: see docs/i18n/REVIEW.md.
 // Same keys as en.js (checked by src/test/i18n.test.js). {name} = placeholder, keep as it is.
 // Common everyday spellings (as people type on WhatsApp), short sentences.
 export default {

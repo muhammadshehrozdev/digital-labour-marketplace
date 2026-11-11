@@ -117,7 +117,7 @@ database by hand.
 Sentences you use often, grouped by where they are used (identity verified / not accepted, proof not
 accepted / suspected fake / approval withdrawn, suspend / reactivate). English is required; Urdu and Roman
 Urdu are optional. **Add the starter set** adds a first set in all three languages (the Urdu and Roman Urdu
-lines are drafts: please check them). Inserting a template only fills the note; you can still change it.
+lines were reviewed by the team on 11 Nov 2026). Inserting a template only fills the note; you can still change it.
 
 ### Exports (`/admin/exports`) — `screenshots/admin/07-exports.png`
 Download CSV files for Excel or Google Sheets: the audit log (with hashes, so the chain can be checked

@@ -19,7 +19,7 @@ Across all modules (Batch 3): the website works in **English, اردو (Urdu, ri
 Urdu** (chooser on the first visit, switcher at the top, the choice is saved to the account); a bold
 design v2 with three colour themes (Emerald Night is the default), a new logo and motion that respects
 "reduce motion"; a read-only "My profile" page with "See what customers see", and one profile editor.
-All Urdu and Roman Urdu texts are drafts for a native reviewer (`docs/i18n/REVIEW.md`).
+The Urdu and Roman Urdu texts were reviewed by the team on 11 Nov 2026 (`docs/i18n/REVIEW.md`, decision D-031).
 
 Batch 4 adds: the original logo back (refined), a **night-mode button on every page** (Light, Dark,
 System, with a circular reveal), design v3 with in-house illustrations, more than 50 features (profile
@@ -220,6 +220,6 @@ In `.\backend`, `npm run coverage` runs the backend tests with a coverage report
 | `docs/TRACEABILITY.md` | Every requirement (proposal, audit, decisions, the team's requests) → code → test → status |
 | `docs/REVIEW-2026-11.md` | Batch 4 code review: findings, fixes, tests, OWASP and ASVS mapping, dependencies |
 | `docs/design/` | UX requirements, analysis, design system v2 (themes, fonts, modern CSS, motion), screens, review, deploy readiness, languages (`07-i18n.md`), logo concepts, screenshots |
-| `docs/i18n/REVIEW.md` | Every Urdu and Roman Urdu text next to its English source, for a native reader to check (draft) |
+| `docs/i18n/REVIEW.md` | Every Urdu and Roman Urdu text next to its English source, reviewed by the team on 11 Nov 2026 (D-031) |
 | `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format) |
 | `docs/CHANGELOG.md` | What changed in each phase |

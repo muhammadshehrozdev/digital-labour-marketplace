@@ -15,7 +15,8 @@ technology choices are not followed.
 **Why:** the existing Modules 1–2 are already MERN; one stack for the whole team.
 
 **Follow-up:** the proposal's Section 7 still names Laravel/MySQL and should be
-revised (see `docs/audit/audit-2026-11-06.md`).
+revised (see `docs/audit/audit-2026-11-06.md`). **Update 11 Nov 2026:** the supervisor told the team to
+build in MERN (D-030).
 
 ---
 
@@ -417,6 +418,7 @@ Roman Urdu (`ur-Latn`, left to right).
   and is saved to the account; otherwise the account's saved language is used (so it follows the user to
   another device); an account without a saved language gets the browser's choice.
 - All Urdu and Roman Urdu texts are **drafts that need a native reviewer** (`docs/i18n/REVIEW.md`).
+  **Update 11 Nov 2026:** reviewed by the team (D-031).
 
 ---
 
@@ -607,7 +609,8 @@ to see or save data; offline, the offline banner says so and retries by itself.
   spreadsheet formulas are neutralised (OWASP "CSV injection"); at most 5,000 rows per file; UTF-8 with a
   byte-order mark so Excel shows Urdu correctly.
 - **Reason templates:** reusable sentences per decision kind, in three languages (English required), with a
-  starter set the team must review (the Urdu and Roman Urdu lines were drafted by Claude Code). Inserting a
+  starter set (the Urdu and Roman Urdu lines were drafted by Claude Code and reviewed by the team on
+  11 Nov 2026, D-031). Inserting a
   template only fills the note; the admin can change the words before saving.
 
 
@@ -634,3 +637,30 @@ least two weeks old; run every test, build, lint and e2e; revert any update that
   with Vite 8.3.5) and `tslib` to **2.8.1** (only used by rolldown's optional WebAssembly helpers; 2.9.1
   was too new). **Remove both pins at the next update** and check the age rule again.
 - Result: backend 516/516, frontend 940/940, lint 0, build OK, e2e 34/34 (see the change log).
+
+---
+
+## D-030 — MERN on the supervisor's instruction (recorded 11 Nov 2026)
+
+**What happened:** the supervisor, Ms. Tooba Abdul Qudoos Khan, told the team to build the project in the
+MERN stack (MongoDB, Express, React, Node.js). Reported by Muhammad Shehroz on 11 Nov 2026.
+
+**Effect:** this is the reason behind D-001 ("MERN only"). The proposal's Section 7, which still names
+Laravel/PHP and MySQL, describes the plan before this instruction; the code follows the supervisor. For the
+defence: if the panel asks why the stack differs from the proposal, the answer is the supervisor's
+instruction (D-001, D-030). There is no written copy of the instruction in this repository; if one exists
+(an email or meeting note), keep it with the project file.
+
+---
+
+## D-031 — Urdu and Roman Urdu texts reviewed by the team (11 Nov 2026)
+
+**What happened:** the team reviewed the Urdu and Roman Urdu texts (reported to Claude Code by the team on
+11 Nov 2026). Until then they were Claude Code's drafts (D-019: "drafts that need a native reviewer").
+
+**Effect:** the texts are no longer marked as drafts (`docs/i18n/REVIEW.md`, the dictionary files, the
+README and the admin guide). The review list in `docs/i18n/REVIEW.md` was generated on 11 Nov 2026 with
+1,424 texts. Five texts were added later that day and should be confirmed by the team:
+`onboarding.nextTitle` ("What next?"), `workerx.strength.ringCaption` ("Profile filled in"),
+`appx.pageLoad.title`, `appx.pageLoad.text` and `appx.pageLoad.retry` (the "page could not be loaded"
+message). Any text added or changed after this date needs the same check before release.

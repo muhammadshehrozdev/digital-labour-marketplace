@@ -1,4 +1,4 @@
-// اردو — draft translation (Batch 3). Needs a native reviewer: see docs/i18n/REVIEW.md.
+// اردو — written in Batch 3, reviewed by the team on 11 Nov 2026 (D-031). New texts: see docs/i18n/REVIEW.md.
 // Same keys as en.js (checked by src/test/i18n.test.js). {name} = placeholder, keep as it is.
 // Digits stay Western (0-9) for phone numbers, CNIC, rates and IDs.
 export default {

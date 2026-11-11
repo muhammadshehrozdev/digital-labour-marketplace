@@ -40,9 +40,9 @@ table('Skills (backend/config/skillTaxonomy.js, DISPLAY_NAMES)', ['Id', 'English
 const count = keys.length + 4 + 1 + CATEGORIES.length * 2 + SKILLS.length;
 const head = `# Urdu and Roman Urdu texts: review list
 
-**Status: DRAFT, needs a native reviewer.** Every Urdu and Roman Urdu text below was written by Claude Code
-in Batch 3 (10 Nov 2026). Nobody who reads Urdu has checked them yet. Please read each row, write your
-name in "Checked by" when it is right, and correct the text in the file named in the section title
+**Status: reviewed by the team on 11 Nov 2026 (decision D-031).** The texts were first written by Claude Code
+(Batch 3, 10 Nov 2026). Texts added or changed after that review must be checked the same way: read the
+row, write your name in "Checked by" when it is right, and correct the text in the file named in the section title
 (\`frontend/src/i18n/dictionaries/ur.js\`, \`ur-Latn.js\`, \`frontend/src/i18n/languages.js\`, or
 \`backend/config/skillTaxonomy.js\`). Then run \`node scripts/i18n-review.mjs\` in \`.\\frontend\` to update this file.
 

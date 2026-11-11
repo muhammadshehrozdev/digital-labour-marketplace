@@ -1,8 +1,8 @@
 # Urdu and Roman Urdu texts: review list
 
-**Status: DRAFT, needs a native reviewer.** Every Urdu and Roman Urdu text below was written by Claude Code
-in Batch 3 (10 Nov 2026). Nobody who reads Urdu has checked them yet. Please read each row, write your
-name in "Checked by" when it is right, and correct the text in the file named in the section title
+**Status: reviewed by the team on 11 Nov 2026 (decision D-031).** The texts were first written by Claude Code
+(Batch 3, 10 Nov 2026). Texts added or changed after that review must be checked the same way: read the
+row, write your name in "Checked by" when it is right, and correct the text in the file named in the section title
 (`frontend/src/i18n/dictionaries/ur.js`, `ur-Latn.js`, `frontend/src/i18n/languages.js`, or
 `backend/config/skillTaxonomy.js`). Then run `node scripts/i18n-review.mjs` in `.\frontend` to update this file.
 
@@ -10,7 +10,7 @@ What to check: simple, everyday words for a worker with basic reading skills; sh
 spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders such as `{name}` and
 `{count}` must stay exactly as they are. Digits stay Western (0-9).
 
-1424 texts in total (generated from the source files; not hand-copied).
+1429 texts in total (generated from the source files; not hand-copied).
 
 ## Website texts: `app`
 
@@ -561,6 +561,7 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | onboarding.summary.identity | Identity | شناخت | Shanakht | |
 | onboarding.addCnic | Add your CNIC on your profile so an admin can check your identity. | اپنی پروفائل پر شناختی کارڈ نمبر لکھیں تاکہ ایڈمن آپ کی شناخت چیک کر سکے۔ | Apni profile par CNIC number likhein taake admin aap ki shanakht check kar sake. | |
 | onboarding.goDashboard | Go to my dashboard | میرے ڈیش بورڈ پر جائیں | Mere dashboard par jayein | |
+| onboarding.nextTitle | What next? | اب آگے کیا کریں؟ | Ab aage kya karein? | |
 | onboarding.proof.addTitle | Add a photo | تصویر لگائیں | Tasveer lagayein | |
 | onboarding.proof.addText | One photo for one skill. You can add more later from your profile. | ایک ہنر کے لیے ایک تصویر۔ بعد میں اپنی پروفائل سے اور بھی لگا سکتے ہیں۔ | Aik hunar ke liye aik tasveer. Baad mein apni profile se aur bhi laga sakte hain. | |
 | onboarding.proof.soFar | Your proof so far | اب تک کے آپ کے ثبوت | Ab tak ke aap ke saboot | |
@@ -1375,6 +1376,7 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | workerx.copy.copied | Worker ID copied | کاریگر آئی ڈی کاپی ہو گئی | Worker ID copy ho gayi | |
 | workerx.copy.failed | Could not copy. Please select the ID and copy it. | کاپی نہیں ہو سکی۔ آئی ڈی کو چن کر کاپی کریں۔ | Copy nahi ho saki. ID ko chun kar copy karein. | |
 | workerx.strength.title | Profile strength | پروفائل کی مضبوطی | Profile ki mazbooti | |
+| workerx.strength.ringCaption | Profile filled in | پروفائل کتنا بھرا ہے | Profile kitna bhara hai | |
 | workerx.strength.levels.starting | Getting started | ابھی شروعات | Abhi shuruaat | |
 | workerx.strength.levels.good | Good | اچھا | Acha | |
 | workerx.strength.levels.strong | Strong | مضبوط | Mazboot | |
@@ -1501,6 +1503,9 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | appx.offline.back | You are back online. | آپ دوبارہ آن لائن ہیں۔ | Aap dobara online hain. | |
 | appx.offline.retry | Try now | ابھی کوشش کریں | Abhi koshish karein | |
 | appx.offline.failedRequest | The server could not be reached. Trying again… | سرور تک رسائی نہیں ہو سکی۔ دوبارہ کوشش ہو رہی ہے… | Server tak rasai nahi ho saki. Dobara koshish ho rahi hai… | |
+| appx.pageLoad.title | This page could not be loaded | یہ صفحہ کھل نہیں سکا | Yeh safha khul nahi saka | |
+| appx.pageLoad.text | Check your internet connection. The page loads by itself when the connection is back. | اپنا انٹرنیٹ کنکشن چیک کریں۔ کنکشن واپس آنے پر صفحہ خود کھل جائے گا۔ | Apna internet connection check karein. Connection wapas aane par safha khud khul jayega. | |
+| appx.pageLoad.retry | Try again | دوبارہ کوشش کریں | Dobara koshish karein | |
 | appx.install.title | Install the app | ایپ انسٹال کریں | App install karein | |
 | appx.install.text | Add Digital Labour Marketplace to your home screen. It opens faster and works like an app. | ڈیجیٹل لیبر مارکیٹ پلیس کو اپنی ہوم اسکرین پر شامل کریں۔ یہ جلدی کھلتی ہے اور ایپ کی طرح چلتی ہے۔ | Digital Labour Marketplace ko apni home screen par shamil karein. Yeh jaldi khulti hai aur app ki tarah chalti hai. | |
 | appx.install.button | Install | انسٹال کریں | Install karein | |
