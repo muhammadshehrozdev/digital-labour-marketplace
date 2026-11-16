@@ -143,7 +143,9 @@ export function printScenario(report, log = console.log) {
 function gitCommit() {
   try {
     const sha = execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
-    const dirty = execSync('git status --porcelain -- .', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim() !== '';
+    // changed or new files count, except installed packages and this tool's own output files
+    const dirty = execSync('git status --porcelain -- .', { stdio: ['ignore', 'pipe', 'ignore'] }).toString()
+      .split('\n').filter((line) => line.trim() && !/node_modules|evaluation\/reputation\/results\//.test(line)).length > 0;
     return dirty ? `${sha}+uncommitted-changes` : sha;
   } catch {
     return null;
