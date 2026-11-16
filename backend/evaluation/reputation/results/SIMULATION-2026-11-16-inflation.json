@@ -1,0 +1,1354 @@
+{
+  "label": "SIMULATION",
+  "warning": "SIMULATION RESULTS: these numbers show how the methods behave if the simulator assumptions hold. They are not real-world results.",
+  "scenario": "inflation",
+  "description": "Every rater is more lenient: L = +0.15",
+  "scenarioSettings": {
+    "description": "Every rater is more lenient: L = +0.15",
+    "leniency": 0.15
+  },
+  "seeds": {
+    "count": 30,
+    "first": 20261116,
+    "last": 20261145
+  },
+  "workersPerRun": 300,
+  "meanCounts": {
+    "workers": 300,
+    "reviewed": 210.63333333333333,
+    "unreviewed": 89.36666666666666,
+    "attacked": 0,
+    "reviews": 842.3
+  },
+  "simulation": {
+    "workers": 300,
+    "qualityAlpha": 4,
+    "qualityBeta": 2,
+    "shareWithoutReviews": 0.3,
+    "reviewsMean": 4,
+    "reviewsCap": 60,
+    "noiseSd": 0.15,
+    "maxAgeDays": 730,
+    "reviewerOtherWorkersMean": 1.5,
+    "shareAuto": 0.1,
+    "fakeMaxAgeDays": 30,
+    "collusionMaxAgeDays": 60
+  },
+  "engineVersion": "rep-1",
+  "parametersHash": "23974876a27d",
+  "methods": {
+    "B1": {
+      "label": "B1 plain average",
+      "kind": "baseline",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.32394251198534285,
+          "sd": 0.04748401024962294,
+          "p2_5": 0.2386231446488397,
+          "p97_5": 0.39886224847351326
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.860336262651457,
+          "sd": 0.028651174273713848,
+          "p2_5": 0.8021014098220284,
+          "p97_5": 0.9046418405547181
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.8709961348825803,
+          "sd": 0.02158049706266387,
+          "p2_5": 0.8349949077711935,
+          "p97_5": 0.912061908505243
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.5566666666666666,
+          "sd": 0.169549775690744,
+          "p2_5": 0.3,
+          "p97_5": 0.8
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.6549902850901624,
+          "sd": 0.02893326501829568,
+          "p2_5": 0.6099283294933358,
+          "p97_5": 0.710284377112781
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.8675100484585437,
+          "sd": 0.028083785593427578,
+          "p2_5": 0.8116601215343643,
+          "p97_5": 0.9139354203027713
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.8809786630731756,
+          "sd": 0.020979938769651898,
+          "p2_5": 0.8442806041055592,
+          "p97_5": 0.9224021342992017
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.5800000000000001,
+          "sd": 0.15177115259040724,
+          "p2_5": 0.3,
+          "p97_5": 0.8
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 14.777034559643255,
+          "sd": 1.307525303995303,
+          "p2_5": 12.830267558528426,
+          "p97_5": 17.073578595317727
+        }
+      }
+    },
+    "B2": {
+      "label": "B2 Bayesian average (m = 5)",
+      "kind": "baseline",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.5094453545999628,
+          "sd": 0.031669593806931226,
+          "p2_5": 0.4469491781516866,
+          "p97_5": 0.5520679306626355
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.9146188357768748,
+          "sd": 0.015589827961062062,
+          "p2_5": 0.8863572811715882,
+          "p97_5": 0.9447661316746262
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.9146542057835327,
+          "sd": 0.016559597020930305,
+          "p2_5": 0.8796738490951939,
+          "p97_5": 0.9412511556035201
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.7533333333333335,
+          "sd": 0.150248835748162,
+          "p2_5": 0.47250000000000003,
+          "p97_5": 1
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.6326212399015471,
+          "sd": 0.026647911992344658,
+          "p2_5": 0.5946347477144849,
+          "p97_5": 0.6838755228087362
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.9222494318946227,
+          "sd": 0.014230537625884401,
+          "p2_5": 0.8990557064073635,
+          "p97_5": 0.9496269490600859
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.9251286265666182,
+          "sd": 0.014955597137632889,
+          "p2_5": 0.898503373214783,
+          "p97_5": 0.9512817338626794
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.7633333333333335,
+          "sd": 0.13514572807192965,
+          "p2_5": 0.47250000000000003,
+          "p97_5": 0.9274999999999999
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 48.12151616499444,
+          "sd": 1.9231061724437388,
+          "p2_5": 45.133779264214034,
+          "p97_5": 52.05685618729096
+        }
+      }
+    },
+    "B3": {
+      "label": "B3 Wilson lower bound (4-5 stars)",
+      "kind": "baseline",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.2391748975787859,
+          "sd": 0.05021173681294047,
+          "p2_5": 0.16434888327413394,
+          "p97_5": 0.3207343916376884
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.8384888472912171,
+          "sd": 0.03156635153175964,
+          "p2_5": 0.7655018683359128,
+          "p97_5": 0.8833486675807211
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.8437923262229183,
+          "sd": 0.028022014140262154,
+          "p2_5": 0.7813265288641612,
+          "p97_5": 0.8838047350024169
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.4166666666666668,
+          "sd": 0.12887666740841353,
+          "p2_5": 0.2,
+          "p97_5": 0.6274999999999998
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.4023437462981797,
+          "sd": 0.047233781854767544,
+          "p2_5": 0.3252403160425464,
+          "p97_5": 0.48451177327289363
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.8454867662838854,
+          "sd": 0.03130948902049918,
+          "p2_5": 0.7702149068804025,
+          "p97_5": 0.888327625813513
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.8534591706802376,
+          "sd": 0.027638035815506876,
+          "p2_5": 0.7904222348009767,
+          "p97_5": 0.8919709723560345
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.4300000000000001,
+          "sd": 0.12635472781569873,
+          "p2_5": 0.2,
+          "p97_5": 0.6274999999999998
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 18.343650668521985,
+          "sd": 1.51511564778201,
+          "p2_5": 16.36880564495724,
+          "p97_5": 21.3576291456558
+        }
+      }
+    },
+    "B4": {
+      "label": "B4 plain Beta (all weights 1)",
+      "kind": "baseline",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.33791315363551894,
+          "sd": 0.046013374699750795,
+          "p2_5": 0.25851657551848334,
+          "p97_5": 0.412140563976272
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.9090749392028019,
+          "sd": 0.019341270092815208,
+          "p2_5": 0.8742104434894659,
+          "p97_5": 0.942885847190914
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.9055627204121807,
+          "sd": 0.018658670283024453,
+          "p2_5": 0.8699573482168721,
+          "p97_5": 0.9355346574243034
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.7166666666666667,
+          "sd": 0.16206285143761961,
+          "p2_5": 0.4,
+          "p97_5": 1
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.5399280801448912,
+          "sd": 0.03941096264428559,
+          "p2_5": 0.47308450231382193,
+          "p97_5": 0.610994706069263
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.9166399000992842,
+          "sd": 0.017316566186456054,
+          "p2_5": 0.8823408153423179,
+          "p97_5": 0.9484151917056831
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.9159214964762344,
+          "sd": 0.016712712587397448,
+          "p2_5": 0.8801478775050827,
+          "p97_5": 0.9449557496770072
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.7233333333333333,
+          "sd": 0.13817363722139078,
+          "p2_5": 0.47250000000000003,
+          "p97_5": 0.9274999999999999
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 20.63858813037992,
+          "sd": 1.7730430391336964,
+          "p2_5": 17.813581575276675,
+          "p97_5": 24.24946516752722
+        }
+      }
+    },
+    "ours": {
+      "label": "Ours: weighted Beta, cautious",
+      "kind": "ours",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.18182322715809693,
+          "sd": 0.04629683792169923,
+          "p2_5": 0.10807686859344406,
+          "p97_5": 0.26539595779308583
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.8749421944795387,
+          "sd": 0.023856342208891018,
+          "p2_5": 0.839162714296314,
+          "p97_5": 0.9238375450926334
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.8685655901425774,
+          "sd": 0.022157156947263487,
+          "p2_5": 0.8302518598941013,
+          "p97_5": 0.9077801341494794
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.5466666666666666,
+          "sd": 0.15477087254553343,
+          "p2_5": 0.3,
+          "p97_5": 0.8274999999999999
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.33279337966095085,
+          "sd": 0.048426495255421594,
+          "p2_5": 0.24813002414310986,
+          "p97_5": 0.41436618383863727
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.8822235847399257,
+          "sd": 0.02245998981787101,
+          "p2_5": 0.8452280502535735,
+          "p97_5": 0.9256647128247467
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.878498461102781,
+          "sd": 0.020630757387689228,
+          "p2_5": 0.8443474921808994,
+          "p97_5": 0.9144371663808653
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.5599999999999999,
+          "sd": 0.15222487902147747,
+          "p2_5": 0.3,
+          "p97_5": 0.8274999999999999
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 16.081382385730215,
+          "sd": 1.5846531011264715,
+          "p2_5": 13.377926421404684,
+          "p97_5": 19.29347826086957
+        }
+      }
+    },
+    "ours_expected": {
+      "label": "Ablation: expected instead of cautious",
+      "kind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.28936967580257905,
+          "sd": 0.04899023201595853,
+          "p2_5": 0.2056332838933601,
+          "p97_5": 0.36985329039057674
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.8879600713749851,
+          "sd": 0.023711929133308864,
+          "p2_5": 0.848077442520362,
+          "p97_5": 0.9390149932615546
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.8829779845215177,
+          "sd": 0.02126062851326419,
+          "p2_5": 0.8384021537621873,
+          "p97_5": 0.9141366432771246
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.6000000000000001,
+          "sd": 0.14383899044561524,
+          "p2_5": 0.37250000000000005,
+          "p97_5": 0.8274999999999999
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.43962044430278097,
+          "sd": 0.047106324551322416,
+          "p2_5": 0.3594762476579531,
+          "p97_5": 0.511934829242933
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.895347275964813,
+          "sd": 0.022143081267522978,
+          "p2_5": 0.8542530460833069,
+          "p97_5": 0.9434983320922692
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.8930720843154668,
+          "sd": 0.019436225583060924,
+          "p2_5": 0.8547113517593241,
+          "p97_5": 0.9213756343211262
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.6066666666666668,
+          "sd": 0.13879613761229795,
+          "p2_5": 0.37250000000000005,
+          "p97_5": 0.8274999999999999
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 21.038338695339284,
+          "sd": 1.9130993673984107,
+          "p2_5": 18.54188876615954,
+          "p97_5": 24.813215404165078
+        }
+      }
+    },
+    "no_recency": {
+      "label": "Ablation: without recency",
+      "kind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.2037497250437383,
+          "sd": 0.04537589366251595,
+          "p2_5": 0.1291769274418903,
+          "p97_5": 0.28279138283583244
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.8908689372864829,
+          "sd": 0.026096209954743804,
+          "p2_5": 0.8458833748170644,
+          "p97_5": 0.9452459100969912
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.8844637935991221,
+          "sd": 0.02363186930340682,
+          "p2_5": 0.846044997840851,
+          "p97_5": 0.924894064584806
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.6233333333333334,
+          "sd": 0.16120950886075686,
+          "p2_5": 0.37250000000000005,
+          "p97_5": 0.9
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.38220769259410453,
+          "sd": 0.042843785179425026,
+          "p2_5": 0.299130162087434,
+          "p97_5": 0.4519173839073971
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.8982722258049443,
+          "sd": 0.024419187516038856,
+          "p2_5": 0.8520118837861256,
+          "p97_5": 0.9470956369819553
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.8945736230914538,
+          "sd": 0.021992398173493678,
+          "p2_5": 0.8564173403755436,
+          "p97_5": 0.9306001669621626
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.6333333333333334,
+          "sd": 0.14700066463216704,
+          "p2_5": 0.37250000000000005,
+          "p97_5": 0.8274999999999999
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 15.813823857302122,
+          "sd": 1.4119150641462723,
+          "p2_5": 13.285953177257525,
+          "p97_5": 18.440635451505017
+        }
+      }
+    },
+    "no_reviewer_trust": {
+      "label": "Ablation: without reviewer trust",
+      "kind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.19186012943676087,
+          "sd": 0.04711431582074372,
+          "p2_5": 0.11968557483498951,
+          "p97_5": 0.27292393301082735
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.8814604741449091,
+          "sd": 0.02252677419180632,
+          "p2_5": 0.8480122788176396,
+          "p97_5": 0.9217343428365552
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.8761072163902636,
+          "sd": 0.0211293170728532,
+          "p2_5": 0.8412048339495555,
+          "p97_5": 0.9164834876264658
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.5933333333333334,
+          "sd": 0.13373502709187435,
+          "p2_5": 0.37250000000000005,
+          "p97_5": 0.8
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.3557500303841463,
+          "sd": 0.049051417348111165,
+          "p2_5": 0.2682642452616737,
+          "p97_5": 0.4390757657846232
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.8888050233473413,
+          "sd": 0.02136874638478115,
+          "p2_5": 0.8553801322722647,
+          "p97_5": 0.9261351072512831
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.886118462513546,
+          "sd": 0.019089816251070955,
+          "p2_5": 0.8570195895318204,
+          "p97_5": 0.9195885326090545
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.6,
+          "sd": 0.1286535041805354,
+          "p2_5": 0.37250000000000005,
+          "p97_5": 0.8
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 15.936454849498327,
+          "sd": 1.4795901847136401,
+          "p2_5": 13.377926421404684,
+          "p97_5": 18.775083612040135
+        }
+      }
+    },
+    "no_pair_factor": {
+      "label": "Ablation: without pair factor",
+      "kind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.18182322715809693,
+          "sd": 0.04629683792169923,
+          "p2_5": 0.10807686859344406,
+          "p97_5": 0.26539595779308583
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.8749421944795387,
+          "sd": 0.023856342208891018,
+          "p2_5": 0.839162714296314,
+          "p97_5": 0.9238375450926334
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.8685655901425774,
+          "sd": 0.022157156947263487,
+          "p2_5": 0.8302518598941013,
+          "p97_5": 0.9077801341494794
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.5466666666666666,
+          "sd": 0.15477087254553343,
+          "p2_5": 0.3,
+          "p97_5": 0.8274999999999999
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.33279337966095085,
+          "sd": 0.048426495255421594,
+          "p2_5": 0.24813002414310986,
+          "p97_5": 0.41436618383863727
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.8822235847399257,
+          "sd": 0.02245998981787101,
+          "p2_5": 0.8452280502535735,
+          "p97_5": 0.9256647128247467
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.878498461102781,
+          "sd": 0.020630757387689228,
+          "p2_5": 0.8443474921808994,
+          "p97_5": 0.9144371663808653
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.5599999999999999,
+          "sd": 0.15222487902147747,
+          "p2_5": 0.3,
+          "p97_5": 0.8274999999999999
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 16.081382385730215,
+          "sd": 1.5846531011264715,
+          "p2_5": 13.377926421404684,
+          "p97_5": 19.29347826086957
+        }
+      }
+    },
+    "no_provenance": {
+      "label": "Ablation: without provenance",
+      "kind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "n": 30,
+          "mean": 0.18351047489910394,
+          "sd": 0.04731034899426037,
+          "p2_5": 0.10662679667338014,
+          "p97_5": 0.27156526942960585
+        },
+        "all.ndcg10": {
+          "n": 30,
+          "mean": 0.875854418559602,
+          "sd": 0.021819198460590074,
+          "p2_5": 0.8410066504216192,
+          "p97_5": 0.9206451639666527
+        },
+        "all.ndcg20": {
+          "n": 30,
+          "mean": 0.8699263806359464,
+          "sd": 0.020907306388037995,
+          "p2_5": 0.8348043429880677,
+          "p97_5": 0.908837233806029
+        },
+        "all.p10": {
+          "n": 30,
+          "mean": 0.5533333333333332,
+          "sd": 0.13578211078487254,
+          "p2_5": 0.37250000000000005,
+          "p97_5": 0.8
+        },
+        "reviewed.tau": {
+          "n": 30,
+          "mean": 0.3369571745718469,
+          "sd": 0.049805346339095495,
+          "p2_5": 0.25285946516104146,
+          "p97_5": 0.42292372064425027
+        },
+        "reviewed.ndcg10": {
+          "n": 30,
+          "mean": 0.8831452714924725,
+          "sd": 0.02033403063519187,
+          "p2_5": 0.8490399352199666,
+          "p97_5": 0.9224529472338916
+        },
+        "reviewed.ndcg20": {
+          "n": 30,
+          "mean": 0.879882123992031,
+          "sd": 0.01957334134621353,
+          "p2_5": 0.8489849890122619,
+          "p97_5": 0.9172473981095135
+        },
+        "reviewed.p10": {
+          "n": 30,
+          "mean": 0.5633333333333332,
+          "sd": 0.1376736103561817,
+          "p2_5": 0.4,
+          "p97_5": 0.8
+        },
+        "attackLift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        },
+        "newWorkerPosition": {
+          "n": 30,
+          "mean": 16.036789297658864,
+          "sd": 1.5664556805135368,
+          "p2_5": 13.377926421404684,
+          "p97_5": 19.20150501672241
+        }
+      }
+    }
+  },
+  "paired": [
+    {
+      "ours": "ours",
+      "other": "B1",
+      "otherKind": "baseline",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": -0.14211928482724595,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": 0.014605931828081724,
+          "shareOursBetter": 0.6666666666666666,
+          "shareEqual": 0
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.0024305447400028934,
+          "shareOursBetter": 0.5666666666666667,
+          "shareEqual": 0
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": -0.01000000000000001,
+          "shareOursBetter": 0.4666666666666667,
+          "shareEqual": 0.16666666666666666
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": -0.32219690542921153,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": 0.014713536281381955,
+          "shareOursBetter": 0.6666666666666666,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.002480201970394602,
+          "shareOursBetter": 0.5666666666666667,
+          "shareEqual": 0
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": -0.020000000000000007,
+          "shareOursBetter": 0.4,
+          "shareEqual": 0.13333333333333333
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "B2",
+      "otherKind": "baseline",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": -0.32762212744186575,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.039676641297335814,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.04608861564095526,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": -0.20666666666666675,
+          "shareOursBetter": 0.06666666666666667,
+          "shareEqual": 0.1
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": -0.29982786024059604,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.04002584715469711,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.04663016546383744,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": -0.2033333333333334,
+          "shareOursBetter": 0.06666666666666667,
+          "shareEqual": 0.1
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "B3",
+      "otherKind": "baseline",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": -0.05735167042068893,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": 0.036453347188321744,
+          "shareOursBetter": 0.9333333333333333,
+          "shareEqual": 0
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": 0.024773263919659082,
+          "shareOursBetter": 0.9333333333333333,
+          "shareEqual": 0
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": 0.13,
+          "shareOursBetter": 0.7333333333333333,
+          "shareEqual": 0.26666666666666666
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": -0.06955036663722881,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": 0.03673681845604051,
+          "shareOursBetter": 0.9333333333333333,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": 0.025039290422543513,
+          "shareOursBetter": 0.9333333333333333,
+          "shareEqual": 0
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": 0.13,
+          "shareOursBetter": 0.7,
+          "shareEqual": 0.3
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "B4",
+      "otherKind": "baseline",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": -0.15608992647742204,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.03413274472326318,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.036997130269603336,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": -0.16999999999999998,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0.26666666666666666
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": -0.20713470048394045,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.03441631535935844,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.037423035373453525,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": -0.16333333333333336,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0.23333333333333334
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "ours_expected",
+      "otherKind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": -0.10754644864448212,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.013017876895446083,
+          "shareOursBetter": 0.16666666666666666,
+          "shareEqual": 0
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.014412394378940107,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": -0.05333333333333335,
+          "shareOursBetter": 0,
+          "shareEqual": 0.5333333333333333
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": -0.10682706464183003,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.013123691224887305,
+          "shareOursBetter": 0.16666666666666666,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.014573623212686035,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": -0.046666666666666676,
+          "shareOursBetter": 0,
+          "shareEqual": 0.5666666666666667
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "no_recency",
+      "otherKind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": -0.02192649788564139,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.015926742806944037,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.015898203456544382,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": -0.07666666666666667,
+          "shareOursBetter": 0.06666666666666667,
+          "shareEqual": 0.36666666666666664
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": -0.049414312933153584,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.016048641065018555,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.016075161988672832,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": -0.07333333333333333,
+          "shareOursBetter": 0.06666666666666667,
+          "shareEqual": 0.36666666666666664
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "no_reviewer_trust",
+      "otherKind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": -0.0100369022786639,
+          "shareOursBetter": 0.03333333333333333,
+          "shareEqual": 0
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.006518279665370345,
+          "shareOursBetter": 0.3,
+          "shareEqual": 0
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.007541626247686099,
+          "shareOursBetter": 0.26666666666666666,
+          "shareEqual": 0
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": -0.046666666666666676,
+          "shareOursBetter": 0.1,
+          "shareEqual": 0.43333333333333335
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": -0.022956650723195467,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.0065814386074154905,
+          "shareOursBetter": 0.3,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.0076200014107648505,
+          "shareOursBetter": 0.26666666666666666,
+          "shareEqual": 0
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": -0.039999999999999994,
+          "shareOursBetter": 0.1,
+          "shareEqual": 0.5
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "no_pair_factor",
+      "otherKind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": 0,
+          "shareOursBetter": 0,
+          "shareEqual": 1
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": 0,
+          "shareOursBetter": 0,
+          "shareEqual": 1
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": 0,
+          "shareOursBetter": 0,
+          "shareEqual": 1
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": 0,
+          "shareOursBetter": 0,
+          "shareEqual": 1
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": 0,
+          "shareOursBetter": 0,
+          "shareEqual": 1
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": 0,
+          "shareOursBetter": 0,
+          "shareEqual": 1
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": 0,
+          "shareOursBetter": 0,
+          "shareEqual": 1
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": 0,
+          "shareOursBetter": 0,
+          "shareEqual": 1
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "no_provenance",
+      "otherKind": "ablation",
+      "metrics": {
+        "all.tau": {
+          "seeds": 30,
+          "meanDifference": -0.0016872477410070136,
+          "shareOursBetter": 0.3,
+          "shareEqual": 0
+        },
+        "all.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.0009122240800631288,
+          "shareOursBetter": 0.3333333333333333,
+          "shareEqual": 0.03333333333333333
+        },
+        "all.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.0013607904933688206,
+          "shareOursBetter": 0.36666666666666664,
+          "shareEqual": 0
+        },
+        "all.p10": {
+          "seeds": 30,
+          "meanDifference": -0.0066666666666666706,
+          "shareOursBetter": 0.1,
+          "shareEqual": 0.7
+        },
+        "reviewed.tau": {
+          "seeds": 30,
+          "meanDifference": -0.004163794910895963,
+          "shareOursBetter": 0.23333333333333334,
+          "shareEqual": 0
+        },
+        "reviewed.ndcg10": {
+          "seeds": 30,
+          "meanDifference": -0.0009216867525466947,
+          "shareOursBetter": 0.3333333333333333,
+          "shareEqual": 0.03333333333333333
+        },
+        "reviewed.ndcg20": {
+          "seeds": 30,
+          "meanDifference": -0.0013836628892499665,
+          "shareOursBetter": 0.36666666666666664,
+          "shareEqual": 0
+        },
+        "reviewed.p10": {
+          "seeds": 30,
+          "meanDifference": -0.003333333333333342,
+          "shareOursBetter": 0.1,
+          "shareEqual": 0.7333333333333333
+        },
+        "attackLift": {
+          "seeds": 0,
+          "meanDifference": null,
+          "shareOursBetter": null,
+          "shareEqual": null
+        }
+      }
+    }
+  ],
+  "date": "2026-11-16",
+  "gitCommit": "cb05f38"
+}
