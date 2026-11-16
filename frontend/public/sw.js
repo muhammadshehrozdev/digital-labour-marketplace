@@ -3,13 +3,17 @@
 // stored: the service worker does not even look at them, so they always go to the server.
 //   - built assets (/assets/*, hashed names), icons, fonts, the manifest: cache first
 //   - page loads (navigation): network first; when offline, the cached app shell (index.html)
+//   - the team's recorded help clips (/audio/help/..., Batch 5): cache first, so help plays offline.
+//     A media element asks for a clip in pieces (Range, status 206), which is never stored: the whole
+//     file is fetched once without a Range and kept.
 // A new version replaces the old cache on activation.
-const VERSION = 'dlm-static-v1';
+const VERSION = 'dlm-static-v2';
 const SHELL = ['/', '/favicon.svg', '/favicon-32.png', '/manifest.webmanifest', '/icons/icon-192.png'];
 
 const isStatic = (url) =>
   url.pathname.startsWith('/assets/') || url.pathname.startsWith('/icons/') ||
   /\.(?:woff2?|svg|png|webmanifest)$/.test(url.pathname);
+const isClip = (url) => url.pathname.startsWith('/audio/help/') && /\.(?:webm|mp3|m4a|ogg)$/.test(url.pathname);
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -41,6 +45,16 @@ self.addEventListener('fetch', (event) => {
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request).catch(async () => (await caches.match('/')) ?? Response.error())
+    );
+    return;
+  }
+
+  if (isClip(url)) {
+    event.respondWith(
+      caches.match(url.pathname).then((cached) => cached ?? fetch(url.pathname).then((response) => {
+        event.waitUntil(keep(new Request(url.pathname), response.clone()));
+        return response;
+      }))
     );
     return;
   }

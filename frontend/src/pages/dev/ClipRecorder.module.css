@@ -1,0 +1,12 @@
+.page { display: grid; gap: var(--space-4); max-inline-size: 860px; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.langs { display: flex; gap: var(--space-2); }
+.progress { margin: 0; font-weight: 700; }
+.card { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--color-border); }
+.counter, .file { margin: 0; color: var(--color-text-secondary); font-size: var(--text-small); }
+.key { margin: 0; font-size: var(--text-body); }
+.say { margin: 0; font-size: var(--text-h3); line-height: 2; }
+.english { margin: 0; color: var(--color-text-secondary); }
+.actions, .nav { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.nav { justify-content: space-between; }
+.missing ul { columns: 2; font-size: var(--text-small); }

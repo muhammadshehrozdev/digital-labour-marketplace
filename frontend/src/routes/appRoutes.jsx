@@ -33,6 +33,7 @@ const AdminExports = lazyPage(() => import('../pages/admin/AdminExports'));
 
 // Developer pages only in development builds (not shipped in production).
 const StyleGuide = import.meta.env.DEV ? lazy(() => import('../pages/dev/StyleGuide')) : null;
+const ClipRecorder = import.meta.env.DEV ? lazy(() => import('../pages/dev/ClipRecorder')) : null;
 const ThemeLab = import.meta.env.DEV ? lazy(() => import('../pages/dev/ThemeLab')) : null;
 
 // One route tree for the app and the tests. A data router (createBrowserRouter) is used for
@@ -84,6 +85,9 @@ export const appRoutes = (
         )}
         {ThemeLab && (
           <Route path="dev/themes" element={<Suspense fallback={<PageLoading />}><ThemeLab /></Suspense>} />
+        )}
+        {ClipRecorder && (
+          <Route path="dev/recorder" element={<Suspense fallback={<PageLoading />}><ClipRecorder /></Suspense>} />
         )}
         <Route path="*" element={<NotFound />} />
       </Route>
