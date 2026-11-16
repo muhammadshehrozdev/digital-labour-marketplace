@@ -111,7 +111,11 @@ test('keyboard only: skip link, then log in without a mouse', async ({ page }) =
   await page.keyboard.press('Enter');
   await page.getByLabel(/^Email/).focus();
   await page.keyboard.type(customer.email);
+  // Batch 5: the Listen button under the email box is the next keyboard stop, then the password
   await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Listen: Email' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('input[type=password]')).toBeFocused();
   await page.keyboard.type(PASSWORD);
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/find$/);

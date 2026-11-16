@@ -153,7 +153,7 @@ the panel arrives. Window C (customer) or any window in Urdu.
 **Say:** "So in Module 1 the worker has an identity with a protected CNIC. In Module 2 a rule-based
 extractor turned their own words into skills. In Module 3 a skill was backed by proof that an admin
 approved, and the customer could see it without seeing private data. Everything is covered by automated
-tests: 521 backend, 941 frontend and 35 browser tests, including this exact demo. Next semester: bookings,
+tests: 540 backend, 1,089 frontend and 45 browser tests, including this exact demo. Next semester: bookings,
 which is when contact details will be shared."
 
 ---

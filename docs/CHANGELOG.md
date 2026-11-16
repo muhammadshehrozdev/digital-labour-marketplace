@@ -2,6 +2,47 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 5 — Listen, Speak, See: audio help, voice typing and picture choices (14–16 Nov 2026)
+
+Why: at the mid defence the panel asked how labourers who cannot read will use the website. Design:
+Medhi, Sagar & Toyama (2007), "Text-Free User Interfaces for Illiterate and Semiliterate Users"
+(D-033). Frontend only; no new package; nothing under `backend/` changed. None of this is AI: it is the
+browser's own speech feature and our own help texts.
+
+- **Listen (🔊):** a Listen button under every box of the worker and customer screens says what to do
+  there, and the same help opens in large text. The sound comes from a clip the team recorded, else a
+  voice on the device, else the help is shown on screen with the words "no voice on this device"
+  (D-034). Roman Urdu users hear the Urdu audio.
+- **Speak (🎤):** voice typing on names, city, trade, job, search, skills description and numbers
+  (phone digit by digit, years and rupees as amounts; nothing is written when a number is not
+  understood). Never on password, CNIC or email (D-035). A one-time notice explains that the browser
+  sends the voice to its maker's service. After voice typing the website reads back what it wrote, and
+  Undo brings the old text back.
+- **See:** picture choices instead of drop-downs for trade (the nine trade drawings), availability, the
+  skill of a proof photo and the proof kind; every picture can be heard; field icons; buttons with an
+  icon and a word.
+- **Page help:** a round speaker button in the same corner of every in-scope page, and a **Sound** menu
+  in the header (show Listen/Speak, read aloud by itself). Settings stay on this device only.
+- **Language chooser:** each language card can be heard ("press here for Urdu"), and the one-time
+  question "Should the website read aloud?" follows the choice.
+- **Voice check** page (`/voice-check`, linked from the Help Centre): which voices and clips this device
+  has, test sentences, a microphone test, and how to add an Urdu voice on Android.
+- **Recorded clips:** `/dev/recorder` (development builds only) for the team to record the Urdu help in
+  their own voices; `npm run audio:manifest`; `docs/audio/RECORDING-GUIDE.md`. The service worker
+  (v2) keeps clips for offline use; API answers are still never cached. No clips are recorded yet.
+- Texts: 152 new or changed texts in English, Urdu and Roman Urdu are drafts until the team checks them
+  (`docs/i18n/REVIEW-BATCH-5.md`, D-031).
+- Docs: D-033..D-036, `docs/EASY-MODE-MANUAL-TEST.md` (what to try on a laptop and a phone),
+  `docs/evaluation/EASY-MODE-USABILITY-PLAN.md` (a plan only, no results), ARCHITECTURE, USE-CASES
+  (UC-17..23), SECURITY, TRACEABILITY, README, DEMO-SCRIPT (optional part).
+- Known limits: registration still needs an email address and a 15-character password; voice quality
+  depends on the device; Urdu audio needs a device voice or the team's clips. Speech could not be heard
+  or spoken in the development container: the speech features are tested with fakes, and the real
+  sound is for the manual checklist.
+
+**Test results (real runs, 16 Nov 2026):** backend 540/540 (unchanged); frontend 1,089/1,089 (22 files;
+before: 945 in 16 files); end-to-end 45/45 in 11.1 minutes (before: 35/35); lint 0 problems; build OK.
+
 ## Go-live kit and cleanup (11 Nov 2026)
 
 - Wordmark: "Digital Labour Marketplace" is one element, weight 700, in the logo's colour, the full name at

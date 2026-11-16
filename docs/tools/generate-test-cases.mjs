@@ -34,6 +34,11 @@ const MODULE = {
   'brand.test.jsx': 'UI (logo)', 'theme.test.jsx': 'UI (dark mode)', 'design.test.jsx': 'UI (design v3)',
   'admin-batch4.test.jsx': 'Admin (Batch 4, UI)', 'customer-batch4.test.jsx': 'Customer (Batch 4, UI)',
   'worker-batch4.test.jsx': 'Worker (Batch 4, UI)', 'app-batch4.test.jsx': 'App-wide (Batch 4, UI)',
+  // go-live kit (D-032)
+  'create-indexes.test.js': 'Infrastructure', 'demo-reset.test.js': 'Infrastructure', 'deploy-config.test.js': 'Deployment', 'health-client-ip.test.js': 'Deployment',
+  // Batch 5: Listen, Speak, See
+  'assist.test.jsx': 'Batch 5 easy mode (UI)', 'assist-pictures.test.jsx': 'Batch 5 easy mode (UI)', 'assist-pages.test.jsx': 'Batch 5 easy mode (UI)',
+  'assistCoverage.test.jsx': 'Batch 5 easy mode (UI)', 'assistClips.test.js': 'Batch 5 easy mode (UI)', 'spokenNumbers.test.js': 'Batch 5 easy mode (UI)',
 };
 
 const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ').trim();

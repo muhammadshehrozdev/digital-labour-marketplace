@@ -2,42 +2,35 @@
   "generatedFrom": "docs/CHANGELOG.md",
   "sections": [
     {
-      "title": "Batch 4 — logo v3, dark mode, design v3, 50+ features, admin tools, full review (11 Nov 2026)",
+      "title": "Batch 5 — Listen, Speak, See: audio help, voice typing and picture choices (14–16 Nov 2026)",
       "points": [
-        "The Batch 1 shield with a wrench and a check is back, refined (two-tone, one-colour, light/dark), with an animated version and a full icon set made by npm run icons (D-021).",
-        "A night-mode button on every page: Light, Dark or System; the sun turns into a moon; the new mode grows as a circle from the button; saved in the browser and on the account; no flash on load (D-022).",
-        "Text size A−, A, A+ in the account menu and the footer.",
-        "28 screens scored before the redesign (docs/design/07-critique-v2.md); in-house illustrations for every trade and 15 scenes; bento landing page, worker dashboard and admin overview; layered surfaces (D-023).",
-        "Profile strength with real next steps; \"You may also do…\" (same-trade skills, one tap, Undo); matched words marked inside the typed text; example sentences in the website language; CNIC, mobile and rupee masks; drafts kept until saved (never the CNIC); upload tip \"Take a clear photo of your certificate\", compression, crop and rotate, progress with Cancel; notifications bell; Available/Busy switch; copy ID; welcome tour; confetti for milestones.",
-        "Search, filters, sort and page in the address; results as you type with matched words marked; sort by experience or approved proof; saved workers; compare two or three workers; recently viewed; share and print a profile.",
-        "Overview with queues and waiting times, audit-chain status, charts from real counts, live activity; Users page with suspend / reactivate; reason templates in three languages; CSV exports (audited, no CNIC, formula-safe); keyboard shortcuts in the review panels; duplicate-photo compare slider (D-024, D-028). Guide: docs/ADMIN-GUIDE.md.",
-        "Command palette (Ctrl+K), keyboard shortcuts (?), offline banner with automatic retry, installable app with a static-only service worker (D-027), scroll to top, session-ending warning, What's new, Help centre."
+        "Listen (🔊): a Listen button under every box of the worker and customer screens says what to do there, and the same help opens in large text. The sound comes from a clip the team recorded, else a voice on the device, else the help is shown on screen with the words \"no voice on this device\" (D-034). Roman Urdu users hear the Urdu audio.",
+        "Speak (🎤): voice typing on names, city, trade, job, search, skills description and numbers (phone digit by digit, years and rupees as amounts; nothing is written when a number is not understood). Never on password, CNIC or email (D-035). A one-time notice explains that the browser sends the voice to its maker's service. After voice typing the website reads back what it wrote, and Undo brings the old text back.",
+        "See: picture choices instead of drop-downs for trade (the nine trade drawings), availability, the skill of a proof photo and the proof kind; every picture can be heard; field icons; buttons with an icon and a word.",
+        "Page help: a round speaker button in the same corner of every in-scope page, and a Sound menu in the header (show Listen/Speak, read aloud by itself). Settings stay on this device only.",
+        "Language chooser: each language card can be heard (\"press here for Urdu\"), and the one-time question \"Should the website read aloud?\" follows the choice.",
+        "Voice check page (/voice-check, linked from the Help Centre): which voices and clips this device has, test sentences, a microphone test, and how to add an Urdu voice on Android.",
+        "Recorded clips: /dev/recorder (development builds only) for the team to record the Urdu help in their own voices; npm run audio:manifest; docs/audio/RECORDING-GUIDE.md. The service worker (v2) keeps clips for offline use; API answers are still never cached. No clips are recorded yet.",
+        "Texts: 152 new or changed texts in English, Urdu and Roman Urdu are drafts until the team checks them (docs/i18n/REVIEW-BATCH-5.md, D-031)."
       ]
     },
     {
-      "title": "Batch 3 — browser tooling, Step 3 and voice fixes, three languages, design v2, profile view/edit (10 Nov 2026)",
+      "title": "Go-live kit and cleanup (11 Nov 2026)",
       "points": [
-        "The dev container has a system Chromium (.devcontainer/Dockerfile, CHROMIUM_PATH); Playwright uses it and never downloads a browser. Used only for http://127.0.0.1 pages.",
-        "npm run e2e (20 tests) and npm run screenshots run on their own servers (5001/5174) and their own local database dlm_e2e; the preview and its data are untouched; Atlas is never used.",
-        "Step 3 \"Your skills\": Continue now uses the server's onboarding state (it bounced back before); without a skill it explains why and links to the skill search. Tests: unit + e2e in Urdu, Roman Urdu, English.",
-        "Voice typing: a specific message for each Web Speech API error (not-allowed, service-not-allowed, network, language-not-supported, no-speech, audio-capture, aborted; Stop is not an error); speech language from the switcher (Urdu ur-PK, English/Roman Urdu en-US); shown only where the browser supports it (\"works best in Google Chrome\"); Gboard / Win + H help always shown; M2-13 notice kept. Tests with a fake SpeechRecognition.",
-        "Found by the new tests: footer jump while a page loads (layout shift 0.16 → below 0.002); the hero typewriter reserves its tallest line; trade cards keep their visible text as link name (WCAG 2.5.3); a new worker's browser no longer requests a profile that does not exist (404 in the console; profileExists in the onboarding state); :lang(ur) also matched Roman Urdu and gave it the Urdu font; avatar initials skipped non-letters; create-admin printed error codes instead of English.",
-        "English, اردو (right to left, Noto Nastaliq Urdu loaded only for Urdu) and Roman Urdu; first-visit chooser; switcher in header, hero and footer; whole page switches without reload, form input stays; choice in localStorage and, for logged-in users, User.preferredLanguage.",
-        "Every visible text is in frontend/src/i18n/dictionaries/ (en, ur, ur-Latn: same keys, tested); trade and skill names in backend/config/skillTaxonomy.js; dates with Intl, Western digits everywhere.",
-        "All Urdu and Roman Urdu texts are drafts for a native reviewer: docs/i18n/REVIEW.md (890 texts)."
+        "Wordmark: \"Digital Labour Marketplace\" is one element, weight 700, in the logo's colour, the full name at every width (before: two weights, the second word grey and hidden on phones).",
+        "Internal working notes (CLAUDE.md, the batch briefs, docs/audit/) are no longer tracked (kept on disk, in .gitignore); every reference now points to a tracked document. docs/SECURITY.md lists the project security rules.",
+        "Go-live (D-032, docs/DEPLOY-RUNBOOK.md): backend/api/index.js as the one Vercel function, a modern backend/vercel.json (no legacy builds; only public/ served), frontend/vercel.json passes /api/:path* to the backend before the app fallback; production settings check (missing variable, local database, non-https origin, missing TRUST_PROXY -> the server refuses to start); optional SHOW_CLIENT_IP check; npm run db:indexes; scripts/atlas-create-admin.sh (first admin from Ubuntu in a throwaway node:24-bookworm container, secrets from a file outside the repository)."
       ]
     },
     {
-      "title": "Batch 2 — Module 3 (Phase 5), integration tests (Phase 6), documentation (Phase 7) (9 Nov 2026)",
+      "title": "Mid-defence preparation (11 Nov 2026, feature freeze: bug fixes only)",
       "points": [
-        "Models Evidence (metadata) and EvidenceFile (processed WebP bytes); storage service with save/read/remove (Vercel Blob could replace it later).",
-        "Upload POST /api/evidence: login and role checked before the file is read; multer in memory, 4 MB (413); type from the bytes (JPEG/PNG/WebP; HEIC \"Please upload a JPG or PNG photo.\"; PDF refused); sharp auto-rotate, fit 2000 px, WebP q80, no metadata (EXIF/GPS removed); SHA-256 of the processed file (same worker + skill → 409); dHash look-alikes and exact copies from other workers flagged for the admin; consent required; 5 per skill, 30 per worker, 30 uploads per 15 minutes per network.",
-        "Worker: GET /api/evidence/mine, GET /api/evidence/:id/file (owner or admin; others 404, customers 403), DELETE /api/evidence/:id (pending/rejected only).",
-        "Admin: GET /api/admin/evidence (queue + filters), GET /api/admin/evidence/:id (duplicate side by side, b/d/u/E as opinion), PATCH /api/admin/evidence/:id (approve, reject with code, suspected fake with reason, revoke with reason), atomic with 409, all audited; stats include evidence.",
-        "services/trust/skillConfidence.js (pure; W = 2, a = 0.5; provisional weights) and a per-skill evidenceSummary (status, approved, pending, strength word) recomputed after every change.",
-        "Public directory/profile show the chip, approved count and strength only; skills=verified filter.",
-        "A skill with reviewed proof cannot be removed (no hiding a suspected fake).",
-        "npm run confidence:sensitivity (formula outputs, with the two documented weak points)."
+        "bash scripts/preview.sh start | demo | reset-demo | status | stop: one command for the whole local preview (MongoDB, API, website) in the dev container; demo uses a separate database dlm_demo.",
+        "npm run demo:reset (backend): wipes only a local _demo database and creates the three synthetic demo accounts (the admin through the create-admin script). The normal preview database is never touched.",
+        "Decisions D-030 (MERN on the supervisor's instruction) and D-031 (Urdu and Roman Urdu texts reviewed by the team), both reported on 11 Nov 2026.",
+        "docs/DEMO-SCRIPT.md: the 7-minute demo of Modules 1-3, with a drawn synthetic proof photo (docs/demo/work-photo-synthetic.jpg) and frontend/e2e/demo-script.e2e.js, which runs the same clicks.",
+        "Bug fixed (found by rehearsing the demo): onboarding Step 4 offered no skill for the proof photo until the page was reloaded. Test: onboarding.test.jsx (fails without the fix) and the demo e2e test.",
+        "Real results: backend 521/521, frontend 941/941, e2e 35/35 (12.6 min, Chromium), oxlint 0."
       ]
     }
   ]

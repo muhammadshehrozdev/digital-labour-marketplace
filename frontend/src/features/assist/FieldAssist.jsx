@@ -164,16 +164,19 @@ function FieldAssist({ helpKey, label, icon: Icon, speak, value = '', onValue, m
   return (
     <div className={styles.assist} data-assist={helpKey} data-assist-for={controlId}>
       <div className={styles.row}>
-        {/* the name starts with the visible word ("Listen: Full name"), the same in every browser */}
-        <button type="button" className={styles.button} aria-pressed={playing} data-state={playing ? 'playing' : undefined} onClick={onListen} aria-label={fieldName ? `${t('assist.listen')}: ${fieldName}` : undefined}>
+        {/* The name is ONE hidden text, "Listen: Full name" (separate pieces got an extra space in
+            Chromium), and it is not an aria-label, so it never counts as a second label of the field. */}
+        <button type="button" className={styles.button} aria-pressed={playing} data-state={playing ? 'playing' : undefined} onClick={onListen}>
           <Volume2 size={20} strokeWidth={1.75} aria-hidden="true" />
-          <span>{t('assist.listen')}</span>
+          <span aria-hidden={fieldName ? 'true' : undefined}>{t('assist.listen')}</span>
+          {fieldName && <span className="visually-hidden">{`${t('assist.listen')}: ${fieldName}`}</span>}
           {playing && <span className={styles.bars} aria-hidden="true"><i /><i /><i /></span>}
         </button>
         {mode && (
-          <button type="button" className={styles.button} aria-pressed={voice.listening} data-state={voice.listening ? 'listening' : undefined} onClick={onSpeak} aria-label={fieldName ? `${t('assist.speak')}: ${fieldName}` : undefined}>
+          <button type="button" className={styles.button} aria-pressed={voice.listening} data-state={voice.listening ? 'listening' : undefined} onClick={onSpeak}>
             <Mic size={20} strokeWidth={1.75} aria-hidden="true" />
-            <span>{t('assist.speak')}</span>
+            <span aria-hidden={fieldName ? 'true' : undefined}>{t('assist.speak')}</span>
+            {fieldName && <span className="visually-hidden">{`${t('assist.speak')}: ${fieldName}`}</span>}
           </button>
         )}
         {undo && (
