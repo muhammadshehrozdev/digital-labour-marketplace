@@ -182,6 +182,7 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
             maxLength={MAX_TEXT}
             rows={5}
             value={text}
+            assist="skills.describe"
             words={result?.skills.flatMap((s) => s.matched) ?? []}
             onChange={(e) => {
               setText(e.target.value);
@@ -320,6 +321,8 @@ export default function SkillsEditor({ onSkillsChange, onProfileSuggestionUsed }
           placeholder={t('skills.searchPlaceholder')}
           options={manualOptions}
           onSelect={addManual}
+          assist="skills.search"
+          icon={Search}
         />
       </Section>
 

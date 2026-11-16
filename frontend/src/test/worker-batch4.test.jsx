@@ -310,7 +310,7 @@ describe('upload: compression, crop and rotate, progress with cancel (features 1
     const user = userEvent.setup();
     renderAt('/worker/profile/edit?section=proof');
     const form = await screen.findByRole('form', { name: /proof/i });
-    await user.selectOptions(within(form).getByLabelText(/^Which skill/), 'elec_wiring');
+    await user.click(within(within(form).getByRole('group', { name: /^Which skill/ })).getByRole('radio', { name: 'House wiring' }));
     await user.click(within(form).getByRole('radio', { name: /Work photo/ }));
     await user.upload(within(form).getByLabelText(/^Photo/), jpeg(3000));
     await user.click(within(form).getByRole('checkbox', { name: /I own this photo/ }));

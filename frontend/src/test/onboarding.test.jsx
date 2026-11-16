@@ -75,8 +75,8 @@ describe('onboarding steps', () => {
     });
     renderAt('/onboarding/work');
     const user = userEvent.setup();
-    await screen.findByRole('option', { name: 'Electrical & Solar' }); // taxonomy loaded from the API
-    await user.selectOptions(screen.getByLabelText(/^Main trade/), 'electrical_solar');
+    await screen.findByRole('radio', { name: 'Electrical & Solar' }); // taxonomy loaded from the API (a picture card since Batch 5)
+    await user.click(within(screen.getByRole('group', { name: /^Main trade/ })).getByRole('radio', { name: 'Electrical & Solar' }));
     expect(screen.getByLabelText(/^Occupation/)).toHaveValue('Electrician'); // helpful default, only because it was empty
     await user.type(screen.getByLabelText(/^Years of experience/), '6');
     await user.type(screen.getByLabelText(/^Rate per day/), '4000');
@@ -191,8 +191,9 @@ describe('skills step (Module 2)', () => {
     await user.click(screen.getByRole('button', { name: 'Find my skills' }));
     await user.click(await screen.findByRole('button', { name: /Add selected skills/ }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
-    const select = await screen.findByRole('combobox', { name: /Which skill does this photo prove/ });
-    const options = within(select).getAllByRole('option').map((o) => o.textContent);
+    // Batch 5: the skills are picture cards (real radio buttons) instead of a drop-down
+    const group = await screen.findByRole('group', { name: /Which skill does this photo prove/ });
+    const options = within(group).getAllByRole('radio').map((o) => o.closest('label').textContent);
     expect(options).toEqual(expect.arrayContaining(['House wiring', 'Solar panel installation']));
   });
 

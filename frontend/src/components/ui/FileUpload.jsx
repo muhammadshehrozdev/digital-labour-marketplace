@@ -1,11 +1,12 @@
 import { useEffect, useId, useState } from 'react';
-import { Crop, ImageUp, X } from 'lucide-react';
+import { Camera, Crop, ImageUp, X } from 'lucide-react';
 import Button from './Button';
 import IconButton from './IconButton';
 import ImageEditor from './ImageEditor';
 import Spinner from './Spinner';
 import { prepareImage, formatBytes } from '../../utils/imageCheck';
 import { useT } from '../../i18n/context';
+import FieldAssist from '../../features/assist/FieldAssist';
 import styles from './FileUpload.module.css';
 
 // Thumbnail of the chosen file. One instance per file (key), so the temporary URL is made once
@@ -23,7 +24,8 @@ function Preview({ file }) {
 // readers work. Type and size are checked here with the same error codes as the server.
 // tip: a short instruction shown above the drop zone (e.g. "Take a clear photo of your certificate").
 // editable: offer "Crop or rotate" once a photo is chosen (Batch 4, feature 15).
-export default function FileUpload({ label, hint, value, onChange, error, required, tip, editable = false }) {
+// assist (Batch 5): help key for a Listen button ("take a photo or choose one").
+export default function FileUpload({ label, hint, value, onChange, error, required, tip, editable = false, assist }) {
   const { t, te } = useT();
   const id = `u${useId().replace(/:/g, '')}`;
   const [dragging, setDragging] = useState(false);
@@ -57,6 +59,7 @@ export default function FileUpload({ label, hint, value, onChange, error, requir
         {required && <span className={styles.required}><span aria-hidden="true"> *</span><span className="visually-hidden"> {t('common.required')}</span></span>}
       </span>
       {tip && <div className={styles.tip}>{tip}</div>}
+      {assist && <FieldAssist helpKey={assist} label={typeof label === 'string' ? label : ''} icon={Camera} />}
       {value ? (
         <div className={styles.selected}>
           <Preview key={`${value.name}-${value.size}-${value.lastModified}`} file={value} />

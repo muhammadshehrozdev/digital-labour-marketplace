@@ -7,12 +7,12 @@ import styles from './Field.module.css';
 // (both decorative: the label already says what the field is).
 // assist (Batch 5): help key for the Listen / Speak row. speak: 'text' (default for text boxes),
 // 'digits' (phone numbers), 'number' (years, rupees) or false. Email and password never get Speak.
-export default function TextField({ label, hint, error, required, id, urdu = false, hideLabel, className, icon: Icon, prefix, suffix, assist, speak, assistMask, ...inputProps }) {
+export default function TextField({ label, hint, error, required, id, urdu = false, hideLabel, className, icon: Icon, prefix, suffix, assist, speak, assistMask, assistIcon, ...inputProps }) {
   const adorned = Boolean(Icon || prefix || suffix);
   const type = inputProps.type ?? 'text';
   const onValue = useValueSetter(inputProps.onChange, inputProps.name);
   const assistControl = assist ? {
-    icon: Icon,
+    icon: assistIcon ?? Icon, // the picture in the help bubble (rates show "Rs" in the box, a banknote in the help)
     inputType: type,
     mask: assistMask,
     speak: speak === undefined ? 'text' : speak,

@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
-import { Camera, Upload, X } from 'lucide-react';
+import { Camera, Tag, Upload, X } from 'lucide-react';
 import API from '../../api';
-import { Alert, Button, Checkbox, FileUpload, ProgressBar, RadioCardGroup, Select, TextField } from '../../components/ui';
+import { Alert, Button, Checkbox, FileUpload, ProgressBar, RadioCardGroup, TextField } from '../../components/ui';
+import { TradeArt } from '../../components/illustrations';
+import FieldAssist from '../assist/FieldAssist';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useT } from '../../i18n';
 import { apiError } from '../../utils/apiErrors';
@@ -69,16 +71,21 @@ export default function EvidenceUploadForm({ skills, defaultSkillId = '', onUplo
   return (
     <form onSubmit={submit} noValidate className={styles.form} aria-label={t('evidence.form.label')}>
       {formError && <Alert tone="danger">{te(formError)}</Alert>}
-      <Select
-        label={t('evidence.form.skill')}
-        required
-        placeholder={t('evidence.form.skillPlaceholder')}
-        options={skills.map((s) => ({ value: s.skillId, label: skillName(s) }))}
+      {/* Batch 5: the skill is chosen by picture (the drawing of its trade); each card can be heard */}
+      <RadioCardGroup
+        legend={<>{t('evidence.form.skill')}<span className={styles.required}><span aria-hidden="true"> *</span><span className="visually-hidden"> {t('common.required')}</span></span></>}
+        name="evidence-skill"
+        layout="tiles"
+        options={skills.map((s) => ({
+          value: s.skillId, title: skillName(s), art: <TradeArt category={s.category} size={48} />,
+          listenKey: 'help.option.proofSkill', listenParams: { name: skillName(s) },
+        }))}
         value={skillId}
-        onChange={(e) => setSkillId(e.target.value)}
+        onChange={setSkillId}
         error={errors.skillId}
+        assist="evidence.skill"
       />
-      <RadioCardGroup legend={t('evidence.form.kind')} name="evidence-type" value={type} onChange={setType} options={typeOptions} error={errors.type} />
+      <RadioCardGroup legend={t('evidence.form.kind')} name="evidence-type" value={type} onChange={setType} options={typeOptions} error={errors.type} assist="evidence.kind" listen="evidenceType" />
       <FileUpload
         label={t('evidence.form.photo')}
         required
@@ -87,11 +94,13 @@ export default function EvidenceUploadForm({ skills, defaultSkillId = '', onUplo
         onChange={setFile}
         error={errors.file}
         hint={t('evidence.form.photoHint')}
+        assist="evidence.photo"
         tip={<><strong><Camera size={16} aria-hidden="true" /> {t('workerx.upload.tipTitle')}</strong><span>{t('workerx.upload.tip')}</span></>}
       />
-      <TextField label={t('evidence.form.title')} maxLength={80} placeholder={t('evidence.form.titlePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} urdu />
+      <TextField label={t('evidence.form.title')} maxLength={80} placeholder={t('evidence.form.titlePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} urdu icon={Tag} assist="evidence.title" />
       <div>
         <Checkbox label={t('evidence.consent')} checked={consent} onChange={setConsent} aria-invalid={errors.consent ? true : undefined} />
+        <FieldAssist helpKey="evidence.consent" label={t('assist.consentShort')} />
         {errors.consent && <p className={styles.error} role="alert">{t(errors.consent)}</p>}
       </div>
       {progress !== null && (

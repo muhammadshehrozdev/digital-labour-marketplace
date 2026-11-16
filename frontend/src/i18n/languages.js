@@ -6,6 +6,8 @@
 //   speech: the language for browser voice typing (Roman Urdu is recognised best as English).
 //   preview, chooser*: texts of the first-visit language chooser. They are here, not in the
 //   dictionaries, because the chooser shows all three languages at once before any is chosen.
+//   chooserSpoken (Batch 5): what the card's 🔊 says, in the SPOKEN language (Roman Urdu is spoken
+//   in Urdu, so its sentence is in Urdu script); the team's recorded clip is help.chooser.<code>.
 export const LANGUAGES = [
   {
     code: 'en', htmlLang: 'en', dir: 'ltr', nativeName: 'English', locale: 'en-PK', speech: 'en-US',
@@ -13,6 +15,9 @@ export const LANGUAGES = [
     chooserTitle: 'Choose your language',
     chooserHint: 'You can change it at any time from the top of the page.',
     chooserContinue: 'Continue in English',
+    chooserListen: 'Listen', chooserListenLabel: 'Listen: English',
+    chooserSpoken: 'Press here for English.',
+    chooserNoVoice: 'This device has no English voice.',
   },
   {
     code: 'ur', htmlLang: 'ur', dir: 'rtl', nativeName: 'اردو', locale: 'ur-PK', speech: 'ur-PK',
@@ -20,6 +25,9 @@ export const LANGUAGES = [
     chooserTitle: 'اپنی زبان چنیں',
     chooserHint: 'آپ اسے کسی بھی وقت صفحے کے اوپر سے بدل سکتے ہیں۔',
     chooserContinue: 'اردو میں جاری رکھیں',
+    chooserListen: 'سنیں', chooserListenLabel: 'سنیں: اردو',
+    chooserSpoken: 'اردو کے لیے یہاں دبائیں۔',
+    chooserNoVoice: 'اس آلے میں اردو آواز نہیں ہے۔',
   },
   {
     code: 'ur-Latn', htmlLang: 'ur-Latn', dir: 'ltr', nativeName: 'Roman Urdu', locale: 'en-PK', speech: 'en-US',
@@ -27,6 +35,9 @@ export const LANGUAGES = [
     chooserTitle: 'Apni zabaan chunein',
     chooserHint: 'Aap ise kisi bhi waqt safhay ke oopar se badal sakte hain.',
     chooserContinue: 'Roman Urdu mein jaari rakhein',
+    chooserListen: 'Sunein', chooserListenLabel: 'Sunein: Roman Urdu',
+    chooserSpoken: 'رومن اردو کے لیے یہاں دبائیں۔',
+    chooserNoVoice: 'Is device mein Urdu awaaz nahi hai.',
   },
 ];
 
@@ -37,3 +48,6 @@ export const languageInfo = (code) => LANGUAGES.find((l) => l.code === code) ?? 
 
 // Western digits in every language (the "-u-nu-latn" extension asks Intl for 0-9).
 export const intlLocale = (code) => `${languageInfo(code).locale}-u-nu-latn`;
+
+// The recorded clip key of each chooser card (docs/audio/RECORDING-GUIDE.md).
+export const CHOOSER_HELP_KEYS = LANGUAGES.map((l) => `help.chooser.${l.code}`);

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { HeartHandshake, House, IdCard, Languages, MapPin, MessageCircle, Phone, Save, User } from 'lucide-react';
 import API from '../../api';
 import { Alert, Button, MaskedField, TextField } from '../../components/ui';
 import { useT } from '../../i18n';
@@ -36,9 +37,9 @@ export default function AboutForm({ values, onChange, cnicOnFile, onSaved, submi
     <form onSubmit={submit} noValidate className={styles.form}>
       {formError && <Alert tone="danger">{te(formError)}</Alert>}
       <div className={styles.grid}>
-        <TextField label={t('about.fullName')} required autoComplete="name" value={values.name} onChange={set('name')} error={errors.name} urdu />
-        <MaskedField mask="mobile" label={t('about.phone')} required type="tel" inputMode="tel" autoComplete="tel" placeholder="0300-1234567" value={values.phone} onChange={set('phone')} error={errors.phone} hint={t('about.phoneHint')} />
-        <MaskedField mask="mobile" label={t('about.whatsapp')} type="tel" inputMode="tel" placeholder="0300-1234567" value={values.whatsappNumber} onChange={set('whatsappNumber')} error={errors.whatsappNumber} />
+        <TextField label={t('about.fullName')} required autoComplete="name" value={values.name} onChange={set('name')} error={errors.name} urdu icon={User} assist="about.name" />
+        <MaskedField mask="mobile" label={t('about.phone')} required type="tel" inputMode="tel" autoComplete="tel" placeholder="0300-1234567" value={values.phone} onChange={set('phone')} error={errors.phone} hint={t('about.phoneHint')} icon={Phone} assist="about.phone" />
+        <MaskedField mask="mobile" label={t('about.whatsapp')} type="tel" inputMode="tel" placeholder="0300-1234567" value={values.whatsappNumber} onChange={set('whatsappNumber')} error={errors.whatsappNumber} icon={MessageCircle} assist="about.whatsapp" />
         <MaskedField
           mask="cnic"
           label={t('about.cnic')}
@@ -49,15 +50,17 @@ export default function AboutForm({ values, onChange, cnicOnFile, onSaved, submi
           onChange={set('cnicNumber')}
           error={errors.cnicNumber}
           hint={t('about.cnicHint')}
+          icon={IdCard}
+          assist="about.cnic"
         />
-        <TextField label={t('about.city')} required autoComplete="address-level2" placeholder={t('about.cityPlaceholder')} value={values.city} onChange={set('city')} error={errors.city} urdu />
-        <TextField label={t('about.area')} placeholder={t('about.areaPlaceholder')} value={values.address} onChange={set('address')} error={errors.address} hint={t('about.areaHint')} urdu />
-        <TextField label={t('about.emergency')} placeholder={t('about.emergencyPlaceholder')} value={values.emergencyContact} onChange={set('emergencyContact')} error={errors.emergencyContact} urdu />
-        <TextField label={t('about.languages')} placeholder={t('about.languagesPlaceholder')} value={values.languages} onChange={set('languages')} error={errors.languages} hint={t('about.languagesHint')} />
+        <TextField label={t('about.city')} required autoComplete="address-level2" placeholder={t('about.cityPlaceholder')} value={values.city} onChange={set('city')} error={errors.city} urdu icon={MapPin} assist="about.city" />
+        <TextField label={t('about.area')} placeholder={t('about.areaPlaceholder')} value={values.address} onChange={set('address')} error={errors.address} hint={t('about.areaHint')} urdu icon={House} assist="about.area" />
+        <TextField label={t('about.emergency')} placeholder={t('about.emergencyPlaceholder')} value={values.emergencyContact} onChange={set('emergencyContact')} error={errors.emergencyContact} urdu icon={HeartHandshake} assist="about.emergency" speak="digits" />
+        <TextField label={t('about.languages')} placeholder={t('about.languagesPlaceholder')} value={values.languages} onChange={set('languages')} error={errors.languages} hint={t('about.languagesHint')} icon={Languages} assist="about.languages" />
       </div>
       <div className={styles.actions}>
         {secondary}
-        <Button type="submit" loading={saving}>{submitLabel ?? t('common.save')}</Button>
+        <Button type="submit" loading={saving} icon={Save}>{submitLabel ?? t('common.save')}</Button>
       </div>
     </form>
   );

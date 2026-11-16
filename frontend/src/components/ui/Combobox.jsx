@@ -1,4 +1,4 @@
-import { useId, useMemo, useRef, useState } from 'react';
+import { useCallback, useId, useMemo, useRef, useState } from 'react';
 import Field from './Field';
 import fieldStyles from './Field.module.css';
 import styles from './Combobox.module.css';
@@ -7,13 +7,15 @@ import { useT } from '../../i18n/context';
 // Searchable select (WAI-ARIA combobox pattern with a listbox popup).
 // options: [{ value, label, group? }]. onSelect(option) is called on Enter or click; the input then clears.
 // Keys: ArrowDown/ArrowUp move, Enter selects, Escape closes.
-export default function Combobox({ id, label, hint, options, onSelect, placeholder, emptyText, maxResults = 50 }) {
+// assist (Batch 5): help key; a spoken search fills the box and opens the list. icon: shown in the help.
+export default function Combobox({ id, label, hint, options, onSelect, placeholder, emptyText, maxResults = 50, assist, icon }) {
   const { t } = useT();
   const listId = `l${useId().replace(/:/g, '')}`;
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const inputRef = useRef(null);
+  const speakSearch = useCallback((said) => { setQuery(said); setOpen(true); setActive(0); }, []);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -50,7 +52,7 @@ export default function Combobox({ id, label, hint, options, onSelect, placehold
 
   const optionId = (i) => `${listId}-o${i}`;
   return (
-    <Field label={label} hint={hint} id={id}>
+    <Field label={label} hint={hint} id={id} assist={assist} assistControl={{ icon, speak: 'text', value: query, onValue: speakSearch }}>
       {(fieldProps) => (
         <div className={styles.wrap}>
           <input

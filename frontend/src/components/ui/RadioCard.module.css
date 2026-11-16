@@ -43,3 +43,17 @@
 .checked .dot { border: 6px solid var(--color-primary); }
 .error { color: var(--color-danger); font-size: var(--text-small); font-weight: 600; }
 :root[lang='ur'] :is(.description, .title) { line-height: 2; }
+
+/* Batch 5: a 🔊 next to the card (bottom corner); the card leaves room for it */
+.option { position: relative; display: grid; }
+.listenSpot { position: absolute; inset-block-end: var(--space-2); inset-inline-end: var(--space-2); }
+.withListen { padding-block-end: 60px; }
+.checked.withListen { padding-block-end: 59px; }
+.note { margin: 0; font-size: var(--text-small); color: var(--color-text-secondary); }
+/* tiles: picture choices (trade, availability), two per row on a phone */
+.tiles { grid-template-columns: repeat(auto-fill, minmax(min(100%, 128px), 1fr)); }
+.tile { flex-direction: column; align-items: center; text-align: center; gap: var(--space-2); min-block-size: 0; }
+.tile .text { justify-items: center; }
+.tile .title { font-size: var(--text-small); line-height: var(--leading-small); }
+.tile .dot { position: absolute; inset-block-start: var(--space-2); inset-inline-end: var(--space-2); margin: 0; }
+.tile .icon { inline-size: 56px; block-size: 56px; }

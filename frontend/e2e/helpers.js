@@ -78,7 +78,8 @@ export async function completeSteps1and2(page, lang = 'en') {
   await page.getByLabel(startsWith(t('about.city'))).fill('Rawalpindi');
   await page.getByRole('button', { name: t('onboarding.saveContinue') }).click();
   await expect(page).toHaveURL(/\/onboarding\/work$/);
-  await page.getByLabel(startsWith(t('work.trade'))).selectOption('electrical_solar');
+  // Batch 5: the trade is a picture card (a radio inside a label), chosen by its value in every language
+  await page.locator('label:has(input[name=category][value=electrical_solar])').click();
   await page.getByLabel(startsWith(t('work.experience'))).fill('5');
   await page.getByLabel(startsWith(t('work.daily'))).fill('4000');
   await page.getByRole('button', { name: t('onboarding.saveContinue') }).click();

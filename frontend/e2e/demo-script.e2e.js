@@ -43,7 +43,7 @@ test('defence demo: Urdu onboarding -> suggested skills -> proof -> admin approv
 
   // Step 2 "Your work"
   await expect(worker).toHaveURL(/\/onboarding\/work$/);
-  await worker.getByLabel(startsWith(ur('work.trade'))).selectOption('electrical_solar');
+  await worker.locator('label:has(input[name=category][value=electrical_solar])').click(); // the trade picture (Batch 5)
   await worker.getByLabel(startsWith(ur('work.experience'))).fill('5');
   await worker.getByLabel(startsWith(ur('work.daily'))).fill('4000');
   await worker.getByRole('button', { name: ur('onboarding.saveContinue') }).click();
@@ -60,7 +60,7 @@ test('defence demo: Urdu onboarding -> suggested skills -> proof -> admin approv
 
   // 3. Step 4 "Proof of skills": a synthetic work photo for house wiring
   await expect(worker).toHaveURL(/\/onboarding\/proof$/);
-  await worker.getByLabel(startsWith(ur('evidence.form.skill'))).selectOption('elec_wiring');
+  await worker.locator('label:has(input[name=evidence-skill][value=elec_wiring])').click(); // the skill picture (Batch 5)
   await worker.getByRole('radio', { name: new RegExp(ur('evidence.types.work_photo.title')) }).check();
   await worker.locator('input[type=file]').setInputFiles(PHOTO);
   await worker.getByRole('checkbox', { name: startsWith(ur('evidence.consent')) }).check();

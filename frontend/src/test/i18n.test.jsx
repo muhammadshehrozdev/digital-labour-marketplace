@@ -124,7 +124,8 @@ describe('language chooser and switcher', () => {
   test('first visit: the chooser shows three cards, each in its own language and direction', async () => {
     mockApi({ 'GET /auth/me': { status: 401, data: {} } });
     renderAt('/', { language: null });
-    const cards = await screen.findAllByRole('button', { name: /English|اردو|Roman Urdu/ });
+    // the cards' names start with the language; each card also has its own Listen button (Batch 5)
+    const cards = await screen.findAllByRole('button', { name: /^(English|اردو|Roman Urdu)/ });
     expect(cards).toHaveLength(3);
     const urdu = cards.find((c) => c.getAttribute('lang') === 'ur');
     expect(urdu).toHaveAttribute('dir', 'rtl');

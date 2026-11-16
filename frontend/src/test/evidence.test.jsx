@@ -45,7 +45,7 @@ const proofStepRoutes = (extra = {}) => ({
 });
 
 async function fillUploadForm(user, { file = jpegFile(), consent = true } = {}) {
-  await user.selectOptions(await screen.findByLabelText(/Which skill does this photo prove/), 'elec_wiring');
+  await user.click(within(await screen.findByRole('group', { name: /Which skill does this photo prove/ })).getByRole('radio', { name: 'House wiring' }));
   await user.click(screen.getByRole('radio', { name: /Work photo/ }));
   if (file) await user.upload(screen.getByLabelText(/^Photo/), file);
   if (consent) await user.click(screen.getByRole('checkbox', { name: /I own this photo/ }));
@@ -185,7 +185,7 @@ describe('worker proof list (profile editor, Proof of skills; D-020)', () => {
     renderAt(PAGE);
     const user = userEvent.setup();
     await user.click(await screen.findByRole('button', { name: 'Add proof for Solar panel installation' }));
-    await waitFor(() => expect(screen.getByLabelText(/Which skill does this photo prove/)).toHaveValue('elec_solar'));
+    await waitFor(() => expect(within(screen.getByRole('group', { name: /Which skill does this photo prove/ })).getByRole('radio', { name: 'Solar panel installation' })).toBeChecked());
     expect(pathname()).toBe('/worker/profile/edit');
     expect(currentSearch()).toContain('skill=elec_solar');
   });

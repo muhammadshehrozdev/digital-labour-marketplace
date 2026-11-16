@@ -8,3 +8,4 @@
 .job { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-subtle); }
 .jobHead { display: flex; justify-content: space-between; align-items: center; }
 .jobNumber { font-weight: 700; font-size: var(--text-small); color: var(--color-text-secondary); }
+.required { color: var(--color-danger); }

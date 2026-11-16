@@ -4,13 +4,15 @@
 // The marks are decorative (aria-hidden): screen readers get the matched words in the list of
 // suggestions, and a short legend under the box says what the marks mean.
 import { useRef } from 'react';
+import { PenLine } from 'lucide-react';
 import Field from '../../components/ui/Field';
 import fieldStyles from '../../components/ui/Field.module.css';
 import { useT } from '../../i18n';
 import { markMatches } from './skillsText';
 import styles from './SkillsEditor.module.css';
 
-export default function HighlightedTextArea({ label, hint, maxLength, value, onChange, words = [], rows = 5 }) {
+// assist (Batch 5): Listen only here; the large "Use voice typing" button below is this box's Speak.
+export default function HighlightedTextArea({ label, hint, maxLength, value, onChange, words = [], rows = 5, assist }) {
   const { t } = useT();
   const mirror = useRef(null);
   const parts = markMatches(value, words);
@@ -21,7 +23,7 @@ export default function HighlightedTextArea({ label, hint, maxLength, value, onC
   );
   const shared = [fieldStyles.control, fieldStyles.textarea, fieldStyles.urdu].join(' ');
   return (
-    <Field label={label} hint={marked ? `${hint} ${t('workerx.highlight.legend')}` : hint} counter={counter}>
+    <Field label={label} hint={marked ? `${hint} ${t('workerx.highlight.legend')}` : hint} counter={counter} assist={assist} assistControl={{ icon: PenLine }}>
       {(fieldProps) => (
         <div className={styles.highlightWrap} data-marked={marked || undefined}>
           {marked && (
