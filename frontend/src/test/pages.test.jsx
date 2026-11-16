@@ -197,9 +197,10 @@ describe('customer pages (D-002)', () => {
     const calls = mockApi({ 'GET /auth/me': me('customer'), 'GET /workers': { status: 200, data: { workers: [], page: 1, limit: 12, total: 0 } } });
     renderAt('/find');
     const user = userEvent.setup();
-    await screen.findByRole('option', { name: 'Domestic Work' });
+    await screen.findByRole('radio', { name: 'Domestic Work' });
     await user.click(screen.getByRole('switch', { name: 'Identity verified only' }));
-    await user.selectOptions(screen.getByLabelText('Trade'), 'domestic_work');
+    // Batch 5: the trade filter is a group of picture cards (real radio buttons)
+    await user.click(within(screen.getAllByRole('group', { name: 'Trade' })[0]).getByRole('radio', { name: 'Domestic Work' }));
     await waitFor(() => expect(calls.some((c) => c.key === 'GET /workers' && c.params.identity === 'verified' && c.params.category === 'domestic_work')).toBe(true));
     expect(await screen.findByRole('heading', { name: 'No workers match' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Clear search and filters' })).toBeInTheDocument();

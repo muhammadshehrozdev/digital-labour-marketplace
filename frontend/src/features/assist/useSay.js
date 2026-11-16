@@ -1,6 +1,8 @@
 // Speaking help and reading answers back, in the right language (Batch 5, D-034).
 //   say(id, key, params)  plays the help text of a dictionary key: a recorded clip if the team made
 //                         one, else a device voice, else nothing ('none': the caller shows the text).
+//                         A param may be a function (spokenLang, spokenT) => text, so values such as
+//                         a skill's name are also in the SPOKEN language.
 //   readBack(id, value, mode) says what was written ("Written: Bilal Ahmed"). mode 'digits' reads a
 //                         phone number digit by digit (recorded Urdu digit clips first).
 // Roman Urdu is spoken with the Urdu audio and the URDU text of the same key (never Roman Urdu text
@@ -35,9 +37,10 @@ export function useSay() {
 
   const say = useCallback(async (id, key, params) => {
     const spokenT = await spokenTranslator(audioLang);
+    const values = params && Object.fromEntries(Object.entries(params).map(([k, v]) => [k, typeof v === 'function' ? v(audioLang, spokenT) : v]));
     // a recorded clip says the fixed text of a key; texts with values ({name}) are spoken by a voice
     const clip = params ? null : clipUrl(audioLang, key);
-    return play({ id, clip, text: spokenT(key, params), lang: audioLang });
+    return play({ id, clip, text: spokenT(key, values), lang: audioLang });
   }, [audioLang]);
 
   const readBack = useCallback(async (id, value, mode = 'text') => {

@@ -28,7 +28,7 @@ export default function Field({ label, hint, error, required, id: givenId, child
         )}
       </label>
       {children({ id, 'aria-describedby': describedBy, 'aria-invalid': error ? true : undefined, required })}
-      {assist && <FieldAssist helpKey={assist} label={label} {...assistControl} />}
+      {assist && <FieldAssist helpKey={assist} label={label} controlId={id} {...assistControl} />}
       {(hint || counter) && (
         <div className={styles.below}>
           {hint && <p id={hintId} className={styles.hint}>{hint}</p>}

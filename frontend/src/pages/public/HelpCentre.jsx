@@ -1,7 +1,9 @@
 // Help centre (Batch 4, feature 55): short how-to guides in the website language, for everyone
 // (a page outside any login). A worker sees the worker guides first, a customer the customer ones.
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, Stethoscope } from 'lucide-react';
+import OptionListen from '../../features/assist/OptionListen';
 import { SceneArt } from '../../components/illustrations';
 import { PageHeader, TextField } from '../../components/ui';
 import { useAuth } from '../../context/auth';
@@ -11,8 +13,10 @@ import styles from './HelpCentre.module.css';
 const GROUPS = [
   { role: 'worker', guides: [['profile', 'step-work'], ['proof', 'step-proof'], ['identity', 'step-about']] },
   { role: 'customer', guides: [['find', 'empty-search'], ['badges', 'compare']] },
-  { role: 'everyone', guides: [['display', 'all-done'], ['install', 'offline']] },
+  // Batch 5: listen, speak, see (their texts are in help.centre.guides, the Batch 5 part of the dictionaries)
+  { role: 'everyone', guides: [['sound', 'all-done', 'help.centre.guides'], ['voiceTyping', 'step-skills', 'help.centre.guides'], ['display', 'all-done'], ['install', 'offline']] },
 ];
+const DEFAULT_BASE = 'appx.help.guides';
 
 export default function HelpCentre() {
   const { t } = useT();
@@ -20,13 +24,13 @@ export default function HelpCentre() {
   useDocumentTitle(t('appx.help.title'));
   const [query, setQuery] = useState('');
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  const matches = (id) => {
-    const text = `${t(`appx.help.guides.${id}.title`)} ${t(`appx.help.guides.${id}.steps`)}`.toLowerCase();
+  const matches = (id, base = DEFAULT_BASE) => {
+    const text = `${t(`${base}.${id}.title`)} ${t(`${base}.${id}.steps`)}`.toLowerCase();
     return words.every((w) => text.includes(w));
   };
   // the person's own guides first
   const groups = [...GROUPS].sort((a, b) => (b.role === user?.role) - (a.role === user?.role));
-  const shown = groups.map((g) => ({ ...g, guides: g.guides.filter(([id]) => matches(id)) })).filter((g) => g.guides.length);
+  const shown = groups.map((g) => ({ ...g, guides: g.guides.filter(([id, , base]) => matches(id, base)) })).filter((g) => g.guides.length);
 
   return (
     <div className={styles.page}>
@@ -39,13 +43,28 @@ export default function HelpCentre() {
         <section key={group.role} aria-labelledby={`help-${group.role}`} className={styles.group}>
           <h2 id={`help-${group.role}`} className={styles.groupTitle}>{t(`appx.help.forRole.${group.role}`)}</h2>
           <div className={styles.guides}>
-            {group.guides.map(([id, art]) => (
+            {group.guides.map(([id, art, base = DEFAULT_BASE]) => (
               <article key={id} className={styles.guide} data-art-hover>
                 <SceneArt name={art} size={120} />
-                <h3 className={styles.guideTitle}>{t(`appx.help.guides.${id}.title`)}</h3>
+                <h3 className={styles.guideTitle}>{t(`${base}.${id}.title`)}</h3>
                 <ol className={styles.steps}>
-                  {t(`appx.help.guides.${id}.steps`).split('|').map((step) => <li key={step}>{step}</li>)}
+                  {t(`${base}.${id}.steps`).split('|').map((step) => <li key={step}>{step}</li>)}
                 </ol>
+                {id === 'voiceTyping' && (
+                  <>
+                    <p className={styles.notice}>{t('voice.notice')}</p>
+                    <Link to="/voice-check" className={styles.checkLink}><Stethoscope size={18} aria-hidden="true" /> {t('assist.voiceCheckLink')}</Link>
+                  </>
+                )}
+                {/* Batch 5: every guide can be heard (in the spoken language) */}
+                <OptionListen
+                  helpKey="help.centre.read"
+                  name={t(`${base}.${id}.title`)}
+                  params={{
+                    title: (lang, spokenT) => spokenT(`${base}.${id}.title`),
+                    steps: (lang, spokenT) => spokenT(`${base}.${id}.steps`).split('|').join(' '),
+                  }}
+                />
               </article>
             ))}
           </div>

@@ -1,0 +1,25 @@
+/* Batch 5: the Sound menu in the header (the word shows from 480 px; below, the icon alone) */
+.wrap { position: relative; }
+.button {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  min-block-size: 44px; min-inline-size: 44px; padding-inline: var(--space-3);
+  border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-surface);
+  color: var(--color-text); font: inherit; font-weight: 600; font-size: var(--text-small); cursor: pointer;
+}
+.button:hover, .button[aria-expanded='true'] { border-color: var(--color-primary); background: var(--color-primary-soft); }
+.word, .chevron { display: none; }
+@media (min-width: 480px) { .word, .chevron { display: inline; } }
+.panel {
+  position: absolute; z-index: 40; inset-block-start: calc(100% + var(--space-2)); inset-inline-end: 0;
+  inline-size: min(340px, calc(100vw - 24px));
+  display: grid; gap: var(--space-3); padding: var(--space-4);
+  border-radius: var(--radius-lg); background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-lg), inset 0 0 0 1px var(--color-border);
+}
+.title { margin: 0; font-weight: 700; }
+.note { margin: 0; font-size: var(--text-small); color: var(--color-text-secondary); }
+.link { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: 44px; font-weight: 700; color: var(--color-primary-text); }
+/* phones: under the header, almost full width (in right-to-left the button sits near the edge) */
+@media (max-width: 639px) {
+  .panel { position: fixed; inset-inline: 12px; inset-block-start: calc(var(--header-height) + var(--space-2)); inline-size: auto; }
+}

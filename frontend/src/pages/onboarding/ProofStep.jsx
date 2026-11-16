@@ -38,7 +38,7 @@ export default function ProofStep({ profile, onProfileChange, back, onNext }) {
           {!loading && !error && <SkillProofList skills={skills} evidence={evidence} headingLevel={3} />}
         </Section>
       </Card>
-      <div className={styles.footer}>
+      <div className={styles.footer} data-bottom-bar>
         {back}
         <Button iconRight={ArrowRight} onClick={onNext} variant={evidence.length ? 'primary' : 'secondary'}>
           {evidence.length ? t('common.continue') : t('onboarding.proof.skip')}

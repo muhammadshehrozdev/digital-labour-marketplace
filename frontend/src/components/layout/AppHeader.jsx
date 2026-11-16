@@ -10,6 +10,7 @@ import { homePathFor } from '../../utils/roles';
 import LanguageSwitcher from './LanguageSwitcher';
 import TextSizeControl from './TextSizeControl';
 import ThemeToggle from './ThemeToggle';
+import SoundMenu from '../../features/assist/SoundMenu';
 import WorkerHeaderTools from '../../features/worker/WorkerHeaderTools';
 import { NAV_LINKS } from './navLinks';
 import styles from './AppHeader.module.css';
@@ -70,6 +71,7 @@ export default function AppHeader() {
             <kbd className={styles.paletteKbd} aria-hidden="true">Ctrl K</kbd>
           </button>
           {user?.role === 'worker' && <WorkerHeaderTools />}
+          <SoundMenu />
           <ThemeToggle />
           <LanguageSwitcher compact />
           {user ? (

@@ -4,10 +4,12 @@
 //   a search can be bookmarked, shared and survives a reload.
 // - Results follow the typing after a short pause (feature 21); matched words are marked.
 // - Sort (22), saved workers (23), compare (24), recently viewed (25).
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
-import { Alert, Button, Drawer, EmptyState, PageHeader, Pagination, Select, Skeleton, Switch, TextField, useToast } from '../../components/ui';
+import { LayoutGrid, MapPin, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Alert, Button, Drawer, EmptyState, PageHeader, Pagination, RadioCardGroup, Select, Skeleton, Switch, TextField, useToast } from '../../components/ui';
+import { TradeArt } from '../../components/illustrations';
+import { AVAILABILITY, AVAILABILITY_ICONS } from '../../features/profile/availability';
 import CompareTray from '../../features/customer/CompareTray';
 import RecentlyViewed from '../../features/customer/RecentlyViewed';
 import WorkerCard from '../../features/customer/WorkerCard';
@@ -22,16 +24,42 @@ import styles from '../../features/customer/Customer.module.css';
 
 const PAGE_SIZE = 12;
 const SORTS = ['updated', 'experience', 'evidence'];
-const AVAILABILITY = ['Available', 'Busy', 'Offline'];
 export const SEARCH_DELAY_MS = 350;
 
+// Batch 5: trade and availability are picture choices (each card can be heard), with "All" first.
+// The filters can be on the page twice (side column and phone drawer): each copy has its own radio names.
 function Filters({ value, set, categories, city, onCity }) {
   const { t } = useT();
+  const uid = useId().replace(/:/g, '');
   return (
     <div className={styles.filterFields}>
-      <Select label={t('find.trade')} value={value.category} onChange={(e) => set({ category: e.target.value })} options={[{ value: 'All', label: t('find.allTrades') }, ...categories.map((c) => ({ value: c.id, label: c.label }))]} />
-      <TextField label={t('find.city')} placeholder={t('about.cityPlaceholder')} maxLength={50} value={city} onChange={(e) => onCity(e.target.value)} />
-      <Select label={t('find.availability')} value={value.availability} onChange={(e) => set({ availability: e.target.value })} options={[{ value: 'All', label: t('find.any') }, ...AVAILABILITY.map((a) => ({ value: a, label: t(`status.availability.${a}`) }))]} />
+      <RadioCardGroup
+        legend={t('find.trade')}
+        name={`trade${uid}`}
+        layout="tiles"
+        value={value.category}
+        onChange={(category) => set({ category })}
+        options={[
+          { value: 'All', title: t('find.allTrades'), icon: LayoutGrid },
+          ...categories.map((c) => ({ value: c.id, title: c.label, art: <TradeArt category={c.id} size={44} /> })),
+        ]}
+        assist="find.trade"
+        listen="trade"
+      />
+      <TextField label={t('find.city')} placeholder={t('about.cityPlaceholder')} maxLength={50} value={city} onChange={(e) => onCity(e.target.value)} icon={MapPin} assist="find.city" />
+      <RadioCardGroup
+        legend={t('find.availability')}
+        name={`availability${uid}`}
+        layout="tiles"
+        value={value.availability}
+        onChange={(availability) => set({ availability })}
+        options={[
+          { value: 'All', title: t('find.any'), icon: LayoutGrid },
+          ...AVAILABILITY.map((a) => ({ value: a, title: t(`status.availability.${a}`), icon: AVAILABILITY_ICONS[a] })),
+        ]}
+        assist="find.availability"
+        listen="availability"
+      />
       <Switch label={t('find.verifiedOnly')} checked={value.identity} onChange={(on) => set({ identity: on ? 'verified' : '' })} />
       <Switch label={t('find.verifiedSkills')} hint={t('find.verifiedSkillsHint')} checked={value.skills} onChange={(on) => set({ skills: on ? 'verified' : '' })} />
     </div>
@@ -122,7 +150,7 @@ export default function FindWorkers() {
       <PageHeader title={t('find.title')} description={t('find.lead')} />
       <form role="search" className={styles.searchBar} onSubmit={(e) => { e.preventDefault(); set({ q: search.trim(), city: city.trim() }); }}>
         <div className={styles.searchField}>
-          <TextField label={t('find.searchLabel')} hideLabel type="search" icon={Search} placeholder={t('find.searchPlaceholder')} maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} hint={t('customerx.instant')} />
+          <TextField label={t('find.searchLabel')} hideLabel type="search" icon={Search} placeholder={t('find.searchPlaceholder')} maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} hint={t('customerx.instant')} assist="find.search" />
         </div>
         <div className={styles.sortField}>
           <Select label={t('customerx.sort.label')} value={value.sort} onChange={(e) => set({ sort: e.target.value })} options={SORTS.map((s) => ({ value: s, label: t(`customerx.sort.${s}`) }))} />

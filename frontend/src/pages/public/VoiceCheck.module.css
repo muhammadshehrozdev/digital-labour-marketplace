@@ -1,0 +1,10 @@
+.page { display: grid; gap: var(--space-5); max-inline-size: 820px; }
+.card { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--color-border); }
+.h2 { font-size: var(--text-h3); line-height: var(--leading-h3); margin: 0; }
+.summary { display: grid; gap: var(--space-2); margin: 0; padding-inline-start: var(--space-5); font-size: var(--text-lead); }
+.voices { display: grid; gap: var(--space-1); margin: 0; padding-inline-start: var(--space-5); }
+.code { color: var(--color-text-secondary); font-size: var(--text-small); }
+.buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.heard { font-size: var(--text-lead); }
+.steps { display: grid; gap: var(--space-2); margin: 0; padding-inline-start: var(--space-5); }
+.note { margin: 0; font-size: var(--text-small); color: var(--color-text-secondary); }

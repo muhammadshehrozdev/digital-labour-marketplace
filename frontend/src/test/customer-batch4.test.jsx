@@ -113,7 +113,7 @@ describe('find workers: address-synced filters, instant search, sort (features 2
     expect(screen.getByText(/"Most approved proof" counts the photos an admin approved/)).toBeInTheDocument();
 
     const sidebar = screen.getByRole('complementary', { name: 'Filters' });
-    await user.selectOptions(within(sidebar).getByLabelText('Trade'), 'plumbing_sanitary');
+    await user.click(within(within(sidebar).getByRole('group', { name: 'Trade' })).getByRole('radio', { name: 'Plumbing & Sanitary' }));
     await user.click(within(sidebar).getByRole('switch', { name: /Verified skills only/ }));
     await waitFor(() => expect(lastSearch(calls)).toMatchObject({ category: 'plumbing_sanitary', skills: 'verified', sort: 'evidence' }));
     expect(currentSearch()).toBe('?sort=evidence&category=plumbing_sanitary&skills=verified');

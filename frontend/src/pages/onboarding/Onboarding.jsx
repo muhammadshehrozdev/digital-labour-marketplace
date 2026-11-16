@@ -126,7 +126,7 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
               setWork(workValuesFrom(data.profile));
             }}
           />
-          <div className={styles.footer}>
+          <div className={styles.footer} data-bottom-bar>
             {back}
             <div className={styles.footerRight}>
               {skillCount === 0 && (
@@ -180,7 +180,7 @@ function OnboardingSteps({ step, state, setState, profile, setProfile }) {
                 <Button to="/worker/profile/edit?section=proof" variant="secondary" icon={Camera}>{t('editor.addProof')}</Button>
               </div>
             </nav>
-            <div className={styles.footer}>
+            <div className={styles.footer} data-bottom-bar>
               {back}
               <Button to="/worker" iconRight={ArrowRight}>{t('onboarding.goDashboard')}</Button>
             </div>

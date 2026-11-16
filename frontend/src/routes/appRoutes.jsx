@@ -22,6 +22,7 @@ const Notifications = lazyPage(() => import('../pages/worker/Notifications'));
 const SavedWorkers = lazyPage(() => import('../pages/customer/SavedWorkers'));
 const CompareWorkers = lazyPage(() => import('../pages/customer/CompareWorkers'));
 const HelpCentre = lazyPage(() => import('../pages/public/HelpCentre'));
+const VoiceCheck = lazyPage(() => import('../pages/public/VoiceCheck'));
 const AdminOverview = lazyPage(() => import('../pages/admin/AdminOverview'));
 const AdminIdentity = lazyPage(() => import('../pages/admin/AdminIdentity'));
 const AdminAudit = lazyPage(() => import('../pages/admin/AdminAudit'));
@@ -40,6 +41,7 @@ export const appRoutes = (
   <Route element={<RootLayout />} errorElement={<CrashScreen />}>
       <Route element={<AppShell />}>
         <Route path="help" element={<HelpCentre />} />
+        <Route path="voice-check" element={<VoiceCheck />} />
         <Route element={<GuestOnly />}>
           <Route index element={<Landing />} />
           <Route path="login" element={<Login />} />

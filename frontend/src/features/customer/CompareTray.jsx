@@ -13,7 +13,7 @@ export default function CompareTray() {
   const to = `/compare?ids=${list.map((w) => encodeURIComponent(w.id)).join(',')}`;
   return (
     <aside className={styles.tray} aria-label={t('customerx.compare.tray')} data-testid="compare-tray">
-      <div className={styles.trayInner}>
+      <div className={styles.trayInner} data-bottom-bar>
         <Scale size={20} strokeWidth={1.75} aria-hidden="true" className={styles.trayIcon} />
         <ul className={styles.trayList}>
           {list.map((w) => (

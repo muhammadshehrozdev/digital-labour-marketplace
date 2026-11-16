@@ -7,6 +7,7 @@ import InstallHint from '../../features/app/InstallHint';
 import OfflineBanner from '../../features/app/OfflineBanner';
 import ScrollTop from '../../features/app/ScrollTop';
 import SessionWatch from '../../features/app/SessionWatch';
+import PageHelp from '../../features/assist/PageHelp';
 import styles from './AppShell.module.css';
 
 // Landmarks on every page: header, main (skip-link target), footer.
@@ -27,6 +28,7 @@ export default function AppShell() {
       </main>
       <Footer />
       <ScrollTop />
+      <PageHelp />
       <InstallHint />
       <SessionWatch />
       <AppCommands />

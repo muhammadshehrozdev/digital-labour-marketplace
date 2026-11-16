@@ -13,7 +13,8 @@ import { useLanguage } from '../../i18n';
 import { languageInfo } from '../../i18n/languages';
 import { spokenToDigits } from '../../utils/spokenNumbers';
 import { announce } from './announce';
-import { stopMic, stopSound } from './audio';
+import { getAudioState, stopMic, stopSound } from './audio';
+import { hasInteracted } from './interaction';
 import { isPrivateField, speakModeFor } from './assistRules';
 import { useAssistSettings } from './settingsStore';
 import { useAudioState } from './useAudioState';
@@ -22,7 +23,7 @@ import { useVoiceTyping } from './useVoiceTyping';
 import VoiceNoticeDialog from './VoiceNoticeDialog';
 import styles from './Assist.module.css';
 
-function FieldAssist({ helpKey, label, icon: Icon, speak, value = '', onValue, multiline = false, inputType, mask, secret = false }) {
+function FieldAssist({ helpKey, label, icon: Icon, speak, value = '', onValue, multiline = false, inputType, mask, secret = false, controlId }) {
   const { t, lang } = useLanguage();
   const [settings, setSettings] = useAssistSettings();
   const { say, readBack } = useSay();
@@ -91,6 +92,30 @@ function FieldAssist({ helpKey, label, icon: Icon, speak, value = '', onValue, m
     onText: onSpoken,
     onError: (problem) => explain(problem.key, { language: t(`voice.speechLanguages.${problem.params?.speechLang ?? speechLang}`) }),
   });
+
+  // Auto-read (off by default): the field's help is spoken when the box gets focus, but not before
+  // the first touch of the page, not while a microphone is on, and typing stops it at once.
+  const onFocusRef = useRef(null);
+  useEffect(() => {
+    onFocusRef.current = () => {
+      if (!hasInteracted() || getAudioState().listeningId) return;
+      setBubble(true);
+      setMessage(null);
+      speakKey(textKey);
+    };
+  });
+  useEffect(() => {
+    const el = settings.autoRead && controlId ? document.getElementById(controlId) : null;
+    if (!el) return undefined;
+    const onFocus = () => onFocusRef.current?.();
+    const onInput = () => { if (getAudioState().playingId === helpId) stopSound(); };
+    el.addEventListener('focus', onFocus);
+    el.addEventListener('input', onInput);
+    return () => {
+      el.removeEventListener('focus', onFocus);
+      el.removeEventListener('input', onInput);
+    };
+  }, [settings.autoRead, controlId, helpId]);
 
   if (!settings.showButtons) return null;
 

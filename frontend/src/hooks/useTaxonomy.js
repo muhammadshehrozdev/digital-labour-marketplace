@@ -21,6 +21,15 @@ export function loadTaxonomy() {
   return pending;
 }
 
+// Batch 5: a skill's name in a SPOKEN language ('en' or 'ur'), for audio help. Roman Urdu users
+// hear Urdu, so they need the Urdu name, not the Roman Urdu one on their screen.
+export function skillNameIn(skill, lang) {
+  const id = skill?.skillId ?? skill?.id;
+  const known = !skill?.custom && cache?.skills?.find((s) => s.id === id);
+  if (!known) return skill?.name ?? '';
+  return lang === 'en' ? known.name : known.i18n?.[lang] || known.name;
+}
+
 export function resetTaxonomyCache() {
   cache = null;
 }

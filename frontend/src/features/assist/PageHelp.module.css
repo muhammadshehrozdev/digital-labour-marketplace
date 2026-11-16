@@ -1,0 +1,48 @@
+/* Batch 5: the page help button. Bottom corner on the START side (the scroll-to-top button is on the
+   end side), above bars at the bottom edge (--lift), clear of the phone's safe area. */
+.wrap {
+  position: fixed; z-index: 24;
+  inset-inline-start: 16px;
+  inset-block-end: calc(max(16px, env(safe-area-inset-bottom)) + var(--lift, 0px));
+  display: grid; justify-items: start; gap: var(--space-2);
+  pointer-events: none;
+}
+.wrap > * { pointer-events: auto; }
+.button {
+  display: grid; place-items: center; inline-size: 56px; block-size: 56px;
+  border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--color-primary); color: var(--color-on-primary);
+  box-shadow: var(--shadow-lg);
+}
+.button:hover { filter: brightness(1.08); }
+.button[aria-pressed='true'] { box-shadow: var(--shadow-lg), 0 0 0 4px color-mix(in oklch, var(--color-primary) 35%, transparent); }
+@media (prefers-reduced-motion: no-preference) {
+  .pulse { animation: pulse 2.2s ease-in-out infinite; }
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: var(--shadow-lg), 0 0 0 0 color-mix(in oklch, var(--color-primary) 45%, transparent); }
+  50% { box-shadow: var(--shadow-lg), 0 0 0 12px color-mix(in oklch, var(--color-primary) 0%, transparent); }
+}
+.card {
+  position: relative; display: grid; gap: var(--space-2);
+  inline-size: min(380px, calc(100vw - 32px));
+  padding: var(--space-4) var(--space-12) var(--space-4) var(--space-4);
+  border: 1px solid var(--color-primary); border-inline-start-width: 4px; border-radius: var(--radius-lg);
+  background: var(--color-surface-elevated); box-shadow: var(--shadow-lg);
+}
+.text { margin: 0; font-size: var(--text-lead); line-height: var(--leading-body); color: var(--color-text); }
+:root[lang='ur'] .text { line-height: 2.1; }
+.note { margin: 0; font-size: var(--text-small); color: var(--color-text-secondary); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.small {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  min-block-size: var(--touch-target); padding-inline: var(--space-3);
+  border: 0; border-radius: var(--radius-md); background: var(--color-primary-soft); color: var(--color-primary-text);
+  font: inherit; font-weight: 700; font-size: var(--text-small); cursor: pointer;
+}
+.close {
+  position: absolute; inset-block-start: var(--space-2); inset-inline-end: var(--space-2);
+  display: grid; place-items: center; inline-size: var(--touch-target); block-size: var(--touch-target);
+  border: 0; border-radius: var(--radius-md); background: none; color: var(--color-text-secondary); cursor: pointer;
+}
+@media print { .wrap { display: none; } }

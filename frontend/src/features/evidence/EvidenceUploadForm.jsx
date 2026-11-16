@@ -4,7 +4,7 @@ import API from '../../api';
 import { Alert, Button, Checkbox, FileUpload, ProgressBar, RadioCardGroup, TextField } from '../../components/ui';
 import { TradeArt } from '../../components/illustrations';
 import FieldAssist from '../assist/FieldAssist';
-import { useTaxonomy } from '../../hooks/useTaxonomy';
+import { skillNameIn, useTaxonomy } from '../../hooks/useTaxonomy';
 import { useT } from '../../i18n';
 import { apiError } from '../../utils/apiErrors';
 import { EVIDENCE_TYPES } from './evidenceText';
@@ -78,7 +78,7 @@ export default function EvidenceUploadForm({ skills, defaultSkillId = '', onUplo
         layout="tiles"
         options={skills.map((s) => ({
           value: s.skillId, title: skillName(s), art: <TradeArt category={s.category} size={48} />,
-          listenKey: 'help.option.proofSkill', listenParams: { name: skillName(s) },
+          listenKey: 'help.option.proofSkill', listenParams: { name: (spokenLang) => skillNameIn(s, spokenLang) },
         }))}
         value={skillId}
         onChange={setSkillId}

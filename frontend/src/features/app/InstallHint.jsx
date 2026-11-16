@@ -53,7 +53,7 @@ export default function InstallHint() {
     setPrompt(null);
   };
   return (
-    <aside className={styles.install} aria-labelledby="install-title" data-testid="install-hint">
+    <aside className={styles.install} data-bottom-bar aria-labelledby="install-title" data-testid="install-hint">
       <Logo size={40} />
       <div className={styles.installText}>
         <h2 id="install-title" className={styles.installTitle}>{t('appx.install.title')}</h2>
