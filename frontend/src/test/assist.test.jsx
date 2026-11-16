@@ -33,6 +33,11 @@ describe('which voice speaks (D-034)', () => {
     expect(pickVoice([{ name: 'US', lang: 'en-US' }], 'ur')).toBeNull();
     expect(pickVoice([{ name: 'GB', lang: 'en-GB' }, { name: 'US', lang: 'en-US' }], 'en').name).toBe('GB');
     expect(pickVoice([], 'en')).toBeNull();
+    // a voice on the device comes before an online voice of the same language
+    const online = { name: 'Google Urdu', lang: 'ur-PK', localService: false };
+    const onDevice = { name: 'Device Urdu', lang: 'ur-IN', localService: true };
+    expect(pickVoice([online, onDevice], 'ur').name).toBe('Device Urdu');
+    expect(pickVoice([online], 'ur').name).toBe('Google Urdu');
     expect(scriptOf('بلال احمد')).toBe('ur');
     expect(scriptOf('Bilal Ahmed')).toBe('en');
   });

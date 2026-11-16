@@ -11,12 +11,17 @@ export const scriptOf = (text) => (/[؀-ۿ]/.test(String(text ?? '')) ? 'ur' : '
 const norm = (lang) => String(lang ?? '').toLowerCase().replace('_', '-');
 
 // The best installed voice for 'ur' or 'en', or null. Never a voice of another language.
+// A voice that runs ON the device (localService) comes before an online voice of the same language
+// (with an online voice, such as Chrome's "Google ..." voices, the spoken text goes to that service).
 export function pickVoice(voices, lang) {
-  const list = (voices ?? []).filter((v) => v && typeof v.lang === 'string');
+  const all = (voices ?? []).filter((v) => v && typeof v.lang === 'string');
   const prefer = lang === 'ur' ? ['ur-pk', 'ur-in', 'ur'] : ['en-pk', 'en-in', 'en-gb', 'en-us', 'en'];
-  for (const code of prefer) {
-    const exact = list.find((v) => norm(v.lang) === code);
-    if (exact) return exact;
-  }
-  return list.find((v) => norm(v.lang).startsWith(`${lang}-`) || norm(v.lang) === lang) ?? null;
+  const ofLanguage = (list) => {
+    for (const code of prefer) {
+      const exact = list.find((v) => norm(v.lang) === code);
+      if (exact) return exact;
+    }
+    return list.find((v) => norm(v.lang).startsWith(`${lang}-`) || norm(v.lang) === lang) ?? null;
+  };
+  return ofLanguage(all.filter((v) => v.localService !== false)) ?? ofLanguage(all);
 }

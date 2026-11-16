@@ -86,6 +86,17 @@ These rules apply to every change. (They used to live only in the team's interna
 | Browser storage | Only per-device conveniences: language, theme, text size, drafts (never the CNIC field), recently viewed (public card fields), compare list (worker ID and public name, per tab), tour/milestone flags; every access in try/catch | `worker-batch4.test.jsx` "drafts", `customer-batch4.test.jsx` "recently viewed" |
 | No-flash script | The only inline script (`index.html`) reads two keys and sets two attributes; no user data. A future Content-Security-Policy needs its hash | `theme.test.jsx` "no flash" |
 
+### Batch 5 additions (Listen, Speak, See; frontend only)
+| Area | Control | Test |
+|---|---|---|
+| Voice typing | The browser's own Web Speech API; our code calls no speech or AI service and holds no key. **Never offered for passwords, CNIC or email**, checked inside the help row itself (`assistRules.js`), so a page cannot switch it on; announced once in a dialog before first use (the browser maker's online service may receive the audio) | `assist.test.jsx` "never voice typing for password, CNIC or email", `assistCoverage.test.jsx`, e2e `easy-mode.e2e.js` |
+| Reading answers aloud | Never for passwords, CNIC or email. Device voices are preferred to online voices; where a language has only an online voice (for example Chrome's "Google …" voices), help texts and read-back answers (name, mobile number) are spoken through that service (stated in D-035) | `assist.test.jsx` "an Urdu text gets an Urdu voice" (device voice first) |
+| Spoken numbers | Nothing is written when any part of a spoken number is not understood (a wrong phone number is worse than an empty box); the value goes through the same masks and checks as typing | `spokenNumbers.test.js` |
+| Sound settings | One `localStorage` key (`dlm.assist.v1`): show buttons, auto-read, notice accepted, pages seen. No personal data; never sent to the server; every access in try/catch | `assist.test.jsx` "sound settings of this device" |
+| Recorded clips | Static public files of the team's own voices (no personal data); the service worker caches them (cache first, fetched whole); `/api/` still never cached | `assistClips.test.js` "service worker and clips" |
+| Clip recorder | Development builds only (`/dev/recorder`, not in production); saves files locally on the team member's computer | build: the route exists only when `import.meta.env.DEV` |
+| Speaking | Never on page load (only after a first touch), never by itself unless the person switched read-aloud on, one sound or microphone at a time, Escape and leaving the page stop everything | `assist-pages.test.jsx` "auto-read" |
+
 ## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET)
 
 - Each key is 32 random bytes, written in base64. Make one in PowerShell (in `.\backend`):

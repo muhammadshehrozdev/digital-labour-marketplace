@@ -7,7 +7,7 @@
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { E2E_ADMIN } from './accounts.js';
-import { T, login, registerUser, setLanguage, startsWith, uniqueEmail, watchConsole } from './helpers.js';
+import { T, answerReadAloud, login, registerUser, setLanguage, startsWith, uniqueEmail, watchConsole } from './helpers.js';
 
 const ur = T('ur');
 const en = T('en');
@@ -24,6 +24,7 @@ test('defence demo: Urdu onboarding -> suggested skills -> proof -> admin approv
   const workerConsole = watchConsole(worker);
   await worker.goto('/');
   await worker.getByRole('button', { name: /اردو میں جاری رکھیں/ }).click();
+  await answerReadAloud(worker, 'ur'); // Batch 5: "should the website read aloud?" (asked once)
   await expect(worker.locator('html')).toHaveAttribute('dir', 'rtl');
   await worker.getByRole('link', { name: ur('landing.joinWorker') }).first().click();
   await expect(worker).toHaveURL(/\/register\?role=worker/);

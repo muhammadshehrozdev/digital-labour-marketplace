@@ -1,4 +1,4 @@
-# Architecture (after Batch 2, 9 Nov 2026)
+# Architecture (after Batch 2, 9 Nov 2026; Batch 5 section added 16 Nov 2026)
 
 A MERN single-page application. Everything below exists in the code today; Vercel deployment is
 Phase 8 (not done). No external AI service and no LLM is used anywhere.
@@ -37,6 +37,29 @@ Folders: `backend/config` (env check, DB connection, taxonomy, evidence limits),
 `controllers`, `services`, `validators`, `middleware`, `scripts`, `evaluation`, `tests`;
 `frontend/src/components/ui` (design system), `features` (forms, skills editor, evidence),
 `pages`, `routes` (guards), `hooks`, `utils`, `test`.
+
+## Listen, Speak, See (Batch 5, frontend only; D-033 to D-036)
+
+```mermaid
+flowchart LR
+  Field["Field / RadioCardGroup / FileUpload<br/>(assist = help key)"] --> FA["FieldAssist<br/>Listen + Speak + help bubble"]
+  Card["Picture card / notification / guide"] --> OL["OptionListen (small 🔊)"]
+  Page["AppShell"] --> PH["PageHelp (round 🔊, help.screen.*)"]
+  FA & OL & PH --> Say["useSay: text in the SPOKEN language<br/>(Roman Urdu -> Urdu)"]
+  Say --> Audio["audio.js: one sound or one mic at a time<br/>1 recorded clip -> 2 device voice -> 3 'none'"]
+  Audio --> Clips[("public/audio/help/ur|en<br/>clipManifest.json<br/>(service worker: cache first)")]
+  Audio --> TTS["window.speechSynthesis<br/>(the browser's own voices)"]
+  FA --> VT["useVoiceTyping (SpeechRecognition)<br/>+ assistRules: never password, CNIC, email<br/>+ spokenNumbers (digits / amounts)"]
+  Root["AssistRoot (RootLayout)"] --> Live["polite live region, Escape and page change stop everything,<br/>first-touch flag, 'read aloud?' question"]
+  Settings[("localStorage dlm.assist.v1<br/>show buttons, auto-read")] --- FA & PH
+```
+
+Folders: `frontend/src/features/assist` (audio service, voices, settings store, help row, page help,
+Sound menu, read-aloud question, voice notice, clip keys), `utils/spokenNumbers.js` and
+`utils/numberWords.js` (a copy of the extractor's number words, checked by a test),
+`pages/public/VoiceCheck.jsx` (`/voice-check`), `pages/dev/ClipRecorder.jsx` (`/dev/recorder`,
+development builds only), `scripts/audio-manifest.mjs`, `scripts/i18n-review-batch5.mjs`. No server
+code, no new package, no outside service: speech is the browser's own Web Speech API.
 
 ## Request flows
 

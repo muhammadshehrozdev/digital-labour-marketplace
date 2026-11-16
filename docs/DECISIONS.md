@@ -694,3 +694,109 @@ message). Any text added or changed after this date needs the same check before 
   would make every visitor look like one IP to the login rate limit. This cannot be checked locally, so
   `SHOW_CLIENT_IP=1` lets the team check it once after deployment (runbook step 9) and set `TRUST_PROXY`,
   or raise `AUTH_RATE_LIMIT` if the visitor IP is not available (the per-account lockout still applies).
+
+---
+
+## D-033 — Listen, Speak, See: help for people who read little (Batch 5, 16 Nov 2026)
+
+**Why:** at the mid defence (13 Nov) the panel asked how labourers who cannot read or write will use the
+website. Until now every label had to be read and every answer typed.
+
+**Decision (from `BATCH_5_PROMPT.md`, built by Claude Code):** three helpers on the worker and customer
+screens, on top of the normal text input, which stays the main way and works fully with the keyboard:
+
+- **Listen (🔊):** under every field of the in-scope forms a Listen button says what to do here, in
+  spoken Urdu or English, and shows the same help in large text in a bubble (for noisy places and
+  hearing-impaired users). A round page help button always sits in the same corner (bottom, start side)
+  and says what the page is for. Every picture card has its own small 🔊. The language chooser has one
+  🔊 per card that speaks in that card's language.
+- **Speak (🎤):** voice typing where it is safe and useful (D-035), with the answer read back.
+- **See:** drop-downs with a few picturable options became picture cards (trade with the nine trade
+  drawings, availability with icons, the skill of a proof photo with its trade drawing, the evidence
+  kind); every field and main button has an icon; status is never colour alone.
+- **Settings:** a Sound menu in the header with two switches, saved on the device only (`dlm.assist.v1`,
+  never sent to the server): show the buttons (on) and read aloud by itself (off). Right after the
+  language is chosen the website asks once, with two big picture buttons, whether it should read aloud.
+- **Scope:** language chooser, landing, register, login, onboarding, the worker's dashboard and editors,
+  skills, evidence, notifications, find workers, worker profile, saved, compare, Help Centre, voice check.
+  Not the admin pages. Frontend only: nothing under `backend/` changed.
+
+**Reference:** Medhi, I., Sagar, A., & Toyama, K. (2007). Text-Free User Interfaces for Illiterate and
+Semiliterate Users. *Information Technologies and International Development*, 4(1), 37–50. The ideas we
+used: pictures that show the action, voice explanation on every element, very little text, and help that
+is always in the same place. This is a design source, not a result: the website has **not** been tested
+with real workers yet (plan: `docs/evaluation/EASY-MODE-USABILITY-PLAN.md`).
+
+## D-034 — Where the spoken help comes from (Batch 5, 16 Nov 2026)
+
+**Order:** (1) a clip recorded by the team, if one exists for the text; (2) the browser's own speech
+synthesis, if the device has a voice for the language (rate 0.9; voices that arrive late in Chrome are
+awaited; a voice that runs on the device is preferred to an online voice); (3) nothing to hear: the help
+is shown in the bubble with a note that this device has no voice for the language. The Listen button is
+never hidden because of (3).
+
+**Why clips first:** many phones and laptops in Pakistan have no Urdu voice, device voices differ in
+quality, and a recorded human voice in everyday Urdu is the most reliable and also works offline (the
+service worker caches clips, version `dlm-static-v2`). Recording is the team's job; the tools are built:
+`/dev/recorder` (development builds only), `npm run audio:manifest`, `docs/audio/RECORDING-GUIDE.md`, and
+`assistClips.test.js` (the list matches the folder; every file belongs to a recordable text). No audio
+was generated or downloaded; the folder starts empty.
+
+**Languages:** English is spoken in English. Urdu and **Roman Urdu are both spoken in Urdu** (the spoken
+language is the same): a Roman Urdu user sees Roman Urdu on screen and hears the Urdu text of the same
+key. Roman Urdu text is never given to an English voice. Values inside a spoken text (a skill name, the
+title of a notification) are also taken in the spoken language. Speech never starts before the person
+has touched the page, and only one sound or microphone runs at a time (Escape and leaving the page stop
+everything). Nothing speaks unless the person pressed a button or switched read-aloud on, so it does not
+talk over a screen reader.
+
+## D-035 — Voice typing policy, and an honest note on the speech features (Batch 5, 16 Nov 2026)
+
+**Where 🎤 is offered:** names, city, area, occupation, job title, client, "what you did", bio, evidence
+title, languages, search boxes; numbers (mobile and WhatsApp, emergency contact, years, rupee rates,
+see D-036). **Never:** passwords (a secret must not be said aloud, and the audio goes to the browser's
+speech service), CNIC (an identity number must not be sent to a speech service), email (dictating an
+address is unreliable; the help says to type it or ask a trusted person), admin screens. The rule is
+checked inside the help row itself (`assistRules.js`), so no page can switch it on by mistake. Answers of
+those three fields are also never read aloud.
+
+**Behaviour:** single-line fields: what was said **replaces** the value, with one-tap Undo; multi-line
+fields: it is **added** at the end. The value goes through the same path as typing (masks, checks,
+counters). Afterwards the answer is read back ("Written: Bilal Ahmed", phone numbers digit by digit), so
+a person who cannot read can check it. The privacy notice is shown in a dialog the first time 🎤 is used
+on a device (it can be heard), and stays in the Help Centre. Without voice typing, without internet, or
+with the microphone blocked, the button stays, explains the problem in words and in audio, and the text
+box keeps working. The skills editor keeps its own large voice button (Batch 3) as the Speak of the
+description box, so there are never two microphones for one box.
+
+**Honest note:** these are the browser's built-in features (Web Speech API). Our code calls no speech or
+AI service and holds no key. In Chrome and Edge, voice typing sends the audio to the browser maker's online
+service; that is why it is optional, never used for passwords or CNIC, and announced before first use.
+Chrome also offers online voices (for example "Google …" voices): the website prefers a voice that runs on
+the device, but where a language has only an online voice, the help text and read-back answers (name,
+mobile number) are spoken through that service. Nothing in Modules 1 to 3 depends on these features. They
+are never called "AI".
+
+**Known limits (stated plainly):** registration still needs an email address and a 15-character password,
+which is hard for someone who cannot read; the help explains them and suggests asking a trusted person.
+Voice quality depends on the device. Urdu audio needs either a device voice or the team's recorded clips
+(none recorded yet). Voice typing in Urdu depends on the browser's speech service. Possible later work
+(not built, not approved): sign-in by phone number, and registration with a helper.
+
+## D-036 — Numbers by voice (Batch 5, 16 Nov 2026)
+
+`utils/spokenNumbers.js` turns what the speech service returns into digits:
+
+- **Phone numbers (digit mode):** Western, Urdu (۰–۹) and Arabic (٠–٩) digits; single-digit words in
+  English, Roman Urdu and Urdu (zero / oh … nine, sifar … nau, صفر … نو); "double" and "triple" before a
+  digit; spaces, dashes and "plus" are ignored.
+- **Amounts and years (number mode):** number words up to fifty plus hundred / thousand / lakh (sau,
+  hazaar, ہزار …), with currency and "years / per day" words ignored: "char hazaar paanch sau" is 4500.
+- **If anything is not understood, nothing is written** and the person hears and sees "I did not
+  understand, please say it again or type it": a wrong phone number is worse than an empty box.
+- The number words are a **copy** of the skill extractor's list
+  (`backend/services/skillExtractor/experience.js`); the frontend never imports backend code, and
+  `spokenNumbers.test.js` fails when the two lists differ.
+- The voice check page (`/voice-check`) tells a person, in plain words, what works on their device: help
+  in Urdu and English (recorded clips, device voice, or text only), voice typing (available, offline, or
+  not in this browser), the device's voices with test sentences, and how to add an Urdu voice on Android.

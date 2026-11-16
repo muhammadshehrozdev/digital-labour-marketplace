@@ -95,10 +95,11 @@ skill."
 | Click | Say |
 |---|---|
 | Open http://127.0.0.1:5173 in window A. The language chooser appears. Click the Urdu card, **اردو میں جاری رکھیں** (Continue in Urdu). | "Many workers read Urdu, so the whole site is in English, Urdu and Roman Urdu. Urdu turns the page right to left." |
+| The question **کیا ویب سائٹ پڑھ کر سنائے؟** (Should the website read aloud?) appears once. Click **نہیں، شکریہ** (No, thank you). | "The website can also read pages aloud; I will show that at the end." |
 | Click **کاریگر کے طور پر شامل ہوں** (Join as a worker). | "Public sign-up offers only worker or customer. Admin accounts are made only by a command on the server." |
 | Fill in **پورا نام** (Full name) `Bilal Ahmed (synthetic)`, **ای میل** (Email) `bilal.demo@example.com`, **موبائل نمبر** (Mobile number) `03000000071`, **پاس ورڈ** (Password) `demo pass phrase 2026`. Click **اکاؤنٹ بنائیں** (Create account). | "Passwords must be at least 15 characters; a short sentence works well." |
 | Step 1 **آپ کے بارے میں** (About you): the name and mobile number are already filled in. Type `Rawalpindi` in **شہر** (City). In **شناختی کارڈ نمبر** (CNIC number) type `1234512345671`; it becomes `12345-1234567-1`. Click **محفوظ کریں اور آگے بڑھیں** (Save and continue). | "The CNIC is checked as you type, stored encrypted, and never shown to customers. Only an admin can reveal it, and every reveal is written to the audit log." |
-| Step 2 **آپ کا کام** (Your work): in **اصل کام** (Main trade) choose **بجلی اور سولر** (Electrical & Solar); **پیشہ** (Occupation) fills itself with الیکٹریشن (Electrician). **تجربے کے سال** (Years of experience) `5`, **فی دن ریٹ (روپے)** (Rate per day) `4000`. Click **محفوظ کریں اور آگے بڑھیں**. | "Each step saves on its own, and the worker gets a permanent worker ID." |
+| Step 2 **آپ کا کام** (Your work): under **اصل کام** (Main trade) press the picture **بجلی اور سولر** (Electrical & Solar); **پیشہ** (Occupation) fills itself with الیکٹریشن (Electrician). **تجربے کے سال** (Years of experience) `5`, **فی دن ریٹ (روپے)** (Rate per day) `4000`. Click **محفوظ کریں اور آگے بڑھیں**. | "Each step saves on its own, and the worker gets a permanent worker ID." |
 
 ### 2:00–3:15 Module 2: skills from the worker's own words (window A)
 
@@ -112,7 +113,7 @@ skill."
 
 | Click | Say |
 |---|---|
-| Step 4 **ہنر کا ثبوت** (Proof of skills): in **یہ تصویر کس ہنر کا ثبوت ہے؟** (Which skill does this photo prove?) choose **گھر کی وائرنگ** (House wiring). Choose **کام کی تصویر** (Work photo). | "Proof is one photo for one skill: a certificate, a photo of finished work, or a reference letter." |
+| Step 4 **ہنر کا ثبوت** (Proof of skills): under **یہ تصویر کس ہنر کا ثبوت ہے؟** (Which skill does this photo prove?) press the picture **گھر کی وائرنگ** (House wiring). Choose **کام کی تصویر** (Work photo). | "Proof is one photo for one skill: a certificate, a photo of finished work, or a reference letter." |
 | Click **تصویر چنیں** (Choose a photo) and pick `work-photo-synthetic.jpg` from the Desktop. | "The server checks the real file type from its content, not its name, limits the size, renames the file, removes location data, and keeps it private: only the worker and admins can open it." |
 | Tick the consent box **یہ تصویر میری ہے یا مجھے اسے دکھانے کی اجازت ہے…** (I own this photo or have permission…). Click **ثبوت اپ لوڈ کریں** (Upload proof). The message **تصویر اپ لوڈ ہو گئی** (Photo uploaded) appears, and the photo is listed as **جانچ باقی ہے** (Pending review). | "Now it waits for an admin." |
 | Click **آگے بڑھیں** (Continue). **سب تیار** (All set) appears with confetti and the worker ID **DLM-2026-000002**. | "The worker's profile is ready." |
@@ -134,6 +135,18 @@ skill."
 | Click **Bilal Ahmed (synthetic)**. In the header, point at the chip **Verified by evidence · 1**; under **Skills**, at **House wiring: Verified by evidence** and **Solar panel installation: Self-declared**. | "The customer sees the difference between what the worker says and what an admin has checked." |
 | Point at the box **How to contact this worker**: "Contact details are shared after a booking is accepted (coming in a later module)." | "No phone number, WhatsApp, CNIC or address is sent to a customer. The server leaves these fields out of every public response; it is not only hidden on the screen." |
 | (Optional) Switch to window A, reload: the bell **اطلاعات** (Notifications) has 1 unread notification, **گھر کی وائرنگ کا ثبوت منظور ہو گیا** (Proof approved for House wiring). | "The worker is told about every decision." |
+
+### Optional (1 minute, only if there is time): Listen, Speak, See (Batch 5)
+
+Use a laptop where **/voice-check** says that Urdu works (team clips or a device voice), and test it before
+the panel arrives. Window C (customer) or any window in Urdu.
+
+| Click | Say |
+|---|---|
+| Under any box press **سنیں** (Listen). | "For workers who cannot read, every box can explain itself in Urdu, and the same help is shown in large text." |
+| Press the round speaker button in the bottom corner. | "This button is always in the same place and says what the page is for." |
+| On **Find workers**, press **بولیں** (Speak) in the search box and say "plumber". | "Voice typing is the browser's own feature. It is never offered for passwords, CNIC or email, and it reads the answer back so the person can check it without reading." |
+| Point at the trade pictures. | "Choices are pictures, and each picture can be heard. None of this is AI: it is the browser's speech feature and our own help texts." |
 
 ### 6:30–7:00 Close (no clicks)
 

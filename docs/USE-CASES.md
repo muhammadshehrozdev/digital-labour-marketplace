@@ -56,3 +56,18 @@ flowchart LR
 | UC-14 | Track / delete proof | Worker | Dashboard or Your skills → each skill's chip, approved count, strength, items with status and reason → delete pending or rejected items | Approved, revoked or suspected-fake items cannot be deleted |
 | UC-15 | Review proof | Admin | Evidence review → queue (oldest first, filters) → drawer with zoomable photo, possible duplicate side by side, b/d/u/E → Approve, Reject (reason), Suspected fake (reason) or Revoke (reason) → audited | Missing reason → stopped; invalid transition → 400; two admins at once → one gets 409 |
 | UC-16 | See skill status | All | Chips: Self-declared, Evidence pending, Verified by evidence, Disputed; strength None/Weak/Moderate/Strong (no percentages) | "Disputed" always wins over "Verified by evidence" |
+
+## Batch 5: Listen, Speak, See (D-033 to D-036)
+
+These cases help a worker or customer who reads little or nothing. They add to UC-1 to UC-16; typing
+still works everywhere.
+
+| ID | Use case | Actor | Main flow | Alternative / error flows |
+|---|---|---|---|---|
+| UC-17 | Hear the help for a field | Visitor, Worker, Customer | Press 🔊 Listen under a box → the help is spoken (team's clip, else the device voice) and shown in large text; press again to stop; "Hear my answer" reads the value back | No voice for the language → the help is shown with "no voice" note; Roman Urdu → Urdu audio; passwords, CNIC and email are never read back |
+| UC-18 | Fill a field by voice | Visitor, Worker, Customer | Press 🎤 Speak → first time: notice about the browser's speech service, accept → speak → the box fills in (single line: replaced, with Undo; multi-line: added at the end) → the answer is read back | No voice typing in the browser, no internet, microphone blocked → explained in words and audio, typing works; a number not understood → nothing written, "say it again or type it"; never on password, CNIC, email |
+| UC-19 | Choose by picture | Worker, Customer | Trade, availability, the skill of a proof photo and the kind of proof are picture cards (radio groups); the small 🔊 on a card says its name | Keyboard: arrow keys move the choice as before |
+| UC-20 | Hear what a page is for | All on in-scope pages | Press the round 🔊 in the bottom corner → page help spoken and shown | Not on admin pages; it stays above bottom bars |
+| UC-21 | Choose sound settings | All | Right after choosing the language: "Should the website read aloud?" (yes / no). Later: Sound menu → show the buttons, read aloud by itself (this device only) | Read aloud never starts before the first touch of the page, never while the microphone is on; typing stops it |
+| UC-22 | Check this device | All | /voice-check → which voices exist, test sentences, microphone test, how to add an Urdu voice on Android | — |
+| UC-23 | Record the help (team) | Team member | /dev/recorder (development builds) → record, play, save each text → `npm run audio:manifest` | Microphone blocked → message; a file with a wrong name → `assistClips.test.js` fails |

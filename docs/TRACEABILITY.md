@@ -120,8 +120,12 @@ Every audit ID is mapped to its control and test in `docs/SECURITY.md`; the shor
 | D-026 | Potential skills, strength, sort keys | `services/{potentialSkills,profileStrength}.js`, `DIRECTORY_SORT` | `batch4-services.test.js`, `batch4-features.test.js` | Done |
 | D-027 | Installable app, static-only service worker | `public/{manifest.webmanifest,sw.js}` | `app-batch4.test.jsx` "installable app" | Done |
 | D-028 | CSV exports and reason templates | `controllers/{adminExportController,reasonTemplatesController}.js` | `batch4-admin.test.js`, `admin-batch4.test.jsx` | Done |
+| D-033 | Listen, Speak, See for people who read little | `features/assist/*`, `components/ui/Field.jsx` and controls, picture cards in `RadioCard.jsx` | `assist.test.jsx`, `assist-pictures.test.jsx`, `assist-pages.test.jsx`, `assistCoverage.test.jsx`, e2e `easy-mode.e2e.js` | Done (not yet tested with real workers: `docs/evaluation/EASY-MODE-USABILITY-PLAN.md`) |
+| D-034 | Spoken help: recorded clip, then device voice, then text; Roman Urdu spoken in Urdu | `features/assist/{audio,useSay,voices,clipKeys}.js`, `public/sw.js`, `/dev/recorder` | `assist.test.jsx` "where the help sound comes from", `assistClips.test.js`, e2e Roman Urdu | Done (no clips recorded yet: team task) |
+| D-035 | Voice typing policy; honest note; known limits | `features/assist/{assistRules,FieldAssist,VoiceNoticeDialog}.jsx` | `assist.test.jsx` "never voice typing for password, CNIC or email", e2e register by voice | Done |
+| D-036 | Numbers by voice; voice check page | `utils/{spokenNumbers,numberWords}.js`, `pages/public/VoiceCheck.jsx` | `spokenNumbers.test.js` (incl. same words as the extractor), `assist-pages.test.jsx` voice check | Done |
 
-## 7. The user's own requests (Batches 1–4)
+## 7. The user's own requests (Batches 1–5)
 
 | Batch | Request (short) | Where | Verified by | Status |
 |---|---|---|---|---|
@@ -141,3 +145,8 @@ Every audit ID is mapped to its control and test in `docs/SECURITY.md`; the shor
 | 4 | At least 50 delightful features | Part 4 features 1–55 (see the Batch 4 report, section 5) | the Batch 4 test files | Done (see report for any feature not built) |
 | 4 | Where does the admin log in and manage things? | Same `/login`; admin area; `docs/ADMIN-GUIDE.md` | `admin-batch4.test.jsx`, e2e | Done |
 | 4 | Check all code in detail; go beyond the documents | `docs/REVIEW-2026-11.md`, this matrix, coverage | review findings with tests | Done |
+| 5 | Listen: spoken help on every field and page, in Urdu and English | D-033, D-034 | `assistCoverage.test.jsx` (13 form pages, every field), `assist-pages.test.jsx` | Done (sound itself checked by hand: `docs/EASY-MODE-MANUAL-TEST.md`) |
+| 5 | Speak: voice typing where safe, never password, CNIC or email; numbers by voice; read-back | D-035, D-036 | `assist.test.jsx`, `spokenNumbers.test.js`, e2e `easy-mode.e2e.js` | Done (microphone checked by hand) |
+| 5 | See: picture choices, icons on fields and buttons, status never colour alone | D-033 | `assist-pictures.test.jsx`, `assist-pages.test.jsx` (Find workers) | Done |
+| 5 | Recorded clips by the team; recorder, guide, offline | D-034, `docs/audio/RECORDING-GUIDE.md` | `assistClips.test.js` | Tools done; recording is the team's task (97 Urdu clips) |
+| 5 | New texts reviewed by the team | `docs/i18n/REVIEW-BATCH-5.md` (152 rows) | `assistCoverage.test.jsx` (same keys in en, ur, ur-Latn) | Waiting for the team's review (D-031) |

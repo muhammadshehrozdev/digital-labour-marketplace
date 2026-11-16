@@ -28,6 +28,14 @@ upload, saved workers, compare, command palette Ctrl+K, offline banner, installa
 and an admin area with charts, a Users page (suspend / reactivate), reason templates and CSV exports.
 **Admins log in at the same `/login` page**; there is no admin sign-up (see `docs/ADMIN-GUIDE.md`).
 
+Batch 5 (**Listen, Speak, See**) helps people who read little or nothing, on the worker and customer
+screens: a **🔊 Listen** button under every field says what to do there (in Urdu or English) and shows it in
+large text; **🎤 Speak** fills a field by voice where it is safe (never passwords, CNIC or email) and reads
+the answer back; trades, availability and proof choices are **pictures**; a round 🔊 in the corner of every
+page says what the page is for. The voice is the team's recorded clip if there is one, else the device's own
+voice; Roman Urdu users hear Urdu. All of it is the browser's built-in speech feature: no outside service,
+no key, not "AI" (decisions D-033 to D-036). Check a device at `/voice-check`.
+
 Deployment (Phase 8) is not done yet.
 
 ## Folders
@@ -209,6 +217,15 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 In `.\backend`, `npm run coverage` runs the backend tests with a coverage report (target: 90% of lines in
 `services/`, `controllers/`, `middleware/`).
 
+## Frontend scripts added in Batch 5 (in `.\frontend`)
+
+| Command | What it does |
+|---|---|
+| `npm run audio:manifest` | Lists the team's recorded help clips (`public/audio/help/ur|en/`) for the website; run after adding or removing clips (`docs/audio/RECORDING-GUIDE.md`) |
+| `node scripts/i18n-review-batch5.mjs` | Writes `docs/i18n/REVIEW-BATCH-5.md`, the new Batch 5 texts side by side for the team's review |
+
+The clip recorder is a development page: `http://127.0.0.1:5173/dev/recorder` (not in the live website).
+
 ## Documentation
 | File | Contents |
 |---|---|
@@ -218,7 +235,7 @@ In `.\backend`, `npm run coverage` runs the backend tests with a coverage report
 | `docs/USE-CASES.md` | Actors and use cases for Modules 1–3 |
 | `docs/TEST-CASES.md` | Test-case table generated from the real test run |
 | `docs/SECURITY.md` | Threats → mitigations → tests, keys, limitations, incidents |
-| `docs/DECISIONS.md` | Decision records D-001 to D-032 |
+| `docs/DECISIONS.md` | Decision records D-001 to D-036 |
 | `docs/DEPLOY-RUNBOOK.md` | Going live on Vercel + MongoDB Atlas, step by step (fresh start, first admin, checks, rollback) |
 | `docs/DEMO-SCRIPT.md` | The 7-minute defence demo of Modules 1–3 |
 | `docs/ADMIN-GUIDE.md` | For admins: creating the first admin, logging in, every admin page, daily tasks, security rules |
@@ -226,5 +243,8 @@ In `.\backend`, `npm run coverage` runs the backend tests with a coverage report
 | `docs/REVIEW-2026-11.md` | Batch 4 code review: findings, fixes, tests, OWASP and ASVS mapping, dependencies |
 | `docs/design/` | UX requirements, analysis, design system v2 (themes, fonts, modern CSS, motion), screens, review, deploy readiness, languages (`07-i18n.md`), logo concepts, screenshots |
 | `docs/i18n/REVIEW.md` | Every Urdu and Roman Urdu text next to its English source, reviewed by the team on 11 Nov 2026 (D-031) |
-| `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format) |
+| `docs/i18n/REVIEW-BATCH-5.md` | The new Batch 5 texts (spoken help) side by side, **waiting for the team's review** |
+| `docs/audio/RECORDING-GUIDE.md` | How the team records the spoken help (recorder page, file names, tips) |
+| `docs/EASY-MODE-MANUAL-TEST.md` | Checklist to test sound and microphone by hand (Chrome, Edge, Android) |
+| `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format); the easy-mode usability test **plan** (`EASY-MODE-USABILITY-PLAN.md`, no results yet) |
 | `docs/CHANGELOG.md` | What changed in each phase |

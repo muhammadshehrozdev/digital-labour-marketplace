@@ -1,7 +1,7 @@
 // Batch 3, Part 3 and Part 7.1: language chooser, switcher, RTL, remembered choice, saved for
 // logged-in users, Urdu font only for Urdu, and the whole onboarding path in all three languages.
 import { test, expect } from '@playwright/test';
-import { LANGS, T, completeStep3, completeSteps1and2, registerWorker, setLanguage, startsWith, watchConsole } from './helpers.js';
+import { LANGS, T, answerReadAloud, completeStep3, completeSteps1and2, registerWorker, setLanguage, startsWith, watchConsole } from './helpers.js';
 
 const SENTENCE = {
   en: 'I have done house wiring and solar panel work for 5 years',
@@ -15,6 +15,7 @@ test('first visit: the chooser; Urdu turns the whole site right-to-left and is r
   const cards = page.getByRole('button', { name: /Continue in English|اردو میں جاری رکھیں|Roman Urdu mein jaari rakhein/ });
   await expect(cards).toHaveCount(3);
   await page.getByRole('button', { name: /اردو میں جاری رکھیں/ }).click();
+  await answerReadAloud(page, 'ur'); // Batch 5: asked once, in the chosen language
   await expect(page.locator('html')).toHaveAttribute('lang', 'ur');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.getByRole('heading', { level: 1 })).toContainText(T('ur')('landing.title'));
@@ -23,6 +24,7 @@ test('first visit: the chooser; Urdu turns the whole site right-to-left and is r
   expect(box.x).toBeGreaterThan(640);
   await page.reload();
   await expect(page.getByRole('button', { name: /Continue in English/ })).toHaveCount(0);
+  await expect(page.getByRole('dialog')).toHaveCount(0); // the read-aloud question is not asked again
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   browserConsole.assertClean();
 });

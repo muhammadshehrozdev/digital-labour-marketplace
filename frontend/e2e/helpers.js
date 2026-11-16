@@ -164,3 +164,13 @@ export async function checkWordmarks(page, lang, label) {
     expect(word.color, `${label}: wordmark colour = logo colour`).toBe(word.logoColor);
   }
 }
+
+// Batch 5: right after a language is chosen on the chooser, the website asks once whether it should
+// read pages aloud. Answers it ('no' by default) and checks that it is gone.
+export async function answerReadAloud(page, lang = 'en', answer = 'no') {
+  const t = T(lang);
+  const dialog = page.getByRole('dialog', { name: t('assist.offerTitle') });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: t(answer === 'yes' ? 'assist.offerYes' : 'assist.offerNo') }).click();
+  await expect(dialog).toHaveCount(0);
+}
