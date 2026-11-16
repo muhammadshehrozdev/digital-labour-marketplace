@@ -4,6 +4,7 @@ import { EVIDENCE_STATUSES } from '../config/evidence.js';
 import { IDENTITY_STATUSES } from '../models/WorkerProfile.js';
 import { TEMPLATE_KINDS, TEMPLATE_TEXT_MAX } from '../models/ReasonTemplate.js';
 import { noCnic, objectId, queryInt } from './common.js';
+import { BOOKING_STATUSES } from '../config/bookingRules.js';
 
 const one = (max) => z.string({ error: 'ONE_VALUE' }).trim().max(max, 'TEXT_TOO_LONG');
 
@@ -32,7 +33,7 @@ export const userStatusSchema = z
 export const chartsQuerySchema = z.object({ days: queryInt(7, 90).optional() }).strict();
 
 // GET /api/admin/exports/:kind
-export const EXPORT_KINDS = Object.freeze(['audit', 'identity', 'evidence', 'users']);
+export const EXPORT_KINDS = Object.freeze(['audit', 'identity', 'evidence', 'users', 'bookings', 'reviews']);
 export const exportParams = z.object({ kind: z.enum(EXPORT_KINDS, { error: 'EXPORT_KIND_UNKNOWN' }) }).strict();
 
 const isoDate = z
@@ -45,7 +46,7 @@ export const exportQuerySchema = z
     action: z.string({ error: 'ONE_VALUE' }).regex(/^[a-z]+(\.[a-z_]+)+$/, 'ACTION_UNKNOWN').max(60, 'TEXT_TOO_LONG').optional(),
     from: isoDate.optional(),
     to: isoDate.optional(),
-    status: z.enum(['all', 'All', ...IDENTITY_STATUSES, ...EVIDENCE_STATUSES, 'active', 'suspended'], { error: 'STATUS_UNKNOWN' }).optional(),
+    status: z.enum(['all', 'All', ...IDENTITY_STATUSES, ...EVIDENCE_STATUSES, 'active', 'suspended', ...BOOKING_STATUSES, 'visible', 'hidden'], { error: 'STATUS_UNKNOWN' }).optional(),
   })
   .strict();
 

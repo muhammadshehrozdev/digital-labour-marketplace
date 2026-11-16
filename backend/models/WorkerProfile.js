@@ -135,6 +135,15 @@ const workerProfileSchema = new mongoose.Schema(
     // The text the worker used when they last ADDED skills from suggestions (owner/admin only).
     rawExperienceText: { type: String, maxlength: 2000, default: '', select: false },
     lastExtractedAt: { type: Date, default: null },
+
+    // ================= MODULE 4: REPUTATION AND RELIABILITY =================
+    // The snapshot from services/reputation/snapshot.js, rebuilt by services/reputation/recompute.js
+    // (never by the worker). null = "new on this platform" (no migration needed). Parts:
+    //   public       what customers may see (stars with count, depth, counts, per-skill facts)
+    //   score        reputation numbers: owner, admin and Module 7 matching only
+    //   reliability  reliability numbers: owner, admin and matching only
+    // plus engineVersion, paramsHash, computedAt. Public responses select ONLY reputation.public.
+    reputation: { type: mongoose.Schema.Types.Mixed, default: null },
   },
   { timestamps: true }
 );
@@ -159,6 +168,8 @@ workerProfileSchema.pre('save', function () {
 });
 workerProfileSchema.index({ approvedEvidenceCount: -1, _id: -1 });
 workerProfileSchema.index({ experienceYears: -1, _id: -1 });
+// "Best track record" (Module 4): cautious score, then completed jobs
+workerProfileSchema.index({ 'reputation.score.cautious': -1, 'reputation.public.completedJobs': -1, updatedAt: -1, _id: -1 });
 // the identity queue: by status, longest waiting first (Batch 4 review R-05)
 workerProfileSchema.index({ verificationStatus: 1, identityRequestedAt: 1 });
 

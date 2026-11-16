@@ -43,7 +43,7 @@ export const profileUpdateSchema = z
   })
   .strict();
 
-export const DIRECTORY_SORTS = Object.freeze(['updated', 'experience', 'evidence']);
+export const DIRECTORY_SORTS = Object.freeze(['updated', 'experience', 'evidence', 'track_record']);
 
 // GET /api/workers — every value must be ONE string (no arrays, no objects), from known
 // values where possible. Unknown keys such as "category[$ne]" -> 400 (audit M1-3, M1-4).
@@ -56,8 +56,10 @@ export const directoryQuerySchema = z
     identity: z.enum(['all', 'verified'], { error: 'IDENTITY_FILTER_INVALID' }).optional(),
     skills: z.enum(['all', 'verified'], { error: 'SKILLS_FILTER_INVALID' }).optional(),
     // Batch 4: updated = recently updated (default), experience = most years first,
-    // evidence = most approved proof items first.
+    // evidence = most approved proof items first; track_record (Module 4) = best cautious score first.
     sort: z.enum(DIRECTORY_SORTS, { error: 'SORT_INVALID' }).optional(),
+    // Module 4: only workers who have done at least one job on this platform
+    hasJobs: z.enum(['true'], { error: 'INVALID_VALUE' }).optional(),
     page: queryInt(1, 1000).optional(),
     limit: queryInt(1, 50).optional(),
   })

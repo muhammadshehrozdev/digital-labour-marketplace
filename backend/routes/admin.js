@@ -13,6 +13,14 @@ import {
 import { adminWorkersQuerySchema, profileIdParams, identityDecisionSchema, auditQuerySchema } from '../validators/workers.js';
 import { listEvidenceQueue, getEvidenceForAdmin, decideEvidence } from '../controllers/adminEvidenceController.js';
 import { adminEvidenceQuerySchema, evidenceIdParams, evidenceDecisionSchema } from '../validators/evidence.js';
+import {
+  listBookings, getBookingForAdmin, listDisputes, decideDispute, listReviewsForAdmin, moderateReview, listFlags, decideFlag,
+  getWorkerReputationForAdmin, getBookingStats,
+} from '../controllers/adminReputationController.js';
+import {
+  adminBookingsQuerySchema, bookingIdParams, disputesQuerySchema, disputeDecisionSchema, adminReviewsQuerySchema, reviewIdParams,
+  reviewModerationSchema, flagsQuerySchema, flagIdParams, flagDecisionSchema, adminWorkerIdParams, statsQuerySchema,
+} from '../validators/bookings.js';
 
 const router = express.Router();
 
@@ -34,6 +42,9 @@ router.patch('/users/:id/status', validate(userIdParams, 'params'), validate(use
 router.get('/charts', validate(chartsQuerySchema, 'query'), getCharts);
 router.get('/audit/verify', verifyAudit);
 router.get('/exports/:kind', validate(exportParams, 'params'), validate(exportQuerySchema, 'query'), downloadExport);
+// Module 4 names for the two new exports (same handler, same checks)
+router.get('/export/bookings.csv', (req, res, next) => { req.params.kind = 'bookings'; next(); }, validate(exportParams, 'params'), validate(exportQuerySchema, 'query'), downloadExport);
+router.get('/export/reviews.csv', (req, res, next) => { req.params.kind = 'reviews'; next(); }, validate(exportParams, 'params'), validate(exportQuerySchema, 'query'), downloadExport);
 
 // Batch 4: reason templates
 router.get('/reason-templates', validate(templateQuerySchema, 'query'), listTemplates);
@@ -46,5 +57,17 @@ router.delete('/reason-templates/:id', validate(templateIdParams, 'params'), del
 router.get('/evidence', validate(adminEvidenceQuerySchema, 'query'), listEvidenceQueue);
 router.get('/evidence/:id', validate(evidenceIdParams, 'params'), getEvidenceForAdmin);
 router.patch('/evidence/:id', validate(evidenceIdParams, 'params'), validate(evidenceDecisionSchema), decideEvidence);
+
+// Module 4: bookings, disputes, review moderation, reputation flags, breakdown, charts
+router.get('/bookings', validate(adminBookingsQuerySchema, 'query'), listBookings);
+router.get('/bookings/:id', validate(bookingIdParams, 'params'), getBookingForAdmin);
+router.patch('/bookings/:id/dispute', validate(bookingIdParams, 'params'), validate(disputeDecisionSchema), decideDispute);
+router.get('/disputes', validate(disputesQuerySchema, 'query'), listDisputes);
+router.get('/reviews', validate(adminReviewsQuerySchema, 'query'), listReviewsForAdmin);
+router.patch('/reviews/:id', validate(reviewIdParams, 'params'), validate(reviewModerationSchema), moderateReview);
+router.get('/reputation-flags', validate(flagsQuerySchema, 'query'), listFlags);
+router.patch('/reputation-flags/:id', validate(flagIdParams, 'params'), validate(flagDecisionSchema), decideFlag);
+router.get('/workers/:id/reputation', validate(adminWorkerIdParams, 'params'), getWorkerReputationForAdmin);
+router.get('/stats/bookings', validate(statsQuerySchema, 'query'), getBookingStats);
 
 export default router;

@@ -15,12 +15,15 @@ const LETTER_VARIANTS = [
   [/ه/g, 'ہ'], // ه -> ہ
 ];
 
+// Urdu (۰-۹) and Arabic (٠-٩) digits -> 0-9. Also used by the Module 4 contact-info check.
+export const toWesternDigits = (text) => text
+  .replace(URDU_DIGITS, (d) => String(d.charCodeAt(0) - 0x06f0))
+  .replace(ARABIC_DIGITS, (d) => String(d.charCodeAt(0) - 0x0660));
+
 export function normalizeText(input) {
   if (typeof input !== 'string') return '';
-  let text = input.normalize('NFC').toLowerCase();
+  let text = toWesternDigits(input.normalize('NFC').toLowerCase());
   text = text
-    .replace(URDU_DIGITS, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(ARABIC_DIGITS, (d) => String(d.charCodeAt(0) - 0x0660))
     .replace(ARABIC_DIACRITICS, '')
     .replace(ZERO_WIDTH, '');
   for (const [from, to] of LETTER_VARIANTS) text = text.replace(from, to);

@@ -15,8 +15,11 @@ import ReasonTemplate from '../models/ReasonTemplate.js';
 import SavedWorker from '../models/SavedWorker.js';
 import User from '../models/User.js';
 import WorkerProfile from '../models/WorkerProfile.js';
+import Booking from '../models/Booking.js';
+import Review from '../models/Review.js';
+import ReputationFlag from '../models/ReputationFlag.js';
 
-const MODELS = [User, WorkerProfile, Evidence, EvidenceFile, AuditLog, Counter, Notification, ReasonTemplate, SavedWorker];
+const MODELS = [User, WorkerProfile, Evidence, EvidenceFile, AuditLog, Counter, Notification, ReasonTemplate, SavedWorker, Booking, Review, ReputationFlag];
 const uri = process.env.MONGO_URI;
 if (!uri) {
   console.error('MONGO_URI is not set.');

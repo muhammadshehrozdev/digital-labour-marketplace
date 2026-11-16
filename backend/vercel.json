@@ -3,5 +3,6 @@
   "framework": null,
   "installCommand": "npm ci --omit=dev",
   "outputDirectory": "public",
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+  "crons": [{ "path": "/api/cron/daily", "schedule": "0 21 * * *" }]
 }

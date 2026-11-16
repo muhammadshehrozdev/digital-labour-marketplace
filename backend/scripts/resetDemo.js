@@ -24,6 +24,9 @@ import ReasonTemplate from '../models/ReasonTemplate.js';
 import SavedWorker from '../models/SavedWorker.js';
 import User from '../models/User.js';
 import WorkerProfile from '../models/WorkerProfile.js';
+import Booking from '../models/Booking.js';
+import Review from '../models/Review.js';
+import ReputationFlag from '../models/ReputationFlag.js';
 
 export const DEFAULT_DEMO_URI = 'mongodb://127.0.0.1:27017/dlm_demo';
 export const DEMO_ADMIN = {
@@ -80,7 +83,7 @@ async function main() {
   await mongoose.connect(demoUri, { serverSelectionTimeoutMS: 5000 });
   await mongoose.connection.dropDatabase();
   // The running backend built its indexes once at start; build them again on the empty database.
-  for (const Model of [User, WorkerProfile, Evidence, EvidenceFile, AuditLog, Counter, Notification, ReasonTemplate, SavedWorker]) {
+  for (const Model of [User, WorkerProfile, Evidence, EvidenceFile, AuditLog, Counter, Notification, ReasonTemplate, SavedWorker, Booking, Review, ReputationFlag]) {
     await Model.createIndexes();
   }
   await mongoose.disconnect();

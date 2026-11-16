@@ -12,20 +12,26 @@ import Evidence from '../models/Evidence.js';
 import { ownerView as evidenceOwnerView } from './evidenceController.js';
 import { profileStrength } from '../services/profileStrength.js';
 import { hideSuspendedWorkers } from '../services/accountStatus.js';
+import { NEW_WORKER_CAUTIOUS } from '../services/reputation/matchingSignals.js';
 
 // PUBLIC fields: what customers and admins see in the directory (audit M1-2, decision D-002).
 // Never: CNIC data, address, emergency contact, WhatsApp, phone, email, raw experience text.
-export const PUBLIC_WORKER_FIELDS = [
+const BASE_PUBLIC_FIELDS = [
   'workerIdCode', 'occupation', 'category', 'skills.skillId', 'skills.name', 'skills.category', 'skills.custom',
   // Module 3: chip state, approved count and strength label only — never images, files or numbers.
   'skills.evidenceSummary.status', 'skills.evidenceSummary.approved', 'skills.evidenceSummary.strength',
   'experienceYears', 'hourlyRate', 'dailyRate', 'city', 'availability', 'verificationStatus', 'bio', 'languages',
   'profileCompletion', 'user',
-].join(' ');
+];
+// Module 4 (D-047): the directory card shows "4.6 (12) · 12 jobs" or "New on this platform": only these
+// four facts of reputation.public. Never reputation.score or reputation.reliability (the numbers).
+export const CARD_REPUTATION_FIELDS = ['reputation.public.ratingAverage', 'reputation.public.reviewCount', 'reputation.public.depth', 'reputation.public.completedJobs'];
+export const PUBLIC_WORKER_FIELDS = [...BASE_PUBLIC_FIELDS, ...CARD_REPUTATION_FIELDS].join(' ');
 // From the linked user: the name only (no phone, no email).
 export const PUBLIC_USER_FIELDS = 'name -_id';
-// The single public profile adds work history, without the client's name.
-const PUBLIC_PROFILE_FIELDS = `${PUBLIC_WORKER_FIELDS} workHistory.jobTitle workHistory.duration workHistory.description`;
+// The single public profile adds work history, without the client's name, and the whole PUBLIC part of
+// the reputation snapshot (MongoDB refuses "reputation.public" next to one of its own fields).
+export const PUBLIC_PROFILE_FIELDS = [...BASE_PUBLIC_FIELDS, 'workHistory.jobTitle', 'workHistory.duration', 'workHistory.description', 'reputation.public'].join(' ');
 
 // Only workers who finished the "Your work" step are listed (a card needs a trade).
 export const LISTED_FILTER = () => ({
@@ -37,12 +43,31 @@ export const LISTED_FILTER = () => ({
 //   updated    recently updated first (the default)
 //   experience most years of experience first (workers without a number come last)
 //   evidence   most approved proof items first (approvedEvidenceCount, the sum over all skills)
+//   track_record (Module 4) highest cautious score first, then completed jobs, then recently updated.
+//              A worker without a snapshot counts as the no-review prior (NEW_WORKER_CAUTIOUS), exactly
+//              like a worker whose snapshot has no reviews. New workers therefore appear lower (the
+//              cold-start problem, Pallais 2014); Module 7 will handle fair exposure. Not the default.
 // _id is always the last key, so the order is stable across pages.
 export const DIRECTORY_SORT = Object.freeze({
   updated: { updatedAt: -1, _id: -1 },
   experience: { experienceYears: -1, updatedAt: -1, _id: -1 },
   evidence: { approvedEvidenceCount: -1, updatedAt: -1, _id: -1 },
+  track_record: { _trackRank: -1, _trackJobs: -1, updatedAt: -1, _id: -1 },
 });
+
+// "Best track record" needs a default for workers without a snapshot, so it is an aggregation.
+async function trackRecordPage(filter, { page, limit }) {
+  const projection = Object.fromEntries(PUBLIC_WORKER_FIELDS.split(' ').map((f) => [f, 1]));
+  const docs = await WorkerProfile.aggregate([
+    { $match: filter },
+    { $addFields: { _trackRank: { $ifNull: ['$reputation.score.cautious', NEW_WORKER_CAUTIOUS] }, _trackJobs: { $ifNull: ['$reputation.public.completedJobs', 0] } } },
+    { $sort: DIRECTORY_SORT.track_record },
+    { $skip: (page - 1) * limit },
+    { $limit: limit },
+    { $project: projection },
+  ]);
+  return WorkerProfile.populate(docs, { path: 'user', select: PUBLIC_USER_FIELDS });
+}
 
 // One query for the public profile, used by the customer page AND by the owner's
 // "See what customers see" preview, so both always show exactly the same fields.
@@ -149,13 +174,14 @@ export const updateMyProfile = async (req, res) => {
 
 // GET /api/workers  (customer, admin) — public directory, paginated, safe fields only.
 export const listDirectory = async (req, res) => {
-  const { search, city, category, availability, identity, skills, sort = 'updated', page = 1, limit = 20 } = req.validated.query;
+  const { search, city, category, availability, identity, skills, hasJobs, sort = 'updated', page = 1, limit = 20 } = req.validated.query;
 
   const filter = await hideSuspendedWorkers(LISTED_FILTER());
   if (category && category !== 'All') filter.category = category;
   if (availability && availability !== 'All') filter.availability = availability;
   if (identity === 'verified') filter.verificationStatus = 'Verified';
   if (skills === 'verified') filter['skills.evidenceSummary.status'] = 'verified'; // at least one skill backed by approved proof
+  if (hasJobs === 'true') filter['reputation.public.completedJobs'] = mongoose.trusted({ $gte: 1 }); // done jobs on this platform
   if (city) filter.city = new RegExp(escapeRegex(city), 'i');
   if (search) {
     const pattern = new RegExp(escapeRegex(search), 'i');
@@ -163,13 +189,15 @@ export const listDirectory = async (req, res) => {
   }
 
   const [workers, total] = await Promise.all([
-    WorkerProfile.find(filter)
-      .select(PUBLIC_WORKER_FIELDS)
-      .populate('user', PUBLIC_USER_FIELDS)
-      .sort(DIRECTORY_SORT[sort])
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean(),
+    sort === 'track_record'
+      ? trackRecordPage(filter, { page, limit })
+      : WorkerProfile.find(filter)
+        .select(PUBLIC_WORKER_FIELDS)
+        .populate('user', PUBLIC_USER_FIELDS)
+        .sort(DIRECTORY_SORT[sort])
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
     WorkerProfile.countDocuments(filter),
   ]);
 

@@ -14,7 +14,7 @@ const SOURCE_DIRS = ['controllers', 'middleware', 'services', 'validators', 'con
 // UPPER_CASE strings in the source that are not error codes.
 // (HTTP methods, the JWT algorithm, Unicode normal forms, and multer's own error names.)
 const NOT_CODES = new Set([
-  'HS256', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE', 'NFC', 'NFKD',
+  'HS256', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE', 'NFC', 'NFKD', 'NFKC',
   'LIMIT_FILE_SIZE', 'LIMIT_UNEXPECTED_FILE', 'LIMIT_FILE_COUNT',
 ]);
 

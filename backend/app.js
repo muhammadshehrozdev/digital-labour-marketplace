@@ -16,6 +16,9 @@ import evidenceRoutes from './routes/evidence.js';
 import usersRoutes from './routes/users.js';
 import notificationsRoutes from './routes/notifications.js';
 import savedRoutes from './routes/saved.js';
+import bookingsRoutes from './routes/bookings.js';
+import reviewsRoutes from './routes/reviews.js';
+import cronRoutes from './routes/cron.js';
 
 export function createApp() {
   const env = getEnv();
@@ -65,6 +68,10 @@ export function createApp() {
   app.use('/api/users', usersRoutes);
   app.use('/api/notifications', notificationsRoutes);
   app.use('/api/saved', savedRoutes);
+  // Module 4 (Batch 6): bookings, reviews, and the daily cron
+  app.use('/api/bookings', bookingsRoutes);
+  app.use('/api/reviews', reviewsRoutes);
+  app.use('/api/cron', cronRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

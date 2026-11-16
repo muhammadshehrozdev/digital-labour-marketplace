@@ -5,6 +5,8 @@ import { getMyProfile, getMyFullProfile, getMyOnboarding, updateMyProfile, listD
 import { extract, listMySkills, listPotentialSkills, addSkills, addCustomSkill, removeSkill } from '../controllers/skillsController.js';
 import { extractSchema, addSkillsSchema, customSkillSchema, skillIdParams } from '../validators/skills.js';
 import { profileUpdateSchema, directoryQuerySchema, workerIdCodeParams, compareQuerySchema } from '../validators/workers.js';
+import { getMyReputation, listWorkerReviews, getWorkHistory } from '../controllers/reviewsController.js';
+import { workerReviewsQuerySchema } from '../validators/bookings.js';
 
 const router = express.Router();
 
@@ -13,6 +15,8 @@ router.get('/me', protect, requireRole('worker'), getMyProfile);
 router.put('/me', protect, requireRole('worker'), validate(profileUpdateSchema), updateMyProfile);
 router.get('/me/onboarding', protect, requireRole('worker'), getMyOnboarding);
 router.get('/me/full', protect, requireRole('worker'), getMyFullProfile);
+// Module 4: the worker's own reputation page data (numbers, per-review explanation, own cancellations)
+router.get('/me/reputation', protect, requireRole('worker'), getMyReputation);
 
 // Own skills (Module 2). Extract gives suggestions and saves nothing.
 router.post('/me/skills/extract', protect, requireRole('worker'), validate(extractSchema), extract);
@@ -26,5 +30,8 @@ router.delete('/me/skills/:skillId', protect, requireRole('worker'), validate(sk
 router.get('/', protect, requireRole('customer', 'admin'), validate(directoryQuerySchema, 'query'), listDirectory);
 router.get('/compare', protect, requireRole('customer', 'admin'), validate(compareQuerySchema, 'query'), compareWorkers);
 router.get('/:workerIdCode', protect, requireRole('customer', 'admin'), validate(workerIdCodeParams, 'params'), getPublicProfile);
+// Module 4: visible reviews and verified work history (customers, admins, and the worker himself)
+router.get('/:workerIdCode/reviews', protect, requireRole('customer', 'admin', 'worker'), validate(workerIdCodeParams, 'params'), validate(workerReviewsQuerySchema, 'query'), listWorkerReviews);
+router.get('/:workerIdCode/work-history', protect, requireRole('customer', 'admin', 'worker'), validate(workerIdCodeParams, 'params'), getWorkHistory);
 
 export default router;

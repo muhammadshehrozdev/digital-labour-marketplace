@@ -205,7 +205,7 @@ Only `pending` or `rejected` items (file bytes are deleted too; audited). `suspe
 ### GET /api/workers — customer, admin
 Query: `search` (≤ 50, in occupation, skill names, bio), `city` (≤ 50), `category` (`All` or id),
 `availability`, `identity` (`all|verified`), `skills` (`all|verified` = at least one skill verified by
-evidence), `sort` (Batch 4, below), `page`, `limit` (≤ 50). Lists only workers who finished "Your work" and whose
+evidence), `hasJobs` (`true` = has done at least one job on this platform, Module 4), `sort` (Batch 4, below), `page`, `limit` (≤ 50). Lists only workers who finished "Your work" and whose
 account is not suspended. Public fields only. The answer also repeats the `sort` that was used.
 
 | `sort` | Order (documented sort keys; `_id` is always the last key, so pages are stable) |
@@ -213,6 +213,7 @@ account is not suspended. Public fields only. The answer also repeats the `sort`
 | `updated` (default) | `updatedAt` newest first |
 | `experience` | `experienceYears` highest first (workers without a number last), then `updatedAt` |
 | `evidence` | `approvedEvidenceCount` highest first (the sum of approved proof items over all skills), then `updatedAt` |
+| `track_record` (Module 4) | the reputation **cautious score** highest first (a worker with no snapshot counts as the no-review prior, 0.1300), then completed jobs, then `updatedAt`. Not the default: new workers appear lower (cold start, Pallais 2014; Module 7 handles fair exposure) |
 ```json
 {"workers":[{"_id":"6af1f57c…515","user":{"name":"Example Worker (synthetic)"},"occupation":"Plumber","category":"plumbing_sanitary",
   "skills":[{"skillId":"plumb_pipe","name":"PPRC and uPVC pipe fitting","category":"plumbing_sanitary","custom":false,
@@ -222,10 +223,12 @@ account is not suspended. Public fields only. The answer also repeats the `sort`
  "page":1,"limit":1,"total":1}
 ```
 Never: phone, WhatsApp, email, address, emergency contact, CNIC data, evidence images, file ids, hashes, numbers.
+Module 4 adds `reputation.public.{ratingAverage, reviewCount, depth, completedJobs}` to each card (or no
+`reputation` at all for a worker who is new on this platform). Never `reputation.score` or `reputation.reliability`.
 
 ### GET /api/workers/:workerIdCode — customer, admin
-Same public fields plus `workHistory[{ jobTitle, duration, description }]` (no client name). 404 if unknown
-or if the worker's account is suspended.
+Same public fields plus `workHistory[{ jobTitle, duration, description }]` (no client name) and the whole
+`reputation.public` part of the snapshot (Module 4, below). 404 if unknown or if the worker's account is suspended.
 
 ### GET /api/workers/compare?ids=A,B[,C] — customer, admin (Batch 4)
 Two or three different worker IDs, comma separated. Answers `{ workers: [public profile, …], missing: [ids] }`
@@ -309,6 +312,99 @@ Any other transition → 400; a race (status changed since it was read) → 409;
  "total":14,"page":1,"limit":2,"actions":["admin.created","cnic.reveal","cnic.updated","evidence.approved","evidence.rejected","evidence.suspected_fake","evidence.uploaded","identity.decision"]}
 ```
 
+## Module 4: bookings, reviews and reputation (Batch 6)
+
+Every body, query and URL parameter is checked by a strict zod schema (`backend/validators/bookings.js`;
+unknown keys → 400 `UNKNOWN_FIELD`). Ownership is checked on the server: a booking is found only through a
+filter with the logged-in user's own id, so someone else's booking answers **404** (not 403). Every step is a
+conditional update on the state that was checked: a double tap or a stale screen gets **409**
+`BOOKING_CHANGED`; a step that the state does not allow gets **400** `BOOKING_NOT_ALLOWED`. Every booking
+read first applies the booking's due timers (the sweep). Text the other person reads (`area`,
+`description`, review `comment`, reply `text`, dispute `note`) is refused with **400**
+`TEXT_HAS_CONTACT_INFO` when it contains an email, a link, a CNIC-like number or 10 or more digits.
+
+### Bookings (customer, worker)
+
+| Method | Path | Who | Body / query and rules |
+|---|---|---|---|
+| POST | `/api/bookings` | customer | `{ workerIdCode, skillId, preferredDate: "YYYY-MM-DD", timeSlot: morning\|afternoon\|evening\|any, city, area (2–80), description? (≤ 500) }`. The skill must be the worker's (`BOOKING_SKILL_NOT_OFFERED`); the day today up to 30 days ahead in Pakistan time (`BOOKING_DATE_RANGE`); a suspended or unlisted worker → 409 `BOOKING_WORKER_UNAVAILABLE`; the same phone number on both sides → 400 `BOOKING_SELF`; at most 1 open request per pair (409 `BOOKING_LIMIT_PAIR`), 5 open per customer (409 `BOOKING_LIMIT_OPEN`), 10 new in 24 hours (429 `BOOKING_LIMIT_DAY`). 201 with the booking |
+| GET | `/api/bookings/mine?as=customer\|worker&status=active\|past\|all\|<status>&page=&limit=` | customer, worker | Own bookings, newest first, with `counts: { requested, accepted }`. **No phone numbers** |
+| GET | `/api/bookings/:id` | the two people, admin | Detail with `timeline`, `dispute`, `actions` (the buttons that fit), `review`, and `contact` (below) |
+| POST | `/api/bookings/:id/accept` | the worker | |
+| POST | `/api/bookings/:id/decline` | the worker | `{ reason?: busy\|too_far\|not_my_work\|other }`; outcome `declined` (never counts) |
+| POST | `/api/bookings/:id/cancel` | customer, worker | `{ reason? }` required after acceptance (`CANCEL_REASON_REQUIRED`): `plans_changed\|found_someone_else\|cannot_come\|emergency\|price\|other`. Not after "Work done" or a no-show report |
+| POST | `/api/bookings/:id/confirm-done` | customer, worker | Each side once (second press 409); both → `completed`, `completionMethod: both` |
+| POST | `/api/bookings/:id/contest-done` | customer, worker | `{ reasonCode?, note? }`: "This work was not done", only after the OTHER side pressed "Work done"; opens `completion_contested` |
+| POST | `/api/bookings/:id/no-show` | the customer | From the start + 2 hours (`NO_SHOW_TOO_EARLY`), while nobody pressed "Work done" |
+| POST | `/api/bookings/:id/no-show/respond` | the worker | `{ answer: admit\|dispute, note? }`; admit → outcome `worker_no_show`; dispute → `no_show_contested` |
+| POST | `/api/bookings/:id/dispute` | the worker | `{ reasonCode, note? }`: a cancellation that counts against him (`cancellation_fault`) or a no-show confirmed only because he did not answer (`no_show_contested`), within 14 days (`DISPUTE_WINDOW_PASSED`); one dispute per booking (`DISPUTE_NOT_ALLOWED`) |
+| POST | `/api/bookings/:id/review` | the customer | `{ rating: 1–5 (whole), onTime?, workQuality?, polite?, priceAsAgreed?, wouldHireAgain?: yes\|no, comment? (≤ 500) }`; completed bookings only (`REVIEW_NOT_ALLOWED`), once (409 `REVIEW_EXISTS`), within 14 days (`REVIEW_WINDOW_PASSED`), not while a dispute is open (`DISPUTE_OPEN`). Never editable |
+
+**Contact block (decision D-002).** `contact` is `null` unless the booking is `accepted`, or was accepted and then
+completed or cancelled less than 7 days ago. Then the customer gets `contact.worker { phone, whatsapp,
+whatsappLink }` (`whatsappLink` only when the worker saved a WhatsApp number), the worker gets
+`contact.customer { phone }`, an admin gets both; `visibleUntil` says when it disappears. Phone numbers are in
+no other response, list, notification or CSV file.
+
+```json
+// POST /api/bookings -> 201 (synthetic)
+{"booking":{"_id":"6b0c…a1","code":"BK-2026-000007","status":"requested","outcome":null,"skillId":"elec_wiring","skillName":"House wiring",
+  "category":"electrical_solar","preferredDate":"2026-11-17","timeSlot":"morning","scheduledStart":"2026-11-17T04:00:00.000Z","city":"Islamabad",
+  "area":"G-9 Markaz","description":"Two sockets do not work.","worker":{"name":"Bilal Ahmed (synthetic)","workerIdCode":"DLM-2026-000002"},
+  "customer":{"name":"Sara K."},"disputeStatus":null,"hasReview":false,"actions":["cancel"],
+  "timeline":[{"from":null,"to":"requested","by":"customer","at":"…","reason":null}],"dispute":null,"review":null,"contact":null}}
+// POST /api/bookings/:id/accept (worker) -> 200: ... "status":"accepted", "contact":{"visibleUntil":null,"customer":{"phone":"03000000002"}}
+// POST /api/bookings with "area":"Call 0300 1234567" -> 400
+{"code":"TEXT_HAS_CONTACT_INFO","params":{"field":"Area","fieldKey":"area"},"message":"area: Please do not write phone numbers, links or ID numbers here.", "errors":[…]}
+```
+
+### Reviews and reputation on profiles
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET | `/api/workers/:workerIdCode/reviews?page=&limit=` | customer, admin, the worker himself | Visible reviews, newest first: `{ rating, onTime, workQuality, polite, priceAsAgreed, wouldHireAgain, comment, reviewer: "Sara K.", skillId, createdAt, reply }`. Another worker → 403 |
+| GET | `/api/workers/:workerIdCode/work-history` | customer, admin, the worker himself | "Done through this platform": the latest 20 completed bookings `{ skillId, skillName, category, month: "YYYY-MM", city, rating }`, plus `total`. No customer details |
+| GET | `/api/workers/me/reputation` | worker | Computed fresh: `snapshot` (with `score` and `reliability`), `perReview` (weight, the four factors, reason codes `counted_fully`, `weeks_old`, `months_old`, `older_than_a_year`, `auto_completed`, `new_reviewer`, `repeat_reviewer`), `cancellations`, `rules` |
+| POST | `/api/reviews/:id/reply` | the reviewed worker | `{ text (1–300) }`, once (409 `REPLY_EXISTS`), final |
+| POST | `/api/reviews/:id/report` | the reviewed worker | `{ reasonCode: abusive\|personal_information\|not_about_my_work\|job_did_not_happen\|other, note? }` (words for `other`), once (409 `REPORT_EXISTS`). Does not hide |
+
+`reputation.public` (public profile, "See what customers see"):
+`{ ratingAverage, reviewCount, depth: none|few|some|many, distribution: {1..5}, quick: { onTime: { yes, total }, … }, wouldHireAgain: { yes, total },
+completedJobs, workerCancelledEarly, workerCancelledLate, noShows, repeatCustomers, lastCompletedAt, perSkill: [{ skillId, completedJobs, reviewCount, ratingAverage, lastCompletedAt }] }`.
+The numbers `expected`, `uncertainty`, `cautious` live in `reputation.score` and `reputation.reliability`: only the
+worker himself, admins and the Module 7 contract (`docs/contracts/MATCHING-INPUTS.md`) read them.
+
+### Admin (admin only; others 403)
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/api/admin/bookings?status=all\|disputed\|<status>&q=&page=&limit=` | `q`: booking code, worker ID or a name (escaped). No phone numbers |
+| GET | `/api/admin/bookings/:id` | Full timeline, dispute with both notes, `allowedDecisions`, the review's stars. No phone numbers |
+| GET | `/api/admin/disputes?status=open\|decided\|all` | The queue, oldest first |
+| PATCH | `/api/admin/bookings/:id/dispute` | `{ decision, note (5–500, no CNIC) }`. Decisions per type: `completion_contested`: `work_done` (→ completed, method admin), `not_done_worker_fault` (→ `worker_no_show`), `not_done_no_fault` (→ `closed_no_fault`); `no_show_contested`: `no_show_confirmed`, `no_show_rejected` (→ `closed_no_fault`); `cancellation_fault`: `worker_fault` (no change), `no_fault` (→ `closed_no_fault`). Wrong decision → 400 `DISPUTE_DECISION_INVALID`; already decided → 409. Audited `dispute.decided`; both people notified; reputation rebuilt |
+| GET | `/api/admin/reviews?status=all\|visible\|hidden&reported=true\|false&page=` | Reported reviews first |
+| PATCH | `/api/admin/reviews/:id` | `{ action: hide, reasonCode: abusive_language\|personal_information\|unrelated\|fake_or_manipulated\|other, note? }` or `{ action: restore, note (≥ 5) }`. 409 when the status already changed. Audited (`review.hidden`, `review.restored`; never the comment text); both people notified; reputation rebuilt. Being negative is never a reason to hide |
+| GET | `/api/admin/reputation-flags?status=open\|dismissed\|actioned\|all` | Rule-based flags (`new_account_praise`, `repeat_pair_burst`), oldest first |
+| PATCH | `/api/admin/reputation-flags/:id` | `{ action: dismiss\|hide_reviews, note }`; `hide_reviews` hides the listed reviews as `fake_or_manipulated`. 409 when already decided. Audited `flag.decided`. A flag itself never changes a score |
+| GET | `/api/admin/workers/:id/reputation` | `:id` = WorkerProfile id. The full breakdown: snapshot, per-review weights with the reviews, hidden reviews, flags, bookings by status |
+| GET | `/api/admin/stats/bookings?days=7..90` | Chart data from real counts: bookings per day by state, star distribution, completed versus worker-cancelled and no-shows per week, queue sizes |
+| GET | `/api/admin/export/bookings.csv`, `/api/admin/export/reviews.csv` (also `/api/admin/exports/bookings`, `/reviews`) | No phone numbers, no description, no comment or reply text, no customer names. Audited (`export.bookings`, `export.reviews`) before the file is sent |
+
+### Cron (Vercel)
+
+`GET /api/cron/daily` with `Authorization: Bearer <CRON_SECRET>` (constant-time comparison). 401
+`CRON_UNAUTHORIZED` when the header is missing or wrong, **and when `CRON_SECRET` is not set**. Runs the sweep for
+every booking and rebuilds the snapshot of every worker who has a booking; answers
+`{ ok, at, swept: { expired, autoCompleted, noShowConfirmed, reminded }, refreshed }`. Safe to run twice.
+
+### Notifications (new types)
+
+`booking_requested`, `booking_accepted`, `booking_declined`, `booking_expired`, `booking_cancelled`,
+`booking_confirm_request`, `booking_completed`, `review_requested`, `review_reminder`, `review_received`,
+`review_reply`, `review_hidden`, `review_restored`, `no_show_reported`, `dispute_opened`, `dispute_decided`.
+New params: `bookingId`, `bookingCode`, `rating`, `outcome` (with the existing `skillId`, `skillName`,
+`reasonCode`). Never a phone number or a name.
+
 ## Removed earlier
 Phase 3: `/auth/*` and `/worker/*` without `/api`, `/api/worker/profile`, `/api/worker/all`,
 `/api/worker/verify/:id`, `/api/worker/admin/users`. Batch 1: `/api/worker/ai-skill-profiler`,
@@ -322,6 +418,9 @@ Phase 3: `/auth/*` and `/worker/*` without `/api`, `/api/worker/profile`, `/api/
 | `npm run list-admins` | Read-only list of admins |
 | `npm run audit:verify` | Read-only check of the audit log hash chain |
 | `npm run confidence:sensitivity` | Prints how the skill score changes with other weights (formula outputs) |
+| `npm run reputation:sensitivity` | Module 4: how `expected` and `cautious` move for the hand-worked cases when one parameter changes (formula outputs) |
+| `npm run evaluate:reputation -- --scenario <name\|all> --seeds 30` | Module 4 simulation; writes `evaluation/reputation/results/SIMULATION-*.json` (**simulation results only**) |
+| `npm run reputation:recompute -- --worker <workerIdCode>` / `-- --all` | Rebuilds reputation snapshots; local only unless `--allow-remote` **and** typing `yes` after seeing the host |
 | `npm run evaluate:skills -- --file <dataset>` / `npm run agreement:skills -- --a <f> --b <f>` | Module 2 evaluation (`docs/evaluation/`) |
 | `npm run migrate:cnic` / `migrate:categories` / `migrate:skills` | Dry run unless `-- --apply`; local only unless `--allow-remote` |
 | `npm run db:local`, `npm run seed:local` | Local preview database and synthetic demo accounts (dev container) |
@@ -455,15 +554,56 @@ table lists every code in the catalog. Regenerate it with `node docs/tools/gener
 | `NOTE_HAS_CNIC` | Do not write a CNIC number here. Notes are saved in the audit log. |
 | `NOTIFICATION_NOT_FOUND` | Notification not found |
 | `SAVED_LIMIT` | You can save at most {max} workers. Remove one first. |
-| `SORT_INVALID` | Sort must be updated, experience or evidence |
+| `SORT_INVALID` | Sort must be updated, experience, evidence or track_record |
 | `COMPARE_NEEDS_TWO` | Choose at least two workers to compare |
 | `COMPARE_MAX_THREE` | You can compare at most three workers |
 | `COMPARE_SAME_WORKER` | Choose different workers to compare |
-| `EXPORT_KIND_UNKNOWN` | Export must be audit, identity, evidence or users |
+| `EXPORT_KIND_UNKNOWN` | Export must be audit, identity, evidence, users, bookings or reviews |
 | `TEMPLATE_KIND_INVALID` | Unknown kind of reason template |
 | `TEMPLATE_TEXT_REQUIRED` | Write the English text of the template (at least 5 characters) |
 | `TEMPLATE_NOT_FOUND` | Reason template not found |
 | `TEMPLATE_LIMIT` | At most {max} reason templates. Delete one first. |
+| `BOOKING_NOT_FOUND` | Booking not found |
+| `BOOKING_ID_INVALID` | Booking number must look like BK-2026-000123 |
+| `BOOKING_NOT_ALLOWED` | This step is not possible for this booking now. Please reload the page. |
+| `BOOKING_CHANGED` | Someone changed this booking just now. Please reload the page. |
+| `BOOKING_SELF` | You cannot send a request to yourself. |
+| `BOOKING_WORKER_UNAVAILABLE` | This worker cannot receive requests right now. |
+| `BOOKING_SKILL_NOT_OFFERED` | Choose one of this worker's skills. |
+| `BOOKING_LIMIT_OPEN` | You already have {max} open requests. Wait for an answer or cancel one first. |
+| `BOOKING_LIMIT_PAIR` | You already have an open request with this worker. |
+| `BOOKING_LIMIT_DAY` | You sent {max} requests in the last 24 hours. Please try again tomorrow. |
+| `BOOKING_DATE_RANGE` | Choose a day from today up to {max} days ahead. |
+| `TIME_SLOT_INVALID` | Choose a time: morning, afternoon, evening or any time. |
+| `BOOKING_AS_INVALID` | as must be customer or worker |
+| `DECLINE_REASON_INVALID` | Choose a reason: busy, too far, not my work or other |
+| `CANCEL_REASON_REQUIRED` | Please choose why you are cancelling. |
+| `CANCEL_REASON_INVALID` | Choose one of the listed reasons for cancelling. |
+| `TEXT_HAS_CONTACT_INFO` | Please do not write phone numbers, links or ID numbers here. |
+| `NO_SHOW_TOO_EARLY` | You can report this from 2 hours after the start time. |
+| `NO_SHOW_ANSWER_INVALID` | Answer must be admit or dispute |
+| `DISPUTE_NOT_ALLOWED` | This booking cannot be disputed. |
+| `DISPUTE_WINDOW_PASSED` | The time to dispute this booking (14 days) has passed. |
+| `DISPUTE_OPEN` | A dispute about this booking is open. An admin will decide. |
+| `DISPUTE_NOT_OPEN` | This booking has no open dispute. |
+| `DISPUTE_REASON_INVALID` | Choose one of the listed reasons. |
+| `DISPUTE_DECISION_INVALID` | This decision does not fit this kind of dispute. |
+| `DISPUTE_ALREADY_DECIDED` | An admin already decided this dispute. Please reload the page. |
+| `RATING_INVALID` | Choose from 1 to 5 stars. |
+| `ANSWER_INVALID` | Answer must be yes or no |
+| `REVIEW_NOT_ALLOWED` | Only the customer of a completed booking can review it. |
+| `REVIEW_EXISTS` | This work was already reviewed. Reviews cannot be changed. |
+| `REVIEW_WINDOW_PASSED` | The time to review this work (14 days) has passed. |
+| `REVIEW_NOT_FOUND` | Review not found |
+| `REPLY_EXISTS` | You already replied to this review. Replies cannot be changed. |
+| `REPLY_EMPTY` | Please write your reply. |
+| `REPORT_REASON_INVALID` | Choose a reason: abusive, personal information, not about my work, the job did not happen, or other |
+| `REPORT_EXISTS` | You already reported this review. An admin will look at it. |
+| `HIDE_REASON_INVALID` | Choose a reason: abusive language, personal information, unrelated, fake or manipulated, or other |
+| `REVIEW_STATUS_CHANGED` | This review already has that status. Please reload the page. |
+| `FLAG_NOT_FOUND` | Flag not found |
+| `FLAG_ALREADY_DECIDED` | An admin already decided this flag. Please reload the page. |
+| `CRON_UNAUTHORIZED` | Not allowed. |
 | `ROUTE_NOT_FOUND` | Route not found |
 | `DUPLICATE_RECORD` | This record already exists |
 | `DB_VALIDATION` | Invalid value for: {fields} |

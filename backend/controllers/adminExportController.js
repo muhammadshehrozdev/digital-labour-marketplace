@@ -7,6 +7,8 @@ import AuditLog from '../models/AuditLog.js';
 import WorkerProfile from '../models/WorkerProfile.js';
 import Evidence from '../models/Evidence.js';
 import User from '../models/User.js';
+import Booking from '../models/Booking.js';
+import Review from '../models/Review.js';
 import { toCsv } from '../services/csv.js';
 import { writeAudit } from '../services/audit.js';
 import { pktDay } from './adminInsightsController.js';
@@ -119,6 +121,79 @@ const EXPORTS = {
       { header: 'suspension_reason', value: (u) => u.suspensionReason },
     ],
   },
+  // Module 4: bookings. No phone numbers, no description, no names of customers (codes and states only).
+  bookings: {
+    auditAction: 'export.bookings',
+    async rows({ status = 'all', from, to }) {
+      const filter = ['requested', 'accepted', 'completed', 'declined', 'expired', 'cancelled'].includes(status) ? { status } : {};
+      const range = dateRange(from, to);
+      if (range) filter.createdAt = range;
+      return Booking.find(filter)
+        .select('code status outcome skillId category city timeSlot scheduledStart createdAt acceptedAt completedAt completionMethod closedAt cancelledBy cancelReason declineReason dispute.type dispute.status dispute.decision worker synthetic')
+        .populate('worker', 'workerIdCode -_id')
+        .sort({ createdAt: 1, _id: 1 })
+        .limit(EXPORT_MAX_ROWS + 1)
+        .lean();
+    },
+    columns: [
+      { header: 'booking_code', value: (b) => b.code },
+      { header: 'worker_id', value: (b) => b.worker?.workerIdCode ?? '' },
+      { header: 'skill', value: (b) => b.skillId },
+      { header: 'category', value: (b) => b.category },
+      { header: 'city', value: (b) => b.city },
+      { header: 'time_slot', value: (b) => b.timeSlot },
+      { header: 'scheduled_start_utc', value: (b) => b.scheduledStart },
+      { header: 'status', value: (b) => b.status },
+      { header: 'outcome', value: (b) => b.outcome },
+      { header: 'created_at_utc', value: (b) => b.createdAt },
+      { header: 'accepted_at_utc', value: (b) => b.acceptedAt },
+      { header: 'completed_at_utc', value: (b) => b.completedAt },
+      { header: 'completion_method', value: (b) => b.completionMethod },
+      { header: 'closed_at_utc', value: (b) => b.closedAt },
+      { header: 'cancelled_by', value: (b) => b.cancelledBy },
+      { header: 'cancel_reason', value: (b) => b.cancelReason },
+      { header: 'decline_reason', value: (b) => b.declineReason },
+      { header: 'dispute_type', value: (b) => b.dispute?.type },
+      { header: 'dispute_status', value: (b) => b.dispute?.status },
+      { header: 'dispute_decision', value: (b) => b.dispute?.decision },
+      { header: 'synthetic', value: (b) => (b.synthetic ? 'yes' : 'no') },
+    ],
+  },
+  // Module 4: reviews. The stars and quick answers only: never the comment or reply text, never names.
+  reviews: {
+    auditAction: 'export.reviews',
+    async rows({ status = 'all', from, to }) {
+      const filter = ['visible', 'hidden'].includes(status) ? { status } : {};
+      const range = dateRange(from, to);
+      if (range) filter.createdAt = range;
+      return Review.find(filter)
+        .select('booking worker skillId rating onTime workQuality polite priceAsAgreed wouldHireAgain status hidden.reasonCode reports reply.at createdAt synthetic')
+        .populate('worker', 'workerIdCode -_id')
+        .populate('booking', 'code completionMethod -_id')
+        .sort({ createdAt: 1, _id: 1 })
+        .limit(EXPORT_MAX_ROWS + 1)
+        .lean();
+    },
+    columns: [
+      { header: 'review_id', value: (r) => String(r._id) },
+      { header: 'booking_code', value: (r) => r.booking?.code ?? '' },
+      { header: 'worker_id', value: (r) => r.worker?.workerIdCode ?? '' },
+      { header: 'skill', value: (r) => r.skillId },
+      { header: 'stars', value: (r) => r.rating },
+      { header: 'on_time', value: (r) => r.onTime },
+      { header: 'good_work', value: (r) => r.workQuality },
+      { header: 'polite', value: (r) => r.polite },
+      { header: 'price_as_agreed', value: (r) => r.priceAsAgreed },
+      { header: 'would_hire_again', value: (r) => r.wouldHireAgain },
+      { header: 'completion_method', value: (r) => r.booking?.completionMethod ?? '' },
+      { header: 'status', value: (r) => r.status },
+      { header: 'hidden_reason', value: (r) => r.hidden?.reasonCode },
+      { header: 'reports', value: (r) => (r.reports ?? []).length },
+      { header: 'has_reply', value: (r) => (r.reply?.at ? 'yes' : 'no') },
+      { header: 'created_at_utc', value: (r) => r.createdAt },
+      { header: 'synthetic', value: (r) => (r.synthetic ? 'yes' : 'no') },
+    ],
+  },
 };
 
 // GET /api/admin/exports/:kind?status=&action=&from=&to=
@@ -134,7 +209,7 @@ export const downloadExport = async (req, res) => {
   await writeAudit({
     actor: req.user._id,
     actorRole: 'admin',
-    action: 'export.downloaded',
+    action: definition.auditAction ?? 'export.downloaded',
     targetType: 'Export',
     targetId: kind,
     reason: `Admin downloaded the ${kind} export (${rows.length} rows)`,

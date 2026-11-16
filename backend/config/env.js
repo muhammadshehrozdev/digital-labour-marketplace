@@ -56,6 +56,10 @@ const envSchema = z.object({
   // Evidence uploads allowed per IP address per 15 minutes.
   UPLOAD_RATE_LIMIT: z.coerce.number().int().min(1).max(100000).default(30),
   DB_TIMEOUT_MS: z.coerce.number().int().min(100).max(60000).default(5000),
+  // Module 4: the secret Vercel sends to GET /api/cron/daily ("Authorization: Bearer <CRON_SECRET>").
+  // Optional: without it the cron endpoint always answers 401 (the per-request sweep still keeps
+  // every booking right). At least 32 random characters when set.
+  CRON_SECRET: z.string().min(32, 'must be at least 32 random characters').optional(),
 });
 
 // The live site (Vercel production, or NODE_ENV=production anywhere) gets stricter checks, so a
