@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Lock, Mail, Phone, User, UserPlus } from 'lucide-react';
 import { Alert, Button, MaskedField, PasswordField, RadioCardGroup, TextField } from '../../components/ui';
 import { WorkerArt, CustomerArt } from '../../components/brand/RoleArt';
 import { useAuth } from '../../context/auth';
@@ -61,15 +62,15 @@ export default function Register() {
         <h1>{t('auth.register.title')}</h1>
         <p>{t('auth.register.lead')}</p>
       </div>
-      <RadioCardGroup legend={t('auth.register.legend')} name="role" value={role} onChange={setRole} options={roles} columns={2} />
+      <RadioCardGroup legend={t('auth.register.legend')} name="role" value={role} onChange={setRole} options={roles} columns={2} assist="register.role" />
       {role && (
         <form onSubmit={submit} noValidate className={styles.form}>
           {formError && <Alert tone="danger">{te(formError)}</Alert>}
-          <TextField label={t('auth.register.fullName')} required autoComplete="name" value={form.name} onChange={set('name')} error={errors.name} urdu />
-          <TextField label={t('auth.register.email')} required type="email" autoComplete="email" dir="ltr" value={form.email} onChange={set('email')} error={errors.email} />
-          <MaskedField mask="mobile" label={t('auth.register.mobile')} required type="tel" inputMode="tel" autoComplete="tel" placeholder="0300-1234567" value={form.phone} onChange={set('phone')} error={errors.phone} hint={role === 'worker' ? t('auth.register.phoneHintWorker') : undefined} />
-          <PasswordField required autoComplete="new-password" value={form.password} onChange={set('password')} error={errors.password} />
-          <Button type="submit" fullWidth loading={loading}>{t('auth.register.submit')}</Button>
+          <TextField label={t('auth.register.fullName')} required autoComplete="name" value={form.name} onChange={set('name')} error={errors.name} urdu icon={User} assist="register.name" />
+          <TextField label={t('auth.register.email')} required type="email" autoComplete="email" dir="ltr" value={form.email} onChange={set('email')} error={errors.email} icon={Mail} assist="register.email" />
+          <MaskedField mask="mobile" label={t('auth.register.mobile')} required type="tel" inputMode="tel" autoComplete="tel" placeholder="0300-1234567" value={form.phone} onChange={set('phone')} error={errors.phone} hint={role === 'worker' ? t('auth.register.phoneHintWorker') : undefined} icon={Phone} assist="register.phone" />
+          <PasswordField required autoComplete="new-password" value={form.password} onChange={set('password')} error={errors.password} icon={Lock} assist="register.password" />
+          <Button type="submit" fullWidth loading={loading} icon={UserPlus}>{t('auth.register.submit')}</Button>
         </form>
       )}
       <p className={styles.foot}>

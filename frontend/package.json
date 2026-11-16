@@ -14,7 +14,8 @@
     "demo:video": "node scripts/record-demo-video.mjs",
     "coverage": "vitest run --coverage",
     "icons": "node scripts/make-icons.mjs",
-    "whats-new": "node scripts/make-whats-new.mjs"
+    "whats-new": "node scripts/make-whats-new.mjs",
+    "audio:manifest": "node scripts/audio-manifest.mjs"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "5.3.0",

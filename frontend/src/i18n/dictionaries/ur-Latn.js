@@ -1418,4 +1418,50 @@ export default {
       },
     },
   },
+  // ---- Batch 5: Listen, Speak, See (help texts are drafts until the team reviews them, D-031) ----
+  assist: {
+    listen: 'Sunein',
+    speak: 'Bolein',
+    undo: 'Wapas karein',
+    again: 'Dobara sunein',
+    hearAnswer: 'Mera jawab sunein',
+    closeHelp: 'Madad band karein',
+    bubbleLabel: 'Madad: {field}',
+    thisField: 'yeh khana',
+    stopSound: 'Awaaz band karein',
+    playing: 'Madad sunai ja rahi hai',
+    listening: 'Sun rahe hain… ab bolein',
+    stopped: 'Band kar diya gaya',
+    written: 'Khane mein likh diya gaya',
+    undone: 'Purana jawab wapas aa gaya',
+    wrote: 'Likha gaya: {value}',
+    noVoice: 'Is phone ya computer mein is zabaan ki awaaz nahi hai. Madad oopar likhi hai.',
+    noVoiceAnswer: 'Yeh phone ya computer aap ka jawab parh kar nahi suna sakta. Aap ka jawab khane mein likha hai.',
+    noMic: 'Is browser mein bol kar likhna nahi chalta. Type karein, ya keyboard ka mic istemal karein.',
+    offlineMic: 'Bol kar likhne ke liye internet chahiye. Abhi internet nahi hai, is liye type karein.',
+    notUnderstood: 'Samajh nahi aaya. Dobara bolein ya type karein.',
+    noticeTitle: 'Bol kar likhne se pehle',
+    noticeAccept: 'Theek hai, bol kar likhein',
+    noticeMore: 'Yeh aap ke browser ki apni sahulat hai. Password ya shanakhti card number kabhi bol kar na likhein.',
+  },
+  help: {
+    field: {
+      register: {
+        role: 'Batayein aap kaun hain. Kaam chahiye to karigar ki tasveer dabayein. Karigar chahiye to gahak ki tasveer dabayein.',
+        name: 'Yahan apna poora naam batayein, jaise Bilal Ahmed.',
+        email: 'Yahan apna email address type karein. Yeh bol kar nahi likha jata, kisi bharosay wale shakhs se madad le lein.',
+        phone: 'Yahan apna mobile number batayein, jaise sifar teen sifar sifar, ek do teen char paanch chhay saat.',
+        password: 'Kam az kam pandrah huroof ka khufia password banayein. Chaar aam lafz jor lein jo aap ko yaad rahein. Ise kabhi bol kar na batayein.',
+      },
+      login: {
+        email: 'Woh email type karein jis se aap ne account banaya tha.',
+        password: 'Yahan apna khufia password type karein. Yeh kisi ko na dikhayein.',
+      },
+    },
+    screen: {
+      register: 'Yahan naya account banta hai. Pehle karigar ya gahak chunein, phir naam, email, mobile aur password likhein.',
+      login: 'Yahan log in karein. Email aur password likhein, phir neeche sabz button dabayein.',
+    },
+  },
+  // ---- end of Batch 5 ----
 };

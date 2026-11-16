@@ -1420,4 +1420,50 @@ export default {
       },
     },
   },
+  // ---- Batch 5: Listen, Speak, See (help texts are drafts until the team reviews them, D-031) ----
+  assist: {
+    listen: 'Listen',
+    speak: 'Speak',
+    undo: 'Undo',
+    again: 'Play again',
+    hearAnswer: 'Hear my answer',
+    closeHelp: 'Close the help',
+    bubbleLabel: 'Help: {field}',
+    thisField: 'this box',
+    stopSound: 'Stop the sound',
+    playing: 'Playing the help',
+    listening: 'Listening… speak now',
+    stopped: 'Stopped',
+    written: 'Written in the box',
+    undone: 'The old answer is back',
+    wrote: 'Written: {value}',
+    noVoice: 'This phone or computer has no voice for this language. The help is written above.',
+    noVoiceAnswer: 'This phone or computer cannot read your answer aloud. Your answer is written in the box.',
+    noMic: 'This browser cannot do voice typing. Please type, or use your keyboard\'s microphone.',
+    offlineMic: 'Voice typing needs the internet. There is no internet now, so please type.',
+    notUnderstood: 'I did not understand. Please say it again, or type it.',
+    noticeTitle: 'Before you use voice typing',
+    noticeAccept: 'OK, use voice typing',
+    noticeMore: 'This is your browser\'s own feature. Never speak a password or a CNIC number.',
+  },
+  help: {
+    field: {
+      register: {
+        role: 'Tell us who you are. Want work? Press the worker picture. Want to hire someone? Press the customer picture.',
+        name: 'Say or type your full name here, for example Bilal Ahmed.',
+        email: 'Type your email address here. It cannot be spoken. A person you trust can help you.',
+        phone: 'Say or type your mobile number, for example zero three zero zero, one two three four five six seven.',
+        password: 'Make a secret password of at least 15 letters. Join four everyday words you will remember. Never say it aloud.',
+      },
+      login: {
+        email: 'Type the email address you used when you made your account.',
+        password: 'Type your secret password here. Do not show it to anyone.',
+      },
+    },
+    screen: {
+      register: 'Here you make a new account. First choose worker or customer, then fill in name, email, mobile and password.',
+      login: 'Here you log in. Type your email and password, then press the green button below.',
+    },
+  },
+  // ---- end of Batch 5 ----
 };

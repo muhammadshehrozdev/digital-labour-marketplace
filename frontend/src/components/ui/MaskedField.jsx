@@ -7,6 +7,10 @@ import { MASKS, maskStatus } from '../../utils/masks';
 import { useT } from '../../i18n/context';
 import styles from './Field.module.css';
 
+// Batch 5: with an assist key, a mobile number may be SPOKEN digit by digit and rupees as an amount;
+// a CNIC never (FieldAssist refuses it a second time).
+const SPEAK_FOR_MASK = { mobile: 'digits', rupees: 'number' };
+
 export default function MaskedField({ mask, value, onChange, hint, error, ...rest }) {
   const { t } = useT();
   const format = MASKS[mask];
@@ -21,6 +25,8 @@ export default function MaskedField({ mask, value, onChange, hint, error, ...res
     <TextField
       {...rest}
       dir="ltr"
+      speak={SPEAK_FOR_MASK[mask] ?? false}
+      assistMask={mask}
       value={value}
       error={error}
       hint={live || hint ? <>{live}{live && hint ? ' · ' : ''}{hint}</> : undefined}

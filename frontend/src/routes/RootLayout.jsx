@@ -6,6 +6,7 @@ import { ToastProvider } from '../components/ui';
 import { LanguageSync } from '../i18n';
 import { ThemeSync } from '../theme';
 import LanguageGate from './LanguageGate';
+import AssistRoot from '../features/assist/AssistRoot';
 
 // Old link /worker/skills(?proof=<skillId>) now opens the profile editor (D-020).
 export function OldSkillsLink() {
@@ -22,6 +23,7 @@ function Providers({ children }) {
       <AuthProvider>
         <LanguageSync />
         <ThemeSync />
+        <AssistRoot />
         <LanguageGate>{children}</LanguageGate>
       </AuthProvider>
     </ToastProvider>

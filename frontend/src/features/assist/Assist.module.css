@@ -1,0 +1,63 @@
+/* Batch 5: the Listen / Speak row under a field and its help bubble. Logical properties only (RTL),
+   48 px touch targets, theme tokens only (light and dark), motion only without "reduce motion". */
+.assist { display: grid; gap: var(--space-2); margin-block-start: var(--space-1); }
+.row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.button {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-block-size: var(--touch-target); min-inline-size: var(--touch-target);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+  background: var(--color-surface-elevated); color: var(--color-primary-text);
+  font: inherit; font-weight: 700; font-size: var(--text-small); cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+.button:hover { background: var(--color-primary-soft); border-color: var(--color-primary); }
+.button[aria-pressed='true'] { background: var(--color-primary-soft); border-color: var(--color-primary); }
+.button[data-state='listening'] { box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 35%, transparent); }
+.quiet { color: var(--color-text); }
+
+/* "playing": three small bars that move (still bars with reduce motion) */
+.bars { display: inline-flex; align-items: flex-end; gap: 2px; block-size: 14px; }
+.bars i { display: block; inline-size: 3px; block-size: 100%; border-radius: 2px; background: currentColor; }
+.bars i:nth-child(2) { block-size: 60%; }
+.bars i:nth-child(3) { block-size: 80%; }
+@media (prefers-reduced-motion: no-preference) {
+  .bars i { animation: bar 0.9s ease-in-out infinite; transform-origin: bottom; }
+  .bars i:nth-child(2) { animation-delay: 0.15s; }
+  .bars i:nth-child(3) { animation-delay: 0.3s; }
+  .button[data-state='listening'] { animation: listen 1.4s ease-in-out infinite; }
+}
+@keyframes bar { 50% { transform: scaleY(0.35); } }
+@keyframes listen { 50% { box-shadow: 0 0 0 6px color-mix(in oklch, var(--color-primary) 20%, transparent); } }
+
+/* the help bubble: the same help in large text, with the field's icon */
+.bubble {
+  position: relative;
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border: 1px solid var(--color-primary); border-inline-start-width: 4px; border-radius: var(--radius-lg);
+  background: var(--color-surface-elevated); box-shadow: var(--shadow-sm);
+}
+.bubbleIcon {
+  flex-shrink: 0; display: grid; place-items: center; inline-size: 44px; block-size: 44px;
+  border-radius: var(--radius-md); background: var(--color-primary-soft); color: var(--color-primary-text);
+}
+.bubbleBody { display: grid; gap: var(--space-2); min-inline-size: 0; flex: 1; padding-inline-end: var(--space-8); }
+.bubbleText { margin: 0; font-size: var(--text-lead); line-height: var(--leading-body); color: var(--color-text); }
+:root[lang='ur'] .bubbleText { line-height: 2.1; }
+.note { margin: 0; font-size: var(--text-small); color: var(--color-text-secondary); }
+.bubbleActions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.small {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  min-block-size: var(--touch-target); padding-inline: var(--space-3);
+  border: 0; border-radius: var(--radius-md); background: var(--color-primary-soft); color: var(--color-primary-text);
+  font: inherit; font-weight: 700; font-size: var(--text-small); cursor: pointer;
+}
+.small:hover { background: var(--color-surface-subtle); }
+.close {
+  position: absolute; inset-block-start: var(--space-2); inset-inline-end: var(--space-2);
+  display: grid; place-items: center; inline-size: var(--touch-target); block-size: var(--touch-target);
+  border: 0; border-radius: var(--radius-md); background: none; color: var(--color-text-secondary); cursor: pointer;
+}
+.close:hover { background: var(--color-surface-subtle); }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Lock, LogIn, Mail } from 'lucide-react';
 import { Alert, Button, PasswordField, TextField } from '../../components/ui';
 import { useAuth } from '../../context/auth';
 import { useDocumentTitle, useT } from '../../i18n';
@@ -44,9 +45,9 @@ export default function Login() {
       {notice && !error && <Alert tone="info">{t(notice)}</Alert>}
       {error && <Alert tone="danger">{te(error)}</Alert>}
       <form onSubmit={submit} noValidate className={styles.form}>
-        <TextField label={t('auth.login.email')} type="email" autoComplete="email" dir="ltr" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        <PasswordField hint={null} autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-        <Button type="submit" fullWidth loading={loading}>{t('auth.login.submit')}</Button>
+        <TextField label={t('auth.login.email')} type="email" autoComplete="email" dir="ltr" required value={email} onChange={(e) => setEmail(e.target.value)} icon={Mail} assist="login.email" />
+        <PasswordField hint={null} autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} icon={Lock} assist="login.password" />
+        <Button type="submit" fullWidth loading={loading} icon={LogIn}>{t('auth.login.submit')}</Button>
       </form>
       <p className={styles.foot}>
         {t('auth.login.newHere')} <Link to="/register">{t('auth.login.createAccount')}</Link>

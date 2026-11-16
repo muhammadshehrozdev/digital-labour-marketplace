@@ -1,13 +1,26 @@
 import Field from './Field';
+import { useValueSetter } from './useValueSetter';
 import styles from './Field.module.css';
 
 // urdu: the worker may type Urdu here -> dir="auto" and an Urdu-friendly font stack.
 // icon: a small leading icon. prefix / suffix: short fixed text inside the box, e.g. "Rs" or "/day"
 // (both decorative: the label already says what the field is).
-export default function TextField({ label, hint, error, required, id, urdu = false, hideLabel, className, icon: Icon, prefix, suffix, ...inputProps }) {
+// assist (Batch 5): help key for the Listen / Speak row. speak: 'text' (default for text boxes),
+// 'digits' (phone numbers), 'number' (years, rupees) or false. Email and password never get Speak.
+export default function TextField({ label, hint, error, required, id, urdu = false, hideLabel, className, icon: Icon, prefix, suffix, assist, speak, assistMask, ...inputProps }) {
   const adorned = Boolean(Icon || prefix || suffix);
+  const type = inputProps.type ?? 'text';
+  const onValue = useValueSetter(inputProps.onChange, inputProps.name);
+  const assistControl = assist ? {
+    icon: Icon,
+    inputType: type,
+    mask: assistMask,
+    speak: speak === undefined ? 'text' : speak,
+    value: inputProps.value,
+    onValue, // the spoken value goes through the same path as typing (masks, validation, counters)
+  } : undefined;
   return (
-    <Field label={label} hint={hint} error={error} required={required} id={id} hideLabel={hideLabel}>
+    <Field label={label} hint={hint} error={error} required={required} id={id} hideLabel={hideLabel} assist={assist} assistControl={assistControl}>
       {(fieldProps) => {
         const input = (
           <input

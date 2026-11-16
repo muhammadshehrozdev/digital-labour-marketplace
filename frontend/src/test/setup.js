@@ -2,6 +2,8 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup, configure } from '@testing-library/react';
 import { afterEach, beforeEach, expect, vi } from 'vitest';
+import { reloadSettings } from '../features/assist/settingsStore';
+import { stopAll } from '../features/assist/audio';
 
 // findBy... and waitFor wait up to 5 s (the default is 1 s). On a busy machine (all test files run
 // at once, next to the dev servers) a 1 s wait sometimes ended before an async image check did.
@@ -40,6 +42,9 @@ afterEach(() => {
   } catch {
     // storage not available
   }
+  // Batch 5: sound settings and the playing / listening state must not leak into the next test
+  stopAll();
+  reloadSettings();
   const errors = consoleError.mock.calls.map((c) => c.join(' '));
   const warnings = consoleWarn.mock.calls.map((c) => c.join(' '));
   vi.restoreAllMocks();
