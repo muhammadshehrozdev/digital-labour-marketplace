@@ -10,7 +10,7 @@ What to check: simple, everyday words for a worker with basic reading skills; sh
 spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders such as `{name}` and
 `{count}` must stay exactly as they are. Digits stay Western (0-9).
 
-1427 texts in total (generated from the source files; not hand-copied).
+1573 texts in total (generated from the source files; not hand-copied).
 
 ## Website texts: `app`
 
@@ -1560,6 +1560,162 @@ spelling; Roman Urdu spelled the way people type it on WhatsApp. Placeholders su
 | appx.help.guides.display.steps | The moon or sun button at the top switches dark and light. Hold it for "System".\|Text size (A−, A, A+) is in your account menu and at the bottom of every page.\|The globe button changes the language: English, Urdu or Roman Urdu. | اوپر چاند یا سورج کا بٹن ڈارک اور روشن بدلتا ہے۔ "سسٹم" کے لیے اسے دبا کر رکھیں۔\|لکھائی کا سائز (A−، A، A+) آپ کے اکاؤنٹ مینو میں اور ہر صفحے کے نیچے ہے۔\|گلوب کا بٹن زبان بدلتا ہے: انگریزی، اردو یا رومن اردو۔ | Oopar chaand ya sooraj ka button dark aur light badalta hai. "System" ke liye isay daba kar rakhein.\|Likhai ka size (A−, A, A+) aap ke account menu mein aur har safhe ke neeche hai.\|Globe ka button zabaan badalta hai: English, Urdu ya Roman Urdu. | |
 | appx.help.guides.install.title | Install the website like an app | ویب سائٹ کو ایپ کی طرح انسٹال کریں | Website ko app ki tarah install karein | |
 | appx.help.guides.install.steps | On Android in Chrome, open the menu and choose "Install app" or "Add to Home screen".\|The app opens without the browser bar. You still need the internet to see and save data. | اینڈرائیڈ پر کروم میں مینو کھولیں اور "ایپ انسٹال کریں" یا "ہوم اسکرین میں شامل کریں" چنیں۔\|ایپ براؤزر بار کے بغیر کھلتی ہے۔ ڈیٹا دیکھنے اور محفوظ کرنے کے لیے انٹرنیٹ پھر بھی ضروری ہے۔ | Android par Chrome mein menu kholein aur "Install app" ya "Add to Home screen" chunein.\|App browser bar ke baghair khulti hai. Data dekhne aur mehfooz karne ke liye internet phir bhi zaroori hai. | |
+
+## Website texts: `assist`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| assist.listen | Listen | سنیں | Sunein | |
+| assist.speak | Speak | بولیں | Bolein | |
+| assist.undo | Undo | واپس کریں | Wapas karein | |
+| assist.again | Play again | دوبارہ سنیں | Dobara sunein | |
+| assist.hearAnswer | Hear my answer | میرا جواب سنیں | Mera jawab sunein | |
+| assist.closeHelp | Close the help | مدد بند کریں | Madad band karein | |
+| assist.bubbleLabel | Help: {field} | مدد: {field} | Madad: {field} | |
+| assist.thisField | this box | یہ خانہ | yeh khana | |
+| assist.stopSound | Stop the sound | آواز بند کریں | Awaaz band karein | |
+| assist.playing | Playing the help | مدد سنائی جا رہی ہے | Madad sunai ja rahi hai | |
+| assist.listening | Listening… speak now | سن رہے ہیں… اب بولیں | Sun rahe hain… ab bolein | |
+| assist.stopped | Stopped | بند کر دیا گیا | Band kar diya gaya | |
+| assist.written | Written in the box | خانے میں لکھ دیا گیا | Khane mein likh diya gaya | |
+| assist.undone | The old answer is back | پرانا جواب واپس آ گیا | Purana jawab wapas aa gaya | |
+| assist.wrote | Written: {value} | لکھا گیا: {value} | Likha gaya: {value} | |
+| assist.noVoice | This phone or computer has no voice for this language. The help is written above. | اس فون یا کمپیوٹر میں اس زبان کی آواز نہیں ہے۔ مدد اوپر لکھی ہے۔ | Is phone ya computer mein is zabaan ki awaaz nahi hai. Madad oopar likhi hai. | |
+| assist.noVoiceAnswer | This phone or computer cannot read your answer aloud. Your answer is written in the box. | یہ فون یا کمپیوٹر آپ کا جواب پڑھ کر نہیں سنا سکتا۔ آپ کا جواب خانے میں لکھا ہے۔ | Yeh phone ya computer aap ka jawab parh kar nahi suna sakta. Aap ka jawab khane mein likha hai. | |
+| assist.noMic | This browser cannot do voice typing. Please type, or use your keyboard's microphone. | اس براؤزر میں بول کر لکھنا نہیں چلتا۔ ٹائپ کریں، یا کی بورڈ کا مائیک استعمال کریں۔ | Is browser mein bol kar likhna nahi chalta. Type karein, ya keyboard ka mic istemal karein. | |
+| assist.offlineMic | Voice typing needs the internet. There is no internet now, so please type. | بول کر لکھنے کے لیے انٹرنیٹ چاہیے۔ ابھی انٹرنیٹ نہیں ہے، اس لیے ٹائپ کریں۔ | Bol kar likhne ke liye internet chahiye. Abhi internet nahi hai, is liye type karein. | |
+| assist.notUnderstood | I did not understand. Please say it again, or type it. | سمجھ نہیں آیا۔ دوبارہ بولیں یا ٹائپ کریں۔ | Samajh nahi aaya. Dobara bolein ya type karein. | |
+| assist.noticeTitle | Before you use voice typing | بول کر لکھنے سے پہلے | Bol kar likhne se pehle | |
+| assist.noticeAccept | OK, use voice typing | ٹھیک ہے، بول کر لکھیں | Theek hai, bol kar likhein | |
+| assist.noticeMore | This is your browser's own feature. Never speak a password or a CNIC number. | یہ آپ کے براؤزر کی اپنی سہولت ہے۔ پاس ورڈ یا شناختی کارڈ نمبر کبھی بول کر نہ لکھیں۔ | Yeh aap ke browser ki apni sahulat hai. Password ya shanakhti card number kabhi bol kar na likhein. | |
+| assist.listenTo | Listen: {name} | سنیں: {name} | Sunein: {name} | |
+| assist.noVoiceOption | This phone or computer has no voice for this language. The names are written on the pictures. | اس فون یا کمپیوٹر میں اس زبان کی آواز نہیں ہے۔ نام تصویروں پر لکھے ہیں۔ | Is phone ya computer mein is zabaan ki awaaz nahi hai. Naam tasveeron par likhe hain. | |
+| assist.consentShort | Permission to share this photo | اس تصویر کو دکھانے کی اجازت | Is tasveer ko dikhane ki ijazat | |
+| assist.sound | Sound | آواز | Awaaz | |
+| assist.soundMenu | Sound settings | آواز کی ترتیبات | Awaaz ki tarteebat | |
+| assist.soundTitle | Sound and help | آواز اور مدد | Awaaz aur madad | |
+| assist.showButtons | Show the Listen and Speak buttons | سنیں اور بولیں کے بٹن دکھائیں | Sunein aur Bolein ke button dikhayein | |
+| assist.showButtonsHint | Under every box, to hear help or to speak instead of typing. | ہر خانے کے نیچے، مدد سننے یا لکھنے کی بجائے بولنے کے لیے۔ | Har khane ke neeche, madad sunne ya likhne ki bajaye bolne ke liye. | |
+| assist.autoRead | Read aloud by itself | خود بخود پڑھ کر سنائیں | Khud ba khud parh kar sunayein | |
+| assist.autoReadHint | Says what each page is for, and the help of a box when you tap it. | ہر صفحے کا مقصد، اور خانہ دبانے پر اس کی مدد سناتا ہے۔ | Har safhay ka maqsad, aur khana dabane par us ki madad sunata hai. | |
+| assist.deviceOnly | Saved on this phone or computer only. | یہ صرف اسی فون یا کمپیوٹر پر محفوظ ہوتا ہے۔ | Yeh sirf isi phone ya computer par mehfooz hota hai. | |
+| assist.voiceCheckLink | Check sound and voice on this device | اس آلے پر آواز اور مائیک چیک کریں | Is device par awaaz aur mic check karein | |
+| assist.pageHelp | Help for this page | اس صفحے کی مدد | Is safhay ki madad | |
+| assist.offerTitle | Should the website read aloud? | کیا ویب سائٹ پڑھ کر سنائے؟ | Kya website parh kar sunaye? | |
+| assist.offerText | It can say what each page is for, and explain each box when you tap it. You can change this later in the Sound menu. | یہ ہر صفحے کا مقصد بتا سکتی ہے، اور خانہ دبانے پر اس کی مدد سنا سکتی ہے۔ بعد میں آواز والے مینو سے بدل سکتے ہیں۔ | Yeh har safhay ka maqsad bata sakti hai, aur khana dabane par us ki madad suna sakti hai. Baad mein awaaz wale menu se badal sakte hain. | |
+| assist.offerYes | Yes, read aloud | ہاں، پڑھ کر سنائیں | Haan, parh kar sunayein | |
+| assist.offerNo | No, thank you | نہیں، شکریہ | Nahi, shukriya | |
+
+## Website texts: `help`
+
+| Key | English | اردو (Urdu) | Roman Urdu | Checked by |
+|---|---|---|---|---|
+| help.field.register.role | Tell us who you are. Want work? Press the worker picture. Want to hire someone? Press the customer picture. | بتائیں آپ کون ہیں۔ کام چاہیے تو کاریگر کی تصویر دبائیں۔ کاریگر چاہیے تو گاہک کی تصویر دبائیں۔ | Batayein aap kaun hain. Kaam chahiye to karigar ki tasveer dabayein. Karigar chahiye to gahak ki tasveer dabayein. | |
+| help.field.register.name | Say or type your full name here, for example Bilal Ahmed. | یہاں اپنا پورا نام بتائیں، جیسے بلال احمد۔ | Yahan apna poora naam batayein, jaise Bilal Ahmed. | |
+| help.field.register.email | Type your email address here. It cannot be spoken. A person you trust can help you. | یہاں اپنا ای میل ایڈریس ٹائپ کریں۔ یہ بول کر نہیں لکھا جاتا، کسی بھروسے والے شخص سے مدد لے لیں۔ | Yahan apna email address type karein. Yeh bol kar nahi likha jata, kisi bharosay wale shakhs se madad le lein. | |
+| help.field.register.phone | Say or type your mobile number, for example zero three zero zero, one two three four five six seven. | یہاں اپنا موبائل نمبر بتائیں، جیسے صفر تین صفر صفر، ایک دو تین چار پانچ چھ سات۔ | Yahan apna mobile number batayein, jaise sifar teen sifar sifar, ek do teen char paanch chhay saat. | |
+| help.field.register.password | Make a secret password of at least 15 letters. Join four everyday words you will remember. Never say it aloud. | کم از کم پندرہ حروف کا خفیہ پاس ورڈ بنائیں۔ چار عام لفظ جوڑ لیں جو آپ کو یاد رہیں۔ اسے کبھی بول کر نہ بتائیں۔ | Kam az kam pandrah huroof ka khufia password banayein. Chaar aam lafz jor lein jo aap ko yaad rahein. Ise kabhi bol kar na batayein. | |
+| help.field.login.email | Type the email address you used when you made your account. | وہ ای میل ٹائپ کریں جس سے آپ نے اکاؤنٹ بنایا تھا۔ | Woh email type karein jis se aap ne account banaya tha. | |
+| help.field.login.password | Type your secret password here. Do not show it to anyone. | یہاں اپنا خفیہ پاس ورڈ ٹائپ کریں۔ یہ کسی کو نہ دکھائیں۔ | Yahan apna khufia password type karein. Yeh kisi ko na dikhayein. | |
+| help.field.about.name | Say or type your full name, for example Bilal Ahmed. | یہاں اپنا پورا نام بتائیں، جیسے بلال احمد۔ | Yahan apna poora naam batayein, jaise Bilal Ahmed. | |
+| help.field.about.phone | Say or type your mobile number, digit by digit. Customers do not see it. | اپنا موبائل نمبر ایک ایک ہندسہ کر کے بتائیں۔ گاہک یہ نمبر نہیں دیکھتے۔ | Apna mobile number ek ek hindsa kar ke batayein. Gahak yeh number nahi dekhte. | |
+| help.field.about.whatsapp | If you use WhatsApp, say its number digit by digit. You can also leave it empty. | اگر واٹس ایپ چلاتے ہیں تو اس کا نمبر ایک ایک ہندسہ کر کے بتائیں۔ خالی بھی چھوڑ سکتے ہیں۔ | Agar WhatsApp chalate hain to us ka number ek ek hindsa kar ke batayein. Khali bhi chhor sakte hain. | |
+| help.field.about.cnic | Type the 13 numbers of your ID card. An admin uses it to check who you are. Customers never see it. | اپنے شناختی کارڈ کے تیرہ ہندسے ٹائپ کریں۔ اس سے ایڈمن آپ کی پہچان چیک کرتا ہے۔ گاہک اسے کبھی نہیں دیکھتے۔ | Apne shanakhti card ke terah hindsay type karein. Is se admin aap ki pehchan check karta hai. Gahak ise kabhi nahi dekhte. | |
+| help.field.about.city | Say or type the city where you work, for example Rawalpindi. | وہ شہر بتائیں جہاں آپ کام کرتے ہیں، جیسے راولپنڈی۔ | Woh shehar batayein jahan aap kaam karte hain, jaise Rawalpindi. | |
+| help.field.about.area | Say your area, for example Satellite Town. Only you and the admins see it. | اپنا علاقہ بتائیں، جیسے سیٹلائٹ ٹاؤن۔ یہ صرف آپ اور ایڈمن دیکھتے ہیں۔ | Apna ilaqa batayein, jaise Satellite Town. Yeh sirf aap aur admin dekhte hain. | |
+| help.field.about.emergency | Say the mobile number of a family member to call in an emergency, digit by digit. | کسی گھر والے کا موبائل نمبر بتائیں جسے مشکل میں فون کیا جا سکے، ایک ایک ہندسہ کر کے۔ | Kisi ghar walay ka mobile number batayein jise mushkil mein phone kiya ja sakay, ek ek hindsa kar ke. | |
+| help.field.about.languages | Say the languages you speak, for example Urdu and Punjabi. | وہ زبانیں بتائیں جو آپ بولتے ہیں، جیسے اردو اور پنجابی۔ | Woh zabanein batayein jo aap bolte hain, jaise Urdu aur Punjabi. | |
+| help.field.work.trade | Press the picture of your main work. The small speaker on a picture says its name. | اپنے اصل کام کی تصویر دبائیں۔ تصویر پر چھوٹا اسپیکر دبائیں تو اس کا نام سنائی دے گا۔ | Apne asal kaam ki tasveer dabayein. Tasveer par chhota speaker dabayein to us ka naam sunai dega. | |
+| help.field.work.occupation | Say or type what you are called at work, for example electrician or plumber. | بتائیں آپ کا پیشہ کیا ہے، جیسے الیکٹریشن یا پلمبر۔ | Batayein aap ka pesha kya hai, jaise electrician ya plumber. | |
+| help.field.work.experience | Say how many years you have done this work, for example five. | بتائیں آپ کتنے سال سے یہ کام کر رہے ہیں، جیسے پانچ۔ | Batayein aap kitne saal se yeh kaam kar rahe hain, jaise paanch. | |
+| help.field.work.availability | Can you take work now? Press a picture: available, busy or offline. | کیا آپ ابھی کام لے سکتے ہیں؟ ایک تصویر دبائیں: دستیاب، مصروف یا آف لائن۔ | Kya aap abhi kaam le sakte hain? Ek tasveer dabayein: dastiyab, masroof ya offline. | |
+| help.field.work.hourly | Say your charge for one hour in rupees, for example eight hundred. You can leave it empty. | ایک گھنٹے کی مزدوری روپوں میں بتائیں، جیسے آٹھ سو۔ خالی بھی چھوڑ سکتے ہیں۔ | Ek ghantay ki mazdoori rupon mein batayein, jaise aath sau. Khali bhi chhor sakte hain. | |
+| help.field.work.daily | Say your charge for one full day in rupees, for example four thousand. | ایک پورے دن کی مزدوری روپوں میں بتائیں، جیسے چار ہزار۔ | Ek poore din ki mazdoori rupon mein batayein, jaise chaar hazaar. | |
+| help.field.work.bio | Say a few words about your work, for example: I do neat wiring and solar fitting. | اپنے کام کے بارے میں چند باتیں بتائیں، جیسے: میں صاف ستھری وائرنگ اور سولر کا کام کرتا ہوں۔ | Apne kaam ke baare mein chand baatein batayein, jaise: main saaf suthri wiring aur solar ka kaam karta hoon. | |
+| help.field.work.jobTitle | Say the name of a job you did before, for example house wiring. | پہلے کیے ہوئے کسی کام کا نام بتائیں، جیسے گھر کی وائرنگ۔ | Pehle kiye huay kisi kaam ka naam batayein, jaise ghar ki wiring. | |
+| help.field.work.client | Say who the job was for, for example a house owner. Customers do not see this name. | بتائیں یہ کام کس کے لیے کیا، جیسے مکان مالک۔ گاہک یہ نام نہیں دیکھتے۔ | Batayein yeh kaam kis ke liye kiya, jaise makaan malik. Gahak yeh naam nahi dekhte. | |
+| help.field.work.duration | Say how long the job took, for example two weeks. | بتائیں کام کتنے دن چلا، جیسے دو ہفتے۔ | Batayein kaam kitne din chala, jaise do haftay. | |
+| help.field.work.whatYouDid | Say in a few words what you did, for example full wiring of a new house. | چند لفظوں میں بتائیں آپ نے کیا کیا، جیسے نئے گھر کی پوری وائرنگ۔ | Chand lafzon mein batayein aap ne kya kiya, jaise naye ghar ki poori wiring. | |
+| help.field.skills.describe | Say what work you do and for how long, for example: I have done house wiring for five years. | بتائیں آپ کیا کام کرتے ہیں اور کتنے سال سے، جیسے: میں پانچ سال سے گھروں کی وائرنگ کرتا ہوں۔ | Batayein aap kya kaam karte hain aur kitne saal se, jaise: main paanch saal se gharon ki wiring karta hoon. | |
+| help.field.skills.search | Say or type the name of a skill, for example geyser, then choose it from the list. | کسی ہنر کا نام بتائیں، جیسے گیزر، پھر فہرست میں سے چن لیں۔ | Kisi hunar ka naam batayein, jaise geyser, phir fehrist mein se chun lein. | |
+| help.field.evidence.skill | Press the picture of the skill that this photo proves. | اس ہنر کی تصویر دبائیں جس کا یہ ثبوت ہے۔ | Us hunar ki tasveer dabayein jis ka yeh saboot hai. | |
+| help.field.evidence.kind | What is in your photo? A certificate, a finished job, or a letter. Press one. | آپ کی تصویر میں کیا ہے؟ سرٹیفکیٹ، مکمل کیا ہوا کام، یا خط۔ ایک دبائیں۔ | Aap ki tasveer mein kya hai? Certificate, mukammal kiya hua kaam, ya khat. Ek dabayein. | |
+| help.field.evidence.photo | Take a photo or choose one. Hold the phone straight, in good light, with all four corners showing. | تصویر کھینچیں یا پہلے سے موجود تصویر چنیں۔ فون سیدھا رکھیں، روشنی اچھی ہو، چاروں کونے نظر آئیں۔ | Tasveer khenchein ya pehle se maujood tasveer chunein. Phone seedha rakhein, roshni achhi ho, charon konay nazar aayein. | |
+| help.field.evidence.title | If you like, say a short name for the photo, for example wiring of a new house. | چاہیں تو تصویر کا چھوٹا سا نام بتائیں، جیسے نئے گھر کی وائرنگ۔ | Chahein to tasveer ka chhota sa naam batayein, jaise naye ghar ki wiring. | |
+| help.field.evidence.consent | Tick this box if the photo is yours and shows no other person's private details. | اگر تصویر آپ کی ہے اور اس میں کسی اور کی ذاتی معلومات نہیں تو یہ خانہ ٹک کریں۔ | Agar tasveer aap ki hai aur is mein kisi aur ki zaati maloomat nahi to yeh khana tick karein. | |
+| help.field.find.search | Say or type a trade or a skill, for example plumber or geyser. | کام یا ہنر کا نام بتائیں، جیسے پلمبر یا گیزر۔ | Kaam ya hunar ka naam batayein, jaise plumber ya geyser. | |
+| help.field.find.trade | Press a picture to see only workers of that trade. | کسی تصویر کو دبائیں تو صرف اس کام کے کاریگر نظر آئیں گے۔ | Kisi tasveer ko dabayein to sirf us kaam ke karigar nazar aayenge. | |
+| help.field.find.city | Say or type a city, for example Lahore. | شہر کا نام بتائیں، جیسے لاہور۔ | Shehar ka naam batayein, jaise Lahore. | |
+| help.field.find.availability | Press a picture to see workers who are available, busy or offline. | تصویر دبائیں تاکہ دستیاب، مصروف یا آف لائن کاریگر نظر آئیں۔ | Tasveer dabayein taa ke dastiyab, masroof ya offline karigar nazar aayein. | |
+| help.field.find.sort | Choose the order of the workers, for example the most checked proof first. | کاریگروں کی ترتیب چنیں، جیسے سب سے زیادہ چیک شدہ ثبوت والے پہلے۔ | Karigaron ki tarteeb chunein, jaise sab se zyada check shuda saboot walay pehle. | |
+| help.field.profile.language | Choose the language of the website. Press the card of your language. | ویب سائٹ کی زبان چنیں۔ اپنی زبان والا کارڈ دبائیں۔ | Website ki zabaan chunein. Apni zabaan wala card dabayein. | |
+| help.field.helpCentre.search | Say or type a word to find a guide, for example photo. | ہدایت ڈھونڈنے کے لیے کوئی لفظ بتائیں، جیسے تصویر۔ | Hidayat dhoondne ke liye koi lafz batayein, jaise tasveer. | |
+| help.screen.register | Here you make a new account. First choose worker or customer, then fill in name, email, mobile and password. | یہاں نیا اکاؤنٹ بنتا ہے۔ پہلے کاریگر یا گاہک چنیں، پھر نام، ای میل، موبائل اور پاس ورڈ لکھیں۔ | Yahan naya account banta hai. Pehle karigar ya gahak chunein, phir naam, email, mobile aur password likhein. | |
+| help.screen.login | Here you log in. Type your email and password, then press the green button below. | یہاں لاگ ان کریں۔ ای میل اور پاس ورڈ لکھیں، پھر نیچے سبز بٹن دبائیں۔ | Yahan log in karein. Email aur password likhein, phir neeche sabz button dabayein. | |
+| help.screen.landing | This website connects skilled workers and customers. Use the buttons at the top to find a worker, or to join as a worker. | یہ ویب سائٹ ہنرمند کاریگروں اور گاہکوں کو ملاتی ہے۔ اوپر کے بٹن سے کاریگر ڈھونڈیں یا کاریگر کے طور پر شامل ہوں۔ | Yeh website hunarmand karigaron aur gahakon ko milati hai. Oopar ke button se karigar dhoondein ya karigar ke taur par shamil hon. | |
+| help.screen.helpCentre | Here are short guides. Press the small speaker on a guide to hear it. | یہاں چھوٹی چھوٹی ہدایات ہیں۔ کسی ہدایت پر چھوٹا اسپیکر دبائیں تو وہ سنائی دے گی۔ | Yahan chhoti chhoti hidayaat hain. Kisi hidayat par chhota speaker dabayein to woh sunai degi. | |
+| help.screen.voiceCheck | This page checks if this phone or computer can speak the help and listen to your voice. | یہ صفحہ چیک کرتا ہے کہ یہ فون یا کمپیوٹر مدد بول کر سنا سکتا ہے اور آپ کی آواز سن سکتا ہے یا نہیں۔ | Yeh safha check karta hai ke yeh phone ya computer madad bol kar suna sakta hai aur aap ki awaaz sun sakta hai ya nahi. | |
+| help.screen.onboardingAbout | Step one of five. Fill in your name, mobile number and city. Then press the green button at the bottom. | پانچ میں سے پہلا قدم۔ اپنا نام، موبائل نمبر اور شہر لکھیں۔ پھر نیچے سبز بٹن دبائیں۔ | Paanch mein se pehla qadam. Apna naam, mobile number aur shehar likhein. Phir neeche sabz button dabayein. | |
+| help.screen.onboardingWork | Step two. Choose the picture of your trade, then say your years of work and your daily charge. Then press the green button. | دوسرا قدم۔ اپنے کام کی تصویر چنیں، پھر کام کے سال اور ایک دن کی مزدوری بتائیں۔ پھر سبز بٹن دبائیں۔ | Doosra qadam. Apne kaam ki tasveer chunein, phir kaam ke saal aur ek din ki mazdoori batayein. Phir sabz button dabayein. | |
+| help.screen.onboardingSkills | Step three. Say what work you do. The website suggests skills from a word list; tick the right ones and add them. | تیسرا قدم۔ بتائیں آپ کیا کام کرتے ہیں۔ ویب سائٹ لفظوں کی فہرست سے ہنر بتاتی ہے، صحیح والے چن کر شامل کریں۔ | Teesra qadam. Batayein aap kya kaam karte hain. Website lafzon ki fehrist se hunar batati hai, sahi walay chun kar shamil karein. | |
+| help.screen.onboardingProof | Step four. Add a photo of a certificate or of finished work. An admin checks it. You can also skip this for now. | چوتھا قدم۔ سرٹیفکیٹ یا مکمل کام کی تصویر لگائیں۔ ایڈمن اسے چیک کرتا ہے۔ ابھی چھوڑ بھی سکتے ہیں۔ | Chautha qadam. Certificate ya mukammal kaam ki tasveer lagayein. Admin ise check karta hai. Abhi chhor bhi sakte hain. | |
+| help.screen.onboardingDone | Well done, your profile is ready. You can now see your profile or add more proof. | شاباش، آپ کی پروفائل تیار ہے۔ اب اپنی پروفائل دیکھیں یا مزید ثبوت لگائیں۔ | Shabash, aap ki profile tayyar hai. Ab apni profile dekhein ya mazeed saboot lagayein. | |
+| help.screen.dashboard | This is your home page. It shows how strong your profile is and what to do next. | یہ آپ کا گھر کا صفحہ ہے۔ یہ بتاتا ہے آپ کی پروفائل کتنی مضبوط ہے اور آگے کیا کرنا ہے۔ | Yeh aap ka ghar ka safha hai. Yeh batata hai aap ki profile kitni mazboot hai aur aage kya karna hai. | |
+| help.screen.profile | This is your profile. The switch at the top shows what customers see. | یہ آپ کی پروفائل ہے۔ اوپر والا بٹن دکھاتا ہے کہ گاہک کیا دیکھتے ہیں۔ | Yeh aap ki profile hai. Oopar wala button dikhata hai ke gahak kya dekhte hain. | |
+| help.screen.profileEdit | Here you change your profile. Choose a part, change it, and press the green save button. | یہاں آپ اپنی پروفائل بدلتے ہیں۔ ایک حصہ چنیں، اسے بدلیں، اور سبز محفوظ کرنے والا بٹن دبائیں۔ | Yahan aap apni profile badalte hain. Ek hissa chunein, use badlein, aur sabz mehfooz karne wala button dabayein. | |
+| help.screen.notifications | Here are messages about your identity and your photos. Press the small speaker to hear a message. | یہاں آپ کی پہچان اور تصویروں کے بارے میں پیغام ہیں۔ پیغام سننے کے لیے چھوٹا اسپیکر دبائیں۔ | Yahan aap ki pehchan aur tasveeron ke baare mein paigham hain. Paigham sunne ke liye chhota speaker dabayein. | |
+| help.screen.find | Here you find workers. Say or type a trade, choose a picture to filter, then open a worker. | یہاں آپ کاریگر ڈھونڈتے ہیں۔ کام کا نام بتائیں یا لکھیں، تصویر سے چھانٹیں، پھر کسی کاریگر کو کھولیں۔ | Yahan aap karigar dhoondte hain. Kaam ka naam batayein ya likhein, tasveer se chhantein, phir kisi karigar ko kholein. | |
+| help.screen.workerProfile | This is a worker's profile. It shows their work, their rates and what an admin has checked. | یہ ایک کاریگر کی پروفائل ہے۔ اس میں ان کا کام، مزدوری اور ایڈمن کی چیک کی ہوئی باتیں ہیں۔ | Yeh ek karigar ki profile hai. Is mein un ka kaam, mazdoori aur admin ki check ki hui baatein hain. | |
+| help.screen.saved | These are the workers you saved. Press the heart to remove one. | یہ وہ کاریگر ہیں جو آپ نے محفوظ کیے۔ ہٹانے کے لیے دل والا نشان دبائیں۔ | Yeh woh karigar hain jo aap ne mehfooz kiye. Hatane ke liye dil wala nishan dabayein. | |
+| help.screen.compare | Here you see two or three workers side by side, so you can choose. | یہاں دو یا تین کاریگر ساتھ ساتھ نظر آتے ہیں، تاکہ آپ چن سکیں۔ | Yahan do ya teen karigar saath saath nazar aate hain, taa ke aap chun sakein. | |
+| help.option.trade.electrical_solar | Electrical and solar: house wiring, switches and solar panels. | بجلی اور سولر: گھر کی وائرنگ، سوئچ اور سولر پینل۔ | Bijli aur solar: ghar ki wiring, switch aur solar panel. | |
+| help.option.trade.plumbing_sanitary | Plumbing and sanitary: pipes, taps, tanks and bathrooms. | پلمبنگ اور سینیٹری: پائپ، نل، ٹینکی اور باتھ روم۔ | Plumbing aur sanitary: pipe, nal, tanki aur bathroom. | |
+| help.option.trade.construction_masonry | Construction and masonry: bricks, plaster, floors and walls. | تعمیر اور مستری کا کام: اینٹ، پلستر، فرش اور دیواریں۔ | Tameer aur mistri ka kaam: eent, plaster, farsh aur deewarein. | |
+| help.option.trade.carpentry_woodwork | Carpentry and woodwork: doors, furniture and cupboards. | بڑھئی کا کام: دروازے، فرنیچر اور الماریاں۔ | Barhai ka kaam: darwazay, furniture aur almariyan. | |
+| help.option.trade.painting_renovation | Painting and renovation: paint, polish and repair of walls. | رنگ و روغن اور مرمت: پینٹ، پالش اور دیواروں کی مرمت۔ | Rang o roghan aur marammat: paint, polish aur deewaron ki marammat. | |
+| help.option.trade.ac_appliance_repair | AC and appliance repair: air conditioners, fridges and washing machines. | اے سی اور گھریلو مشینوں کی مرمت: اے سی، فریج اور واشنگ مشین۔ | AC aur gharelu machinon ki marammat: AC, fridge aur washing machine. | |
+| help.option.trade.home_maintenance | Home maintenance: small repairs and fittings around the house. | گھر کی دیکھ بھال: گھر کے چھوٹے موٹے مرمت کے کام۔ | Ghar ki dekh bhaal: ghar ke chhotay motay marammat ke kaam. | |
+| help.option.trade.domestic_work | Domestic work: cleaning, cooking and help in the home. | گھریلو کام: صفائی، کھانا پکانا اور گھر میں مدد۔ | Gharelu kaam: safai, khana pakana aur ghar mein madad. | |
+| help.option.trade.moving_loading | Moving and loading: shifting a house and lifting goods. | شفٹنگ اور لوڈنگ: گھر کا سامان منتقل کرنا اور سامان اٹھانا۔ | Shifting aur loading: ghar ka saman muntaqil karna aur saman uthana. | |
+| help.option.trade.All | All trades: show workers of every trade. | تمام کام: ہر کام کے کاریگر دکھائیں۔ | Tamam kaam: har kaam ke karigar dikhayein. | |
+| help.option.availability.Available | Available: you can take new work now. | دستیاب: آپ ابھی نیا کام لے سکتے ہیں۔ | Dastiyab: aap abhi naya kaam le sakte hain. | |
+| help.option.availability.Busy | Busy: you have work now and can take more later. | مصروف: ابھی کام ہے، بعد میں اور لے سکتے ہیں۔ | Masroof: abhi kaam hai, baad mein aur le sakte hain. | |
+| help.option.availability.Offline | Offline: you are not taking work for now. | آف لائن: آپ فی الحال کام نہیں لے رہے۔ | Offline: aap filhaal kaam nahi le rahe. | |
+| help.option.availability.All | Any: show workers whether available, busy or offline. | کوئی بھی: دستیاب، مصروف یا آف لائن، سب کاریگر دکھائیں۔ | Koi bhi: dastiyab, masroof ya offline, sab karigar dikhayein. | |
+| help.option.proofSkill | {name}. Press this picture to add proof for this skill. | {name}۔ اس ہنر کا ثبوت لگانے کے لیے یہ تصویر دبائیں۔ | {name}. Is hunar ka saboot lagane ke liye yeh tasveer dabayein. | |
+| help.option.evidenceType.certificate | Certificate: a photo of a course or trade certificate. | سرٹیفکیٹ: کسی کورس یا ہنر کے سرٹیفکیٹ کی تصویر۔ | Certificate: kisi course ya hunar ke certificate ki tasveer. | |
+| help.option.evidenceType.work_photo | Work photo: a job you finished. No faces and no house numbers. | کام کی تصویر: آپ کا مکمل کیا ہوا کام۔ اس میں چہرے اور مکان نمبر نہ ہوں۔ | Kaam ki tasveer: aap ka mukammal kiya hua kaam. Is mein chehray aur makaan number na hon. | |
+| help.option.evidenceType.reference_letter | Letter: a photo of a letter from a client or employer. | خط: کسی گاہک یا مالک کے لکھے خط کی تصویر۔ | Khat: kisi gahak ya malik ke likhe khat ki tasveer. | |
+| help.notification | {title}. {text} | {title}۔ {text} | {title}. {text} | |
+| help.centre.read | {title}. {steps} | {title}۔ {steps} | {title}. {steps} | |
+| help.centre.guides.sound.title | Listen to the help | مدد سنیں | Madad sunein | |
+| help.centre.guides.sound.steps | Press Listen under a box to hear what to write there.\|The round speaker button in the corner tells you what the page is for.\|Press the small speaker on a picture to hear its name.\|In the Sound menu at the top you can hide the buttons, or let pages read aloud by themselves. | کسی خانے کے نیچے سنیں دبائیں، پتا چلے گا وہاں کیا لکھنا ہے۔\|کونے میں گول اسپیکر والا بٹن بتاتا ہے کہ یہ صفحہ کس لیے ہے۔\|کسی تصویر پر چھوٹا اسپیکر دبائیں تو اس کا نام سنائی دے گا۔\|اوپر آواز والے مینو میں بٹن چھپا سکتے ہیں، یا صفحے خود پڑھ کر سنانے کا کہہ سکتے ہیں۔ | Kisi khane ke neeche Sunein dabayein, pata chalega wahan kya likhna hai.\|Konay mein gol speaker wala button batata hai ke yeh safha kis liye hai.\|Kisi tasveer par chhota speaker dabayein to us ka naam sunai dega.\|Oopar awaaz wale menu mein button chhupa sakte hain, ya safhay khud parh kar sunane ka keh sakte hain. | |
+| help.centre.guides.voiceTyping.title | Speak instead of typing | لکھنے کی بجائے بولیں | Likhne ki bajaye bolein | |
+| help.centre.guides.voiceTyping.steps | Press Speak under a box and say your answer.\|The website writes it in the box and reads it back to you.\|If it is wrong, press Undo, or say it again.\|Say numbers one digit at a time, for example zero three zero zero.\|Never speak a password or a CNIC number: type those. | خانے کے نیچے بولیں دبائیں اور اپنا جواب بولیں۔\|ویب سائٹ اسے خانے میں لکھ کر آپ کو پڑھ کر سناتی ہے۔\|اگر غلط ہو تو واپس کریں دبائیں، یا دوبارہ بولیں۔\|نمبر ایک ایک ہندسہ کر کے بولیں، جیسے صفر تین صفر صفر۔\|پاس ورڈ اور شناختی کارڈ نمبر کبھی نہ بولیں، انہیں ٹائپ کریں۔ | Khane ke neeche Bolein dabayein aur apna jawab bolein.\|Website use khane mein likh kar aap ko parh kar sunati hai.\|Agar ghalat ho to Wapas karein dabayein, ya dobara bolein.\|Number ek ek hindsa kar ke bolein, jaise sifar teen sifar sifar.\|Password aur shanakhti card number kabhi na bolein, unhein type karein. | |
+| help.voiceCheck.title | Check sound and voice | آواز اور مائیک چیک کریں | Awaaz aur mic check karein | |
+| help.voiceCheck.lead | What works on this phone or computer: help that speaks, and typing with your voice. | اس فون یا کمپیوٹر پر کیا چلتا ہے: بول کر سنانے والی مدد، اور آواز سے لکھنا۔ | Is phone ya computer par kya chalta hai: bol kar sunane wali madad, aur awaaz se likhna. | |
+| help.voiceCheck.summaryTitle | On this device | اس آلے پر | Is device par | |
+| help.voiceCheck.loading | Checking… | چیک ہو رہا ہے… | Check ho raha hai… | |
+| help.voiceCheck.urdu | Urdu | اردو | Urdu | |
+| help.voiceCheck.english | English | انگریزی | English | |
+| help.voiceCheck.audio.clips | Help in {language}: works, with the team's recorded voice. | {language} میں مدد: چلتی ہے، ٹیم کی ریکارڈ کی ہوئی آواز سے۔ | {language} mein madad: chalti hai, team ki record ki hui awaaz se. | |
+| help.voiceCheck.audio.voice | Help in {language}: works, with this device's voice. | {language} میں مدد: چلتی ہے، اس آلے کی آواز سے۔ | {language} mein madad: chalti hai, is device ki awaaz se. | |
+| help.voiceCheck.audio.text | Help in {language}: no voice yet, so the help is shown as text. | {language} میں مدد: ابھی آواز نہیں، اس لیے مدد لکھی ہوئی نظر آتی ہے۔ | {language} mein madad: abhi awaaz nahi, is liye madad likhi hui nazar aati hai. | |
+| help.voiceCheck.mic.ok | Voice typing: available (it needs the internet). | آواز سے لکھنا: دستیاب ہے (انٹرنیٹ ضروری ہے)۔ | Awaaz se likhna: dastiyab hai (internet zaroori hai). | |
+| help.voiceCheck.mic.offline | Voice typing: not now, because there is no internet. | آواز سے لکھنا: ابھی نہیں، کیونکہ انٹرنیٹ نہیں ہے۔ | Awaaz se likhna: abhi nahi, kyunke internet nahi hai. | |
+| help.voiceCheck.mic.none | Voice typing: not available in this browser. Typing always works. | آواز سے لکھنا: اس براؤزر میں نہیں چلتا۔ ٹائپ کرنا ہمیشہ چلتا ہے۔ | Awaaz se likhna: is browser mein nahi chalta. Type karna hamesha chalta hai. | |
+| help.voiceCheck.voicesTitle | Voices on this device | اس آلے کی آوازیں | Is device ki awaazein | |
+| help.voiceCheck.noVoices | This device has no voices for speaking. | اس آلے میں بول کر سنانے والی کوئی آواز نہیں ہے۔ | Is device mein bol kar sunane wali koi awaaz nahi hai. | |
+| help.voiceCheck.clips | Recorded help from the team: {ur} in Urdu, {en} in English. | ٹیم کی ریکارڈ کی ہوئی مدد: اردو میں {ur}، انگریزی میں {en}۔ | Team ki record ki hui madad: Urdu mein {ur}, English mein {en}. | |
+| help.voiceCheck.test.en | Play an English test | انگریزی آواز آزمائیں | English awaaz aazmayein | |
+| help.voiceCheck.test.ur | Play an Urdu test | اردو آواز آزمائیں | Urdu awaaz aazmayein | |
+| help.voiceCheck.testFailed | This device could not speak {language}. | یہ آلہ {language} میں نہیں بول سکا۔ | Yeh device {language} mein nahi bol saka. | |
+| help.voiceCheck.micTitle | Voice typing | آواز سے لکھنا | Awaaz se likhna | |
+| help.voiceCheck.micButton | Test the microphone | مائیک آزمائیں | Mic aazmayein | |
+| help.voiceCheck.heard | You said: | آپ نے کہا: | Aap ne kaha: | |
+| help.voiceCheck.addTitle | Add an Urdu voice to an Android phone | اینڈرائیڈ فون میں اردو آواز شامل کریں | Android phone mein Urdu awaaz shamil karein | |
+| help.voiceCheck.addSteps | Open Settings and search for “Text-to-speech”.\|Choose the Google speech engine and open its settings.\|Choose “Install voice data” and add Urdu (Pakistan).\|Come back to this page and press “Play an Urdu test”. | سیٹنگز کھولیں اور “Text-to-speech” تلاش کریں۔\|گوگل کا اسپیچ انجن چنیں اور اس کی سیٹنگز کھولیں۔\|“Install voice data” چنیں اور Urdu (Pakistan) شامل کریں۔\|اس صفحے پر واپس آئیں اور “اردو آواز آزمائیں” دبائیں۔ | Settings kholein aur “Text-to-speech” talaash karein.\|Google ka speech engine chunein aur us ki settings kholein.\|“Install voice data” chunein aur Urdu (Pakistan) shamil karein.\|Is safhay par wapas aayein aur “Urdu awaaz aazmayein” dabayein. | |
+| help.voiceCheck.addNote | The menu names differ a little between phones. Without an Urdu voice, the website plays the team's recordings or shows the help as text. | مینو کے نام ہر فون میں تھوڑے مختلف ہوتے ہیں۔ اردو آواز نہ ہو تو ویب سائٹ ٹیم کی ریکارڈنگ چلاتی ہے یا مدد لکھی ہوئی دکھاتی ہے۔ | Menu ke naam har phone mein thoray mukhtalif hote hain. Urdu awaaz na ho to website team ki recording chalati hai ya madad likhi hui dikhati hai. | |
 
 ## Language chooser (shown in all three languages at once)
 

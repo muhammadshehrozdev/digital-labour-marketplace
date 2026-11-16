@@ -33,6 +33,7 @@ export default function OptionListen({ helpKey, params, name, onNoVoice, classNa
       aria-pressed={playing}
       aria-label={t('assist.listenTo', { name })}
       data-state={playing ? 'playing' : undefined}
+      data-help-key={helpKey}
       onClick={onClick}
     >
       <Volume2 size={18} strokeWidth={1.75} aria-hidden="true" />

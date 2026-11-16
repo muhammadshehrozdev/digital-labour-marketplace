@@ -1513,6 +1513,13 @@ export default {
         trade: 'Kisi tasveer ko dabayein to sirf us kaam ke karigar nazar aayenge.',
         city: 'Shehar ka naam batayein, jaise Lahore.',
         availability: 'Tasveer dabayein taa ke dastiyab, masroof ya offline karigar nazar aayein.',
+        sort: 'Karigaron ki tarteeb chunein, jaise sab se zyada check shuda saboot walay pehle.',
+      },
+      profile: {
+        language: 'Website ki zabaan chunein. Apni zabaan wala card dabayein.',
+      },
+      helpCentre: {
+        search: 'Hidayat dhoondne ke liye koi lafz batayein, jaise tasveer.',
       },
     },
     screen: {

@@ -185,6 +185,7 @@ function Editor({ full }) {
           <RadioCardGroup
             legend={t('editor.languageCurrent', { name: info.nativeName })}
             name="site-language"
+            assist="profile.language"
             value={lang}
             onChange={changeLanguage}
             options={LANGUAGES.map((l) => ({

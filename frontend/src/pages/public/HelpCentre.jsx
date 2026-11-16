@@ -36,7 +36,7 @@ export default function HelpCentre() {
     <div className={styles.page}>
       <PageHeader title={t('appx.help.title')} description={t('appx.help.lead')} />
       <div role="search" className={styles.search}>
-        <TextField label={t('appx.help.search')} type="search" icon={Search} value={query} onChange={(e) => setQuery(e.target.value)} />
+        <TextField label={t('appx.help.search')} type="search" icon={Search} value={query} onChange={(e) => setQuery(e.target.value)} assist="helpCentre.search" />
       </div>
       {shown.length === 0 && <p className={styles.none} role="status">{t('appx.help.none')}</p>}
       {shown.map((group) => (

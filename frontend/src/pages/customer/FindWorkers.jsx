@@ -6,7 +6,7 @@
 // - Sort (22), saved workers (23), compare (24), recently viewed (25).
 import { useEffect, useId, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { LayoutGrid, MapPin, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
+import { ArrowDownUp, LayoutGrid, MapPin, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
 import { Alert, Button, Drawer, EmptyState, PageHeader, Pagination, RadioCardGroup, Select, Skeleton, Switch, TextField, useToast } from '../../components/ui';
 import { TradeArt } from '../../components/illustrations';
 import { AVAILABILITY, AVAILABILITY_ICONS } from '../../features/profile/availability';
@@ -153,7 +153,7 @@ export default function FindWorkers() {
           <TextField label={t('find.searchLabel')} hideLabel type="search" icon={Search} placeholder={t('find.searchPlaceholder')} maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} hint={t('customerx.instant')} assist="find.search" />
         </div>
         <div className={styles.sortField}>
-          <Select label={t('customerx.sort.label')} value={value.sort} onChange={(e) => set({ sort: e.target.value })} options={SORTS.map((s) => ({ value: s, label: t(`customerx.sort.${s}`) }))} />
+          <Select label={t('customerx.sort.label')} value={value.sort} onChange={(e) => set({ sort: e.target.value })} options={SORTS.map((s) => ({ value: s, label: t(`customerx.sort.${s}`) }))} assist="find.sort" icon={ArrowDownUp} />
         </div>
         <Button variant="secondary" icon={SlidersHorizontal} className={styles.filterButton} onClick={() => setDrawerOpen(true)}>{t('find.filters')}</Button>
       </form>

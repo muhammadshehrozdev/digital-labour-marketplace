@@ -1515,6 +1515,13 @@ export default {
         trade: 'Press a picture to see only workers of that trade.',
         city: 'Say or type a city, for example Lahore.',
         availability: 'Press a picture to see workers who are available, busy or offline.',
+        sort: 'Choose the order of the workers, for example the most checked proof first.',
+      },
+      profile: {
+        language: 'Choose the language of the website. Press the card of your language.',
+      },
+      helpCentre: {
+        search: 'Say or type a word to find a guide, for example photo.',
       },
     },
     screen: {

@@ -1,0 +1,145 @@
+// Batch 5 coverage guard (prompt section 8): every field of every in-scope form has a help row, and
+// every help key that is used exists in all three dictionaries. Fails when a new field is added
+// without help, or when a help text is missing in one language.
+import { describe, test, expect } from 'vitest';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { lookup } from '../i18n/translate';
+import { PAGE_HELP_NAMES } from '../features/assist/pageHelp';
+import en from '../i18n/dictionaries/en';
+import ur from '../i18n/dictionaries/ur';
+import urLatn from '../i18n/dictionaries/ur-Latn';
+import { mockApi, me, onboarding, PROFILE, full } from './mockApi';
+import { renderAt } from './renderApp';
+
+const DICTS = { en, ur, 'ur-Latn': urLatn };
+const missingIn = (key) => Object.entries(DICTS).filter(([, d]) => typeof lookup(d, key) !== 'string' && typeof lookup(d, key) !== 'object').map(([l]) => l);
+
+// The fields of a page that need help, and the ones that have none.
+function fieldsWithoutHelp(root) {
+  const missing = [];
+  const hasHelpNear = (el, levels = 5) => {
+    let node = el.parentElement;
+    for (let i = 0; node && i < levels; i += 1, node = node.parentElement) {
+      if (node.querySelector('[data-assist]')) return true;
+    }
+    return false;
+  };
+  // text boxes, drop-downs and text areas: their OWN help row (it names the control it belongs to)
+  for (const el of root.querySelectorAll('input:not([type=hidden]):not([type=radio]):not([type=checkbox]):not([type=file]), textarea, select')) {
+    if (el.closest('dialog')) continue; // dialogs are not form fields of the page
+    if (!el.id || !root.querySelector(`[data-assist-for="${el.id}"]`)) missing.push(el.id || el.name || el.type);
+  }
+  // a check box or a photo: a help row right next to it
+  for (const el of root.querySelectorAll('input[type=checkbox], input[type=file]')) {
+    if (el.closest('dialog')) continue;
+    if (!hasHelpNear(el, 3)) missing.push(el.id || el.name || el.type);
+  }
+  for (const fieldset of root.querySelectorAll('fieldset')) {
+    if (fieldset.querySelector('input[type=radio]') && !fieldset.querySelector(':scope > [data-assist]')) {
+      missing.push(`radio group "${fieldset.querySelector('legend')?.textContent}"`);
+    }
+  }
+  return missing;
+}
+
+function keysUsed(root) {
+  return [
+    ...[...root.querySelectorAll('[data-assist]')].map((el) => `help.field.${el.dataset.assist}`),
+    ...[...root.querySelectorAll('[data-help-key]')].map((el) => el.dataset.helpKey),
+    ...[...document.querySelectorAll('[data-page-help]')].map((el) => `help.screen.${el.dataset.pageHelp}`),
+  ];
+}
+
+const WORKER = me('worker', { _id: 'w1' });
+const SKILLS = [{ skillId: 'elec_wiring', name: 'House wiring', category: 'electrical_solar', custom: false, evidenceSummary: { status: 'self_declared', approved: 0 } }];
+const workerRoutes = (steps = { about: true, work: true, skills: true }) => ({
+  'GET /auth/me': WORKER,
+  'GET /workers/me/onboarding': onboarding(steps, steps.skills ? '2026-11-09T10:00:00Z' : null),
+  'GET /workers/me': { status: 200, data: { ...PROFILE, skills: SKILLS } },
+  'GET /workers/me/full': full({ ...PROFILE, skills: SKILLS }, []),
+  'GET /workers/me/skills': { status: 200, data: { skills: SKILLS } },
+  'GET /evidence/mine': { status: 200, data: { evidence: [] } },
+  'GET /notifications/unread-count': { status: 200, data: { unread: 0 } },
+});
+
+const PAGES = [
+  { path: '/register', routes: { 'GET /auth/me': { status: 401, data: {} } }, ready: async (user) => user.click(await screen.findByRole('radio', { name: /I want to find work/ })) },
+  { path: '/login', routes: { 'GET /auth/me': { status: 401, data: {} } } },
+  { path: '/onboarding/about', routes: workerRoutes({ about: false, work: false, skills: false }) },
+  { path: '/onboarding/work', routes: workerRoutes({ about: true, work: false, skills: false }), ready: () => screen.findByRole('radio', { name: 'Electrical & Solar' }) },
+  { path: '/onboarding/skills', routes: workerRoutes({ about: true, work: true, skills: false }) },
+  { path: '/onboarding/proof', routes: workerRoutes(), ready: () => screen.findByRole('radio', { name: 'House wiring' }) },
+  ...['about', 'work', 'skills', 'proof', 'history', 'language'].map((section) => ({
+    path: `/worker/profile/edit?section=${section}`,
+    routes: workerRoutes(),
+    ready: section === 'history' ? async (user) => user.click(await screen.findByRole('button', { name: /Add a past job/ })) : undefined,
+  })),
+  {
+    path: '/find',
+    routes: { 'GET /auth/me': me('customer', { _id: 'c1' }), 'GET /workers': { status: 200, data: { workers: [], page: 1, limit: 12, total: 0, sort: 'updated' } }, 'GET /saved/ids': { status: 200, data: { ids: [], max: 100 } } },
+    ready: () => screen.findByRole('radio', { name: 'Electrical & Solar' }),
+  },
+  { path: '/help', routes: { 'GET /auth/me': { status: 401, data: {} } } },
+];
+
+describe('coverage guard: help on every field of the in-scope forms', () => {
+  test.each(PAGES.map((p) => [p.path, p]))('%s', async (path, page) => {
+    localStorage.setItem('dlm.tour.w1', 'done');
+    mockApi(page.routes);
+    renderAt(path);
+    const user = userEvent.setup();
+    const main = await screen.findByRole('main');
+    await within(main).findAllByRole('heading', { level: 1 });
+    await page.ready?.(user);
+    await screen.findAllByRole('button', { name: /^Listen/ });
+    expect(fieldsWithoutHelp(main)).toEqual([]);
+    const keys = keysUsed(main);
+    expect(keys.length).toBeGreaterThan(0);
+    for (const key of keys) expect(missingIn(key), key).toEqual([]);
+  });
+});
+
+describe('coverage guard: every help key in the code exists in en, ur and ur-Latn', () => {
+  const files = [];
+  const walk = (dir) => readdirSync(dir).forEach((f) => {
+    const p = join(dir, f);
+    if (statSync(p).isDirectory()) { if (f !== 'test') walk(p); } else if (/\.jsx?$/.test(f)) files.push(p);
+  });
+  walk('src');
+  const source = files.map((f) => readFileSync(f, 'utf8')).join('\n');
+
+  test('assist="..." keys used in the source', () => {
+    const keys = [...new Set([...source.matchAll(/assist="([\w.]+)"/g)].map((m) => `help.field.${m[1]}`))];
+    expect(keys.length).toBeGreaterThan(30); // 39 on 16 Nov 2026
+    for (const key of keys) expect(missingIn(key), key).toEqual([]);
+  });
+
+  test('page help of every in-scope page', () => {
+    for (const name of PAGE_HELP_NAMES) expect(missingIn(`help.screen.${name}`), name).toEqual([]);
+  });
+
+  test('picture groups: every option a group can show has its spoken line', () => {
+    const groups = {
+      trade: ['All', 'electrical_solar', 'plumbing_sanitary', 'construction_masonry', 'carpentry_woodwork', 'painting_renovation', 'ac_appliance_repair', 'home_maintenance', 'domestic_work', 'moving_loading'],
+      availability: ['All', 'Available', 'Busy', 'Offline'],
+      evidenceType: ['certificate', 'work_photo', 'reference_letter'],
+    };
+    for (const [group, values] of Object.entries(groups)) {
+      for (const value of values) expect(missingIn(`help.option.${group}.${value}`), `${group}.${value}`).toEqual([]);
+    }
+  });
+
+  test('the same keys in all three dictionaries for the whole Batch 5 part (help and assist)', () => {
+    const flat = (d, prefix) => Object.keys(Object.fromEntries(Object.entries(d).filter(([k]) => k === prefix))).length;
+    expect(flat(en, 'help') + flat(ur, 'help') + flat(urLatn, 'help')).toBe(3);
+    const leaves = (obj, p = '') => Object.entries(obj).flatMap(([k, v]) => (typeof v === 'object' ? leaves(v, `${p}${k}.`) : [`${p}${k}`]));
+    for (const top of ['help', 'assist']) {
+      const keys = leaves(en[top]).sort();
+      expect(leaves(ur[top]).sort(), top).toEqual(keys);
+      expect(leaves(urLatn[top]).sort(), top).toEqual(keys);
+    }
+  });
+});

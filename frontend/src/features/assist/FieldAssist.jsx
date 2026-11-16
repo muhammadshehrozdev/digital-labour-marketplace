@@ -162,7 +162,7 @@ function FieldAssist({ helpKey, label, icon: Icon, speak, value = '', onValue, m
   };
 
   return (
-    <div className={styles.assist} data-assist={helpKey}>
+    <div className={styles.assist} data-assist={helpKey} data-assist-for={controlId}>
       <div className={styles.row}>
         <button type="button" className={styles.button} aria-pressed={playing} data-state={playing ? 'playing' : undefined} onClick={onListen}>
           <Volume2 size={20} strokeWidth={1.75} aria-hidden="true" />
