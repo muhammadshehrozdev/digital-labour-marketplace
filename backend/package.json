@@ -20,7 +20,10 @@
     "evaluate:skills": "node evaluation/skill-extraction/evaluate.js",
     "agreement:skills": "node evaluation/skill-extraction/agreement.js",
     "confidence:sensitivity": "node scripts/confidenceSensitivity.js",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "reputation:sensitivity": "node scripts/reputationSensitivity.js",
+    "reputation:recompute": "node scripts/reputationRecompute.js",
+    "evaluate:reputation": "node evaluation/reputation/evaluate.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
