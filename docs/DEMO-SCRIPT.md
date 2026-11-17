@@ -153,10 +153,27 @@ the panel arrives. Window C (customer) or any window in Urdu.
 **Say:** "So in Module 1 the worker has an identity with a protected CNIC. In Module 2 a rule-based
 extractor turned their own words into skills. In Module 3 a skill was backed by proof that an admin
 approved, and the customer could see it without seeing private data. Everything is covered by automated
-tests: 540 backend, 1,089 frontend and 45 browser tests, including this exact demo. Next semester: bookings,
-which is when contact details will be shared."
+tests (the current numbers are in docs/CHANGELOG.md), including this exact demo. Module 4 then added
+bookings, reviews and the reputation engine, shown in the part below."
 
 ---
+
+## Module 4 part (Batch 6): bookings, reviews and reputation (about 6 minutes, three windows)
+
+Before: `bash scripts/preview.sh reset-demo` (fresh synthetic demo data). Window A normal Chrome: customer.demo;
+window B Incognito: worker.demo; window C Guest: admin.demo (passwords as above). All data is synthetic.
+
+| Window | Click | Say |
+|---|---|---|
+| A | Find workers → Sort by **Best track record**. Point at the note under it. | "A worker with one lucky review does not jump over a worker with a long good record. The note says openly that new workers appear lower; fair exposure for them is Module 7." |
+| A | Open **Demo Plumber** → Reputation section. | "Stars with how many reviews, how sure we are in words, quick answers as 'x of y', jobs done and cancellations. No secret numbers are shown to customers." |
+| A | Open **Demo Worker** → **Request this worker** → pictures for work, day and time → area → Send. | "Picture choices, every one can be heard. The phone number is shared only if the worker accepts: decision D-002." |
+| B | **Requests** (count in the menu) → **Hear this request** → **Accept**. | "A worker who cannot read hears the request. Accepting shares the phone numbers, only inside this booking." |
+| A | My bookings → the booking → **Call** and **WhatsApp**. | "Now both can call. After seven days the number disappears again." |
+| B, A | My jobs → **Work done**; then in A **Work done** → **Rate this work** → 5 stars (press 🔊) → Send after the read-back. | "Completion needs both people, so a stranger cannot fake a job. A review cannot be changed later, so it cannot be bargained over." |
+| B | **My reputation**. | "The worker hears, in simple words, how reputation is counted and why a late cancellation counts double." |
+| C | **Disputes** → open the painter's dispute → decision → note → Save. **Reputation flags** → the carpenter. | "A small dispute step for reliability, decided by a person with a note in the audit log. The flag is a fixed rule; it never changes a score by itself." |
+| C | Point at `docs/modules/MODULE-4.md` §5 (or the printed table). | "We measured the model by simulation, against four simple baselines. Honestly: with our first settings it is not better overall, and recent fake reviews still buy places. That is a simulation result, and it is why the settings are a decision for the real pilot." |
 
 ## If something goes wrong
 

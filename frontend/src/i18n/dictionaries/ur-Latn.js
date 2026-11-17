@@ -2305,6 +2305,20 @@ export default {
         text: 'Booking {code}. Faisla dekhne ke liye kholein.',
       },
     },
+    guides: {
+      request: {
+        title: 'Karigar bulayein aur kaam ki rating dein',
+        steps: 'Kisi karigar ka profile kholein aur "Is karigar ko bulayein" dabayein.|Kaam, din aur waqt chunein, apna ilaqa likhein aur bhejein.|Karigar qabool karein to unhein call karne ke liye booking kholein.|Kaam ke baad "Kaam ho gaya" dabayein, phir "Is kaam ki rating dein". Review baad mein badla nahi ja sakta.',
+      },
+      jobs: {
+        title: 'Darkhwast ka jawab dein aur kaam mukammal karein',
+        steps: '"Darkhwastein" kholein. Sunne ke liye "Yeh darkhwast sunein" dabayein.|Qabool ya inkaar dabayein. Inkaar kabhi aap ke khilaaf nahi gina jata.|Qabool karne ke baad "Mere kaam" mein gaahak ka phone number nazar aata hai.|Kaam khatam ho jaye to "Kaam ho gaya" dabayein.',
+      },
+      reputation: {
+        title: 'Aap ki saakh kaise gini jati hai',
+        steps: 'Sirf woh gaahak review de sakte hain jin ke saath aap ka kaam mukammal hua.|Naye reviews zyada ginay jatay hain; aik hi gaahak har baar kam gina jata hai.|Jo gaahak doosre karigar bhi bula chuke hon woh poore ginay jatay hain.|Der se mansookhi do guna gini jati hai: kam az kam aik din pehle mansookh karein.',
+      },
+    },
   },
   reputation: {
     title: 'Saakh',

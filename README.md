@@ -14,6 +14,7 @@ Team: Muhammad Shehroz, Shahzaib Khan, Usama Asif. Supervisor: Ms. Tooba Abdul Q
 | **1 — Worker Digital Identity** | Secure accounts (HttpOnly cookie sessions), guided onboarding, worker profile with contact details, CNIC stored encrypted, identity check by an admin with a note, customer directory without private data, audit log |
 | **2 — Experience and Skill Profiler** | A **rule-based (dictionary) skill extractor**: the worker describes their work in Urdu, Roman Urdu or English and gets skill suggestions with the matched words; nothing is saved until the worker ticks and adds. An evaluation harness (precision, recall, F1) for real labelled data. No "AI", no external AI service |
 | **3 — Skill Evidence and Verification** | Workers upload photos of certificates, finished work or reference letters for one skill; an admin approves, rejects, flags as suspected fake or revokes; each skill shows Self-declared / Evidence pending / Verified by evidence / Disputed and a strength word (no percentages) |
+| **4 — Reputation and Reliability Engine** | A minimal **Work Booking** (request → accept → both confirm "Work done"; cancel, no-show, a small dispute step); phone numbers shared only inside an accepted booking (D-002); **reviews** after completed work (never edited); a **weighted Beta reputation model** (Jøsang & Ismail 2002) that says how sure it is, a reliability record, verified work history, "Best track record" order, rule-based flags for admins; **evaluated by simulation** (`backend/evaluation/reputation/`, results are simulation results only). No "AI" |
 
 Across all modules (Batch 3): the website works in **English, اردو (Urdu, right to left) and Roman
 Urdu** (chooser on the first visit, switcher at the top, the choice is saved to the account); a bold
@@ -35,6 +36,13 @@ the answer back; trades, availability and proof choices are **pictures**; a roun
 page says what the page is for. The voice is the team's recorded clip if there is one, else the device's own
 voice; Roman Urdu users hear Urdu. All of it is the browser's built-in speech feature: no outside service,
 no key, not "AI" (decisions D-033 to D-036). Check a device at `/voice-check`.
+
+Batch 6 (**Module 4**) adds bookings, reviews and reputation: customers request a worker with picture choices,
+workers hear the request and accept, both see each other's number only inside an accepted booking, both
+press "Work done", the customer rates; profiles show stars with how sure we are in words, verified work
+history and reliability counts; workers see "My reputation" in plain words; admins handle disputes, review
+moderation and reputation flags. Details, formulas, the simulation results and the viva answers:
+`docs/modules/MODULE-4.md`.
 
 Deployment (Phase 8) is not done yet.
 
@@ -201,6 +209,10 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 | `npm run demo:reset` | Wipes the separate demo database (`dlm_demo`, local only, name must end in `_demo`) and creates the three synthetic demo accounts; asks for `yes` (or add `-- --yes`) |
 | `npm run audit:verify` | Checks that nobody changed the audit log (hash chain) |
 | `npm run confidence:sensitivity` | Shows how the Module 3 skill score changes with other weights (formula outputs) |
+| `npm run reputation:sensitivity` | Module 4: how the reputation score moves when one parameter changes (formula outputs, not results) |
+| `npm run evaluate:reputation -- --scenario all --seeds 30` | Module 4 evaluation **by simulation**; writes `evaluation/reputation/results/SIMULATION-*.json` |
+| `npm run reputation:recompute -- --worker <workerIdCode>` / `-- --all` | Rebuilds reputation snapshots; local database only unless `--allow-remote` **and** you type `yes` |
+| `npm run demo:module4` | Adds the synthetic Module 4 demo data to the demo database (`preview.sh demo` and `reset-demo` run it for you) |
 | `npm run evaluate:skills -- --file <dataset.csv>` | Module 2 evaluation on a labelled dataset (`docs/evaluation/README.md`) |
 | `npm run agreement:skills -- --a <file> --b <file>` | Agreement between two annotators (Cohen's kappa, Krippendorff's alpha) |
 | `npm run migrate:cnic` / `migrate:categories` / `migrate:skills` | Data migrations; dry run unless `-- --apply`; local database only unless `--allow-remote` (ask the team first) |
@@ -232,10 +244,10 @@ The clip recorder is a development page: `http://127.0.0.1:5173/dev/recorder` (n
 | `docs/API.md` | Every endpoint, who may call it, request/response examples, error codes |
 | `docs/DATA-MODEL.md` | Collections, fields, indexes, ER diagram |
 | `docs/ARCHITECTURE.md` | Components, request flows, where each security control sits |
-| `docs/USE-CASES.md` | Actors and use cases for Modules 1–3 |
+| `docs/USE-CASES.md` | Actors and use cases for Modules 1–4 |
 | `docs/TEST-CASES.md` | Test-case table generated from the real test run |
 | `docs/SECURITY.md` | Threats → mitigations → tests, keys, limitations, incidents |
-| `docs/DECISIONS.md` | Decision records D-001 to D-036 |
+| `docs/DECISIONS.md` | Decision records D-001 to D-058 |
 | `docs/DEPLOY-RUNBOOK.md` | Going live on Vercel + MongoDB Atlas, step by step (fresh start, first admin, checks, rollback) |
 | `docs/DEMO-SCRIPT.md` | The 7-minute defence demo of Modules 1–3 |
 | `docs/ADMIN-GUIDE.md` | For admins: creating the first admin, logging in, every admin page, daily tasks, security rules |
@@ -247,4 +259,9 @@ The clip recorder is a development page: `http://127.0.0.1:5173/dev/recorder` (n
 | `docs/audio/RECORDING-GUIDE.md` | How the team records the spoken help (recorder page, file names, tips) |
 | `docs/EASY-MODE-MANUAL-TEST.md` | Checklist to test sound and microphone by hand (Chrome, Edge, Android) |
 | `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format); the easy-mode usability test **plan** (`EASY-MODE-USABILITY-PLAN.md`, no results yet) |
+| `docs/modules/MODULE-4.md` | Module 4: what it does, diagrams, formulas with worked examples, the **simulation** results, limitations, extension points, how to explain it in the viva, deployment notes |
+| `docs/contracts/MATCHING-INPUTS.md` | The reputation fields Module 7 (matching) may read, and its two rules |
+| `docs/MODULE-4-MANUAL-TEST.md` | Checklist for three browser windows and an Android phone |
+| `docs/evaluation/REPUTATION-PILOT-PLAN.md` | A **plan** for a small real pilot (no results) |
+| `docs/i18n/REVIEW-BATCH-6.md` | The new Module 4 texts side by side, **waiting for the team's review**, with the clips to record |
 | `docs/CHANGELOG.md` | What changed in each phase |

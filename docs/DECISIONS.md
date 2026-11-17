@@ -800,3 +800,172 @@ Voice quality depends on the device. Urdu audio needs either a device voice or t
 - The voice check page (`/voice-check`) tells a person, in plain words, what works on their device: help
   in Urdu and English (recorded clips, device voice, or text only), voice typing (available, offline, or
   not in this browser), the device's voices with test sentences, and how to add an Urdu voice on Android.
+
+## D-037 — A minimal Work Booking inside Module 4 (Batch 6, 16 Nov 2026)
+
+**Approval:** supervisor approval, reported by the team on 16 Nov 2026: keep a minimal Work Booking inside Module 4.
+
+**Why:** "ratings and reviews after completed work" need a record of completed work, and "cancellations" need a
+record of accepted work. Neither existed (Batch 4's scope guard allowed no jobs).
+
+**Decision:** a customer sends a hire request to one worker; the worker accepts or declines; both confirm when the
+work is done, or someone cancels. States `requested → accepted → completed`, or `declined`, `expired`,
+`cancelled`. Every step is a conditional update on the state that was checked (409 on a double or stale step) and
+is pushed onto `statusHistory`. Readable codes `BK-<year>-<6 digits>` from an atomic counter. Deliberately small:
+no price, terms, photos or check-in (Modules 5, 6, 8, 10 add fields later; `docs/modules/MODULE-4.md` §7).
+
+## D-038 — The reputation engine is evaluated by simulation (Batch 6, 16 Nov 2026)
+
+**Approval:** supervisor approval, reported by the team on 16 Nov 2026: evaluate the reputation engine by simulation.
+
+**Decision:** `backend/evaluation/reputation/` (seeded simulator, 11 scenarios, four baselines, ablations, Kendall's
+tau-b, NDCG, Precision@10, attack lift, paired comparison). Results are written to `results/` with the date,
+scenario, seeds, parameter hash and git commit, and are quoted only as **simulation** results. A real pilot is
+planned (`docs/evaluation/REPUTATION-PILOT-PLAN.md`, a plan only).
+
+## D-039 — Completion needs both sides (Batch 6)
+
+Each side presses "Work done" once; both → `completed` (`completionMethod: both`). If one side confirmed and the
+other does nothing for 72 hours → `completed` (`auto`, counts 0.6 in the reputation weight). Instead of
+confirming, the other side may press "This work was not done", which opens a dispute and stops the timer. This
+protects workers from fake bad reviews: a stranger cannot "complete" a job the worker never did.
+
+## D-040 — Outcomes, and declining never counts (Batch 6)
+
+Every closed booking stores one `outcome`, the only field the reliability engine reads: `completed` (+1),
+`cancelled_by_worker_early` (−0.5, 24 hours or more before the start), `cancelled_by_worker_late` (−1, later or
+after the start), `worker_no_show` (−1); `cancelled_by_customer`, `declined`, `expired`, `closed_no_fault` count
+nothing. A worker may always say no: counting it would push workers to accept jobs they cannot do and cancel later.
+
+## D-041 — Reviews: once, never edited; the contact-info check (Batch 6)
+
+A review is possible only for the customer of a `completed` booking, once (unique index), within 14 days, not
+during an open dispute. The customer can never edit or delete it (a changeable review can be bargained over);
+the form says so and reads the answers back before sending. Booking texts, review comments, replies and dispute
+notes are refused (`TEXT_HAS_CONTACT_INFO`) when they contain an email, a web link, a CNIC-like number, or 10 or
+more digits once separators are removed (Western, Urdu and Arabic digits), so nobody can pass a phone number
+before acceptance and get around D-002. Known limit: numbers written as words pass.
+
+## D-042 — Timers without a server clock: per-request sweep plus a daily cron (Batch 6)
+
+Vercel's Hobby plan runs a cron job at most once a day. One function, `sweepBookings({ now, filter })`, applies
+every due timer (expiry after 48 h, auto-completion after 72 h, an unanswered no-show after 72 h, one review
+reminder after 3 days) with conditional updates, so it is safe to run twice at the same time. It runs at the start
+of every booking read (scoped to that user), so people always see the right state. `GET /api/cron/daily`
+(constant-time `Authorization: Bearer <CRON_SECRET>`, 401 otherwise, also when the secret is not set) sweeps
+everything and refreshes the snapshots; it is a GET because the CSRF check blocks other methods without a browser
+Origin. The cron only tidies up; correctness never depends on it.
+
+## D-043 — A weighted Beta reputation model (Batch 6)
+
+Reputation is the Beta reputation model of Jøsang & Ismail (2002), written in subjective-logic form (the same
+form as Module 3's skill score, D-014): stars become graded evidence (`p = (stars − 1)/4`), each review is weighed,
+and the model reports `expected`, `uncertainty`, a `cautious` lower estimate and a `depth` word. It is a formula,
+not "AI"; every value can be worked out by hand (the worked examples are unit tests).
+
+## D-044 — The four weights, and why (Batch 6)
+
+`w = provenance × recency × reviewerTrust × pairFactor`: confirmed by both or an admin 1.0, auto 0.6 (stronger
+proof when both confirmed); `0.5^(age/365 days)` (the paper's forgetting factor); `0.5 + 0.5·min(n, 3)/3` with n
+the customer's other workers (the paper's discounting by the provider's standing; a fake account would first
+have to book and finish real jobs); the k-th review of the same customer `1/k` (ten reviews from one friend are
+not ten opinions). Reviewer trust uses the customer's history **now**, on purpose.
+
+## D-045 — `cautious` for ordering; "Best track record" (Batch 6)
+
+The directory's new sort "Best track record" orders by `cautious`, then completed jobs, then recently updated.
+A worker without a snapshot counts as the no-review prior (0.1300), exactly like a snapshot with no reviews. It is
+not the default, and the screen says plainly that new workers appear lower ("Recently updated" shows them).
+The cold-start problem (Pallais 2014) is Module 7's research question. The simulation found that ordering by
+`cautious` lowers rank correlation when the number of reviews says nothing about quality (MODULE-4.md §5.3).
+
+## D-046 — The reliability record (Batch 6)
+
+The same Beta numbers from booking outcomes (D-040) with the same recency weight; raw counts for display
+(completed, early and late worker cancellations, no-shows, accepted, repeat customers) are never weighted.
+Customers see the counts only.
+
+## D-047 — The snapshot, its three parts, and when it is rebuilt (Batch 6)
+
+`WorkerProfile.reputation` holds `public` (what anyone may see), `score` and `reliability` (numbers for the
+worker himself, admins and Module 7), with `engineVersion` (`rep-1`), `paramsHash` and `computedAt`. Public
+responses select only `reputation.public`, so a number can never leak through a missed field. Rebuilt after an
+outcome, a review change and a dispute decision, and daily; it never changes `updatedAt`. No migration: no
+snapshot = "new on this platform". `perReview` (the explanation) is rebuilt on request, not stored.
+
+## D-048 — Provisional parameters, and how they are tested (Batch 6)
+
+Every number (W, half-life, auto weight, trust floor and cap, z, depth thresholds, outcome weights; the booking
+hours and limits) lives in `config/reputationParams.js` or `config/bookingRules.js`, marked provisional. They are
+tested three ways: `npm run reputation:sensitivity` (formula outputs per parameter), the simulation with
+ablations, and `explore.js` (other trust floors and half-lives; the noise assumption). The live parameters were
+**not** changed after the simulation: choosing them from the same runs would be circular, so any change is a team
+and supervisor decision, checked on new seeds and on the pilot.
+
+## D-049 — The small dispute step: one per booking, the admin decides (Batch 6)
+
+Types `completion_contested`, `no_show_contested`, `cancellation_fault` (a worker within 14 days). At most one
+dispute per booking; while it is open there is no review, no auto-completion and no other step. An admin decides
+with a required note; the decision is final, audited, tells both people and rebuilds the reputation. Module 9 will
+handle real disputes.
+
+## D-050 — When "This work was not done" and "Worker did not come" are offered (Batch 6)
+
+"This work was not done" only after the OTHER side pressed "Work done" (instead of confirming). "Worker did not
+come" only from the start + 2 hours and while nobody pressed "Work done" (otherwise the first is the right step).
+
+## D-051 — Rule-based flags never punish automatically (Batch 6)
+
+Two rules create a `ReputationFlag` for an admin: `new_account_praise` (3 or more 4–5★ reviews in 14 days from
+accounts under 14 days old with no other worker) and `repeat_pair_burst` (one customer, 3 completed bookings with
+one worker in 30 days). A flag changes no score. The admin dismisses it or hides the listed reviews as
+`fake_or_manipulated`, with a note; both are audited. Being negative is never a reason to hide a review.
+
+## D-052 — Phone numbers through the booking only (Batch 6; delivers D-002)
+
+The customer sees the worker's phone (and WhatsApp, only if the worker saved one), the worker sees the customer's
+phone, only from `GET /api/bookings/:id`, only while `accepted` and for 7 days after the booking closed; admins
+too, under the same window. Never in a list, the directory, a public profile, a notification, the admin timeline
+or a CSV file. Tests prove the numbers are absent everywhere else.
+
+## D-053 — An unanswered no-show can still be disputed (Batch 6)
+
+A no-show confirmed only because the worker did not answer in 72 hours (`noShow.workerResponse: no_answer`) can be
+disputed within 14 days, because a worker who cannot read may miss a notification.
+
+## D-054 — Request limits and BOOKING_SELF (Batch 6)
+
+Only customers send requests; a suspended or unlisted worker cannot receive them. At most 5 open requests per
+customer, 1 per customer and worker, 10 new in 24 hours (rolling). A request is refused when the customer's phone
+equals the worker's phone or WhatsApp number in any written form (`BOOKING_SELF`). Known limit: the counts are not
+locks, so two requests in the same millisecond could both pass.
+
+## D-055 — "depth", not a word the honesty tests ban (Batch 6)
+
+How much evidence there is is called `depth` (none, few, some, many) in code, field names and texts, because the
+honesty tests ban "confidence" in the frontend and confidence-score words in the backend (Module 2 and 3 rules).
+The website says "Few reviews yet", "Many reviews".
+
+## D-056 — The one planned change to the frontend honesty test (Batch 6)
+
+`frontend/src/test/honesty.test.js` banned `★` and "star rating" in all frontend source, to stop invented ratings
+before real reviews existed. Module 4 must show real stars, so (and only so) the line was replaced by two checks:
+"testimonial" stays banned everywhere; `★` and "star rating" are allowed only in `src/features/reputation/`, and
+those files may contain no digit next to `★` and no sample review text. A new test checks that the landing page,
+the Help Centre and the dictionaries show no example rating, and a backend test checks that every public rating
+number equals what is computed from the stored reviews. The "AI" and "confidence" checks are unchanged.
+
+## D-057 — Customer notifications through a menu link; three existing tests updated (Batch 6)
+
+Customers now receive booking and review notifications. An existing Batch 4 test requires that customers have no
+bell, so customers get a "Notifications" menu link with the unread count instead (the test is unchanged). Three
+existing tests were updated to the new truth, still checking exact values: the profile contact note (its old text
+said contacts come "in a later module"); the worker's top menu (now Dashboard, Requests, My jobs, My profile, as
+Section 7 of the Batch 6 plan requires); the admin sidebar (now with the four new admin pages).
+
+## D-058 — What the simulation found, and that nothing was tuned (Batch 6, 17 Nov 2026)
+
+In the simulation (30 seeds, `docs/modules/MODULE-4.md` §5), with the provisional parameters the weighted model is
+not better than the plain average overall, and recent fake reviews still buy places because the recency factor
+counts them almost fully. The individual defences do reduce the attacks they target. This is reported as found;
+the parameters were left as specified, and the choice of new values is left to the team and the supervisor (D-048).

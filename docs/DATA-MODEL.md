@@ -1,4 +1,4 @@
-# Data model (MongoDB, after Batch 4, 11 Nov 2026)
+# Data model (MongoDB, after Batch 6 / Module 4, 17 Nov 2026)
 
 Source of truth: `backend/models/*.js` (Mongoose 9). Field lists below were read from the schemas.
 `*` = required. Collections are created by Mongoose with these names.
@@ -16,6 +16,14 @@ erDiagram
   USER ||--o{ EVIDENCE : "reviewedBy (admin)"
   USER ||--o{ WORKER_PROFILE : "identityReviewedBy (admin)"
   COUNTER ||..o{ WORKER_PROFILE : "issues workerIdCode"
+  USER ||--o{ BOOKING : "customer (Module 4)"
+  WORKER_PROFILE ||--o{ BOOKING : "worker"
+  BOOKING ||--o| REVIEW : "one review per booking"
+  WORKER_PROFILE ||--o{ REVIEW : "about"
+  USER ||--o{ REVIEW : "written by (customer)"
+  WORKER_PROFILE ||--o{ REPUTATION_FLAG : "pattern found"
+  REPUTATION_FLAG }o--o{ REVIEW : "lists"
+  COUNTER ||..o{ BOOKING : "issues code BK-year-n"
 
   USER {
     ObjectId _id
@@ -217,5 +225,47 @@ Indexes: `{ customer: 1, profile: 1 }` unique (saving twice keeps one row), `{ c
 | createdAt, updatedAt | Date | timestamps |
 At most 60 templates. Texts are checked for CNIC-like numbers before they are saved.
 
+## bookings (Module 4, D-037)
+
+`code`* (unique, `BK-<year>-<6 digits>`), `customer`* (User), `worker`* (WorkerProfile), `workerUser`* (User),
+`skillId`*, `skillName`, `category`, `preferredDate`* (`YYYY-MM-DD`, Pakistan day), `timeSlot`* (`morning |
+afternoon | evening | any`), `scheduledStart`* (UTC moment of the slot hour in Pakistan time), `city`*, `area`*
+(≤ 80), `description` (≤ 500), `status` (`requested | accepted | completed | declined | expired | cancelled`),
+`statusHistory[]` `{ from, to, by: customer|worker|system|admin, at, reason (a code) }`, `acceptedAt`,
+`declineReason`, `cancelledBy`, `cancelReason`, `customerConfirmedAt`, `workerConfirmedAt`, `completedAt`,
+`completionMethod` (`both | auto | admin`), `noShow { reportedAt, workerResponse: admit|dispute|no_answer,
+respondedAt }`, `dispute { type, openedBy, reasonCode, note, openedAt, status: open|decided, decision,
+decisionNote, decidedBy, decidedAt }`, `outcome` (D-040), `closedAt`, `reviewRemindedAt`, `synthetic` (demo
+only), timestamps. Indexes: `{ code }` unique; `{ workerUser, status, createdAt }`; `{ customer, status,
+createdAt }`; `{ status, scheduledStart }`; `{ status, updatedAt }`; `{ dispute.status }`; `{ worker, closedAt }`.
+Never in a list or export: phone numbers (they are on `users` and `workerprofiles`, read only by
+`services/booking/contact.js`). Extension points for Modules 5, 6, 8, 9, 10 are listed in the model's header.
+
+## reviews (Module 4, D-041)
+
+`booking`* (unique), `worker`*, `workerUser`*, `customer`*, `skillId`*, `rating`* (1–5, whole), `onTime`,
+`workQuality`, `polite`, `priceAsAgreed`, `wouldHireAgain` (`yes | no | null`), `comment` (≤ 500), `status`
+(`visible | hidden`), `hidden { reasonCode, note, by, at }`, `reply { text (≤ 300), at }` (once),
+`reports[] { reasonCode, note, at }` (once), `synthetic`, timestamps. Indexes: `{ booking }` unique;
+`{ worker, status, createdAt }`; `{ customer, createdAt }`. Never edited by the customer.
+
+## reputationflags (Module 4, D-051)
+
+`worker`*, `type`* (`new_account_praise | repeat_pair_burst`), `reviewIds[]`, `bookingIds[]`, `details` (counts
+and windows only), `status` (`open | dismissed | actioned`), `decision { note, by, at }`, `synthetic`,
+timestamps. Indexes: `{ status, createdAt }`, `{ worker, type, status }`. A flag never changes a score.
+
+## workerprofiles.reputation (Module 4, D-047)
+
+The snapshot from `services/reputation/snapshot.js` (Mixed): `engineVersion` (`rep-1`), `paramsHash`,
+`computedAt`, `public { ratingAverage, reviewCount, depth, distribution, quick, wouldHireAgain, completedJobs,
+workerCancelledEarly, workerCancelledLate, noShows, repeatCustomers, lastCompletedAt, perSkill[] }`, `score { r,
+s, belief, disbelief, uncertainty, expected, cautious, depth }`, `reliability { …the same numbers…, completed,
+workerCancelledEarly, workerCancelledLate, noShows, acceptedTotal, repeatCustomers }`. `null` = new on this
+platform. Index `{ reputation.score.cautious: -1, reputation.public.completedJobs: -1, updatedAt: -1, _id: -1 }`.
+Public responses select only `reputation.public` (or four of its fields on directory cards).
+
 ## counters
+
+Module 4 adds `bookingCode-<year>` (booking codes).
 `{ _id: "workerId-<year>", seq }`, increased with an atomic `$inc` (year = Pakistan time).

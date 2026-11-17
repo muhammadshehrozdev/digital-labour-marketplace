@@ -97,7 +97,25 @@ These rules apply to every change. (They used to live only in the team's interna
 | Clip recorder | Development builds only (`/dev/recorder`, not in production); saves files locally on the team member's computer | build: the route exists only when `import.meta.env.DEV` |
 | Speaking | Never on page load (only after a first touch), never by itself unless the person switched read-aloud on, one sound or microphone at a time, Escape and leaving the page stop everything | `assist-pages.test.jsx` "auto-read" |
 
-## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET)
+## Threats, mitigations and tests (Module 4, Batch 6)
+
+| Threat | Defence | Test |
+|---|---|---|
+| Fake praise (a worker praises himself) | Reviews only after a booking both people confirmed; one per booking; `BOOKING_SELF` (same phone or WhatsApp on both sides); reviews from accounts that hired nobody else count half; rule `new_account_praise` flags it | `integration/reviews-reputation.test.js` "only the customer of a completed booking…", "new_account_praise…"; `bookings.test.js` "BOOKING_SELF…"; simulation `sybil_*` (SIMULATION only) |
+| Fake accounts (Sybil) | As above; the request limits; a flag never changes a score by itself, an admin decides | `bookings.test.js` "limits…"; simulation `sybil_*`, `smart_sybil_*` (SIMULATION only: recent fakes still buy places, MODULE-4.md §5.3) |
+| Repeat-pair collusion | The k-th review of the same customer counts 1/k; rule `repeat_pair_burst` | `reputationEngine.test.js` "three 5 star from the SAME customer"; `reviews-reputation.test.js` "repeat_pair_burst…"; simulation `pair_collusion` |
+| Fake bad reviews | No review without a completed booking that both confirmed (or an admin decided); worker reply and report; admin hides abusive/unrelated/fake reviews with a reason (never for being negative) | `reviews-reputation.test.js` "an admin hides a review…", "reply once… report once…" |
+| Contact leak before acceptance (around D-002) | Contact block only from `GET /api/bookings/:id`, only accepted / 7 days after close; contact-info check on every free text (email, link, CNIC-like, 10+ digits in Western, Urdu, Arabic digits) | `bookings.test.js` "phone numbers (D-002)…" (lists, admin views, notifications), `unit/bookingRules.test.js` "contact-info check…", `reviews-reputation.test.js` "CSV… no phone numbers" |
+| Double actions, stale screens | Every step is one conditional update on the checked state: 409 `BOOKING_CHANGED` / `DISPUTE_ALREADY_DECIDED` / `REVIEW_STATUS_CHANGED` / `FLAG_ALREADY_DECIDED` | `bookings.test.js` "two accepts at the same time…", "a step based on a stale read…"; `reviews-reputation.test.js` "409 on a second decision" |
+| Sweep races and cron replays | Every timer is a conditional update; the sweep is idempotent; the cron needs `Bearer <CRON_SECRET>` (constant-time), 401 without it or when unset | `bookings.test.js` "expiry… running the sweep twice changes nothing more", "GET /api/cron/daily: 401…" |
+| Someone else's booking | Every booking query includes the user's own id → 404, not 403 | `bookings.test.js` "worker B cannot see or act on worker A's booking…" |
+| Tampering with reputation inputs | `booking.completed`, `booking.closed`, `review.created` (rating only), `review.hidden`, `review.restored`, `dispute.opened`, `dispute.decided`, `flag.created`, `flag.decided`, `export.bookings`, `export.reviews` are in the hash-chained audit log, so every input of a score is tamper-evident (`npm run audit:verify`) | `bookings.test.js` "every booking audit entry is in the hash chain…", `reviews-reputation.test.js` "the audit chain still verifies" |
+| A rating number invented on the website | Stars only in `src/features/reputation/`, never with a hard-coded value; public numbers equal what is computed from stored reviews | `frontend honesty.test.js`, `reputation-honesty.test.jsx`; backend "every public rating number equals…" |
+
+Known limits: numbers written as words pass the contact-info check; request limits are counts, not locks; demo
+data is written straight into the demo database (not audited).
+
+## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET; Module 4 adds the optional CRON_SECRET)
 
 - Each key is 32 random bytes, written in base64. Make one in PowerShell (in `.\backend`):
   `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`.

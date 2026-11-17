@@ -281,3 +281,20 @@ describe('Booking detail and notifications', () => {
     expect(screen.getByText('Booking BK-2026-000007. You can now see the phone number.')).toBeInTheDocument();
   });
 });
+
+describe('Help Centre (Module 4 guides)', () => {
+  test('a customer sees "Request a worker and rate the work"; a worker sees the job and reputation guides first', async () => {
+    mockApi(customerRoutes());
+    const first = renderAt('/help');
+    const request = await screen.findByRole('heading', { level: 3, name: 'Request a worker and rate the work' });
+    expect(within(request.closest('article')).getByText(/A review cannot be changed later/)).toBeInTheDocument();
+    first.unmount();
+
+    mockApi(workerRoutes());
+    renderAt('/help');
+    const jobs = await screen.findByRole('heading', { level: 3, name: 'Answer a request and finish a job' });
+    expect(within(jobs.closest('article')).getByText(/Saying no never counts against you/)).toBeInTheDocument();
+    const worker = screen.getAllByRole('region')[0];
+    expect(within(worker).getByRole('heading', { level: 3, name: 'How your reputation is counted' })).toBeInTheDocument();
+  });
+});

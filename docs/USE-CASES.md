@@ -71,3 +71,20 @@ still works everywhere.
 | UC-21 | Choose sound settings | All | Right after choosing the language: "Should the website read aloud?" (yes / no). Later: Sound menu → show the buttons, read aloud by itself (this device only) | Read aloud never starts before the first touch of the page, never while the microphone is on; typing stops it |
 | UC-22 | Check this device | All | /voice-check → which voices exist, test sentences, microphone test, how to add an Urdu voice on Android | — |
 | UC-23 | Record the help (team) | Team member | /dev/recorder (development builds) → record, play, save each text → `npm run audio:manifest` | Microphone blocked → message; a file with a wrong name → `assistClips.test.js` fails |
+
+## Batch 6: Module 4, bookings, reviews and reputation (D-037 to D-058)
+
+| ID | Use case | Actor | Main flow | Alternative / error flows |
+|---|---|---|---|---|
+| UC-24 | Request a worker | Customer | Public profile → Request this worker → skill, day, time (pictures), area, description (🎤) → Send | Phone number or link in the text → refused; 5 open requests, 1 per worker, 10 a day → refused with the limit; the worker is Busy → a notice, still allowed; own phone number → refused |
+| UC-25 | Answer a request | Worker | Requests (count in the menu) → 🔊 Hear this request → Accept or Decline (optional reason) | No answer in 48 h → expired, the customer is told; declining never counts |
+| UC-26 | Call the other person | Customer, worker | After acceptance, the booking shows the phone number with Call and WhatsApp | Before acceptance or 7 days after the close: no number |
+| UC-27 | Confirm the work | Customer, worker | Each presses "Work done" → completed | Only one presses → completed by itself after 72 h; "This work was not done" → dispute |
+| UC-28 | Cancel | Customer, worker | Cancel → reason cards → "Cancel the booking" | Worker cancels < 24 h before the start → counts double; not after "Work done" or a no-show report |
+| UC-29 | Report a no-show | Customer | From the start + 2 h → "Worker did not come" | The worker admits, or says "I did come" (dispute); no answer in 72 h → confirmed no-show (disputable for 14 days) |
+| UC-30 | Rate the work | Customer | Rate this work → stars (each can be heard), quick thumbs, comment (🎤) → read-back → Send | After 14 days, twice, during a dispute, or by anyone else → refused |
+| UC-31 | Reply to or report a review | Worker | My reviews → 🔊, Reply (once), Report (reason cards) | Second reply → refused; reporting does not hide |
+| UC-32 | Understand my reputation | Worker | My reputation → summary, four rules (🔊), each review's reasons, numbers in words, tips, own cancellations | — |
+| UC-33 | Decide a dispute | Admin | Disputes → open → read notes and timeline → decision card → required note → Save | Already decided → 409; both people told; reputation rebuilt |
+| UC-34 | Moderate reviews and flags | Admin | Reviews (reported first) → Hide with a reason / Restore with a note; Reputation flags → Dismiss or hide the listed reviews | A negative review is never hidden for being negative |
+| UC-35 | Find by track record | Customer | Find workers → Sort "Best track record"; filter "Has done jobs on this platform" | The note explains that new workers appear lower |

@@ -150,3 +150,37 @@ Every audit ID is mapped to its control and test in `docs/SECURITY.md`; the shor
 | 5 | See: picture choices, icons on fields and buttons, status never colour alone | D-033 | `assist-pictures.test.jsx`, `assist-pages.test.jsx` (Find workers) | Done |
 | 5 | Recorded clips by the team; recorder, guide, offline | D-034, `docs/audio/RECORDING-GUIDE.md` | `assistClips.test.js` | Tools done; recording is the team's task (97 Urdu clips) |
 | 5 | New texts reviewed by the team | `docs/i18n/REVIEW-BATCH-5.md` (152 rows) | `assistCoverage.test.jsx` (same keys in en, ur, ur-Latn) | Waiting for the team's review (D-031) |
+
+## Proposal: Module 4 — Reputation and Reliability Engine (Batch 6, 17 Nov 2026)
+
+| # | Requirement (proposal text) | Where implemented | How verified | Status |
+|---|---|---|---|---|
+| M4.a | Collection of customer ratings and reviews after completed work | Work Booking `models/Booking.js`, `services/booking/*`, `controllers/bookingsController.js` (D-037, D-039); reviews `models/Review.js`, `controllers/reviewsController.js` (D-041); screens `pages/customer/{RequestWorker,MyBookings,RateWork}.jsx`, `pages/booking/BookingDetail.jsx`, `pages/worker/{Requests,MyJobs,MyReviews}.jsx` | `integration/bookings.test.js` (state machine, ownership, limits, sweep, disputes), `integration/reviews-reputation.test.js` "review rules…", `unit/bookingRules.test.js`; `module4.test.jsx` "Rate this work…"; e2e `module4.e2e.js` "request -> hear and accept -> … -> rate" | Done |
+| M4.b | Calculation of worker reputation based on work-related records | `services/reputation/reputationEngine.js` (weighted Beta, D-043, D-044), `snapshot.js`, `recompute.js` (D-047), `config/reputationParams.js` (D-048) | `unit/reputationEngine.test.js` (every hand-worked example, property tests), `reputationSensitivity.test.js`; `reviews-reputation.test.js` "the snapshot is rebuilt after every trigger", "every public rating number equals…"; evaluation `npm run evaluate:reputation` (SIMULATION only, D-038, D-058) | Done (limit: the simulation shows the provisional parameters do not beat simple baselines overall, MODULE-4.md §5.3) |
+| M4.c | Maintenance of reliability indicators such as completed jobs and cancellations | `services/reputation/reliabilityEngine.js` (D-046) from booking outcomes (D-040); early/late cancellation, no-show, small dispute step (D-049, D-050, D-053) | `unit/reliabilityEngine.test.js` (hand-worked, property tests); `bookings.test.js` "a worker cancelling…early…late", "no-show…", "cancellation fault…"; e2e `module4.e2e.js` "a late cancellation…", "a no-show is reported…" | Done |
+| M4.d | Display of relevant reputation information on worker profiles | `features/reputation/{ReputationPanel,RatingBadge,ReviewList,WorkHistoryList}.jsx` in the public profile and "See what customers see"; directory card; compare; `pages/worker/MyReputation.jsx`; admin Reputation tab | `module4.test.jsx` "Public reputation… never the numbers", "the percentage rule", "My reputation…"; `reviews-reputation.test.js` "public profile shows words and counts, never the numbers"; `reputation-honesty.test.jsx`; e2e `module4.e2e.js`; axe `quality.e2e.js` | Done |
+| M4.e | Use of verified work history as supporting information for future matching | Verified work history (`GET /api/workers/:code/work-history`, "Done through this platform"); `toMatchingSignals` + `docs/contracts/MATCHING-INPUTS.md`; "Best track record" sort and "Has done jobs" filter (D-045) | `reliabilityEngine.test.js` "toMatchingSignals…"; `reviews-reputation.test.js` "verified work history…", "Best track record…"; e2e `module4.e2e.js` "Best track record sort…" | Done (Module 7 will use the signals) |
+
+### Batch 6 decisions
+
+| Decision | Where | Checked by |
+|---|---|---|
+| D-037 minimal Work Booking (supervisor approval, reported 16 Nov 2026) | `models/Booking.js`, `services/booking/transitions.js` | `bookings.test.js` |
+| D-038 evaluation by simulation (supervisor approval, reported 16 Nov 2026) | `evaluation/reputation/` | `reputationEvaluation.test.js`; results in `evaluation/reputation/results/` |
+| D-039 completion by both sides / auto / admin | `bookingsController.confirmDone`, `sweep.js` | `bookings.test.js` "accept -> contact shared; both…", "auto-completion…" |
+| D-040 outcomes; declining never counts | `reliabilityEngine.js`, `transitions.cancelOutcome` | `reliabilityEngine.test.js` property tests; `reviews-reputation.test.js` "declining never counts" |
+| D-041 reviews once, never edited; contact-info check | `reviewsController.createReview`, `contactInfo.js` | `reviews-reputation.test.js`, `bookingRules.test.js` |
+| D-042 per-request sweep + daily cron | `sweep.js`, `cronController.js`, `vercel.json` | `bookings.test.js` sweep and cron tests, `module4-config.test.js` |
+| D-043 / D-044 weighted Beta model and its weights | `reputationEngine.js` | `reputationEngine.test.js` |
+| D-045 cautious for ordering; Best track record | `workersController.trackRecordPage` | `reviews-reputation.test.js` "Best track record…" |
+| D-046 reliability record | `reliabilityEngine.js` | `reliabilityEngine.test.js` |
+| D-047 snapshot parts and triggers | `snapshot.js`, `recompute.js`, `PUBLIC_*_FIELDS` | `reviews-reputation.test.js` |
+| D-048 provisional parameters and their tests | `config/*Params.js`, `config/bookingRules.js`, sensitivity, explore | `reputationSensitivity.test.js` |
+| D-049 / D-050 / D-053 dispute rules | `transitions.canDo`, `disputeResult` | `bookingRules.test.js`, `bookings.test.js` |
+| D-051 flags never punish | `patternCheck.js`, `adminReputationController.decideFlag` | `reviews-reputation.test.js` flag tests |
+| D-052 phone numbers through the booking only | `services/booking/contact.js` | `bookings.test.js` "phone numbers (D-002)…" |
+| D-054 request limits, BOOKING_SELF | `bookingsController.createBooking` | `bookings.test.js` "limits…", "BOOKING_SELF…" |
+| D-055 the name `depth` | engines, texts | backend and frontend honesty tests |
+| D-056 the honesty test change | `frontend/src/test/honesty.test.js` | that test and `reputation-honesty.test.jsx` |
+| D-057 customer notifications via a menu link; three tests updated | `navLinks.js`, `NotificationsCount.jsx` | `module4.test.jsx` "customers have notifications too…", `app-batch4.test.jsx` (unchanged bell test) |
+| D-058 the simulation finding; nothing tuned | `docs/modules/MODULE-4.md` §5 | the committed `SIMULATION-*.json` files |

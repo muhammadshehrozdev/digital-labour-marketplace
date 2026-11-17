@@ -52,7 +52,7 @@ you log in again. "Log out" (account menu, top right) ends your sessions on all 
 
 ## 3. The admin pages
 
-The menu on the left (on a phone: across the top) has seven pages.
+The menu on the left (on a phone: across the top) has eleven pages (seven from Batch 4, four from Module 4).
 
 ### Overview (`/admin`) — `screenshots/admin/01-overview.png`
 - **Needs your attention:** how many workers wait for an identity check, how many proof photos wait for
@@ -124,6 +124,27 @@ Download CSV files for Excel or Google Sheets: the audit log (with hashes, so th
 outside the website), the identity queue, the evidence queue, and users. Every download is written to the
 audit log **before** the file is sent. A file never contains CNIC numbers, passwords, home addresses or
 photos; it has at most 5,000 rows.
+
+### Module 4 pages (Batch 6)
+
+- **Bookings (`/admin/bookings`):** every booking with its state and outcome; search by booking number, worker ID
+  or name; a drawer with the full timeline and the dispute. Phone numbers are never shown here.
+- **Disputes (`/admin/disputes`):** oldest first, with "Waiting N days". Open one: read what the person wrote
+  and the timeline, choose one of the decision cards that fit this kind of dispute, write a **required** note
+  (how you checked, for example "both called"; never a CNIC number: notes go to the audit log), Save. Both people
+  are told and the worker's reputation is rebuilt. J / K move between disputes. A decision is final.
+- **Reviews (`/admin/reviews`):** reported reviews first. **Hide** only for abusive language, personal
+  information, not about this work, or fake or manipulated (or "other" with a written reason). **Being negative
+  is never a reason to hide a review.** A hidden review leaves the profile and every score; both people are told
+  why. **Restore** needs a written reason. Saved reasons can be inserted (Reason templates → "Hiding a review").
+- **Reputation flags (`/admin/flags`):** patterns found by two fixed rules (praise from new accounts; many jobs
+  from one customer). A flag changes nothing by itself. Check (for example call the customers), then **Dismiss**
+  with a note or **Hide the listed reviews** as fake or manipulated with a note.
+- **Users → a worker → Reputation tab:** the numbers (expected, cautious, uncertainty, reliability), how each
+  review was weighed and why, hidden reviews and flags.
+- **Overview:** open disputes, open flags, reported reviews, and charts of bookings, stars and completed versus
+  worker-cancelled jobs (real counts). **Exports:** bookings and reviews CSV files (no phone numbers, no
+  descriptions, no comment text; audited).
 
 ## 4. Daily tasks (15 minutes)
 

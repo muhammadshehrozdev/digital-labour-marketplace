@@ -61,6 +61,23 @@ Sound menu, read-aloud question, voice notice, clip keys), `utils/spokenNumbers.
 development builds only), `scripts/audio-manifest.mjs`, `scripts/i18n-review-batch5.mjs`. No server
 code, no new package, no outside service: speech is the browser's own Web Speech API.
 
+## Module 4: bookings, reviews and reputation (Batch 6, D-037 to D-058)
+
+- **Pure engines** (no database, no clock, no randomness): `services/reputation/{beta,reputationEngine,
+  reliabilityEngine,snapshot,matchingSignals}.js` and `services/booking/{transitions,schedule,contactInfo}.js`.
+  The live API, the sensitivity script and the simulation (`evaluation/reputation/`) import the same files.
+- **Database steps:** `services/booking/lifecycle.js` (conditional step, booking codes, after-close: audit,
+  recompute, pattern check), `services/booking/sweep.js` (every due timer), `services/booking/contact.js` (the
+  only reader of phone numbers for bookings), `services/reputation/recompute.js` (the only writer of the
+  snapshot), `services/reputation/patternCheck.js` (flags).
+- **Routes:** `/api/bookings` (`routes/bookings.js`), `/api/reviews`, `/api/cron/daily`, new `/api/workers/...`
+  and `/api/admin/...` routes (`docs/API.md`). Every booking read sweeps first.
+- **Frontend:** `features/booking/` (cards, actions, timeline, contact card, Hear this request, reason dialogs),
+  `features/reputation/` (the only folder that draws stars: rating line, panel, stars input, review list,
+  verified history), pages under `pages/customer`, `pages/worker`, `pages/booking`, `pages/admin`.
+- **Data flow:** booking outcome / review → recompute → `WorkerProfile.reputation` → public profile, directory
+  card, "Best track record", `toMatchingSignals` for Module 7 (diagram in `docs/modules/MODULE-4.md` §3).
+
 ## Request flows
 
 ### Login (D-006)

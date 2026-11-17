@@ -2307,6 +2307,20 @@ export default {
         text: 'Booking {code}. Open it to see the decision.',
       },
     },
+    guides: {
+      request: {
+        title: 'Request a worker and rate the work',
+        steps: 'Open a worker\'s profile and press "Request this worker".|Choose the work, the day and the time, write your area, and send.|When the worker accepts, open the booking to call them.|After the work, press "Work done", then "Rate this work". A review cannot be changed later.',
+      },
+      jobs: {
+        title: 'Answer a request and finish a job',
+        steps: 'Open "Requests". Press "Hear this request" to listen to it.|Press Accept or Decline. Saying no never counts against you.|After you accept, "My jobs" shows the customer\'s phone number.|When the work is finished, press "Work done".',
+      },
+      reputation: {
+        title: 'How your reputation is counted',
+        steps: 'Only customers who finished a job with you can review you.|Newer reviews count more; one customer counts less each time.|Customers who also hired other workers count fully.|A late cancellation counts double: cancel at least a day before.',
+      },
+    },
   },
   reputation: {
     title: 'Reputation',

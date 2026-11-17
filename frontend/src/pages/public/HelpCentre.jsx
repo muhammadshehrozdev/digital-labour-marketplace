@@ -11,9 +11,10 @@ import { useDocumentTitle, useT } from '../../i18n';
 import styles from './HelpCentre.module.css';
 
 const GROUPS = [
-  { role: 'worker', guides: [['profile', 'step-work'], ['proof', 'step-proof'], ['identity', 'step-about']] },
-  { role: 'customer', guides: [['find', 'empty-search'], ['badges', 'compare']] },
-  // Batch 5: listen, speak, see (their texts are in help.centre.guides, the Batch 5 part of the dictionaries)
+  { role: 'worker', guides: [['profile', 'step-work'], ['proof', 'step-proof'], ['identity', 'step-about'], ['jobs', 'all-done', 'booking.guides'], ['reputation', 'step-done', 'booking.guides']] },
+  { role: 'customer', guides: [['find', 'empty-search'], ['badges', 'compare'], ['request', 'saved', 'booking.guides']] },
+  // Batch 5: listen, speak, see (their texts are in help.centre.guides, the Batch 5 part of the dictionaries).
+  // Module 4 guides (worker: jobs, reputation; customer: request) are in booking.guides.
   { role: 'everyone', guides: [['sound', 'all-done', 'help.centre.guides'], ['voiceTyping', 'step-skills', 'help.centre.guides'], ['display', 'all-done'], ['install', 'offline']] },
 ];
 const DEFAULT_BASE = 'appx.help.guides';
