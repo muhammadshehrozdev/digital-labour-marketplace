@@ -30,6 +30,11 @@ not better than a plain average. No new package. Nothing here is AI: written for
   (`GET /api/meta/reputation-rules`); new per-review reasons; the public depth word follows the visible reviews;
   "Best track record" explains that new workers start in the middle. Urdu "I did come" is gender-neutral.
 - **Texts:** new and changed texts in English, Urdu and Roman Urdu (`docs/i18n/REVIEW-BATCH-6B.md`).
+- **Tests (real runs, 17 Nov 2026):** backend 823/823 (43 files; coverage lines 98.6%, reputation services
+  99.24%); frontend 1211/1211 (29 files; coverage lines 90.99%); lint 0; build OK; e2e: full run 55/57 — the two
+  header tests flagged the planned email "…" in the account menu; with that check corrected (test only) they pass
+  3/3. Baseline before the batch: backend 754/754, frontend 1161/1162 (one timing flake, passes alone), Batch 6
+  e2e 50/50. Existing tests changed: listed in `docs/DECISIONS.md` D-065 and the Batch 6B report.
 
 ## Batch 6 — Module 4: bookings, reviews and the reputation engine (16–17 Nov 2026)
 
