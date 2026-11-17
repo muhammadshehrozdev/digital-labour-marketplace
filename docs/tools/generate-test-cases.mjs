@@ -43,7 +43,7 @@ const MODULE = {
   'reputationEngine.test.js': 'Module 4', 'reliabilityEngine.test.js': 'Module 4', 'reputationSensitivity.test.js': 'Module 4',
   'reputationEvaluation.test.js': 'Module 4 (evaluation)', 'bookingRules.test.js': 'Module 4', 'module4-config.test.js': 'Deployment',
   'bookings.test.js': 'Module 4', 'reviews-reputation.test.js': 'Module 4', 'demo-module4.test.js': 'Infrastructure',
-  'module4.test.jsx': 'Module 4 (UI)', 'admin-module4.test.jsx': 'Admin (Module 4, UI)', 'reputation-honesty.test.jsx': 'Module 4 (UI honesty)',
+  'module4.test.jsx': 'Module 4 (UI)', 'module4-lists.test.jsx': 'Module 4 (UI)', 'admin-module4.test.jsx': 'Admin (Module 4, UI)', 'reputation-honesty.test.jsx': 'Module 4 (UI honesty)',
 };
 
 const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ').trim();
