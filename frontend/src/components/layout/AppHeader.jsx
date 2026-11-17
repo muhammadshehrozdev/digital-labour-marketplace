@@ -153,10 +153,15 @@ export default function AppHeader() {
         )}
 
         <div className={styles.end} data-tour="header">
-          <button type="button" className={styles.paletteButton} onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE))} aria-label={t('appx.palette.open')} aria-keyshortcuts="Control+K" title={t('appx.palette.open')}>
-            <Search size={18} aria-hidden="true" />
+          {/* The "Ctrl K" hint is decoration NEXT TO the button, inside the same pill: inside the button its
+              visible text would have to be part of the button's name (axe label-content-name-mismatch). The
+              button covers the whole pill, so a click on the hint still opens the search. */}
+          <span className={styles.palette}>
+            <button type="button" className={styles.paletteButton} onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE))} aria-label={t('appx.palette.open')} aria-keyshortcuts="Control+K" title={t('appx.palette.open')}>
+              <Search size={18} aria-hidden="true" />
+            </button>
             <kbd className={styles.paletteKbd} aria-hidden="true">Ctrl K</kbd>
-          </button>
+          </span>
           {user?.role === 'worker' && <WorkerHeaderTools />}
           <div className={styles.barTool}><SoundMenu /></div>
           <div className={styles.barTheme}><ThemeToggle /></div>
@@ -177,7 +182,9 @@ export default function AppHeader() {
                   <div id="account-menu" ref={accountMenuRef} className={styles.accountMenu}>
                     <p className={styles.signedIn}>
                       {t('header.signedInAs')} <strong dir="auto">{user.name}</strong>
-                      <span>{t(`roles.${user.role}`)} · <span dir="ltr" className={styles.email} title={user.email}>{user.email}</span></span>
+                      <span>{t(`roles.${user.role}`)}</span>
+                      {/* its own line, so a long address ends with "…" inside the menu (full address in the title) */}
+                      <span dir="ltr" className={styles.email} title={user.email}>{user.email}</span>
                     </p>
                     <MovedControls level={level} onNavigate={() => setAccountOpen(false)} />
                     <div className={styles.menuRow}>

@@ -134,6 +134,7 @@
 
 .signedIn {
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* a long email may shrink and end with "…" */
   gap: 2px;
   padding: var(--space-2) var(--space-3) var(--space-3);
   border-block-end: 1px solid var(--color-border);
@@ -144,12 +145,13 @@
 
 /* a long email ends with "…"; the whole address is in its title */
 .email {
-  display: inline-block;
-  max-inline-size: 100%;
+  display: block;
+  min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  vertical-align: bottom;
+  text-align: left;
+  :root[dir='rtl'] & { text-align: right; } /* the address is left-to-right; it lines up with the other lines */
 }
 
 .menuItem {
@@ -285,12 +287,23 @@
   color: var(--color-text-secondary);
 }
 
-/* Search pages and actions (command palette, Ctrl+K) */
-.paletteButton {
-  display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--touch-target); min-inline-size: var(--touch-target); justify-content: center;
-  padding-inline: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-surface); color: var(--color-text-secondary); cursor: pointer;
+/* Search pages and actions (command palette, Ctrl+K). The pill is the wrapper; the button covers all of it
+   (::after), so the hint next to it is clickable too but is not part of the button's name. */
+.palette {
+  position: relative; display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: var(--touch-target); min-inline-size: var(--touch-target); justify-content: center;
+  padding-inline: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-surface); color: var(--color-text-secondary);
   &:hover { background: var(--color-surface-muted); color: var(--color-text); }
+  &:has(.paletteButton:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px color-mix(in oklch, var(--color-focus-halo) 55%, transparent);
+  }
+}
+.paletteButton {
+  display: inline-grid; place-items: center; padding: 0; border: 0; background: none; color: inherit; cursor: pointer;
+  &::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  &:focus-visible { outline: none; box-shadow: none; }
 }
 .paletteKbd { display: inline; white-space: nowrap; font-family: var(--font-latin); font-size: var(--text-caption); font-weight: 700; padding: 1px 6px; border-radius: 6px; background: var(--color-surface-muted); }
 /* the Ctrl K hint only where there is room for it (data-fit-hint, above); search itself from 640 px */
-@media (max-width: 639px) { .paletteButton { display: none; } }
+@media (max-width: 639px) { .palette { display: none; } }

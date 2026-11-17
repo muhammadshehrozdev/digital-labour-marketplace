@@ -41,7 +41,16 @@ const measure = (page) => page.evaluate(() => {
     if (box.width < 2 || getComputedStyle(el).visibility === 'hidden') continue; // not shown
     const name = (el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 40);
     if (box.left < -0.5 || box.right > width + 0.5) out.outside.push(`${name} ${Math.round(box.left)}..${Math.round(box.right)}`);
-    if (el.scrollWidth > el.clientWidth + 1) out.squeezed.push(name);
+  }
+  // squeezed = content really cut: a shown element that clips its overflow and is narrower than its content
+  // ("En…"). A badge that sticks out of a button on purpose (overflow visible) is not cut.
+  for (const el of document.querySelectorAll('header *')) {
+    const box = el.getBoundingClientRect();
+    if (box.width < 2 || !el.closest('[data-header-row]')) continue; // not shown, or the 1 px screen-reader text
+    const style = getComputedStyle(el);
+    // the one planned exception: a long email that ends with "…" and carries the whole address in its title
+    const plannedEllipsis = style.textOverflow === 'ellipsis' && el.title && el.title === el.textContent.trim();
+    if (style.overflowX !== 'visible' && el.scrollWidth > el.clientWidth + 1 && !plannedEllipsis) out.squeezed.push((el.textContent || el.tagName).trim().slice(0, 40));
   }
   return out;
 });

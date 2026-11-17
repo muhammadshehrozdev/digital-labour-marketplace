@@ -982,7 +982,10 @@ language into the account menu (visitors: a "More" menu) → the mobile menu →
 only → the night-mode button last. Nothing in the row may shrink, and only CSS (from the header's own attributes)
 hides things in the row: an earlier version let React state from the previous level feed the measurement and
 settled on a level that did not fit (found by the e2e test). Every popover is moved back inside the window with an
-8 px margin (`useStayInView`); a long email ends with "…" and its full address is in the title.
+8 px margin (`useStayInView`); a long email ends with "…" on its own line and its full address is in the title.
+The "Ctrl K" hint is a decorative sibling of the search button inside the same pill (the button covers the pill):
+inside the button its visible text would have to be part of the button's name (axe `label-content-name-mismatch`,
+found by the final e2e run once the hint could show below 1440 px).
 
 ## D-060 — One install service; no website can install itself (Batch 6B)
 
