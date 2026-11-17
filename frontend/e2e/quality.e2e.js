@@ -31,7 +31,8 @@ test.beforeAll(async ({ browser }) => {
 const MODES = ['light', 'dark'];
 for (const lang of LANGS) for (const mode of MODES) {
   test(`axe: no serious or critical problems on the main pages in ${lang}, ${mode} mode`, async ({ browser }) => {
-    test.setTimeout(180_000);
+    // Batch 6 added ten Module 4 pages to this list (about 3 minutes per language and mode now)
+    test.setTimeout(360_000);
     const problems = [];
     const visit = async (page, path, label) => {
       await page.goto(path);

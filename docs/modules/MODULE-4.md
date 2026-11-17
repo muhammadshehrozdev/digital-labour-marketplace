@@ -259,7 +259,10 @@ In this simulation, with the plan's provisional parameters:
    124 places). The reason is visible in the weights: fake reviews are recent, the recency factor counts them
    almost fully, and the reviewer-trust floor of 0.5 only halves them; old genuine reviews weigh less.
 3. **The individual defences work against what they target.** Removing reviewer trust makes naive Sybils buy
-   more places; removing the pair factor makes pair collusion buy more (the ablation table). In the
+   more places; removing the pair factor makes pair collusion buy more (the ablation table). Two results
+   point the other way: switching recency off lowers the attack lift in every attack scenario but one (sybil_k5:
+   141 instead of 155 places; smart_sybil_k10 is the same, 162), and against the "smart" attacker, who first hires other workers, reviewer trust
+   helps the attacker a little (smart_sybil_k3: 155 places with it, 152 without). In the
    exploration, a trust floor of 0 removes the naive Sybil effect completely (attack lift 0), but a "smart"
    attacker who first hires other workers still buys about 159 places, and rank correlation in the base world
    drops (0.352).
