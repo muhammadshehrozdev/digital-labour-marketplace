@@ -13,7 +13,9 @@ import Notification from '../../models/Notification.js';
 import User from '../../models/User.js';
 import { verifyAuditChain } from '../../services/audit.js';
 import { computeReputation } from '../../services/reputation/reputationEngine.js';
-import { recomputeReputation } from '../../services/reputation/recompute.js';
+import { recomputeReputation, loadReputationInput, safeRecompute } from '../../services/reputation/recompute.js';
+import { nextBookingCode } from '../../services/booking/lifecycle.js';
+import Counter from '../../models/Counter.js';
 import { runPatternCheck, findRepeatPairBursts, findNewAccountPraise } from '../../services/reputation/patternCheck.js';
 import { parseArgs, confirmRemote, recompute } from '../../scripts/reputationRecompute.js';
 import { checkWriteAllowed } from '../../scripts/lib/dbGuard.js';
@@ -401,6 +403,31 @@ describe('admin views, exports and the recompute script', () => {
     const stored = await Review.find({ worker: w.profileId }).lean();
     const engine = computeReputation(stored.map((r) => ({ id: String(r._id), customerId: String(r.customer), stars: r.rating, createdAt: r.createdAt, completionMethod: 'both', reviewerOtherWorkers: 0, hidden: false })), { now: new Date() });
     expect((await recomputeReputation(w.profileId)).score.expected).toBeCloseTo(engine.expected, 4);
+  });
+
+  test('error paths: a review whose booking lost its outcome keeps its completion method; a failed rebuild is logged, never thrown; two first booking codes at once retry once', async () => {
+    const w = await makeWorker(app);
+    const c = await makeCustomer(app);
+    const b = await completedBooking(app, c, w);
+    await review(c, b._id, { rating: 5 });
+    await Booking.updateOne({ _id: b._id }, { $set: { outcome: null } });
+    const input = await loadReputationInput(w.profileId);
+    expect(input.closedBookings).toHaveLength(0);
+    expect(input.reviews.map((r) => r.completionMethod)).toEqual(['both']);
+    await Booking.updateOne({ _id: b._id }, { $set: { outcome: 'completed' } });
+
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(WorkerProfile, 'updateOne').mockRejectedValueOnce(new Error('database went away'));
+    expect(await safeRecompute(w.profileId)).toBeNull();
+    expect(logged).toHaveBeenCalledWith(expect.stringMatching(/recompute failed .*database went away/));
+
+    const spy = vi.spyOn(Counter, 'findOneAndUpdate');
+    spy.mockRejectedValueOnce(Object.assign(new Error('E11000 duplicate key'), { code: 11000 }));
+    const first = await nextBookingCode();
+    expect(first).toMatch(/^BK-\d{4}-\d{6}$/);
+    expect(spy).toHaveBeenCalledTimes(2);
+    spy.mockRejectedValueOnce(Object.assign(new Error('other failure'), { code: 2 }));
+    await expect(nextBookingCode()).rejects.toThrow('other failure');
   });
 
   test('the audit chain still verifies after all of this', async () => {
