@@ -2096,6 +2096,8 @@ export default {
       noShowText: 'Karigar ko jawab ke liye 3 din milenge. Jawab na aaya to isay ghair haazri mana jayega.',
       admitTitle: 'Aap nahi aa sake?',
       admitText: 'Yeh aap ke record mein ghair haazri gini jayegi. Agar aap aaye thay to "Yeh durust nahi" dabayein.',
+      cancelConfirm: 'Booking mansookh karein',
+      keep: 'Booking rehne dein',
     },
     done: {
       accepted: 'Qabool kar liya. Ab aap gaahak ka phone number dekh sakte hain.',

@@ -65,7 +65,7 @@ for (const lang of LANGS) for (const mode of MODES) {
     await login(workerPage, worker.email);
     await skipTour(workerPage);
     await workerPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
-    for (const [path, label] of [['/notifications', 'notifications'], ['/worker', 'dashboard'], ['/worker/profile', 'profile view'], ['/worker/profile/edit', 'profile edit'], ['/worker/profile/edit?section=skills', 'edit skills'], ['/worker/profile/edit?section=proof', 'edit proof'], ['/onboarding/skills', 'onboarding step 3']]) {
+    for (const [path, label] of [['/notifications', 'notifications'], ['/worker', 'dashboard'], ['/worker/profile', 'profile view'], ['/worker/profile/edit', 'profile edit'], ['/worker/profile/edit?section=skills', 'edit skills'], ['/worker/profile/edit?section=proof', 'edit proof'], ['/onboarding/skills', 'onboarding step 3'], ['/worker/requests', 'requests'], ['/worker/jobs', 'my jobs'], ['/worker/reviews', 'my reviews'], ['/worker/reputation', 'my reputation']]) {
       await visit(workerPage, path, label);
     }
     await workerContext.close();
@@ -83,6 +83,12 @@ for (const lang of LANGS) for (const mode of MODES) {
     await expect(customerPage).toHaveURL(/\/workers\//);
     await expect(customerPage.getByRole('heading', { level: 1 }).first()).toBeVisible();
     problems.push(...(await axe(customerPage, `${lang} ${mode} worker public profile`)));
+    // Module 4: the request form (from the profile) and the customer's bookings
+    await customerPage.getByRole('link', { name: T(lang)('booking.request.button') }).first().click();
+    await expect(customerPage).toHaveURL(/\/request$/);
+    await expect(customerPage.getByRole('heading', { level: 1 }).first()).toBeVisible();
+    problems.push(...(await axe(customerPage, `${lang} ${mode} request form`)));
+    await visit(customerPage, '/bookings', 'my bookings');
     await visit(customerPage, '/saved', 'saved workers');
     await visit(customerPage, '/help', 'help centre');
     await customerContext.close();

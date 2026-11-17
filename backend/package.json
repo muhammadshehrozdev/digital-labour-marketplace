@@ -23,7 +23,8 @@
     "coverage": "vitest run --coverage",
     "reputation:sensitivity": "node scripts/reputationSensitivity.js",
     "reputation:recompute": "node scripts/reputationRecompute.js",
-    "evaluate:reputation": "node evaluation/reputation/evaluate.js"
+    "evaluate:reputation": "node evaluation/reputation/evaluate.js",
+    "demo:module4": "node scripts/seedModule4Demo.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

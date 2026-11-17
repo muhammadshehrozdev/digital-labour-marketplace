@@ -65,7 +65,7 @@ export default function BookingActions({ booking: b, viewer, onChanged, compact 
         <ReasonDialog open tone="danger" title={t('booking.dialog.cancelTitle')} intro={t(b.status === 'requested' ? 'booking.dialog.cancelRequestText' : 'booking.dialog.cancelText')}
           warning={lateCancel ? t('booking.dialog.lateWarning') : viewer === 'worker' ? t('booking.dialog.earlyWarning') : null}
           reasons={CANCEL_REASONS} group="cancel" reasonRequired={b.status === 'accepted'}
-          confirmLabel={t('booking.action.cancel')} onClose={() => setOpen(null)} onConfirm={({ reason }) => post('cancel', reason ? { reason } : {}, 'booking.done.cancelled')} />
+          confirmLabel={t('booking.dialog.cancelConfirm')} dismissLabel={t('booking.dialog.keep')} onClose={() => setOpen(null)} onConfirm={({ reason }) => post('cancel', reason ? { reason } : {}, 'booking.done.cancelled')} />
       )}
       {open === 'contest' && (
         <ReasonDialog open title={t('booking.dialog.contestTitle')} intro={t('booking.dialog.contestText')} reasons={DISPUTE_REASONS.filter((r) => r !== 'i_did_come' && r !== 'not_my_fault')} group="dispute"

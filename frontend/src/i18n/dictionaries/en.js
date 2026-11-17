@@ -2098,6 +2098,8 @@ export default {
       noShowText: 'The worker gets 3 days to answer. If there is no answer, it counts as a no-show.',
       admitTitle: 'You could not come?',
       admitText: 'This counts as a no-show in your record. If you did come, press "I did come" instead.',
+      cancelConfirm: 'Cancel the booking',
+      keep: 'Keep the booking',
     },
     done: {
       accepted: 'Accepted. You can now see the customer\'s phone number.',

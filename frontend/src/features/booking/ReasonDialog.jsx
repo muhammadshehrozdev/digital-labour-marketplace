@@ -7,7 +7,7 @@ import { apiError } from '../../utils/apiErrors';
 import styles from './Booking.module.css';
 
 export default function ReasonDialog({
-  open, title, intro, warning, reasons, group, reasonRequired = true, note = false, noteLabel, confirmLabel, tone = 'primary', onConfirm, onClose,
+  open, title, intro, warning, reasons, group, reasonRequired = true, note = false, noteLabel, confirmLabel, dismissLabel, tone = 'primary', onConfirm, onClose,
 }) {
   const { t, te } = useT();
   const [reason, setReason] = useState(null);
@@ -36,7 +36,7 @@ export default function ReasonDialog({
       title={title}
       footer={
         <>
-          <Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button>
+          <Button variant="secondary" onClick={onClose}>{dismissLabel ?? t('common.cancel')}</Button>
           <Button variant={tone === 'danger' ? 'danger' : 'primary'} loading={busy} onClick={submit}>{confirmLabel}</Button>
         </>
       }
