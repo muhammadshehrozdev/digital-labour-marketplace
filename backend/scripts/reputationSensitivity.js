@@ -45,16 +45,19 @@ export const GROUPS = [
 // ---- rep-2 (Batch 6B) ----
 export const REP2_REFERENCE = REP2_SELECTED ?? { newReviewerBudget: 2, burst: false };
 export const REP2_REFERENCE_BASE_RATE = 0.7;
+// rep-2 has no recency, so a date matters only for the burst check: the reviews of a case are 15 days apart
+// (never a burst), except the case that shows one (four days in a row).
+const spread = (list) => list.map((rv, i) => ({ ...rv, createdAt: new Date(NOW.getTime() - i * 15 * DAY) }));
 const fresh = (stars, extra = {}) => R(stars, { reviewerOtherWorkers: 0, ...extra }); // a new reviewer
 export const REP2_CASES = [
   ['No reviews', []],
   ['One 5 star', [R(5)]],
   ['One 1 star', [R(1)]],
-  ['Ten 5 star, reviewers with history', times(10, () => R(5))],
-  ['Ten 5 star from ten new reviewers', times(10, () => fresh(5))],
-  ['Two 4 star (history) + five 5 star (new reviewers)', [...times(2, () => R(4)), ...times(5, () => fresh(5))]],
+  ['Ten 5 star, reviewers with history', spread(times(10, () => R(5)))],
+  ['Ten 5 star from ten new reviewers', spread(times(10, () => fresh(5)))],
+  ['Two 4 star (history) + five 5 star (new reviewers)', spread([...times(2, () => R(4)), ...times(5, () => fresh(5))])],
   ['Four 5 star on four days in a row', times(4, (i) => R(5, { createdAt: new Date(NOW.getTime() - i * DAY) }))],
-  ['28 x 5 star + 12 x 4 star', [...times(28, () => R(5)), ...times(12, () => R(4))]],
+  ['28 x 5 star + 12 x 4 star', spread([...times(28, () => R(5)), ...times(12, () => R(4))])],
 ];
 const ref = (changes = {}) => withParams(changes, rep2Params(REP2_REFERENCE));
 // one parameter at a time; the reference value is in the middle (burst: the reference's own value is marked)

@@ -1,0 +1,235 @@
+{
+  "label": "SIMULATION",
+  "kind": "rep-2 selection on the development seeds (BATCH_6B section 5.4, steps 2-3)",
+  "warning": "Simulation results only. Development seeds (already seen in Batch 6): these numbers choose the candidate; they are not the evaluation. The test seeds are used once, after the frozen commit.",
+  "seeds": {
+    "count": 30,
+    "first": 20261116,
+    "last": 20261145
+  },
+  "workersPerRun": 300,
+  "rule": {
+    "baseMargin": 0.01,
+    "attacks": [
+      "sybil_k3",
+      "sybil_k5",
+      "sybil_k10",
+      "pair_collusion",
+      "combined"
+    ],
+    "tieBreak": "smaller B, then burst off"
+  },
+  "baselines": {
+    "B1": {
+      "base": 0.892535009216377,
+      "attacks": {
+        "sybil_k3": 0.7891458603487861,
+        "sybil_k5": 0.7891458603487861,
+        "sybil_k10": 0.7891458603487861,
+        "pair_collusion": 0.8490656303567299,
+        "combined": 0.7716761587196047
+      },
+      "attackMean": 0.7976358740245386,
+      "attackLift": {
+        "sybil_k3": 112.11222222222221,
+        "sybil_k5": 124.13666666666668,
+        "sybil_k10": 137.65666666666664,
+        "pair_collusion": 107.31555555555555,
+        "combined": 97.71034295225165
+      },
+      "baseTau": 0.33779702695901875
+    },
+    "B4": {
+      "base": 0.9378421603984296,
+      "attacks": {
+        "sybil_k3": 0.8716860093450303,
+        "sybil_k5": 0.6749005685271704,
+        "sybil_k10": 0.5627065432038317,
+        "pair_collusion": 0.8679890293437421,
+        "combined": 0.8172976895936794
+      },
+      "attackMean": 0.7589159680026908,
+      "attackLift": {
+        "sybil_k3": 139.45555555555558,
+        "sybil_k5": 157.92555555555558,
+        "sybil_k10": 172.39777777777778,
+        "pair_collusion": 121.54444444444447,
+        "combined": 130.2883705174261
+      },
+      "baseTau": 0.4682759896295264
+    }
+  },
+  "candidates": [
+    {
+      "id": "B1-burst-off",
+      "candidate": {
+        "id": "B1-burst-off",
+        "newReviewerBudget": 1,
+        "burst": false
+      },
+      "paramsHash": "85c83462b354",
+      "base": 0.9354414290702427,
+      "attacks": {
+        "sybil_k3": 0.9336996664358088,
+        "sybil_k5": 0.935391281993376,
+        "sybil_k10": 0.9325705620881671,
+        "pair_collusion": 0.9020473139481354,
+        "combined": 0.9005518512612004
+      },
+      "attackMean": 0.9208521351453376,
+      "attackLift": {
+        "sybil_k3": 75.22888888888887,
+        "sybil_k5": 77.19222222222224,
+        "sybil_k10": 74.59,
+        "pair_collusion": 83.9888888888889,
+        "combined": 60.422850155663546
+      },
+      "baseTau": 0.5218854896618775
+    },
+    {
+      "id": "B1-burst-on",
+      "candidate": {
+        "id": "B1-burst-on",
+        "newReviewerBudget": 1,
+        "burst": true
+      },
+      "paramsHash": "cfb1c342f1f5",
+      "base": 0.9354273118638273,
+      "attacks": {
+        "sybil_k3": 0.9336996664358088,
+        "sybil_k5": 0.9353939410041784,
+        "sybil_k10": 0.9334675274785114,
+        "pair_collusion": 0.9060580713156011,
+        "combined": 0.906429670052718
+      },
+      "attackMean": 0.9230097752573636,
+      "attackLift": {
+        "sybil_k3": 75.30111111111111,
+        "sybil_k5": 76.71444444444447,
+        "sybil_k10": 73.05888888888889,
+        "pair_collusion": 83.59111111111112,
+        "combined": 60.04559378186151
+      },
+      "baseTau": 0.5218854748402484
+    },
+    {
+      "id": "B2-burst-off",
+      "candidate": {
+        "id": "B2-burst-off",
+        "newReviewerBudget": 2,
+        "burst": false
+      },
+      "paramsHash": "b6686e7e17dc",
+      "base": 0.9396189822118318,
+      "attacks": {
+        "sybil_k3": 0.8861561289671049,
+        "sybil_k5": 0.8750614364599597,
+        "sybil_k10": 0.8502147598973132,
+        "pair_collusion": 0.910944160249666,
+        "combined": 0.8971644320036022
+      },
+      "attackMean": 0.8839081835155291,
+      "attackLift": {
+        "sybil_k3": 103.92555555555558,
+        "sybil_k5": 107.9611111111111,
+        "sybil_k10": 108.4088888888889,
+        "pair_collusion": 88.88222222222223,
+        "combined": 77.08713925032131
+      },
+      "baseTau": 0.5259859471148797
+    },
+    {
+      "id": "B2-burst-on",
+      "candidate": {
+        "id": "B2-burst-on",
+        "newReviewerBudget": 2,
+        "burst": true
+      },
+      "paramsHash": "8cafbd1a44cc",
+      "base": 0.9396189822118318,
+      "attacks": {
+        "sybil_k3": 0.8861561289671049,
+        "sybil_k5": 0.877418020919619,
+        "sybil_k10": 0.8371600238644329,
+        "pair_collusion": 0.9127454706907808,
+        "combined": 0.8996298646969739
+      },
+      "attackMean": 0.8826219018277822,
+      "attackLift": {
+        "sybil_k3": 103.96666666666668,
+        "sybil_k5": 106.46777777777775,
+        "sybil_k10": 105.30777777777779,
+        "pair_collusion": 88.52222222222221,
+        "combined": 76.4414072196999
+      },
+      "baseTau": 0.5259890464650672
+    },
+    {
+      "id": "B3-burst-off",
+      "candidate": {
+        "id": "B3-burst-off",
+        "newReviewerBudget": 3,
+        "burst": false
+      },
+      "paramsHash": "dbe108fefefd",
+      "base": 0.9402355254201216,
+      "attacks": {
+        "sybil_k3": 0.7479242465361701,
+        "sybil_k5": 0.73985196947891,
+        "sybil_k10": 0.7334371777520067,
+        "pair_collusion": 0.9218207843891643,
+        "combined": 0.8737473222610421
+      },
+      "attackMean": 0.8033563000834587,
+      "attackLift": {
+        "sybil_k3": 118.21333333333332,
+        "sybil_k5": 125.05777777777776,
+        "sybil_k10": 125.64777777777776,
+        "pair_collusion": 89.53555555555553,
+        "combined": 87.81344644074649
+      },
+      "baseTau": 0.5263212585512047
+    },
+    {
+      "id": "B3-burst-on",
+      "candidate": {
+        "id": "B3-burst-on",
+        "newReviewerBudget": 3,
+        "burst": true
+      },
+      "paramsHash": "b45cfdb3fdae",
+      "base": 0.9402355254201216,
+      "attacks": {
+        "sybil_k3": 0.7479242465361701,
+        "sybil_k5": 0.7411649846328021,
+        "sybil_k10": 0.7116642612496871,
+        "pair_collusion": 0.9221286476717513,
+        "combined": 0.8745086499447121
+      },
+      "attackMean": 0.7994781580070246,
+      "attackLift": {
+        "sybil_k3": 118.23555555555554,
+        "sybil_k5": 123.3888888888889,
+        "sybil_k10": 121.70000000000002,
+        "pair_collusion": 89.11333333333332,
+        "combined": 86.56692496774461
+      },
+      "baseTau": 0.5263291331693309
+    }
+  ],
+  "eligible": [
+    "B1-burst-off",
+    "B1-burst-on",
+    "B2-burst-off",
+    "B2-burst-on",
+    "B3-burst-off",
+    "B3-burst-on"
+  ],
+  "chosen": {
+    "id": "B1-burst-on",
+    "newReviewerBudget": 1,
+    "burst": true
+  },
+  "gitCommit": "b4b4b09",
+  "startedAt": "2026-11-17T13:55:16.238Z"
+}

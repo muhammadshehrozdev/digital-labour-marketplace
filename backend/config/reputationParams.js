@@ -90,9 +90,11 @@ export const REP2_CANDIDATES = Object.freeze([1, 2, 3].flatMap((B) => [false, tr
   burst,
 }))));
 
-// FROZEN by the pre-registered selection on the development seeds (see MODULE-4.md section 5.4).
-// null until then: no rep-2 set exists before the selection.
-export const REP2_SELECTED = null;
+// FROZEN by the pre-registered selection on the development seeds 20261116..20261145 (SIMULATION; Batch 6B,
+// 17 Nov 2026, results/SIMULATION-rep2-dev-2026-11-17-selection.json, MODULE-4.md section 5.4): every candidate
+// passed the base-world line (>= B4 - 0.01 = 0.928); the highest mean NDCG@10 over the five attacks was
+// B = 1 with the burst check on (0.923; B = 1 burst off 0.921). Never changed after the test-seed run.
+export const REP2_SELECTED = Object.freeze({ newReviewerBudget: 1, burst: true });
 export const REP2_PARAMS = REP2_SELECTED ? rep2Params(REP2_SELECTED) : null;
 
 export const PARAM_SETS = Object.freeze({ 'rep-1': REP1_PARAMS, ...(REP2_PARAMS ? { 'rep-2': REP2_PARAMS } : {}) });
