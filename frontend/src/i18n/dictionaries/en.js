@@ -1459,7 +1459,7 @@ export default {
         find: { title: 'Find and compare workers', steps: 'Type a trade or skill in the search box.|Use the filters for city, availability and verified workers.|Tap the heart to save a worker.|Tick "Compare" on two or three workers and open the comparison.' },
         badges: { title: 'What the badges mean', steps: '"Identity verified": an admin checked the worker\'s CNIC card.|"Verified by evidence": an admin approved a photo as proof of that skill.|"Self-declared": the worker says so; no proof has been checked yet.' },
         display: { title: 'Dark mode, text size and language', steps: 'The moon or sun button at the top switches dark and light. Hold it for "System".|Text size (A−, A, A+) is in your account menu and at the bottom of every page.|The globe button changes the language: English, Urdu or Roman Urdu.' },
-        install: { title: 'Install the website like an app', steps: 'On Android in Chrome, open the menu and choose "Install app" or "Add to Home screen".|The app opens without the browser bar. You still need the internet to see and save data.' },
+        install: { title: 'Install the website like an app', steps: 'Press "Install this app" at the bottom of any page.|Android, or a computer with Chrome or Edge: press "Install" in the question that opens. If no question opens, open the browser menu ⋮ and choose "Install app" or "Add to Home screen".|iPhone and iPad: open the website in Safari, press Share, then "Add to Home Screen", then "Add".|No website can install itself: you always press "Install" yourself. The app opens without the browser bar; you still need the internet to see and save data.' },
       },
     },
   },
@@ -1628,6 +1628,29 @@ export default {
       compare: 'Here you see two or three workers side by side, so you can choose.',
     },
     option: {
+      // ---- Batch 6B (help.option): header, install, rep-2 texts, drafts until the team reviews them ----
+      install: {
+        line: 'Install the app: it opens like any other app on your phone and works with weak internet.',
+        chromium: {
+          intro: 'Your browser has not offered the app yet. You can add it from the browser menu:',
+          step1: 'Open the browser menu: the three dots ⋮ at the top.',
+          step2: 'Choose "Install app" or "Add to Home screen". On a computer it can be under "Cast, save and share".',
+          step3: 'Press "Install". The app appears on your home screen or desktop.',
+        },
+        iosSafari: {
+          intro: 'On iPhone and iPad, Safari adds the app in three steps:',
+          step1: 'Press the Share button: a square with an arrow pointing up. On iPhone it is at the bottom, on iPad at the top.',
+          step2: 'Scroll down and choose "Add to Home Screen".',
+          step3: 'Press "Add". The app appears on your home screen.',
+        },
+        iosOther: {
+          intro: 'Open this page in Safari to install the app. On iPhone and iPad, other browsers cannot install apps.',
+        },
+        other: {
+          intro: 'Installing works in Chrome or Edge. Open this link there:',
+        },
+      },
+      // ---- end of Batch 6B (help.option) ----
       // ---- Batch 6 (help.option): Module 4 texts, drafts until the team reviews them ----
       requestSkill: {
         any: '{name}. Choose this if you need this work.',
@@ -2445,4 +2468,45 @@ export default {
     },
   },
   // ---- end of Batch 6 (top) ----
+  // ---- Batch 6B (top): header, install, rep-2 texts, drafts until the team reviews them ----
+  b6b: {
+    header: {
+      more: 'More',
+      moreMenu: 'More settings: language, sound and text size',
+    },
+    install: {
+      title: 'Install the app',
+      install: 'Install',
+      notNow: 'Not now',
+      footerButton: 'Install this app',
+      thanks: 'Thank you! The app is being added. Look for it on your home screen.',
+      stepsTitle: 'How to install the app',
+      stepName: 'Step {n}',
+      done: 'Done',
+      linkLabel: 'Link to this website',
+      copy: 'Copy the link',
+      copied: 'Link copied',
+      copyFailed: 'The link could not be copied. Please copy it from the box.',
+      line: 'Install the app: it opens like any other app on your phone and works with weak internet.',
+      chromium: {
+        intro: 'Your browser has not offered the app yet. You can add it from the browser menu:',
+        step1: 'Open the browser menu: the three dots ⋮ at the top.',
+        step2: 'Choose "Install app" or "Add to Home screen". On a computer it can be under "Cast, save and share".',
+        step3: 'Press "Install". The app appears on your home screen or desktop.',
+      },
+      iosSafari: {
+        intro: 'On iPhone and iPad, Safari adds the app in three steps:',
+        step1: 'Press the Share button: a square with an arrow pointing up. On iPhone it is at the bottom, on iPad at the top.',
+        step2: 'Scroll down and choose "Add to Home Screen".',
+        step3: 'Press "Add". The app appears on your home screen.',
+      },
+      iosOther: {
+        intro: 'Open this page in Safari to install the app. On iPhone and iPad, other browsers cannot install apps.',
+      },
+      other: {
+        intro: 'Installing works in Chrome or Edge. Open this link there:',
+      },
+    },
+  },
+  // ---- end of Batch 6B (top) ----
 };

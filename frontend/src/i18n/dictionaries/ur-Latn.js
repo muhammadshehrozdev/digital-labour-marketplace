@@ -1457,7 +1457,7 @@ export default {
         find: { title: 'Karigar talaash karein aur muwazna karein', steps: 'Talaash ke khanay mein pesha ya hunar likhein.|Shehar, dastiyabi aur tasdeeq shuda karigaron ke filter istemaal karein.|Karigar ko mehfooz karne ke liye dil par tap karein.|Do ya teen karigaron par "Muwazna" ka nishan lagayein aur muwazna kholein.' },
         badges: { title: 'Nishanaat ka matlab', steps: '"Shanakht tasdeeq shuda": admin ne karigar ka CNIC card dekha.|"Saboot se tasdeeq shuda": admin ne is hunar ke saboot ki tasveer manzoor ki.|"Khud bataya gaya": karigar ne khud kaha hai; abhi koi saboot check nahi hua.' },
         display: { title: 'Dark mode, likhai ka size aur zabaan', steps: 'Oopar chaand ya sooraj ka button dark aur light badalta hai. "System" ke liye isay daba kar rakhein.|Likhai ka size (A−, A, A+) aap ke account menu mein aur har safhe ke neeche hai.|Globe ka button zabaan badalta hai: English, Urdu ya Roman Urdu.' },
-        install: { title: 'Website ko app ki tarah install karein', steps: 'Android par Chrome mein menu kholein aur "Install app" ya "Add to Home screen" chunein.|App browser bar ke baghair khulti hai. Data dekhne aur mehfooz karne ke liye internet phir bhi zaroori hai.' },
+        install: { title: 'Website ko app ki tarah install karein', steps: 'Kisi bhi safhay ke neeche "Yeh app install karein" dabayein.|Android, ya Chrome ya Edge wala computer: jo sawal khulay us mein "Install" dabayein. Agar koi sawal na khulay to browser ka menu ⋮ kholein aur "Install app" ya "Add to Home screen" chunein.|iPhone aur iPad: website Safari mein kholein, Share dabayein, phir "Add to Home Screen", phir "Add".|Koi website khud ko install nahi kar sakti: "Install" hamesha aap khud dabatay hain. App browser bar ke baghair khulti hai; data dekhne aur mehfooz karne ke liye internet phir bhi zaroori hai.' },
       },
     },
   },
@@ -1626,6 +1626,29 @@ export default {
       compare: 'Yahan do ya teen karigar saath saath nazar aate hain, taa ke aap chun sakein.',
     },
     option: {
+      // ---- Batch 6B (help.option): header, install, rep-2 texts, drafts until the team reviews them ----
+      install: {
+        line: 'App install karein: yeh aap ke phone par baqi apps ki tarah khulti hai aur kamzor internet par bhi chalti hai.',
+        chromium: {
+          intro: 'Aap ke browser ne abhi app pesh nahi ki. Aap isay browser ke menu se shamil kar saktay hain:',
+          step1: 'Browser ka menu kholein: upar walay teen nuqte ⋮.',
+          step2: '"Install app" ya "Add to Home screen" chunein. Computer par yeh "Cast, save and share" ke andar ho sakta hai.',
+          step3: '"Install" dabayein. App aap ki home screen ya desktop par aa jaye gi.',
+        },
+        iosSafari: {
+          intro: 'iPhone aur iPad par Safari teen marhalon mein app shamil karta hai:',
+          step1: 'Share ka button dabayein: ek chokor jis mein upar ki taraf teer hai. iPhone par yeh neeche hota hai, iPad par upar.',
+          step2: 'Neeche jayein aur "Add to Home Screen" chunein.',
+          step3: '"Add" dabayein. App aap ki home screen par aa jaye gi.',
+        },
+        iosOther: {
+          intro: 'App install karne ke liye yeh safha Safari mein kholein. iPhone aur iPad par doosray browser app install nahi kar saktay.',
+        },
+        other: {
+          intro: 'Install karna Chrome ya Edge mein hota hai. Yeh link wahan kholein:',
+        },
+      },
+      // ---- end of Batch 6B (help.option) ----
       // ---- Batch 6 (help.option): Module 4 texts, drafts until the team reviews them ----
       requestSkill: {
         any: '{name}. Agar yeh kaam chahiye to yeh chunein.',
@@ -2443,4 +2466,45 @@ export default {
     },
   },
   // ---- end of Batch 6 (top) ----
+  // ---- Batch 6B (top): header, install, rep-2 texts, drafts until the team reviews them ----
+  b6b: {
+    header: {
+      more: 'Mazeed',
+      moreMenu: 'Mazeed tarteebat: zabaan, awaaz aur likhai ka size',
+    },
+    install: {
+      title: 'App install karein',
+      install: 'Install karein',
+      notNow: 'Abhi nahi',
+      footerButton: 'Yeh app install karein',
+      thanks: 'Shukriya! App shamil ho rahi hai. Isay apni home screen par dekhein.',
+      stepsTitle: 'App install karne ka tareeqa',
+      stepName: 'Marhala {n}',
+      done: 'Theek hai',
+      linkLabel: 'Is website ka link',
+      copy: 'Link copy karein',
+      copied: 'Link copy ho gaya',
+      copyFailed: 'Link copy nahi ho saka. Baraye meharbani khanay se copy karein.',
+      line: 'App install karein: yeh aap ke phone par baqi apps ki tarah khulti hai aur kamzor internet par bhi chalti hai.',
+      chromium: {
+        intro: 'Aap ke browser ne abhi app pesh nahi ki. Aap isay browser ke menu se shamil kar saktay hain:',
+        step1: 'Browser ka menu kholein: upar walay teen nuqte ⋮.',
+        step2: '"Install app" ya "Add to Home screen" chunein. Computer par yeh "Cast, save and share" ke andar ho sakta hai.',
+        step3: '"Install" dabayein. App aap ki home screen ya desktop par aa jaye gi.',
+      },
+      iosSafari: {
+        intro: 'iPhone aur iPad par Safari teen marhalon mein app shamil karta hai:',
+        step1: 'Share ka button dabayein: ek chokor jis mein upar ki taraf teer hai. iPhone par yeh neeche hota hai, iPad par upar.',
+        step2: 'Neeche jayein aur "Add to Home Screen" chunein.',
+        step3: '"Add" dabayein. App aap ki home screen par aa jaye gi.',
+      },
+      iosOther: {
+        intro: 'App install karne ke liye yeh safha Safari mein kholein. iPhone aur iPad par doosray browser app install nahi kar saktay.',
+      },
+      other: {
+        intro: 'Install karna Chrome ya Edge mein hota hai. Yeh link wahan kholein:',
+      },
+    },
+  },
+  // ---- end of Batch 6B (top) ----
 };

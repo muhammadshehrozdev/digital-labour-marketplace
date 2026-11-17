@@ -33,6 +33,9 @@
   transition: rotate var(--duration-fast) var(--ease-out);
 }
 
+/* Batch 6B: nothing inside the button may shrink (a squeezed name read "En…") */
+.button > * { flex-shrink: 0; }
+
 .current[lang='ur'] {
   font-family: var(--font-urdu);
   line-height: 1.6;
@@ -49,10 +52,6 @@
 }
 
 .compact .current {
-  /* On very small screens only the globe and the short name stay visible. */
-  max-inline-size: 7.5em;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -61,6 +60,7 @@
   inset-inline-end: 0;
   z-index: 40;
   min-inline-size: 11rem;
+  max-inline-size: calc(100vw - 16px);
   margin: 0;
   padding: var(--space-1);
   list-style: none;
@@ -123,4 +123,33 @@
   .list {
     animation: none;
   }
+}
+
+/* Batch 6B: the three languages as one row (inside the account, More and mobile menus) */
+.choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+}
+
+.choiceOption {
+  min-block-size: 40px;
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover { background: var(--color-surface-muted); }
+  &[aria-checked='true'] { background: var(--color-primary); color: var(--color-on-primary); }
+  &[lang='ur'] { font-family: var(--font-urdu); line-height: 1.6; }
 }

@@ -4,6 +4,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Check, ChevronDown, Globe } from 'lucide-react';
 import { LANGUAGES, useChangeLanguage, useLanguage } from '../../i18n';
+import { useStayInView } from './useStayInView';
 import styles from './LanguageSwitcher.module.css';
 
 export default function LanguageSwitcher({ tone = 'light', compact = false, placement = 'below' }) {
@@ -12,6 +13,8 @@ export default function LanguageSwitcher({ tone = 'light', compact = false, plac
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const buttonRef = useRef(null);
+  const listRef = useRef(null);
+  useStayInView(listRef, open);
   const listId = `lang-${useId().replace(/:/g, '')}`;
 
   useEffect(() => {
@@ -55,7 +58,7 @@ export default function LanguageSwitcher({ tone = 'light', compact = false, plac
         <ChevronDown size={16} aria-hidden="true" className={styles.chevron} />
       </button>
       {open && (
-        <ul id={listId} className={[styles.list, styles[placement]].join(' ')} aria-label={t('language.label')}>
+        <ul id={listId} ref={listRef} className={[styles.list, styles[placement]].join(' ')} aria-label={t('language.label')}>
           {LANGUAGES.map((l) => (
             <li key={l.code}>
               <button

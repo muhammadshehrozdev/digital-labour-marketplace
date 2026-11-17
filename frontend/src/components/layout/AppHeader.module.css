@@ -32,8 +32,13 @@
   flex-shrink: 0;
 }
 
+/* Batch 6B (D-059): nothing in the row may shrink. When the row is too long the header collapses in a
+   planned order instead (headerFit.js writes data-fit-* on <header>; the rules are at the end). */
+.inner > *, .end > * { flex-shrink: 0; }
+.header svg { flex-shrink: 0; }
+
 .desktopNav {
-  display: none;
+  display: flex;
   gap: var(--space-1);
   margin-inline-start: var(--space-4);
 }
@@ -103,19 +108,22 @@
   &:hover { background: var(--color-surface-muted); }
 }
 
+/* The whole name or none of it (never "Demo Cu…"): when it does not fit, the level hides it. */
 .accountName {
-  display: none;
-  max-inline-size: 14ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* Anchored to the END edge of its button (right in English, left in Urdu), at most the window minus
+   8 px on each side; useStayInView moves it back inside if it would still reach past an edge. */
 .accountMenu {
   position: absolute;
+  z-index: 40;
   inset-inline-end: 0;
   inset-block-start: calc(100% + 8px);
-  inline-size: 270px;
+  inline-size: 300px;
+  max-inline-size: calc(100vw - 16px);
+  max-block-size: calc(100dvh - var(--header-height) - 16px);
+  overflow-y: auto;
   padding: var(--space-2);
   background: var(--color-surface-elevated);
   border: 1px solid var(--color-border);
@@ -131,7 +139,17 @@
   border-block-end: 1px solid var(--color-border);
   font-size: var(--text-small);
 
-  & > span { color: var(--color-text-secondary); overflow-wrap: anywhere; }
+  & > span { color: var(--color-text-secondary); }
+}
+
+/* a long email ends with "…"; the whole address is in its title */
+.email {
+  display: inline-block;
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
 }
 
 .menuItem {
@@ -151,7 +169,45 @@
   &:hover { background: var(--color-surface-muted); }
 }
 
-.menuToggle { display: inline-grid; }
+.menuToggle { display: none; }
+
+/* Visitors: "More" holds Sound, language and text size when the bar has no room */
+.moreButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--touch-target);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover, &[aria-expanded='true'] { border-color: var(--color-primary); background: var(--color-primary-soft); }
+}
+
+.barTool, .barTheme { display: inline-flex; }
+
+/* A moved control inside a menu: an icon and words, then the control */
+.rowLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 700;
+}
+.menuSection {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-block-end: 1px solid var(--color-border);
+}
 
 .guest {
   display: flex;
@@ -195,26 +251,31 @@
   from { opacity: 0; transform: translateY(-6px); }
 }
 
-/* Phones: no account dropdown (the mobile menu has it). Very small phones: the hero and the
-   login card have "Create account", so the header keeps only "Log in". */
-/* The full header (links, switcher, account name) needs about 900 px; below 960 px the menu
-   button holds the links and the account. */
-@media (max-width: 959px) {
-  .account { display: none; }
+/* The collapse levels (headerFit.js). Before the first measurement nothing is set: the full header. */
+.header[data-fit-hint='off'] .paletteKbd { display: none; }
+.header[data-fit-account-name='off'] .accountName {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
-@media (max-width: 459px) {
-  .createAccount { display: none; }
+.header[data-fit-tools='menu'] .barTool { display: none; }
+.header:not([data-fit-tools='menu']) .moreWrap { display: none; }
+.header[data-fit-theme='menu'] .barTheme { display: none; }
+.header[data-fit-brand='mark'] [data-wordmark] { display: none; }
+.header[data-fit-create='off'] .createAccount { display: none; }
+.header[data-fit-nav='menu'] {
+  & .desktopNav, & .account { display: none; }
+  & .menuToggle { display: inline-grid; }
 }
-@media (min-width: 960px) {
-  .desktopNav { display: flex; }
-  .accountName { display: inline; }
-  .menuToggle { display: none; }
-  .mobileNav { display: none; }
-}
+.header:not([data-fit-nav='menu']) .mobileNav { display: none; }
 
 /* A setting inside the account menu (text size). */
 .menuRow {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
@@ -230,7 +291,6 @@
   padding-inline: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-surface); color: var(--color-text-secondary); cursor: pointer;
   &:hover { background: var(--color-surface-muted); color: var(--color-text); }
 }
-.paletteKbd { display: none; white-space: nowrap; font-family: var(--font-latin); font-size: var(--text-caption); font-weight: 700; padding: 1px 6px; border-radius: 6px; background: var(--color-surface-muted); }
-/* the Ctrl K hint only where there is room for it next to everything else */
-@media (min-width: 1440px) { .paletteKbd { display: inline; } }
+.paletteKbd { display: inline; white-space: nowrap; font-family: var(--font-latin); font-size: var(--text-caption); font-weight: 700; padding: 1px 6px; border-radius: 6px; background: var(--color-surface-muted); }
+/* the Ctrl K hint only where there is room for it (data-fit-hint, above); search itself from 640 px */
 @media (max-width: 639px) { .paletteButton { display: none; } }

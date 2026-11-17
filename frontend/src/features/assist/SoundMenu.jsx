@@ -8,14 +8,41 @@ import { Switch } from '../../components/ui';
 import { useT } from '../../i18n';
 import { stopAll } from './audio';
 import { useAssistSettings } from './settingsStore';
+import { useStayInView } from '../../components/layout/useStayInView';
 import styles from './SoundMenu.module.css';
+
+// The settings themselves (the panel below, and the account / More / mobile menu when the header has no
+// room for the Sound button: Batch 6B).
+export function SoundSettings({ onNavigate }) {
+  const { t } = useT();
+  const [settings, setSettings] = useAssistSettings();
+  return (
+    <>
+      <Switch label={t('assist.showButtons')} hint={t('assist.showButtonsHint')} checked={settings.showButtons} onChange={(on) => setSettings({ showButtons: on })} />
+      <Switch
+        label={t('assist.autoRead')}
+        hint={t('assist.autoReadHint')}
+        checked={settings.autoRead}
+        onChange={(on) => {
+          if (!on) stopAll();
+          setSettings({ autoRead: on, autoReadOffered: true, offerPending: false });
+        }}
+      />
+      <p className={styles.note}>{t('assist.deviceOnly')}</p>
+      <Link to="/voice-check" className={styles.link} onClick={onNavigate}>
+        <Stethoscope size={18} strokeWidth={1.75} aria-hidden="true" /> {t('assist.voiceCheckLink')}
+      </Link>
+    </>
+  );
+}
 
 export default function SoundMenu() {
   const { t } = useT();
-  const [settings, setSettings] = useAssistSettings();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const panelRef = useRef(null);
   const panelId = `sound${useId().replace(/:/g, '')}`;
+  useStayInView(panelRef, open);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -38,22 +65,9 @@ export default function SoundMenu() {
         <ChevronDown size={14} aria-hidden="true" className={styles.chevron} />
       </button>
       {open && (
-        <div id={panelId} className={styles.panel}>
+        <div id={panelId} ref={panelRef} className={styles.panel}>
           <p className={styles.title}>{t('assist.soundTitle')}</p>
-          <Switch label={t('assist.showButtons')} hint={t('assist.showButtonsHint')} checked={settings.showButtons} onChange={(on) => setSettings({ showButtons: on })} />
-          <Switch
-            label={t('assist.autoRead')}
-            hint={t('assist.autoReadHint')}
-            checked={settings.autoRead}
-            onChange={(on) => {
-              if (!on) stopAll();
-              setSettings({ autoRead: on, autoReadOffered: true, offerPending: false });
-            }}
-          />
-          <p className={styles.note}>{t('assist.deviceOnly')}</p>
-          <Link to="/voice-check" className={styles.link} onClick={() => setOpen(false)}>
-            <Stethoscope size={18} strokeWidth={1.75} aria-hidden="true" /> {t('assist.voiceCheckLink')}
-          </Link>
+          <SoundSettings onNavigate={() => setOpen(false)} />
         </div>
       )}
     </div>

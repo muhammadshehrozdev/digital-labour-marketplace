@@ -7,6 +7,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Check, ChevronDown, Monitor, Moon, Sun } from 'lucide-react';
 import { useT } from '../../i18n';
 import { THEME_PREFERENCES, useTheme } from '../../theme';
+import { useStayInView } from './useStayInView';
 import styles from './ThemeToggle.module.css';
 
 const LONG_PRESS_MS = 550;
@@ -43,6 +44,7 @@ export default function ThemeToggle({ tone = 'light', placement = 'below' }) {
   const timer = useRef(null);
   const longPressed = useRef(false);
   const menuId = `theme-${useId().replace(/:/g, '')}`;
+  useStayInView(menuRef, open);
 
   const origin = () => {
     const box = buttonRef.current?.getBoundingClientRect();

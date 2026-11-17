@@ -13,6 +13,7 @@ import { useAuth } from '../../context/auth';
 import NotificationItem from './NotificationItem';
 import { NOTIFICATION_POLL_MS, notificationLink } from './notificationText';
 import styles from './Notifications.module.css';
+import { useStayInView } from '../../components/layout/useStayInView';
 
 export default function NotificationBell() {
   const { t, formatNumber } = useT();
@@ -24,6 +25,8 @@ export default function NotificationBell() {
   const [list, setList] = useState(null);
   const wrapRef = useRef(null);
   const buttonRef = useRef(null);
+  const panelRef = useRef(null);
+  useStayInView(panelRef, open);
   const panelId = `bell-${useId().replace(/:/g, '')}`;
   const unread = count.data?.unread ?? 0;
 
@@ -85,7 +88,7 @@ export default function NotificationBell() {
         {unread > 0 && <span className={styles.count} aria-hidden="true">{unread > 9 ? '9+' : formatNumber(unread)}</span>}
       </button>
       {open && (
-        <div id={panelId} className={styles.panel} role="region" aria-label={t('workerx.notifications.title')}>
+        <div id={panelId} ref={panelRef} className={styles.panel} role="region" aria-label={t('workerx.notifications.title')}>
           <div className={styles.panelHead}>
             <h2 className={styles.panelTitle}>{t('workerx.notifications.title')}</h2>
             {list?.some((n) => !n.read) && <Button size="sm" variant="ghost" onClick={markAll}>{t('workerx.notifications.markAll')}</Button>}
