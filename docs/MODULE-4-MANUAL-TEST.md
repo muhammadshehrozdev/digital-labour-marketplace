@@ -66,6 +66,16 @@ customer is `local-demo-password-123`; the admin passphrase is `local admin demo
 | 26 | Switch to اردو and Roman Urdu on pages 2, 5, 14, 17 | All texts translated; right-to-left in Urdu; star rows and timelines still readable |
 | 27 | Dark mode on the same pages | Stars, chips and charts readable; nothing shown by colour alone |
 | 28 | Android Chrome: open the preview from the phone (same Wi-Fi, as in `docs/EASY-MODE-MANUAL-TEST.md` P1) or the deployed test site when available | Big buttons fit at 360 px; Call opens the phone dialler; WhatsApp opens the app; 🔊 speaks with an Urdu voice if one is installed |
-| 29 | Find workers → Sort by "Best track record" | The note "New workers appear lower in this order…"; "Has done jobs on this platform" filter works |
+| 29 | Find workers → Sort by "Best track record" | The note "New workers start at the typical rating of this website, so they appear in the middle of this order…" (rep-2, Batch 6B); "Has done jobs on this platform" filter works |
 
-Write down anything unclear in plain words; texts are drafts until the team reviews them (`docs/i18n/REVIEW-BATCH-6.md`).
+## 5. rep-2 and the header (Batch 6B)
+
+| # | Do | Expected |
+|---|---|---|
+| 30 | A (worker): My reputation | Five rules: only real customers; one customer, less each time; new customer accounts counted with a limit ("at most 1 review"); many reviews in a few days; cancel early. No "Newer reviews count more". Each rule has 🔊. The reputation score says "Best track record" orders by it |
+| 31 | Help Centre → "How your reputation is counted" | The same five rules in one line each |
+| 32 | C (admin): Users → a worker → Reputation tab | Factors "provenance · new-account budget · burst · pair"; stored snapshot "engine rep-2" |
+| 33 | Make the Chrome window narrower step by step (or Windows display scaling 125% / 150%), as A, B, C and a visitor | The name next to the avatar disappears first, then Sound and language move into the account menu, then ☰; nothing is cut off; the account menu always opens fully inside the window (also in Urdu, where it opens to the right) |
+| 34 | "Install this app" | See `docs/INSTALL-MANUAL-TEST.md` |
+
+Write down anything unclear in plain words; texts are drafts until the team reviews them (`docs/i18n/REVIEW-BATCH-6.md`, `docs/i18n/REVIEW-BATCH-6B.md`).

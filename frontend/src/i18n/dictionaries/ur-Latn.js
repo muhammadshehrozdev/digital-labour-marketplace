@@ -1915,8 +1915,8 @@ export default {
     },
     breakdown: {
       tabs: 'Karigar ki tafseel',
-      expected: 'Mutawaqqa (saakh)',
-      cautious: 'Mohtaat score ("Behtareen record" ki tarteeb)',
+      expected: 'Mutawaqqa (saakh; "Behtareen record" ki tarteeb)',
+      cautious: 'Mohtaat score',
       uncertainty: 'Ghair yaqeeni aur gehrai',
       reliability: 'Bharosa',
       reliabilityCounts: '{completed} mukammal, {early} pehle se aur {late} der se mansookhiyan, {noShows} ghair haazriyan',
@@ -2396,7 +2396,7 @@ export default {
     notRated: 'Rating nahi di',
     selfDeclared: 'Karigar ka apna likha hua (is platform ne jaancha nahi).',
     sortTrack: 'Behtareen record',
-    sortTrackNote: 'Is tarteeb mein naye karigar neeche nazar aatay hain. Unhein dekhne ke liye "Haal hi mein update hue" chunein.',
+    sortTrackNote: 'Naye karigar is website ki aam rating se shuru hotay hain, is liye woh is tarteeb ke darmiyan mein nazar aatay hain. Sab se naye dekhne ke liye "Haal hi mein update hue" chunein.',
     hasJobs: 'Is platform par kaam kar chuke',
     hasJobsHint: 'Sirf woh karigar jin ki kam az kam aik booking mukammal ho chuki ho',
     reason: {

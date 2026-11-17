@@ -37,6 +37,22 @@ if (files.length) {
   console.log(`\n**Test seeds** (SIMULATION; seeds ${any.seeds.first}..${any.seeds.last}, ${any.seeds.count} seeds, ${any.workersPerRun} workers per run; rep-2 = ${JSON.stringify(any.rep2Selected)}, parameters ${any.parametersHash}; frozen commit ${any.gitCommit}; first file started ${first}${any.rerunReason ? `; RE-RUN: ${any.rerunReason}` : ''}). Mean (standard deviation) over seeds.\n`);
   const order = ['base', 'inflation', 'sybil_k3', 'sybil_k5', 'sybil_k10', 'smart_sybil_k3', 'smart_sybil_k5', 'smart_sybil_k10', 'slow_sybil', 'pair_collusion', 'quality_change', 'combined', 'busy_genuine', 'new_platform', 'base_noise30', 'base_noise50', 'sybil_k5_noise30', 'sybil_k5_noise50'];
   const names = Object.keys(reports).sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  if (process.argv.includes('--brief')) {
+    const m = (r, k, f) => r.methods[k].metrics[f];
+    console.log('| Scenario | NDCG@10: B1 / B4 / rep-1 cautious / **rep-2** | Attack lift: B1 / B4 / rep-1 cautious / **rep-2** | tau-b (all): B4 / **rep-2** | New-worker percentile: rep-1 / **rep-2** |');
+    console.log('|---|---|---|---|---|');
+    for (const name of names) {
+      const r = reports[name];
+      const four = (f) => ['B1', 'B4', 'rep1_cautious', 'rep2_expected'].map((k, i) => (i === 3 ? `**${f3(m(r, k, f).mean)}**` : f3(m(r, k, f).mean))).join(' / ');
+      console.log(`| ${name} | ${four('all.ndcg10')} | ${m(r, 'B1', 'attackLift').n ? four('attackLift') : '–'} | ${f3(m(r, 'B4', 'all.tau').mean)} / **${f3(m(r, 'rep2_expected', 'all.tau').mean)}** | ${f3(m(r, 'rep1_cautious', 'newWorkerPosition').mean)} / **${f3(m(r, 'rep2_expected', 'newWorkerPosition').mean)}** |`);
+    }
+    const c = checkCriteria(reports);
+    console.log(`\n- **S1** (base: rep-2 NDCG@10 ≥ B4 − 0.01 and ≥ B1): rep-2 ${f3(c.s1.rep2)}, B4 ${f3(c.s1.B4)}, B1 ${f3(c.s1.B1)} → **${c.s1.met ? 'met' : 'not met'}**`);
+    console.log(`- **S2** (lower attack lift and higher NDCG@10 than B1 and B4, each in ≥ 80% of seeds): ${c.s2.map((s) => `${s.scenario} ${s.checks.map((x) => pct(x.share)).join('/')}`).join('; ')} → **${c.verdict.S2 ? 'met' : 'not met'}**`);
+    console.log(`- **S3** (NDCG@10 above rep-1 cautious in ≥ 80% of seeds): ${c.s3.map((s) => `${s.scenario} ${pct(s.share)}`).join(', ')} → **${c.verdict.S3 ? 'met' : 'not met'}**`);
+    console.log(`- Engine by the pre-registered rule: **${c.liveEngine}**`);
+    process.exit(0);
+  }
   console.log('| Scenario | Method | NDCG@10 (all) | Kendall tau-b (all) | Precision@10 (all) | Attack lift | New-worker percentile |');
   console.log('|---|---|---|---|---|---|---|');
   for (const name of names) {

@@ -184,3 +184,13 @@ Every audit ID is mapped to its control and test in `docs/SECURITY.md`; the shor
 | D-056 the honesty test change | `frontend/src/test/honesty.test.js` | that test and `reputation-honesty.test.jsx` |
 | D-057 customer notifications via a menu link; three tests updated | `navLinks.js`, `NotificationsCount.jsx` | `module4.test.jsx` "customers have notifications too…", `app-batch4.test.jsx` (unchanged bell test) |
 | D-058 the simulation finding; nothing tuned | `docs/modules/MODULE-4.md` §5 | the committed `SIMULATION-*.json` files |
+
+### Batch 6B (17 Nov 2026): header, install, rep-2
+
+| Item | Where | Checked by |
+|---|---|---|
+| D-059 header collapses in a measured order; popovers stay inside the window | `components/layout/{headerFit.js,useStayInView.js,AppHeader.jsx,LanguageChoice.jsx}` | `header-fit.test.jsx`; e2e `header-fit.e2e.js` (4 roles × en/ur × 10 widths, axe) |
+| D-060 one install service; invitation; footer button on every page | `features/app/install/*`, `features/app/InstallHint.jsx`, `components/layout/Footer.jsx` | `install.test.jsx` (platforms, installed, prompt once, 14 days, second page, iOS steps, every route); e2e `install.e2e.js` (axe); manual `docs/INSTALL-MANUAL-TEST.md` |
+| D-061 to D-064 rep-2: recency off, new-reviewer budget, burst check, platform prior, rank by expected | `config/reputationParams.js` (`rep2Params`, `REP2_SELECTED`), `services/reputation/{reputationEngine,recompute,snapshot,matchingSignals}.js` | `reputationEngineRep2.test.js` (11 hand-worked cases, property tests per candidate), `reliabilityEngine.test.js` (rep-2 snapshot) |
+| D-065 pre-registered protocol; S1-S3; rep-2 live | `evaluation/reputation/{selectRep2,rep2Criteria,evaluate}.js`, README "rep-2 protocol"; results `SIMULATION-rep2-*` | `reputationRep2Evaluation.test.js` (rule, guard, criteria, scenarios); commits b4b4b09 → d634b3f → fd946a2 → f063aa4 |
+| D-066 public depth from visible reviews; rules from the parameters | `snapshot.publicDepth`, `services/reputation/rules.js`, `GET /api/meta/reputation-rules`, `MyReputation.jsx`, `HelpCentre.jsx` | `reliabilityEngine.test.js`, `reputationRules.test.js`, `reputation-rep2.test.jsx`, `reviews-reputation.test.js` |

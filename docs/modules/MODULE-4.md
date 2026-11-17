@@ -1,4 +1,4 @@
-# Module 4 — Reputation and Reliability Engine (Batch 6, 16–17 Nov 2026)
+# Module 4 — Reputation and Reliability Engine (Batch 6, 16–17 Nov 2026; rep-2 in Batch 6B, 17 Nov 2026)
 
 Bookings that create real work records, reviews after completed work, a weighted reputation score that
 says how sure it is, a reliability record, and an evaluation by simulation. Nothing in this module is
@@ -12,7 +12,7 @@ The team reports that the supervisor approved (1) keeping a minimal Work Booking
 | Proposal bullet | How it is met |
 |---|---|
 | Collection of customer ratings and reviews after completed work | A review is possible only for a `completed` booking, only by its customer, once, within 14 days, not while a dispute is open; never editable (D-041). |
-| Calculation of worker reputation based on work-related records | `services/reputation/reputationEngine.js`: each review is weighed by how the job was confirmed, its age, the reviewer's hiring history and repeats by the same customer (D-043, D-044). |
+| Calculation of worker reputation based on work-related records | `services/reputation/reputationEngine.js`: each review is weighed by how the job was confirmed and repeats by the same customer; reviews from first-time customer accounts count together at most B reviews' worth; many reviews in a few days count less; the prior is the platform's typical rating (rep-2, live since Batch 6B, D-061 to D-066; rep-1 of Batch 6: D-043, D-044). |
 | Maintenance of reliability indicators such as completed jobs and cancellations | `services/reputation/reliabilityEngine.js` from booking outcomes (completed, early and late worker cancellations, no-shows); declining never counts (D-040, D-046). |
 | Display of relevant reputation information on worker profiles | Public profile: stars with the count, depth in words, star bars, quick-answer counts, reliability counts, reviews with replies, verified work history; directory card line (D-047). |
 | Use of verified work history as supporting information for future matching | `toMatchingSignals(snapshot)` and `docs/contracts/MATCHING-INPUTS.md` for Module 7; "Best track record" sort (D-045). |
@@ -110,6 +110,51 @@ score 0.8775 against 0.8594).
 **Reliability** (same Beta numbers, same recency weight; tests in `reliabilityEngine.test.js`): nothing →
 0.5000 / 1.0000; 10 completed → 0.9167 / 0.1667; + 1 late cancellation → 0.8462 / 0.1538; + 1 early
 cancellation instead → 0.8800 / 0.1600; 3 completed + 1 no-show → 0.6667 / 0.3333 (expected / uncertainty).
+
+### 4.1 rep-2 (live since Batch 6B, 17 Nov 2026; D-061 to D-066)
+
+The Batch 6 simulation (§5.1–5.3) showed that rep-1's settings are not better than a plain average. rep-2 makes
+five changes that follow from that analysis; everything else (stars to evidence, the Beta numbers, provenance, the
+pair factor, depth thresholds, reliability) is unchanged. rep-1 stays in `config/reputationParams.js`
+(`REP1_PARAMS`, hash `23974876a27d`) as a method of the evaluation.
+
+| Change | rep-1 | rep-2 | Why (Batch 6 finding, SIMULATION) |
+|---|---|---|---|
+| 1. Recency | `0.5 ^ (age / 365)` | off (`halfLifeDays: null`, weight 1); the code stays for a pilot | fake reviews are always new; recency off lowered the attack lift in 7 of 8 attack scenarios |
+| 2. New reviewers | trust floor 0.5 + ramp to 1 after 3 other workers | reviewers with no completed job with any other worker count fully, but **together at most B reviews' worth**: each is multiplied by `min(1, B / m)`, m = the sum of their weights; reviewers with a hiring history count 1 | the floor halved every genuine first-time customer but still let ten fakes add five reviews' worth |
+| 3. Burst check | – | a review with 3 or more other reviews of the worker in the 14 days before it (the same moment counts) counts half | a candidate; the pre-registered selection decides |
+| 4. Prior | a = 0.5 (3 stars) | a = the plain mean of `(stars − 1) / 4` over all visible reviews on the platform, clamped to [0.2, 0.9]; 0.5 below 20 reviews. `recompute.js` passes it in; the snapshot stores `baseRate` | 0.5 is far below typical ratings, so workers with few reviews were pushed down whatever their stars |
+| 5. Ranking number | `cautious` | `expected` (`cautious` and `uncertainty` stay in the snapshot and in `toMatchingSignals`) | B4 (expected, unweighted) had the best NDCG@10 in the base world |
+
+**Chosen by the pre-registered selection (§5.4): B = 1, burst check on.** `expected = (r + W·a) / (r + s + W)`, W = 2;
+cautious as before with Beta(r + W·a, s + W·(1 − a)).
+
+Hand-worked rep-2 examples (each is a unit test in `backend/tests/unit/reputationEngineRep2.test.js` with explicit
+parameters B = 2, burst off, four decimals, all passing):
+
+| Case (a = 0.8 unless said) | r | s | uncertainty | expected | cautious |
+|---|---|---|---|---|---|
+| No reviews | 0 | 0 | 1.0000 | 0.8000 | 0.5040 |
+| One 5★ | 1 | 0 | 0.6667 | 0.8667 | 0.6488 |
+| One 1★ | 0 | 1 | 0.6667 | 0.5333 | 0.2136 |
+| Ten 5★, reviewers with history | 10 | 0 | 0.1667 | 0.9667 | 0.9029 |
+| 28 × 5★ + 12 × 4★, reviewers with history | 37 | 3 | 0.0476 | 0.9190 | 0.8657 |
+| Three 5★ from the same customer (1, 1/2, 1/3) | 1.8333 | 0 | 0.5217 | 0.8957 | 0.7174 |
+| Ten 5★ from ten new reviewers, B = 2 (0.2 each) | 2 | 0 | 0.5000 | 0.9000 | 0.7281 |
+| Two 4★ (history) + five 5★ from new reviewers, B = 2 (0.4 each) | 3.5 | 0.5 | 0.3333 | 0.8500 | 0.6770 |
+| The same seven reviews with no budget | 6.5 | 0.5 | 0.2222 | 0.9000 | 0.7784 |
+| Two 5★ from two new reviewers, B = 2 (the budget does not bite) | 2 | 0 | 0.5000 | 0.9000 | 0.7281 |
+| Platform with fewer than 20 reviews: a = 0.5, one 5★ | 1 | 0 | 0.6667 | 0.6667 | 0.3646 |
+
+**An honest change of the viva example:** by `expected`, ten 5★ reviews from customers with a hiring history
+(0.9667) now rank **above** forty reviews averaging 4.7 (0.9190); rep-1's `cautious` put the forty first. Both stay
+far above a single 5★ (0.8667). `npm run reputation:sensitivity` prints rep-2's tables for B 1/2/3, burst off/on,
+a 0.5/0.7/0.8 and W 1/2/4.
+
+**Public depth word (D-066):** with B = 1, twelve reviews from twelve first-time customers are one review's worth of
+evidence; "Few reviews yet" next to "(12)" would contradict what customers see. For rep-2 snapshots the public word
+follows the number of visible reviews (the same thresholds as if each weighed 1); the score's own `depth`
+(the worker, admins, matching) stays evidence-based.
 
 ## 5. Evaluation by simulation
 
@@ -274,6 +319,105 @@ whether real fake accounts look like the simulated ones. Choosing new parameters
 be circular. The production parameters were **not** changed: that is a decision for the team and the
 supervisor, to be checked on new seeds and on the real pilot (`docs/evaluation/REPUTATION-PILOT-PLAN.md`).
 
+### 5.4 rep-2: a pre-registered second version (Batch 6B, 17 Nov 2026; SIMULATION)
+
+**Method.** Everything was fixed in `BATCH_6B` before any rep-2 run, and written into
+`backend/evaluation/reputation/README.md` ("rep-2 protocol") and committed (b4b4b09) before the first one:
+the five changes, six candidates (B ∈ {1, 2, 3} × burst off/on), the selection rule, the success criteria and
+which engine goes live. Three new scenarios test the limits of the new defences: `slow_sybil` (five fakes spread
+over a year: no burst), `busy_genuine` (10% of workers get 8 genuine reviews in 14 days: the cost of the burst
+check), `new_platform` (80% of genuine reviewers have no other hiring history: the cost of the budget); plus the
+noise variants (star noise sd 0.3 and 0.5).
+
+1. **Development seeds** 20261116..20261145 (seen in Batch 6): selection only (`selectRep2.js`).
+2. **Rule:** among candidates with base NDCG@10 ≥ B4 − 0.01, the highest mean NDCG@10 over sybil_k3, sybil_k5,
+   sybil_k10, pair_collusion and combined; ties to smaller B, then burst off.
+3. **Freeze:** the choice written into `REP2_SELECTED`, unit tests run, committed: **d634b3f** (2026-11-17 13:56:33 UTC).
+4. **Test seeds** 20270101..20270130 (never used before), **one run** at d634b3f; the first file started
+   2026-11-17 17:06:13 UTC (after the freeze). The run refuses to start before a freeze, with uncommitted changes,
+   or a second time. It was not re-run.
+5. **Criteria** (paired, seed by seed, rep-2 `expected`): S1 no cost without attack; S2 attacks; S3 better than v1.
+   Engine: rep-2 goes live if S1 and S3 hold.
+
+**Development seeds: the selection** (all six candidates passed the base-world line):
+
+**Selection on the DEVELOPMENT seeds** (SIMULATION; seeds 20261116..20261145, 300 workers per run, git b4b4b09, 2026-11-17T13:55:16.238Z). NDCG@10 (all workers), mean over seeds. Base-world line: B4 0.938 − 0.01 = 0.928.
+
+| Method | base | sybil_k3 | sybil_k5 | sybil_k10 | pair_collusion | combined | attack mean | passes the base line |
+|---|---|---|---|---|---|---|---|---|
+| B1 | 0.893 | 0.789 | 0.789 | 0.789 | 0.849 | 0.772 | 0.798 | – |
+| B4 | 0.938 | 0.872 | 0.675 | 0.563 | 0.868 | 0.817 | 0.759 | – |
+| rep-2 B1-burst-off | 0.935 | 0.934 | 0.935 | 0.933 | 0.902 | 0.901 | 0.921 | yes |
+| rep-2 B1-burst-on | 0.935 | 0.934 | 0.935 | 0.933 | 0.906 | 0.906 | 0.923 | yes |
+| rep-2 B2-burst-off | 0.940 | 0.886 | 0.875 | 0.850 | 0.911 | 0.897 | 0.884 | yes |
+| rep-2 B2-burst-on | 0.940 | 0.886 | 0.877 | 0.837 | 0.913 | 0.900 | 0.883 | yes |
+| rep-2 B3-burst-off | 0.940 | 0.748 | 0.740 | 0.733 | 0.922 | 0.874 | 0.803 | yes |
+| rep-2 B3-burst-on | 0.940 | 0.748 | 0.741 | 0.712 | 0.922 | 0.875 | 0.799 | yes |
+
+Chosen by the rule: **B = 1, burst on**.
+
+Attack lift (places bought; lower is better), development seeds, mean:
+
+| Method | sybil_k3 | sybil_k5 | sybil_k10 | pair_collusion | combined |
+|---|---|---|---|---|---|
+| B1 | 112.112 | 124.137 | 137.657 | 107.316 | 97.710 |
+| B4 | 139.456 | 157.926 | 172.398 | 121.544 | 130.288 |
+| rep-2 B1-burst-off | 75.229 | 77.192 | 74.590 | 83.989 | 60.423 |
+| rep-2 B1-burst-on | 75.301 | 76.714 | 73.059 | 83.591 | 60.046 |
+| rep-2 B2-burst-off | 103.926 | 107.961 | 108.409 | 88.882 | 77.087 |
+| rep-2 B2-burst-on | 103.967 | 106.468 | 105.308 | 88.522 | 76.441 |
+| rep-2 B3-burst-off | 118.213 | 125.058 | 125.648 | 89.536 | 87.813 |
+| rep-2 B3-burst-on | 118.236 | 123.389 | 121.700 | 89.113 | 86.567 |
+
+**Test seeds** (SIMULATION; seeds 20270101..20270130, 30 seeds, 300 workers per run; rep-2 = {"newReviewerBudget":1,"burst":true}, parameters cfb1c342f1f5; frozen commit d634b3f; first file started 2026-11-17T17:06:13.207Z). Mean (standard deviation) over seeds.
+
+| Scenario | NDCG@10: B1 / B4 / rep-1 cautious / **rep-2** | Attack lift: B1 / B4 / rep-1 cautious / **rep-2** | tau-b (all): B4 / **rep-2** | New-worker percentile: rep-1 / **rep-2** |
+|---|---|---|---|---|
+| base | 0.892 / 0.936 / 0.900 / **0.936** | – | 0.477 / **0.523** | 19.805 / **46.873** |
+| inflation | 0.857 / 0.910 / 0.872 / **0.916** | – | 0.352 / **0.514** | 15.881 / **48.110** |
+| sybil_k3 | 0.758 / 0.883 / 0.879 / **0.936** | 113.528 / 140.168 / 142.440 / **75.747** | 0.315 / **0.446** | 17.129 / **46.159** |
+| sybil_k5 | 0.758 / 0.661 / 0.733 / **0.935** | 125.559 / 159.426 / 157.419 / **76.992** | 0.286 / **0.443** | 17.129 / **47.352** |
+| sybil_k10 | 0.758 / 0.562 / 0.557 / **0.934** | 140.223 / 174.913 / 164.118 / **74.170** | 0.264 / **0.425** | 17.129 / **56.672** |
+| smart_sybil_k3 | 0.758 / 0.883 / 0.703 / **0.707** | 113.528 / 140.168 / 157.126 / **135.320** | 0.315 / **0.380** | 17.129 / **43.841** |
+| smart_sybil_k5 | 0.758 / 0.661 / 0.585 / **0.602** | 125.559 / 159.426 / 163.332 / **151.781** | 0.286 / **0.358** | 17.129 / **44.398** |
+| smart_sybil_k10 | 0.758 / 0.562 / 0.561 / **0.559** | 140.223 / 174.913 / 164.827 / **164.018** | 0.264 / **0.324** | 17.129 / **52.837** |
+| slow_sybil | 0.758 / 0.661 / 0.857 / **0.936** | 125.559 / 159.426 / 149.818 / **77.744** | 0.286 / **0.443** | 17.129 / **47.297** |
+| pair_collusion | 0.849 / 0.878 / 0.885 / **0.918** | 106.611 / 118.956 / 116.409 / **84.624** | 0.442 / **0.504** | 18.857 / **47.118** |
+| quality_change | 0.863 / 0.935 / 0.900 / **0.932** | – | 0.477 / **0.498** | 22.603 / **47.676** |
+| combined | 0.748 / 0.828 / 0.776 / **0.906** | 91.341 / 123.172 / 124.563 / **57.947** | 0.196 / **0.422** | 14.515 / **48.305** |
+| busy_genuine | 0.891 / 0.940 / 0.911 / **0.940** | – | 0.498 / **0.548** | 18.166 / **47.040** |
+| new_platform | 0.892 / 0.936 / 0.898 / **0.924** | – | 0.477 / **0.515** | 19.961 / **46.862** |
+| base_noise30 | 0.817 / 0.904 / 0.879 / **0.893** | – | 0.379 / **0.389** | 22.648 / **47.441** |
+| base_noise50 | 0.762 / 0.855 / 0.841 / **0.846** | – | 0.272 / **0.268** | 26.304 / **48.122** |
+| sybil_k5_noise30 | 0.734 / 0.604 / 0.667 / **0.888** | 116.894 / 152.656 / 154.846 / **71.184** | 0.211 / **0.315** | 19.693 / **49.114** |
+| sybil_k5_noise50 | 0.703 / 0.578 / 0.612 / **0.819** | 111.354 / 144.882 / 150.907 / **66.798** | 0.126 / **0.201** | 23.027 / **50.853** |
+
+- **S1** (base: rep-2 NDCG@10 ≥ B4 − 0.01 and ≥ B1): rep-2 0.936, B4 0.936, B1 0.892 → **met**
+- **S2** (lower attack lift and higher NDCG@10 than B1 and B4, each in ≥ 80% of seeds): sybil_k3 100%/100%/100%/90%; sybil_k5 100%/100%/100%/100%; sybil_k10 100%/100%/100%/100%; pair_collusion 90%/97%/100%/90%; combined 100%/100%/100%/100% → **met**
+- **S3** (NDCG@10 above rep-1 cautious in ≥ 80% of seeds): base 97%, sybil_k3 100%, sybil_k5 100%, sybil_k10 100%, pair_collusion 93%, combined 100% → **met**
+- Engine by the pre-registered rule: **rep-2**
+
+Full tables (every method, every metric with standard deviations, the paired comparisons):
+[`docs/evaluation/REP2-SIMULATION-TABLES.md`](../evaluation/REP2-SIMULATION-TABLES.md), generated by
+`node docs/tools/rep2-tables.mjs`; the criteria: `npm run evaluate:rep2-criteria`.
+
+**Which engine is live:** S1 and S3 were met, so by the rule decided in advance **rep-2 is the production engine**
+(`LIVE_ENGINE = 'rep-2'`); the demo snapshots were rebuilt.
+
+**What this shows, in plain words (SIMULATION only).** In this simulator, the second version keeps the plain Beta's
+quality on the top ten when nobody attacks, and it holds that quality against naive fake accounts and a colluding
+friend, where every baseline and rep-1 lose a lot (sybil_k10: 0.934 against 0.758 for the plain average). It also
+needed fewer places to be bought by fakes (about 75 instead of 114–175).
+
+**What it does not show.** It does not stop the "smart" attacker who first hires other workers: there rep-2 is
+**worse** than the plain average (smart_sybil_k5 NDCG@10 0.602 against 0.758; about 152 places bought against
+126) — the budget looks only at hiring history, which this attacker buys. On a young platform where most genuine
+customers are new (`new_platform`), rep-2 is a little below the plain Beta (0.924 against 0.936; better in 30% of
+seeds). With noisier stars it is about 0.01 below the plain Beta without attacks. New workers now sit near the
+middle of the ranking (percentile about 47 instead of about 20), which is a choice with costs of its own (Module
+7). The development seeds were seen twice (Batch 6 and the selection); only the test-seed numbers are evidence,
+and only about the simulator. A real pilot is still needed (`docs/evaluation/REPUTATION-PILOT-PLAN.md`).
+
 ## 6. Who sees what
 
 | Where | Shown | Never shown |
@@ -299,38 +443,61 @@ booking is accepted and for 7 days after it closes.
 
 ## 8. Limitations (stated plainly)
 
-- The simulation results above: with the provisional parameters the model is not better than the baselines
-  overall, and recency helps recent fake reviews (§5.3).
+- The simulation results above: with the provisional parameters rep-1 was not better than the baselines
+  overall, and recency helped recent fake reviews (§5.3). rep-2 (§5.4) fixed that **in the simulator**; it is
+  still not a real-world result.
+- **rep-2 does not stop a "smart" attacker** who first completes real jobs with other workers: such accounts are
+  not "new", so the budget does not apply, and in the simulation rep-2 is then worse than a plain average.
+  The pattern check (two flag rules for an admin) is the only other defence.
+- rep-2's budget also limits **genuine** first-time customers: on a young platform most reviews come from them, and
+  a worker's score then moves slowly (simulation `new_platform`: a little below the plain Beta).
+- With the platform prior, a worker without reviews scores the platform's typical rating, so new workers rank near
+  the middle; one bad first review moves them below it. Whether that is fair is Module 7's question.
+- The burst check also halves genuine reviews of a busy worker (8 in 14 days); in the simulation this cost little
+  (`busy_genuine`), but real busy weeks may look different.
 - Contact details written as words ("zero three zero zero …") pass the contact-info check.
 - The request limits are counted, not locked: two requests sent in the same millisecond could both pass.
 - An accepted booking that nobody ever confirms, cancels or reports stays accepted (Module 10's check-in will close this).
 - The pattern check has two rules only; a patient attacker can stay under them. A flag never changes a score.
-- `reviewerTrust` trusts a customer's past jobs, which a determined attacker can buy (the "smart" Sybil).
+- rep-1's `reviewerTrust` and rep-2's budget both trust a customer's past jobs, which a determined attacker can buy (the "smart" Sybil).
 - Demo data is written straight into the demo database and is therefore not in the audit log.
 
 ## 9. How to explain this in the viva
 
 **Why not a plain average?** One 5★ review would beat forty reviews averaging 4.7, and a plain average cannot say
-how sure it is. Our score keeps the evidence and the doubt apart: the more real evidence, the smaller the
-doubt. The cautious score is what we are fairly sure of, so a worker with one lucky review does not jump over a
-worker with a long good record.
+how sure it is. Our score keeps the evidence and the doubt apart, and starts from the platform's typical rating
+instead of zero: a worker with one lucky review moves only a little above the typical worker. Since rep-2 the
+ranking number is the middle estimate (`expected`); the careful number (`cautious`, "about 90% sure the true value
+is at least this") is still computed and shown to the worker.
 
 **Is this AI?** No. It is a written formula (a Beta reputation model from 2002) and a few fixed rules. Every number
 can be worked out by hand; the unit tests do exactly that.
 
 **How do you stop fake reviews?** Only a customer who finished a booking that both people confirmed can review,
-once per booking. Reviews from accounts that have hired nobody else count half. Many reviews from one customer
-count less each time. Two rules raise a flag for an admin. And we measured it: in our simulation these steps
-work against the attacks they target, but with the current settings recent fake reviews still buy places, which
-is why the settings are a decision for the pilot, not a finished fact.
+once per booking. Many reviews from one customer count less each time (1, 1/2, 1/3, …). All reviews from brand-new
+customer accounts together count as at most one review, and many reviews within a few days count half. Two rules
+raise a flag for an admin. In our simulation (test seeds, decided in advance) this cut the places that naive fake
+accounts could buy from about 114–175 to about 75 and kept the top ten almost as good as without an attack. It does
+**not** stop an attacker who first pays for real jobs with other workers; we say so, and the pilot must look for it.
 
-**What happens to new workers?** They show "New on this platform", they can always be found under "Recently
-updated", and the "Best track record" order says openly that new workers appear lower. Fair exposure for new
-workers is Module 7's own research question (Pallais 2014 shows why it matters).
+**Your first version lost to a plain average. What did you do?** We reported it as found (Batch 6, §5.3) and did
+not tune the numbers on the same runs. We wrote down why each part failed (recency rewarded the always-new fake
+reviews; the trust floor halved genuine first-time customers but still let ten fakes count five; the 0.5 prior
+pushed down workers with few reviews), designed five changes from those reasons, and fixed the candidates, the
+selection rule, the success criteria and which version goes live **before** running anything. We chose on seeds
+we had already seen and tested once on 30 new seeds, after committing the choice (the commit is older than every
+test result). Version 2 met the criteria, so it went live; the same files show where it still fails.
 
-**Where do the weights come from?** The structure comes from the paper (forgetting factor, discounting by the
-provider's standing). The numbers (half-life one year, auto 0.6, trust floor 0.5) are design choices written in
-one config file and marked provisional; the sensitivity script and the simulation show how much each one matters.
+**What happens to new workers?** They show "New on this platform" and can always be found under "Recently
+updated". Since rep-2 a new worker starts at the platform's typical rating, so in "Best track record" they appear in
+the middle (the page says so), above workers whose reviews are worse than typical. Fair exposure for new workers is
+Module 7's own research question (Pallais 2014 shows why it matters).
+
+**Where do the weights come from?** The structure comes from the paper (graded feedback, a prior, discounting by the
+provider's standing). The rep-2 values come from a pre-registered selection: the six candidates (budget 1, 2 or 3;
+burst check off or on) were fixed in advance, the rule picked B = 1 with the burst check on, and that choice was
+frozen in a commit before the test run. They are still design parameters in one config file; the sensitivity
+script shows how much each one matters, and the pilot can change them through the same protocol.
 
 **How did you evaluate it, and why a simulation?** A real evaluation needs the true quality of each worker, which
 nobody knows, and enough fake reviews to measure an attack, which we must not create on a live site. A seeded
@@ -353,6 +520,10 @@ it would push workers to accept jobs they cannot do and then cancel, which hurts
   "Schedules": check the dashboard when deploying.
 - No migration: a worker without a snapshot is "new". Optional after deploying: `npm run reputation:recompute -- --all`
   (refuses a remote database unless `--allow-remote` is given and you type `yes` after seeing the host).
+- **Batch 6B (rep-2 live):** after deploying, run `npm run reputation:recompute -- --all` once (with the team's
+  permission for the live database) so every snapshot says `rep-2` and stores `baseRate`; otherwise the daily cron
+  rebuilds workers with bookings, and "Best track record" mixes rep-1 and rep-2 numbers until then. No new
+  environment variable.
 - `npm run db:indexes` builds the new indexes (bookings, reviews, flags, the track-record index) on Atlas.
 
 ## References

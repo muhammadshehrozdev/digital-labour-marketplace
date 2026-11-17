@@ -969,3 +969,82 @@ In the simulation (30 seeds, `docs/modules/MODULE-4.md` §5), with the provision
 not better than the plain average overall, and recent fake reviews still buy places because the recency factor
 counts them almost fully. The individual defences do reduce the attacks they target. This is reported as found;
 the parameters were left as specified, and the choice of new values is left to the team and the supervisor (D-048).
+
+## D-059 — The header collapses in a measured order; menus stay inside the window (Batch 6B, 17 Nov 2026)
+
+Playwright screenshots (4 roles × 10 widths × English/Urdu × light/dark) showed the cause of the cut-off header:
+the customer header needs about 1373 px and the worker header about 1422 px, but the row is at most 1200 px wide
+and the full header was switched on at a fixed 960 px. Text with `overflow: hidden` and icons shrank first
+("En…", "Demo Customer…"), and `body { overflow-x: clip }` still let the browser scroll the page sideways when the
+account menu opened. Decision: no fixed breakpoints. `headerFit.js` measures the row and tries levels in a fixed
+order — full → no "Ctrl K" hint → no name (initials stay; the name is still read and is in the menu) → Sound and
+language into the account menu (visitors: a "More" menu) → the mobile menu → tools in the mobile menu → shield
+only → the night-mode button last. Nothing in the row may shrink, and only CSS (from the header's own attributes)
+hides things in the row: an earlier version let React state from the previous level feed the measurement and
+settled on a level that did not fit (found by the e2e test). Every popover is moved back inside the window with an
+8 px margin (`useStayInView`); a long email ends with "…" and its full address is in the title.
+
+## D-060 — One install service; no website can install itself (Batch 6B)
+
+`features/app/install/installStore.js` is the only install code: it keeps Chromium's `beforeinstallprompt` from app
+start, knows whether the app is installed (`display-mode: standalone`/`fullscreen`, iOS `navigator.standalone`,
+`appinstalled`, or an "accepted" answer) and the platform (`chromium`, `ios-safari`, `ios-other`, `other`). The
+first-visit invitation (an in-page sheet, not a phone notification) and the footer button use it. The team asked
+for automatic installation: **browsers do not allow it** — the browser shows its own question and the person must
+press "Install" (MDN, web.dev, checked 16–17 Nov 2026); on iPhone only Safari can add a web app, by Share → "Add to
+Home Screen". Own decisions: the invitation appears at most once per 14 days on a device (counted from when it is
+shown; "Not now", closing it and "dismissed" also hide it 14 days); it waits for the second page or 30 seconds, the
+first touch, no open dialog, no focused text field, no open mobile menu and no other bar at the bottom; the old
+`InstallHint.jsx` file was rebuilt on the service (nothing deleted). The page help and scroll-to-top buttons lift
+above any bar floating just above the bottom edge.
+
+## D-061 — rep-2: recency off for reviews (Batch 6B)
+
+Batch 6 (SIMULATION) showed that recency rewards fake reviews, which are always new: switching it off lowered the
+attack lift in 7 of 8 attack scenarios. rep-2 sets `halfLifeDays: null` (every review weighs 1); the code stays so a
+pilot can switch it on. Booking outcomes (reliability) keep their one-year half-life (`reliabilityHalfLifeDays`):
+rep-2's changes are about reviews (own decision).
+
+## D-062 — rep-2: a budget for new reviewers instead of the trust floor (Batch 6B)
+
+The trust floor 0.5 halved every genuine first-time customer but still let ten fake accounts add five reviews'
+worth; a floor of 0 removed the naive attack but cost rank quality. rep-2: reviewers with no completed job with any
+other worker count fully, but together at most B reviews' worth (each × `min(1, B / m)`, m = the sum of their
+weights after the pair factor, provenance and the burst check); reviewers with a hiring history count 1.
+Candidates B ∈ {1, 2, 3}; chosen B = 1 (D-065).
+
+## D-063 — rep-2: an optional burst check (Batch 6B)
+
+A review with 3 or more other reviews of the same worker in the 14 days before it counts half ("before" includes
+the same moment, so the result never depends on the order of the input). Candidates off/on; chosen on (D-065).
+Its cost was tested with `busy_genuine`.
+
+## D-064 — rep-2: the platform prior and `expected` as the ranking number (Batch 6B)
+
+The 0.5 prior (3 stars) is far below typical ratings and pushed workers with few reviews down whatever their stars.
+rep-2's base rate a is the plain mean of `(stars − 1) / 4` over all visible reviews, clamped to [0.2, 0.9], and 0.5
+below 20 reviews; `recompute.js` computes it and passes it in (the engine stays pure) and the snapshot stores it.
+`expected` (W = 2) orders "Best track record"; `cautious` and `uncertainty` stay for the worker, admins and
+`toMatchingSignals`, which gains `baseRate` (no field removed). Consequence stated in the documents: new workers now
+sit near the middle of that order, and ten perfect reviews rank above forty reviews averaging 4.7.
+
+## D-065 — The rep-2 protocol, the criteria and which engine went live (Batch 6B)
+
+Fixed before any rep-2 run (BATCH_6B §5.4; `evaluation/reputation/README.md`; committed in b4b4b09): six candidates;
+development seeds 20261116..20261145 for the selection only; the rule (base NDCG@10 ≥ B4 − 0.01, then the highest
+mean NDCG@10 over five attacks; ties to smaller B, then burst off); freeze in a commit; test seeds
+20270101..20270130 once; S1 (no cost without attack), S2 (attacks), S3 (better than rep-1); rep-2 goes live if S1 and
+S3 hold. The test run refuses to start before the freeze, with uncommitted changes, or a second time. Result
+(SIMULATION): all candidates passed the base line; the rule chose B = 1 with the burst check on; frozen in
+d634b3f (13:56:33 UTC); the test run started at 17:06:13 UTC, once; S1, S2 and S3 were met; **rep-2 is live**.
+The documents also report where it fails (the "smart" attacker, `new_platform`, noisier stars). rep-1 stays as a
+method of the evaluation; tests that tested rep-1 through the default now name rep-1 with unchanged values.
+
+## D-066 — rep-2's public depth word follows the visible reviews (Batch 6B)
+
+With B = 1, twelve reviews from first-time customers are one review's worth of evidence, and "Few reviews yet" next
+to "(12)" would contradict what customers see. For rep-2 snapshots, `reputation.public.depth` comes from the number
+of visible reviews (uncertainty W / (n + W), the same thresholds); `score.depth` stays evidence-based. Display only:
+the frozen parameters did not change. Also: the reputation rules are served by `GET /api/meta/reputation-rules` and
+worded by the website, so My reputation and the Help Centre always say what the live engine does; the Urdu answer
+"I did come" became gender-neutral ("میں نے حاضری دی تھی"), for team review.

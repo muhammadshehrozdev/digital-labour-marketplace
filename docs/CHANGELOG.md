@@ -2,6 +2,35 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 6B — header fix, "Install this app", reputation engine v2 (17 Nov 2026)
+
+Why: a header that cut off the account name and its menu on Windows laptops (125–150% display scaling); the
+team's request that everyone is invited to install the website as an app; and the Batch 6 finding that rep-1 was
+not better than a plain average. No new package. Nothing here is AI: written formulas and fixed rules.
+
+- **Header (D-059):** measured, never cut off: it hides the "Ctrl K" hint, then the name next to the avatar,
+  then moves Sound and language into the account menu (visitors: "More"), then switches to the mobile menu.
+  Every menu stays inside the window (8 px margin); a long email ends with "…". Checked in the browser for every
+  role, English and Urdu, at 10 widths from 360 to 1920 px.
+- **Install this app (D-060):** an invitation on the second page (or after 30 s) for everyone, once per 14 days,
+  with 🔊; a permanent "Install this app" button at the bottom of every page. The browser's own question where
+  it exists; otherwise steps with pictures (Chrome/Edge menu, iPhone Safari Share → Add to Home Screen, "open in
+  Safari", "use Chrome or Edge"). No website can install itself: the person always presses "Install".
+- **Reputation engine v2, rep-2 (D-061 to D-066):** recency off for reviews; reviews from brand-new customer
+  accounts count, but all together at most one review; many reviews in a few days count half; the platform's
+  typical rating as the starting point; "Best track record" orders by the middle estimate. Chosen and tested
+  with a pre-registered protocol: candidates, rule and success criteria fixed first; selection on the Batch 6
+  seeds; the choice frozen in a commit; one run on 30 new seeds.
+- **SIMULATION result (test seeds, not a real-world result):** S1, S2 and S3 met — as good as the plain Beta
+  without attacks (NDCG@10 0.936), much better under naive fake accounts and collusion (sybil_k10 0.934 against
+  0.758 for the plain average), better than rep-1 in 97–100% of seeds. **rep-2 is live.** Not solved: an
+  attacker who first hires other workers (worse than the plain average there); a young platform with mostly
+  first-time customers is slightly below the plain Beta.
+- **What people see:** "My reputation" and the Help Centre guide list the live rules from the server
+  (`GET /api/meta/reputation-rules`); new per-review reasons; the public depth word follows the visible reviews;
+  "Best track record" explains that new workers start in the middle. Urdu "I did come" is gender-neutral.
+- **Texts:** new and changed texts in English, Urdu and Roman Urdu (`docs/i18n/REVIEW-BATCH-6B.md`).
+
 ## Batch 6 — Module 4: bookings, reviews and the reputation engine (16–17 Nov 2026)
 
 Why: Module 4 of the proposal (Reputation and Reliability Engine). The team reports supervisor approval

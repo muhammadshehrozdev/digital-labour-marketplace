@@ -1917,8 +1917,8 @@ export default {
     },
     breakdown: {
       tabs: 'Worker details',
-      expected: 'Expected (reputation)',
-      cautious: 'Cautious score (orders "Best track record")',
+      expected: 'Expected (reputation; orders "Best track record")',
+      cautious: 'Cautious score',
       uncertainty: 'Uncertainty and depth',
       reliability: 'Reliability',
       reliabilityCounts: '{completed} done, {early} early and {late} late cancellations, {noShows} no-shows',
@@ -2398,7 +2398,7 @@ export default {
     notRated: 'Not rated',
     selfDeclared: 'Written by the worker (not checked by this platform).',
     sortTrack: 'Best track record',
-    sortTrackNote: 'New workers appear lower in this order. Choose "Recently updated" to see them.',
+    sortTrackNote: 'New workers start at the typical rating of this website, so they appear in the middle of this order. Choose "Recently updated" to see the newest.',
     hasJobs: 'Has done jobs on this platform',
     hasJobsHint: 'Only workers with at least one finished booking',
     reason: {

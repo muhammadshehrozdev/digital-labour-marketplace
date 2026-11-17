@@ -2,6 +2,17 @@
   "generatedFrom": "docs/CHANGELOG.md",
   "sections": [
     {
+      "title": "Batch 6B — header fix, \"Install this app\", reputation engine v2 (17 Nov 2026)",
+      "points": [
+        "Header (D-059): measured, never cut off: it hides the \"Ctrl K\" hint, then the name next to the avatar, then moves Sound and language into the account menu (visitors: \"More\"), then switches to the mobile menu. Every menu stays inside the window (8 px margin); a long email ends with \"…\". Checked in the browser for every role, English and Urdu, at 10 widths from 360 to 1920 px.",
+        "Install this app (D-060): an invitation on the second page (or after 30 s) for everyone, once per 14 days, with 🔊; a permanent \"Install this app\" button at the bottom of every page. The browser's own question where it exists; otherwise steps with pictures (Chrome/Edge menu, iPhone Safari Share → Add to Home Screen, \"open in Safari\", \"use Chrome or Edge\"). No website can install itself: the person always presses \"Install\".",
+        "Reputation engine v2, rep-2 (D-061 to D-066): recency off for reviews; reviews from brand-new customer accounts count, but all together at most one review; many reviews in a few days count half; the platform's typical rating as the starting point; \"Best track record\" orders by the middle estimate. Chosen and tested with a pre-registered protocol: candidates, rule and success criteria fixed first; selection on the Batch 6 seeds; the choice frozen in a commit; one run on 30 new seeds.",
+        "SIMULATION result (test seeds, not a real-world result): S1, S2 and S3 met — as good as the plain Beta without attacks (NDCG@10 0.936), much better under naive fake accounts and collusion (sybil_k10 0.934 against 0.758 for the plain average), better than rep-1 in 97–100% of seeds. rep-2 is live. Not solved: an attacker who first hires other workers (worse than the plain average there); a young platform with mostly first-time customers is slightly below the plain Beta.",
+        "What people see: \"My reputation\" and the Help Centre guide list the live rules from the server (GET /api/meta/reputation-rules); new per-review reasons; the public depth word follows the visible reviews; \"Best track record\" explains that new workers start in the middle. Urdu \"I did come\" is gender-neutral.",
+        "Texts: new and changed texts in English, Urdu and Roman Urdu (docs/i18n/REVIEW-BATCH-6B.md)."
+      ]
+    },
+    {
       "title": "Batch 6 — Module 4: bookings, reviews and the reputation engine (16–17 Nov 2026)",
       "points": [
         "Work Booking: a customer requests one worker (picture choices for work, day and time; area; description), the worker hears the request (🔊) and accepts or declines; both press \"Work done\", or one side and 72 hours pass; cancellations with reasons (a worker's late cancellation counts double); \"Worker did not come\" from the start + 2 hours; one small dispute step decided by an admin (D-039 to D-042, D-049, D-050, D-053, D-054).",
@@ -25,14 +36,6 @@
         "Voice check page (/voice-check, linked from the Help Centre): which voices and clips this device has, test sentences, a microphone test, and how to add an Urdu voice on Android.",
         "Recorded clips: /dev/recorder (development builds only) for the team to record the Urdu help in their own voices; npm run audio:manifest; docs/audio/RECORDING-GUIDE.md. The service worker (v2) keeps clips for offline use; API answers are still never cached. No clips are recorded yet.",
         "Texts: 152 new or changed texts in English, Urdu and Roman Urdu are drafts until the team checks them (docs/i18n/REVIEW-BATCH-5.md, D-031)."
-      ]
-    },
-    {
-      "title": "Go-live kit and cleanup (11 Nov 2026)",
-      "points": [
-        "Wordmark: \"Digital Labour Marketplace\" is one element, weight 700, in the logo's colour, the full name at every width (before: two weights, the second word grey and hidden on phones).",
-        "Internal working notes (CLAUDE.md, the batch briefs, docs/audit/) are no longer tracked (kept on disk, in .gitignore); every reference now points to a tracked document. docs/SECURITY.md lists the project security rules.",
-        "Go-live (D-032, docs/DEPLOY-RUNBOOK.md): backend/api/index.js as the one Vercel function, a modern backend/vercel.json (no legacy builds; only public/ served), frontend/vercel.json passes /api/:path* to the backend before the app fallback; production settings check (missing variable, local database, non-https origin, missing TRUST_PROXY -> the server refuses to start); optional SHOW_CLIENT_IP check; npm run db:indexes; scripts/atlas-create-admin.sh (first admin from Ubuntu in a throwaway node:24-bookworm container, secrets from a file outside the repository)."
       ]
     }
   ]

@@ -101,9 +101,11 @@ These rules apply to every change. (They used to live only in the team's interna
 
 | Threat | Defence | Test |
 |---|---|---|
-| Fake praise (a worker praises himself) | Reviews only after a booking both people confirmed; one per booking; `BOOKING_SELF` (same phone or WhatsApp on both sides); reviews from accounts that hired nobody else count half; rule `new_account_praise` flags it | `integration/reviews-reputation.test.js` "only the customer of a completed booking…", "new_account_praise…"; `bookings.test.js` "BOOKING_SELF…"; simulation `sybil_*` (SIMULATION only) |
+| Fake praise (a worker praises himself) | Reviews only after a booking both people confirmed; one per booking; `BOOKING_SELF` (same phone or WhatsApp on both sides); **rep-2 (Batch 6B, live):** reviews from accounts that hired nobody else count together at most B = 1 review's worth (rep-1: half each); rule `new_account_praise` flags it | `integration/reviews-reputation.test.js` "only the customer of a completed booking…", "new_account_praise…"; `bookings.test.js` "BOOKING_SELF…"; `reputationEngineRep2.test.js` (budget hand-worked cases, "never more than B" property); simulation `sybil_*`, `slow_sybil` (SIMULATION only) |
 | Fake accounts (Sybil) | As above; the request limits; a flag never changes a score by itself, an admin decides | `bookings.test.js` "limits…"; simulation `sybil_*`, `smart_sybil_*` (SIMULATION only: recent fakes still buy places, MODULE-4.md §5.3) |
 | Repeat-pair collusion | The k-th review of the same customer counts 1/k; rule `repeat_pair_burst` | `reputationEngine.test.js` "three 5 star from the SAME customer"; `reviews-reputation.test.js` "repeat_pair_burst…"; simulation `pair_collusion` |
+| Burst of reviews (many accounts in a few days) — Batch 6B | rep-2: a review with 3 or more other reviews of the worker in the 14 days before it counts half; the cost for genuinely busy workers is measured | `reputationEngineRep2.test.js` "burst check (hand-worked)…"; simulation `busy_genuine`, `slow_sybil` (SIMULATION only) |
+| **Stated limit:** the "smart" attacker who first completes real jobs with other workers — Batch 6B | Not stopped by the engine: such accounts are not "new", so the budget does not apply (rep-1's reviewer trust had the same gap). Only the pattern check and admin moderation remain; the pilot must watch for it | simulation `smart_sybil_k3/k5/k10`: rep-2 worse than the plain average there (`docs/modules/MODULE-4.md` §5.4, SIMULATION only) |
 | Fake bad reviews | No review without a completed booking that both confirmed (or an admin decided); worker reply and report; admin hides abusive/unrelated/fake reviews with a reason (never for being negative) | `reviews-reputation.test.js` "an admin hides a review…", "reply once… report once…" |
 | Contact leak before acceptance (around D-002) | Contact block only from `GET /api/bookings/:id`, only accepted / 7 days after close; contact-info check on every free text (email, link, CNIC-like, 10+ digits in Western, Urdu, Arabic digits) | `bookings.test.js` "phone numbers (D-002)…" (lists, admin views, notifications), `unit/bookingRules.test.js` "contact-info check…", `reviews-reputation.test.js` "CSV… no phone numbers" |
 | Double actions, stale screens | Every step is one conditional update on the checked state: 409 `BOOKING_CHANGED` / `DISPUTE_ALREADY_DECIDED` / `REVIEW_STATUS_CHANGED` / `FLAG_ALREADY_DECIDED` | `bookings.test.js` "two accepts at the same time…", "a step based on a stale read…"; `reviews-reputation.test.js` "409 on a second decision" |
@@ -114,6 +116,11 @@ These rules apply to every change. (They used to live only in the team's interna
 
 Known limits: numbers written as words pass the contact-info check; request limits are counts, not locks; demo
 data is written straight into the demo database (not audited).
+
+Batch 6B also adds `GET /api/meta/reputation-rules` (public, no input, no database): it returns only rule ids and
+the live parameters' numbers (budget, burst window, late-cancel hours), never a score (`unit/reputationRules.test.js`).
+The install service keeps one versioned `localStorage` key (`dlm.install.v1`, a date only) and sends nothing to the
+server.
 
 ## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET; Module 4 adds the optional CRON_SECRET)
 

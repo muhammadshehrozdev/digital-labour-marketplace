@@ -14,7 +14,7 @@ Team: Muhammad Shehroz, Shahzaib Khan, Usama Asif. Supervisor: Ms. Tooba Abdul Q
 | **1 — Worker Digital Identity** | Secure accounts (HttpOnly cookie sessions), guided onboarding, worker profile with contact details, CNIC stored encrypted, identity check by an admin with a note, customer directory without private data, audit log |
 | **2 — Experience and Skill Profiler** | A **rule-based (dictionary) skill extractor**: the worker describes their work in Urdu, Roman Urdu or English and gets skill suggestions with the matched words; nothing is saved until the worker ticks and adds. An evaluation harness (precision, recall, F1) for real labelled data. No "AI", no external AI service |
 | **3 — Skill Evidence and Verification** | Workers upload photos of certificates, finished work or reference letters for one skill; an admin approves, rejects, flags as suspected fake or revokes; each skill shows Self-declared / Evidence pending / Verified by evidence / Disputed and a strength word (no percentages) |
-| **4 — Reputation and Reliability Engine** | A minimal **Work Booking** (request → accept → both confirm "Work done"; cancel, no-show, a small dispute step); phone numbers shared only inside an accepted booking (D-002); **reviews** after completed work (never edited); a **weighted Beta reputation model** (Jøsang & Ismail 2002) that says how sure it is, a reliability record, verified work history, "Best track record" order, rule-based flags for admins; **evaluated by simulation** (`backend/evaluation/reputation/`, results are simulation results only). No "AI" |
+| **4 — Reputation and Reliability Engine** | A minimal **Work Booking** (request → accept → both confirm "Work done"; cancel, no-show, a small dispute step); phone numbers shared only inside an accepted booking (D-002); **reviews** after completed work (never edited); a **weighted Beta reputation model** (Jøsang & Ismail 2002) that says how sure it is — version 2 (rep-2, Batch 6B) live after a pre-registered test — a reliability record, verified work history, "Best track record" order, rule-based flags for admins; **evaluated by simulation** (`backend/evaluation/reputation/`, results are simulation results only). No "AI" |
 
 Across all modules (Batch 3): the website works in **English, اردو (Urdu, right to left) and Roman
 Urdu** (chooser on the first visit, switcher at the top, the choice is saved to the account); a bold
@@ -44,7 +44,12 @@ history and reliability counts; workers see "My reputation" in plain words; admi
 moderation and reputation flags. Details, formulas, the simulation results and the viva answers:
 `docs/modules/MODULE-4.md`.
 
-Deployment (Phase 8) is not done yet.
+Batch 6B fixes the header (it never cuts off the name or a menu, at any window width), invites everyone to
+**install the website as an app** (an invitation after the second page and an "Install this app" button at the
+bottom of every page; the browser always asks the person, no site can install itself), and makes **rep-2** the
+live reputation engine after a pre-registered test (simulation only; `docs/modules/MODULE-4.md` §5.4).
+
+The website has been live since 12 Nov 2026 (Vercel). New batches are deployed by the team after review.
 
 ## Folders
 
@@ -211,6 +216,9 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 | `npm run confidence:sensitivity` | Shows how the Module 3 skill score changes with other weights (formula outputs) |
 | `npm run reputation:sensitivity` | Module 4: how the reputation score moves when one parameter changes (formula outputs, not results) |
 | `npm run evaluate:reputation -- --scenario all --seeds 30` | Module 4 evaluation **by simulation**; writes `evaluation/reputation/results/SIMULATION-*.json` |
+| `npm run evaluate:rep2-select` | Batch 6B: the rep-2 selection on the development seeds (simulation; already done, kept for checking) |
+| `npm run evaluate:reputation -- --protocol rep2-test --scenario all --seeds 30` | Batch 6B: the one test-seed run of rep-2 (refuses to run a second time without `--rerun "<reason>"`) |
+| `npm run evaluate:rep2-criteria` | Batch 6B: S1, S2, S3 from the committed test-seed files (no simulation) |
 | `npm run reputation:recompute -- --worker <workerIdCode>` / `-- --all` | Rebuilds reputation snapshots; local database only unless `--allow-remote` **and** you type `yes` |
 | `npm run demo:module4` | Adds the synthetic Module 4 demo data to the demo database (`preview.sh demo` and `reset-demo` run it for you) |
 | `npm run evaluate:skills -- --file <dataset.csv>` | Module 2 evaluation on a labelled dataset (`docs/evaluation/README.md`) |
@@ -264,4 +272,7 @@ The clip recorder is a development page: `http://127.0.0.1:5173/dev/recorder` (n
 | `docs/MODULE-4-MANUAL-TEST.md` | Checklist for three browser windows and an Android phone |
 | `docs/evaluation/REPUTATION-PILOT-PLAN.md` | A **plan** for a small real pilot (no results) |
 | `docs/i18n/REVIEW-BATCH-6.md` | The new Module 4 texts side by side, **waiting for the team's review**, with the clips to record |
+| `docs/i18n/REVIEW-BATCH-6B.md` | Batch 6B's new and changed texts (header, install, rep-2), **waiting for the team's review**, with the clips to record |
+| `docs/evaluation/REP2-SIMULATION-TABLES.md` | rep-2's simulation tables, generated from the result files |
+| `docs/INSTALL-MANUAL-TEST.md` | Hand checks of "Install this app": desktop Chrome locally; Android and iPhone on the live site |
 | `docs/CHANGELOG.md` | What changed in each phase |
