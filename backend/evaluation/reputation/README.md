@@ -17,6 +17,8 @@ simulation (decision D-038).
 | `simulate.js` | The synthetic world (workers, hidden quality, reviews, attacks). |
 | `methods.js` | Baselines B1-B4, ours, ablations. "Ours" **imports** the production engine; nothing is copied. |
 | `metrics.js` | Kendall's tau-b, NDCG@k, Precision@k, summaries, paired comparison (pure, unit-tested). |
+| `selectRep2.js` | Batch 6B: `node evaluation/reputation/selectRep2.js` — the rep-2 selection on the **development** seeds (see "rep-2 protocol"). Writes `results/SIMULATION-rep2-dev-<date>-selection.json`. |
+| `rep2Criteria.js` | Batch 6B: `node evaluation/reputation/rep2Criteria.js [--markdown]` — S1, S2, S3 from the **test-seed** files; never runs a simulation. |
 | `rng.js` | Seeded random numbers (mulberry32, Box-Muller, Gamma/Beta, geometric). No `Math.random`. |
 | `config.js` | Every value below, and the scenarios. |
 | `results/` | Output files of real runs of these scripts (all simulation). |
@@ -54,7 +56,14 @@ seed. That makes the paired comparison and the attack lift fair.
 | `quality_change` | 20% of workers lost 0.3 of quality twelve months ago; older reviews reflect the old quality |
 | `combined` | `inflation` + `sybil_k5` + `pair_collusion` + `quality_change` |
 
-`--scenario sybil` runs the three `sybil_k*` scenarios; `--scenario all` runs every scenario.
+| `slow_sybil` (6B) | As `sybil_k5`, but the five fake reviews are spread evenly over the last 12 months (ages 36.5, 109.5, 182.5, 255.5, 328.5 days): no burst. The same workers are attacked as in `sybil_k5` |
+| `busy_genuine` (6B) | 10% of workers (chosen at random, any quality) get 8 extra **genuine** reviews from the last 14 days (stars from their quality, own random stream): the cost of the burst check |
+| `new_platform` (6B) | 80% of genuine reviewers have no other hiring history (each review: with probability 0.8 the reviewer's count is 0, otherwise its base draw but at least 1); stars and dates as in `base`: the cost of the new-reviewer budget on a young platform |
+| `base_noise30`, `base_noise50`, `sybil_k5_noise30`, `sybil_k5_noise50` (6B) | `base` / `sybil_k5` with star noise sd 0.3 and 0.5 (the default is 0.15): the noise variants |
+
+`--scenario sybil` runs the three `sybil_k*` scenarios; `--scenario noise` the four noise variants;
+`--scenario all` runs every scenario. The three Batch 6B scenarios use their own random streams, so every
+other draw (the genuine reviews, the attacks) stays exactly as in `base`.
 
 ## Methods (`methods.js`)
 
@@ -78,6 +87,29 @@ seed. That makes the paired comparison and the attack lift fair.
 - Per scenario and method: mean, standard deviation, 2.5th and 97.5th percentiles across seeds, and a
   **paired** comparison of ours against every other method, seed by seed (mean difference, share of
   seeds where ours is better).
+
+## rep-2 protocol (Batch 6B, pre-registered; written here BEFORE any rep-2 run)
+
+The Batch 6 results (above, rep-1) showed that the rep-1 settings are not better than a plain average.
+rep-2 (`config/reputationParams.js`) makes five changes that follow from that analysis: recency off; a budget
+of B reviews' worth for all new reviewers together instead of the trust floor; an optional burst check; the
+platform's mean rating as the prior (0.5 below 20 reviews); `expected` as the ranking number.
+
+| Step | What | Seeds |
+|---|---|---|
+| Seeds | **development seeds 20261116..20261145** (30, already seen in Batch 6); **test seeds 20270101..20270130** (30, never used before). Constants in `config.js` (`DEV_SEED_BASE`, `TEST_SEED_BASE`, `PROTOCOL_SEEDS`). No unit test runs the test seeds. | |
+| Candidates | B in {1, 2, 3} x burst {off, on}: six candidates, all with changes 1, 4 and 5 (`REP2_CANDIDATES`) | |
+| Selection rule | Among the candidates whose base-world NDCG@10 (all workers, `expected`) is at least B4's minus 0.01, the highest mean NDCG@10 over `sybil_k3`, `sybil_k5`, `sybil_k10`, `pair_collusion`, `combined`. Ties: smaller B, then burst off. No candidate passes: stop, the team decides. `selectRep2.js` | development only |
+| Freeze | The chosen values go into `REP2_SELECTED`; unit tests run; **commit**. That commit is the pre-registration: it is older than every test-seed file. | |
+| Test run, once | `npm run evaluate:reputation -- --protocol rep2-test --scenario all --seeds 30`: B1, B2, B3, B4, rep-1 (expected, cautious), rep-2 (expected, cautious), every scenario including the noise variants. Files `results/SIMULATION-rep2-test-<date>-<scenario>.json` with the commit, the per-seed numbers and `startedAt`. The script refuses before the freeze, with uncommitted changes, with other seeds or worker counts, and a second time (only `--rerun "<reason>"` after a bug fix, and the reason is written into every file and reported). | test only |
+| S1 | In `base`, mean NDCG@10 of rep-2 (`expected`) >= B4 - 0.01 **and** >= B1. | test |
+| S2 | In `sybil_k3`, `sybil_k5`, `sybil_k10`, `pair_collusion`, `combined`: rep-2 has a lower attack lift **and** a higher NDCG@10 than B1 **and** than B4, each in at least 80% of seeds (paired, seed by seed). | test |
+| S3 | rep-2 has a higher NDCG@10 than rep-1 (cautious) in `base` and every S2 scenario, in at least 80% of seeds. | test |
+| Report only | `smart_sybil_*`, `slow_sybil`, `busy_genuine`, `new_platform`, `inflation`, `quality_change`, the noise variants; Kendall's tau-b, Precision@10, the new-worker percentile. | test |
+| Engine | S1 and S3 hold: rep-2 becomes the production engine. Otherwise rep-1 stays live and the team decides. S2 only decides what the report may claim. | |
+
+"Higher" and "lower" are strict (a tie is not a win). rep-2's platform base rate in the simulator is the mean
+of ALL reviews of the run, fakes included, as it would be in reality.
 
 ## Honesty notes (read before quoting anything)
 

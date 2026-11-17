@@ -18,6 +18,7 @@ import { trusted } from '../services/booking/lifecycle.js';
 import { loadReputationInput, safeRecompute, reputationExplanation } from '../services/reputation/recompute.js';
 import { snapshotFrom } from '../services/reputation/snapshot.js';
 import { runPatternCheck } from '../services/reputation/patternCheck.js';
+import { reputationRules } from '../services/reputation/rules.js';
 import { BOOKING_RULES } from '../config/bookingRules.js';
 import { DEFAULT_REPUTATION_PARAMS as P } from '../config/reputationParams.js';
 
@@ -141,6 +142,8 @@ export const getMyReputation = async (req, res) => {
       disputeStatus: c.dispute?.status ?? null, disputeDecision: c.dispute?.decision ?? null,
     })),
     rules: {
+      // Batch 6B: the rules of the live engine as ids and numbers (rules.js), so the page says what the code does
+      ...reputationRules(),
       lateCancelHours: BOOKING_RULES.LATE_CANCEL_HOURS,
       earlyCancelCounts: P.reliabilityNegative.cancelled_by_worker_early,
       lateCancelCounts: P.reliabilityNegative.cancelled_by_worker_late,

@@ -7,7 +7,8 @@ import Booking from '../../models/Booking.js';
 import Review from '../../models/Review.js';
 import WorkerProfile from '../../models/WorkerProfile.js';
 import { snapshotFrom } from './snapshot.js';
-import { computeReputation } from './reputationEngine.js';
+import { computeReputation, platformBaseRate } from './reputationEngine.js';
+import { DEFAULT_REPUTATION_PARAMS } from '../../config/reputationParams.js';
 
 // For each customer: how many OTHER workers they have a completed booking with (reviewerTrust's n).
 export async function otherWorkersByCustomer(customerIds, workerProfileId) {
@@ -17,6 +18,22 @@ export async function otherWorkersByCustomer(customerIds, workerProfileId) {
     { $group: { _id: '$customer', workers: { $addToSet: '$worker' } } },
   ]);
   return new Map(rows.map((r) => [String(r._id), r.workers.length]));
+}
+
+// rep-2, change 4: { count, meanEvidence } over every VISIBLE review on the platform, meanEvidence = the
+// plain mean of p = (stars - 1) / 4. The engine turns it into the base rate (platformBaseRate).
+export async function loadPlatformStats() {
+  const [row] = await Review.aggregate([
+    { $match: { status: 'visible' } },
+    { $group: { _id: null, count: { $sum: 1 }, meanEvidence: { $avg: { $divide: [{ $subtract: ['$rating', 1] }, 4] } } } },
+  ]);
+  return { count: row?.count ?? 0, meanEvidence: row?.meanEvidence ?? null };
+}
+
+// The base rate the live engine uses right now (rep-1: always its fixed 0.5).
+export async function currentBaseRate(params = DEFAULT_REPUTATION_PARAMS) {
+  if (!params.platformPrior) return params.baseRate;
+  return platformBaseRate(await loadPlatformStats(), params);
 }
 
 // The engines' input for one worker, from the database.
@@ -37,6 +54,7 @@ export async function loadReputationInput(workerProfileId) {
   }
   const others = await otherWorkersByCustomer([...new Set(reviews.map((r) => String(r.customer)))].map((c) => new mongoose.Types.ObjectId(c)), id);
   return {
+    baseRate: await currentBaseRate(),
     closedBookings: closed.map((b) => ({
       id: String(b._id), outcome: b.outcome, closedAt: b.closedAt, customerId: String(b.customer), skillId: b.skillId, accepted: Boolean(b.acceptedAt),
     })),
@@ -66,7 +84,7 @@ export async function recomputeReputation(workerProfileId, now = new Date()) {
 // The explanation for the worker's "How my reputation is counted" page and the admin view.
 export async function reputationExplanation(workerProfileId, now = new Date()) {
   const input = await loadReputationInput(workerProfileId);
-  const reputation = computeReputation(input.reviews, { now });
+  const reputation = computeReputation(input.reviews, { now, baseRate: input.baseRate });
   const byId = new Map(input.reviews.map((r) => [r.id, r]));
   return {
     perReview: reputation.perReview.map((p) => ({ ...p, skillId: byId.get(p.id)?.skillId ?? null, reviewerOtherWorkers: byId.get(p.id)?.reviewerOtherWorkers ?? 0 })),

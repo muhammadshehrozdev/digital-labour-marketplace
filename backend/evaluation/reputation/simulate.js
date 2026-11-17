@@ -23,7 +23,11 @@ export function simulateWorld({ seed, scenario = {}, workers: count = S.workers,
   const attack = createRng((seed * 2654435761) >>> 0);
   const change = createRng((seed ^ 0x5bd1e995) >>> 0);
   const ties = createRng((seed + 0x9e3779b9) >>> 0);
+  // Batch 6B: their own streams, so these scenarios leave every other draw unchanged
+  const busy = createRng((seed ^ 0x27d4eb2f) >>> 0);
+  const young = createRng((seed + 0x165667b1) >>> 0);
   const leniency = scenario.leniency ?? 0;
+  const noiseSd = scenario.noiseSd ?? settings.noiseSd; // the noise variants change only the spread of the same draws
 
   // 1. workers and their true quality (same draws in every scenario)
   const workers = Array.from({ length: count }, (_, i) => {
@@ -33,7 +37,7 @@ export function simulateWorld({ seed, scenario = {}, workers: count = S.workers,
     // per review: age, noise, reviewer history, completion method (drawn in this fixed order)
     const draws = Array.from({ length: n }, () => ({
       ageDays: genuine.next() * settings.maxAgeDays,
-      noise: genuine.normal(0, settings.noiseSd),
+      noise: genuine.normal(0, noiseSd),
       otherWorkers: genuine.geometric(settings.reviewerOtherWorkersMean),
       auto: genuine.next() < settings.shareAuto,
     }));
@@ -62,13 +66,42 @@ export function simulateWorld({ seed, scenario = {}, workers: count = S.workers,
       hidden: false,
       kind: 'genuine',
     }));
-    w.hadGenuineReviews = w.reviews.length > 0;
     delete w.draws;
   }
 
+  // 3b. new_platform: most genuine reviewers have hired nobody else (exactly `shareNoHistory` on average;
+  //     the others keep their draw, at least 1)
+  if (scenario.newPlatform) {
+    for (const w of workers) {
+      for (const rv of w.reviews) rv.reviewerOtherWorkers = young.next() < scenario.newPlatform.shareNoHistory ? 0 : Math.max(1, rv.reviewerOtherWorkers);
+    }
+  }
+
+  // 3c. busy_genuine: some workers (any quality) get several extra GENUINE reviews in the last days
+  if (scenario.busy) {
+    const { share, extra, maxAgeDays } = scenario.busy;
+    for (const w of choose(busy, workers, Math.round(share * count))) {
+      w.busy = true;
+      for (let j = 0; j < extra; j += 1) {
+        const ageDays = busy.next() * maxAgeDays;
+        w.reviews.push({
+          id: `${w.id}-b${j}`,
+          customerId: `${w.id}-busy${j}`,
+          stars: starsFrom(ageDays > changeDay ? w.oldQuality : w.quality, leniency, busy.normal(0, noiseSd)),
+          createdAt: dateDaysAgo(ageDays),
+          completionMethod: busy.next() < settings.shareAuto ? 'auto' : 'both',
+          reviewerOtherWorkers: busy.geometric(settings.reviewerOtherWorkersMean),
+          hidden: false,
+          kind: 'genuine',
+        });
+      }
+    }
+  }
+  for (const w of workers) w.hadGenuineReviews = w.reviews.length > 0;
+
   // 4. Sybil attack: fake 5 star reviews for some workers from the lower half of quality
   if (scenario.sybil) {
-    const { share, fromLowerHalf, k, smart } = scenario.sybil;
+    const { share, fromLowerHalf, k, smart, spreadDays } = scenario.sybil;
     const sorted = [...workers].sort((a, b) => a.quality - b.quality);
     const pool = fromLowerHalf ? sorted.slice(0, Math.floor(count / 2)) : workers;
     for (const w of choose(attack, pool, Math.round(share * count))) {
@@ -78,7 +111,8 @@ export function simulateWorld({ seed, scenario = {}, workers: count = S.workers,
           id: `${w.id}-s${j}`,
           customerId: `${w.id}-fake${j}`, // a fresh account for every fake review
           stars: 5,
-          createdAt: dateDaysAgo(attack.next() * settings.fakeMaxAgeDays),
+          // recent (the last 30 days), or (slow_sybil) evenly spread over `spreadDays`: no burst
+          createdAt: dateDaysAgo(spreadDays ? (spreadDays * (j + 0.5)) / k : attack.next() * settings.fakeMaxAgeDays),
           completionMethod: 'both', // the attacker confirms both sides himself
           reviewerOtherWorkers: smart ? attack.int(1, 3) : 0,
           hidden: false,

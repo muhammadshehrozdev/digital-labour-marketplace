@@ -12,7 +12,7 @@ import { evaluateSeed } from './evaluate.js';
 import { METHODS, engineMethod } from './methods.js';
 import { SCENARIOS, SEED_BASE, SIMULATION } from './config.js';
 import { summarize, pairedComparison } from './metrics.js';
-import { withParams, paramsHash, DEFAULT_REPUTATION_PARAMS } from '../../config/reputationParams.js';
+import { withParams, paramsHash, REP1_PARAMS } from '../../config/reputationParams.js';
 
 export const SCENARIOS_EXPLORED = ['base', 'sybil_k5', 'smart_sybil_k5', 'pair_collusion', 'quality_change', 'combined'];
 
@@ -28,7 +28,7 @@ export const VARIANTS = [
 export function explorationMethods() {
   const methods = { B1: METHODS.B1, B4: METHODS.B4 };
   VARIANTS.forEach(([label, change], i) => {
-    const params = withParams(change);
+    const params = withParams(change, REP1_PARAMS); // rep-1's parameters (Batch 6), by name
     methods[`v${i}_cautious`] = { ...engineMethod(`${label}, cautious`, params, 'cautious'), paramsHash: paramsHash(params) };
     methods[`v${i}_expected`] = { ...engineMethod(`${label}, expected`, params, 'expected'), paramsHash: paramsHash(params) };
   });
@@ -63,7 +63,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const i = process.argv.indexOf('--seeds');
   const seeds = i >= 0 ? Number.parseInt(process.argv[i + 1], 10) : 30;
   console.log('PARAMETER EXPLORATION. SIMULATION RESULTS ONLY: not real-world results, and not a validation of any value.');
-  console.log(`Production defaults stay ${paramsHash(DEFAULT_REPUTATION_PARAMS)}. ${seeds} seeds (${SEED_BASE}..${SEED_BASE + seeds - 1}), ${SIMULATION.workers} workers per run.`);
+  console.log(`rep-1 defaults ${paramsHash(REP1_PARAMS)} (explored, never changed here). ${seeds} seeds (${SEED_BASE}..${SEED_BASE + seeds - 1}), ${SIMULATION.workers} workers per run.`);
   const { results } = explore({ seeds });
   for (const [scenario, rows] of Object.entries(results)) {
     console.log(`\n=== SIMULATION exploration | ${scenario} | ${seeds} seeds ===`);
@@ -75,6 +75,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const dir = join(dirname(fileURLToPath(import.meta.url)), 'results');
   mkdirSync(dir, { recursive: true });
   const file = join(dir, `SIMULATION-${new Date().toISOString().slice(0, 10)}-exploration.json`);
-  writeFileSync(file, `${JSON.stringify({ label: 'SIMULATION', kind: 'parameter exploration', warning: 'Simulation results only. Choosing parameters on the same simulation that measures them is circular; check any choice on new seeds and on real data.', seeds, workersPerRun: SIMULATION.workers, defaultsHash: paramsHash(DEFAULT_REPUTATION_PARAMS), variants: VARIANTS, results }, null, 2)}\n`);
+  writeFileSync(file, `${JSON.stringify({ label: 'SIMULATION', kind: 'parameter exploration', warning: 'Simulation results only. Choosing parameters on the same simulation that measures them is circular; check any choice on new seeds and on real data.', seeds, workersPerRun: SIMULATION.workers, defaultsHash: paramsHash(REP1_PARAMS), variants: VARIANTS, results }, null, 2)}\n`);
   console.log(`\nwritten: ${file.replace(process.cwd(), '.')}`);
 }

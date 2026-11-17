@@ -12,7 +12,9 @@ import Evidence from '../models/Evidence.js';
 import { ownerView as evidenceOwnerView } from './evidenceController.js';
 import { profileStrength } from '../services/profileStrength.js';
 import { hideSuspendedWorkers } from '../services/accountStatus.js';
-import { NEW_WORKER_CAUTIOUS } from '../services/reputation/matchingSignals.js';
+import { newWorkerRank } from '../services/reputation/matchingSignals.js';
+import { currentBaseRate } from '../services/reputation/recompute.js';
+import { DEFAULT_REPUTATION_PARAMS, rankFieldOf } from '../config/reputationParams.js';
 
 // PUBLIC fields: what customers and admins see in the directory (audit M1-2, decision D-002).
 // Never: CNIC data, address, emergency contact, WhatsApp, phone, email, raw experience text.
@@ -43,9 +45,9 @@ export const LISTED_FILTER = () => ({
 //   updated    recently updated first (the default)
 //   experience most years of experience first (workers without a number come last)
 //   evidence   most approved proof items first (approvedEvidenceCount, the sum over all skills)
-//   track_record (Module 4) highest cautious score first, then completed jobs, then recently updated.
-//              A worker without a snapshot counts as the no-review prior (NEW_WORKER_CAUTIOUS), exactly
-//              like a worker whose snapshot has no reviews. New workers therefore appear lower (the
+//   track_record (Module 4) highest ranking number first (rep-1: the cautious score; rep-2: the expected
+//              value), then completed jobs, then recently updated. A worker without a snapshot counts as
+//              the no-review prior (newWorkerRank), exactly like a worker whose snapshot has no reviews. New workers therefore appear lower (the
 //              cold-start problem, Pallais 2014); Module 7 will handle fair exposure. Not the default.
 // _id is always the last key, so the order is stable across pages.
 export const DIRECTORY_SORT = Object.freeze({
@@ -58,9 +60,11 @@ export const DIRECTORY_SORT = Object.freeze({
 // "Best track record" needs a default for workers without a snapshot, so it is an aggregation.
 async function trackRecordPage(filter, { page, limit }) {
   const projection = Object.fromEntries(PUBLIC_WORKER_FIELDS.split(' ').map((f) => [f, 1]));
+  const rankField = `$reputation.score.${rankFieldOf(DEFAULT_REPUTATION_PARAMS)}`;
+  const newRank = newWorkerRank(await currentBaseRate());
   const docs = await WorkerProfile.aggregate([
     { $match: filter },
-    { $addFields: { _trackRank: { $ifNull: ['$reputation.score.cautious', NEW_WORKER_CAUTIOUS] }, _trackJobs: { $ifNull: ['$reputation.public.completedJobs', 0] } } },
+    { $addFields: { _trackRank: { $ifNull: [rankField, newRank] }, _trackJobs: { $ifNull: ['$reputation.public.completedJobs', 0] } } },
     { $sort: DIRECTORY_SORT.track_record },
     { $skip: (page - 1) * limit },
     { $limit: limit },

@@ -5,14 +5,14 @@
 // assumptions hold (README.md); it says nothing about the real marketplace. Report it only with the
 // label "simulation", the scenario, the number of seeds and the parameter hash.
 import { execSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { simulateWorld, withoutAttacks } from './simulate.js';
-import { METHODS, scoreAll } from './methods.js';
+import { METHODS, rep2TestMethods, scoreAll } from './methods.js';
 import { kendallTauB, ndcgAtK, pairedComparison, percentileRanks, precisionAtK, rankOrder, ranksFromOrder, summarize, topShare, mean } from './metrics.js';
-import { SCENARIOS, SEED_BASE, SIMULATION, scenarioNames } from './config.js';
-import { DEFAULT_REPUTATION_PARAMS, REPUTATION_ENGINE_VERSION, paramsHash } from '../../config/reputationParams.js';
+import { SCENARIOS, SEED_BASE, SIMULATION, scenarioNames, TEST_SEED_BASE, PROTOCOL_SEEDS } from './config.js';
+import { REP1_PARAMS, REP2_PARAMS, REP2_SELECTED, paramsHash } from '../../config/reputationParams.js';
 
 export const METRICS = Object.freeze([
   // [key, label, higher is better?]
@@ -78,25 +78,31 @@ export function evaluateSeed({ seed, scenario, workers = SIMULATION.workers, met
 
 const get = (obj, path) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
 
-export function evaluateScenario(name, { seeds = 30, workers = SIMULATION.workers } = {}) {
+// The metrics kept seed by seed in a report (perSeed), so the paired criteria can be re-checked by hand.
+export const PER_SEED_METRICS = Object.freeze(['all.ndcg10', 'attackLift', 'all.tau', 'reviewed.tau', 'all.p10', 'newWorkerPosition']);
+
+// methods: the method table; ours: the method the paired comparison is made for; seedBase: the first seed.
+export function evaluateScenario(name, { seeds = 30, workers = SIMULATION.workers, seedBase = SEED_BASE, methods: table = METHODS, ours = 'ours', perSeed = false, params = REP1_PARAMS } = {}) {
   const scenario = SCENARIOS[name];
-  const seedList = Array.from({ length: seeds }, (_, i) => SEED_BASE + i);
-  const runs = seedList.map((seed) => evaluateSeed({ seed, scenario, workers }));
+  const seedList = Array.from({ length: seeds }, (_, i) => seedBase + i);
+  const runs = seedList.map((seed) => evaluateSeed({ seed, scenario, workers, methods: table }));
   const methods = {};
-  for (const [method, def] of Object.entries(METHODS)) {
+  for (const [method, def] of Object.entries(table)) {
     methods[method] = {
       label: def.label,
       kind: def.kind,
+      ...(def.paramsHash ? { paramsHash: def.paramsHash } : {}),
       metrics: Object.fromEntries(METRICS.map(([key]) => [key, summarize(runs.map((r) => get(r.result[method], key)))])),
+      ...(perSeed ? { perSeed: Object.fromEntries(PER_SEED_METRICS.map((key) => [key, runs.map((r) => get(r.result[method], key) ?? null)])) } : {}),
     };
   }
-  const paired = Object.keys(METHODS).filter((m) => m !== 'ours').map((other) => ({
-    ours: 'ours',
+  const paired = Object.keys(table).filter((m) => m !== ours).map((other) => ({
+    ours,
     other,
-    otherKind: METHODS[other].kind,
+    otherKind: table[other].kind,
     metrics: Object.fromEntries(METRICS.filter(([, , hib]) => hib !== null).map(([key, , higherIsBetter]) => [
       key,
-      pairedComparison(runs.map((r) => get(r.result.ours, key)), runs.map((r) => get(r.result[other], key)), { higherIsBetter }),
+      pairedComparison(runs.map((r) => get(r.result[ours], key)), runs.map((r) => get(r.result[other], key)), { higherIsBetter }),
     ])),
   }));
   return {
@@ -109,8 +115,9 @@ export function evaluateScenario(name, { seeds = 30, workers = SIMULATION.worker
     workersPerRun: workers,
     meanCounts: Object.fromEntries(Object.keys(runs[0].counts).map((k) => [k, mean(runs.map((r) => r.counts[k]))])),
     simulation: SIMULATION,
-    engineVersion: REPUTATION_ENGINE_VERSION,
-    parametersHash: paramsHash(DEFAULT_REPUTATION_PARAMS),
+    engineVersion: params.engineVersion ?? 'rep-1',
+    parametersHash: paramsHash(params),
+    ours,
     methods,
     paired,
   };
@@ -125,15 +132,16 @@ export function printScenario(report, log = console.log) {
   log(`    ${report.description}`);
   const c = report.meanCounts;
   log(`    per run (mean): ${c.reviewed} workers with reviews, ${c.unreviewed} without, ${c.attacked} attacked, ${c.reviews} reviews`);
-  const shown = METRICS.filter(([key]) => key !== 'attackLift' || report.methods.ours.metrics.attackLift.n > 0);
+  const ours = report.ours ?? 'ours';
+  const shown = METRICS.filter(([key]) => key !== 'attackLift' || report.methods[ours].metrics.attackLift.n > 0);
   log(`    each cell: mean (sd) over seeds\n`);
   log(['method'.padEnd(40), ...shown.map(([key]) => key.padStart(13))].join(''));
   for (const m of Object.values(report.methods)) log([m.label.padEnd(40), ...shown.map(([key]) => cell(m.metrics[key]))].join(''));
-  log('\n    paired, ours minus other, seed by seed: mean difference [share of seeds where ours is better]');
-  const keys = ['all.tau', 'all.ndcg10', 'all.p10', 'reviewed.tau', ...(report.methods.ours.metrics.attackLift.n > 0 ? ['attackLift'] : [])];
+  log(`\n    paired, ${ours} minus other, seed by seed: mean difference [share of seeds where ${ours} is better]`);
+  const keys = ['all.tau', 'all.ndcg10', 'all.p10', 'reviewed.tau', ...(report.methods[ours].metrics.attackLift.n > 0 ? ['attackLift'] : [])];
   log(['vs'.padEnd(40), ...keys.map((k) => k.padStart(18))].join(''));
   for (const p of report.paired) {
-    log([METHODS[p.other].label.padEnd(40), ...keys.map((k) => {
+    log([report.methods[p.other].label.padEnd(40), ...keys.map((k) => {
       const x = p.metrics[k];
       return (x.meanDifference === null ? '-' : `${x.meanDifference >= 0 ? '+' : ''}${f3(x.meanDifference)} [${Math.round(100 * x.shareOursBetter)}%]`).padStart(18);
     })].join(''));
@@ -161,14 +169,35 @@ function args(argv) {
     scenario: value('--scenario', 'base'),
     seeds: Number.parseInt(value('--seeds', '30'), 10),
     workers: Number.parseInt(value('--workers', String(SIMULATION.workers)), 10),
-    out: value('--out', join(dirname(fileURLToPath(import.meta.url)), 'results')),
+    out: value('--out', RESULTS_DIR),
+    protocol: value('--protocol', null),
+    rerun: value('--rerun', null),
   };
+}
+
+export const RESULTS_DIR = join(dirname(fileURLToPath(import.meta.url)), 'results');
+export const REP2_TEST_PREFIX = 'SIMULATION-rep2-test-';
+
+// The pre-registered test run (BATCH_6B section 5.4, step 5) may start only when: rep-2 is frozen
+// (REP2_SELECTED), the code is committed (the commit is the pre-registration), and no test-seed result
+// exists yet, unless --rerun "<reason>" says why it runs again (only after a bug fix; the reason is written
+// into every file and must be reported).
+export function rep2TestRefusal({ selected = REP2_SELECTED, commit, existing = [], rerun = null, seeds, workers }) {
+  if (!selected) return 'rep-2 is not frozen (REP2_SELECTED is null). Run the selection on the development seeds first.';
+  if (!commit || commit.includes('+uncommitted')) return 'commit the frozen parameters first: the test run must name a clean commit.';
+  if (seeds !== PROTOCOL_SEEDS || workers !== SIMULATION.workers) return `the protocol fixes ${PROTOCOL_SEEDS} seeds and ${SIMULATION.workers} workers per run.`;
+  if (existing.length && !rerun) return `test-seed results already exist (${existing.length} files). The test run happens ONCE; use --rerun "<reason>" only after a bug fix.`;
+  return null;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const opts = args(process.argv.slice(2));
   if (!(opts.seeds >= 1 && opts.seeds <= 500) || !(opts.workers >= 20 && opts.workers <= 5000)) {
     console.error('Use --seeds 1..500 and --workers 20..5000');
+    process.exit(1);
+  }
+  if (opts.protocol && opts.protocol !== 'rep2-test') {
+    console.error('The only protocol is rep2-test (the development-seed selection is evaluation/reputation/selectRep2.js).');
     process.exit(1);
   }
   let names;
@@ -180,15 +209,42 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   }
   const date = new Date().toISOString().slice(0, 10);
   const commit = gitCommit();
-  console.log('Module 4 reputation evaluation. ALL NUMBERS BELOW ARE SIMULATION RESULTS, NOT REAL-WORLD RESULTS.');
-  console.log(`Engine ${REPUTATION_ENGINE_VERSION}, parameters ${paramsHash()}, git ${commit ?? 'unknown'}, ${opts.seeds} seeds (${SEED_BASE}..${SEED_BASE + opts.seeds - 1}).`);
   mkdirSync(opts.out, { recursive: true });
-  for (const name of names) {
-    const started = Date.now();
-    const report = { ...evaluateScenario(name, opts), date, gitCommit: commit };
-    printScenario(report);
-    const file = join(opts.out, `SIMULATION-${date}-${name}.json`);
-    writeFileSync(file, `${JSON.stringify(report, null, 2)}\n`);
-    console.log(`    written: ${file.replace(process.cwd(), '.')} (${((Date.now() - started) / 1000).toFixed(1)} s)`);
+  console.log('Module 4 reputation evaluation. ALL NUMBERS BELOW ARE SIMULATION RESULTS, NOT REAL-WORLD RESULTS.');
+  if (opts.protocol === 'rep2-test') {
+    const existing = readdirSync(opts.out).filter((f) => f.startsWith(REP2_TEST_PREFIX));
+    const refusal = rep2TestRefusal({ commit, existing, rerun: opts.rerun, seeds: opts.seeds, workers: opts.workers });
+    if (refusal) {
+      console.error(`Refused: ${refusal}`);
+      process.exit(1);
+    }
+    const methods = rep2TestMethods();
+    console.log(`rep-2 TEST RUN (pre-registered): rep-2 ${JSON.stringify(REP2_SELECTED)}, parameters ${paramsHash(REP2_PARAMS)}, frozen at git ${commit}, test seeds ${TEST_SEED_BASE}..${TEST_SEED_BASE + opts.seeds - 1}.${opts.rerun ? ` RE-RUN: ${opts.rerun}` : ''}`);
+    for (const name of names) {
+      const started = Date.now();
+      const report = {
+        ...evaluateScenario(name, { seeds: opts.seeds, workers: opts.workers, seedBase: TEST_SEED_BASE, methods, ours: 'rep2_expected', perSeed: true, params: REP2_PARAMS }),
+        protocol: 'rep2-test (BATCH_6B section 5.4, step 5)',
+        rep2Selected: REP2_SELECTED,
+        startedAt: new Date(started).toISOString(),
+        date,
+        gitCommit: commit,
+        ...(opts.rerun ? { rerunReason: opts.rerun } : {}),
+      };
+      printScenario(report);
+      const file = join(opts.out, `${REP2_TEST_PREFIX}${date}-${name}.json`);
+      writeFileSync(file, `${JSON.stringify(report, null, 2)}\n`);
+      console.log(`    written: ${file.replace(process.cwd(), '.')} (${((Date.now() - started) / 1000).toFixed(1)} s)`);
+    }
+  } else {
+    console.log(`Engine rep-1 (the Batch 6 method table), parameters ${paramsHash(REP1_PARAMS)}, git ${commit ?? 'unknown'}, ${opts.seeds} seeds (${SEED_BASE}..${SEED_BASE + opts.seeds - 1}).`);
+    for (const name of names) {
+      const started = Date.now();
+      const report = { ...evaluateScenario(name, opts), date, gitCommit: commit };
+      printScenario(report);
+      const file = join(opts.out, `SIMULATION-${date}-${name}.json`);
+      writeFileSync(file, `${JSON.stringify(report, null, 2)}\n`);
+      console.log(`    written: ${file.replace(process.cwd(), '.')} (${((Date.now() - started) / 1000).toFixed(1)} s)`);
+    }
   }
 }

@@ -6,9 +6,11 @@
 //   score        the reputation numbers (owner, admin and Module 7 matching only)
 //   reliability  the reliability numbers and counts (owner, admin and matching only)
 // `perReview` (the explanation) is not stored: it is rebuilt when the worker or an admin asks.
+// `baseRate` is the base rate (a) that the reputation numbers used (rep-1 always 0.5; rep-2 the platform prior at
+// that moment), so every number can be re-done by hand.
 import { computeReputation } from './reputationEngine.js';
 import { computeReliability } from './reliabilityEngine.js';
-import { DEFAULT_REPUTATION_PARAMS, REPUTATION_ENGINE_VERSION, paramsHash } from '../../config/reputationParams.js';
+import { DEFAULT_REPUTATION_PARAMS, engineVersionOf, paramsHash } from '../../config/reputationParams.js';
 
 const pickNumbers = ({ r, s, belief, disbelief, uncertainty, expected, cautious, depth }) => ({ r, s, belief, disbelief, uncertainty, expected, cautious, depth });
 
@@ -45,9 +47,10 @@ export function buildReputationSnapshot({ reputation, reliability, completedBook
   const perSkill = perSkillFacts(completedBookings, reviews);
   const lastCompletedAt = perSkill.reduce((latest, s) => (s.lastCompletedAt && (!latest || s.lastCompletedAt > latest) ? s.lastCompletedAt : latest), null);
   return {
-    engineVersion: REPUTATION_ENGINE_VERSION,
+    engineVersion: engineVersionOf(params),
     paramsHash: paramsHash(params),
     computedAt,
+    baseRate: reputation.baseRate ?? params.baseRate,
     public: {
       ratingAverage: reputation.ratingAverage,
       reviewCount: reputation.reviewCount,
@@ -77,8 +80,9 @@ export function buildReputationSnapshot({ reputation, reliability, completedBook
 }
 
 // Convenience: run both engines and build the snapshot from plain data (used by recompute.js and tests).
-export function snapshotFrom({ reviews = [], closedBookings = [], now, params = DEFAULT_REPUTATION_PARAMS }) {
-  const reputation = computeReputation(reviews, { now, params });
+// baseRate: the platform base rate (rep-2; recompute.js computes it); rep-1 ignores it.
+export function snapshotFrom({ reviews = [], closedBookings = [], now, params = DEFAULT_REPUTATION_PARAMS, baseRate }) {
+  const reputation = computeReputation(reviews, { now, params, baseRate });
   const reliability = computeReliability(closedBookings, { now, params });
   const completedBookings = closedBookings.filter((b) => b.outcome === 'completed').map((b) => ({ skillId: b.skillId, completedAt: b.closedAt }));
   return { snapshot: buildReputationSnapshot({ reputation, reliability, completedBookings, reviews, computedAt: now, params }), reputation, reliability };

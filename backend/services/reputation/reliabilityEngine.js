@@ -7,7 +7,9 @@
 //   cancelled_by_worker_late    1 negative   (less than 24 hours before, or after the start)
 //   worker_no_show              1 negative
 //   declined, expired, cancelled_by_customer, closed_no_fault: nothing (a worker may always say no)
-// Each item also gets the same recency weight as a review. Same Beta numbers as reviews (beta.js).
+// Each item also gets a recency weight (rep-1: the reviews' half-life; rep-2: reliabilityHalfLifeDays,
+// 365 days, because rep-2 switches recency off for reviews only). Same Beta numbers as reviews (beta.js),
+// always with the fixed base rate 0.5 (the platform prior is about stars).
 // The raw counts for display are never weighted.
 import { DEFAULT_REPUTATION_PARAMS } from '../../config/reputationParams.js';
 import { ageInDays, betaNumbers, depthFrom, recencyWeight, requireNow } from './beta.js';
@@ -21,6 +23,8 @@ const AFTER_ACCEPT = new Set(['completed', 'cancelled_by_worker_early', 'cancell
 
 export function computeReliability(bookings = [], { now, params = DEFAULT_REPUTATION_PARAMS } = {}) {
   requireNow(now);
+  // rep-2 switches recency off for reviews only; booking outcomes keep their own half-life (Batch 6B).
+  const halfLife = params.reliabilityHalfLifeDays ?? params.halfLifeDays;
   let r = 0;
   let s = 0;
   const counts = { completed: 0, workerCancelledEarly: 0, workerCancelledLate: 0, noShows: 0, acceptedTotal: 0 };
@@ -42,7 +46,7 @@ export function computeReliability(bookings = [], { now, params = DEFAULT_REPUTA
     const positive = params.reliabilityPositive[b.outcome] ?? 0;
     const negative = params.reliabilityNegative[b.outcome] ?? 0;
     if (positive === 0 && negative === 0) continue; // outcomes that never count
-    const weight = params.factors.recency ? recencyWeight(ageInDays(b.closedAt, now), params.halfLifeDays) : 1;
+    const weight = params.factors.recency && halfLife ? recencyWeight(ageInDays(b.closedAt, now), halfLife) : 1;
     r += weight * positive;
     s += weight * negative;
   }
