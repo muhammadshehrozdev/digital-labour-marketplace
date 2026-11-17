@@ -9,7 +9,9 @@ import { useDocumentTitle, useT } from '../../i18n';
 import { apiError, apiFieldErrors } from '../../utils/apiErrors';
 import styles from './Admin.module.css';
 
-const TEMPLATE_KINDS = ['identity_verify', 'identity_reject', 'evidence_reject', 'evidence_fake', 'evidence_revoke', 'user_suspend', 'user_reactivate'];
+const TEMPLATE_KINDS = ['identity_verify', 'identity_reject', 'evidence_reject', 'evidence_fake', 'evidence_revoke', 'user_suspend', 'user_reactivate', 'dispute_decision', 'review_hide'];
+// Module 4 kinds have their names in adminm4.templateKinds
+const kindLabel = (t, k) => t(['dispute_decision', 'review_hide'].includes(k) ? `adminm4.templateKinds.${k}` : `adminx.templates.kinds.${k}`);
 const EMPTY = { en: '', ur: '', 'ur-Latn': '' };
 
 function TemplateDialog({ template, onClose, onSaved }) {
@@ -62,7 +64,7 @@ function TemplateDialog({ template, onClose, onSaved }) {
       }
     >
       {error && <Alert tone="danger">{te(error)}</Alert>}
-      <Select label={t('adminx.templates.kind')} value={kind} disabled={editing} onChange={(e) => setKind(e.target.value)} options={TEMPLATE_KINDS.map((k) => ({ value: k, label: t(`adminx.templates.kinds.${k}`) }))} />
+      <Select label={t('adminx.templates.kind')} value={kind} disabled={editing} onChange={(e) => setKind(e.target.value)} options={TEMPLATE_KINDS.map((k) => ({ value: k, label: kindLabel(t, k) }))} />
       {area('en', t('adminx.templates.textEn'), { required: true, lang: 'en', dir: 'ltr' })}
       {area('ur', t('adminx.templates.textUr'), { urdu: true, lang: 'ur' })}
       {area('ur-Latn', t('adminx.templates.textRoman'), { lang: 'ur-Latn', dir: 'ltr' })}
@@ -135,7 +137,7 @@ export default function AdminTemplates() {
           <div className={styles.templateGroups}>
             {kindsWith.map((kind) => (
               <section key={kind} className={styles.templateGroup} aria-labelledby={`kind-${kind}`}>
-                <h2 id={`kind-${kind}`} className={styles.sectionTitle}>{t(`adminx.templates.kinds.${kind}`)}</h2>
+                <h2 id={`kind-${kind}`} className={styles.sectionTitle}>{kindLabel(t, kind)}</h2>
                 <ul className={styles.templateList}>
                   {templates.filter((tpl) => tpl.kind === kind).map((tpl) => (
                     <li key={tpl._id} className={styles.template}>

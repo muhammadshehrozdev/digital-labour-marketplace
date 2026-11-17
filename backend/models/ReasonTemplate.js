@@ -6,6 +6,8 @@ import { LANGUAGES } from '../config/languages.js';
 // Where a template can be used.
 export const TEMPLATE_KINDS = Object.freeze([
   'identity_verify', 'identity_reject', 'evidence_reject', 'evidence_fake', 'evidence_revoke', 'user_suspend', 'user_reactivate',
+  // Module 4 (Batch 6): dispute decisions and hiding a review
+  'dispute_decision', 'review_hide',
 ]);
 export const MAX_TEMPLATES = 60;
 export const TEMPLATE_TEXT_MAX = 300;

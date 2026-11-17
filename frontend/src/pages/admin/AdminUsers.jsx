@@ -6,8 +6,9 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Ban, LockKeyhole, RotateCcw, Search } from 'lucide-react';
 import API from '../../api';
 import {
-  Alert, Badge, Button, DataTable, Dialog, Drawer, EmptyState, PageHeader, Pagination, Select, Skeleton, StatusChip, TextArea, TextField, useToast,
+  Alert, Badge, Button, DataTable, Dialog, Drawer, EmptyState, PageHeader, Pagination, Select, Skeleton, StatusChip, Tabs, TextArea, TextField, useToast,
 } from '../../components/ui';
+import ReputationBreakdown from '../../features/admin/ReputationBreakdown';
 import TemplatePicker from '../../features/admin/TemplatePicker';
 import { actionKey } from '../../features/admin/adminHelpers';
 import { useAuth } from '../../context/auth';
@@ -77,10 +78,30 @@ function UserDrawer({ id, onClose, onChanged }) {
   const { categoryLabel } = useTaxonomy();
   const detail = useApiQuery(`/admin/users/${id}`);
   const [asking, setAsking] = useState(false);
+  const [workerTab, setWorkerTab] = useState('profile'); // Module 4: Profile | Reputation
   const u = detail.data?.user;
   const w = detail.data?.worker;
   const isSelf = u && me && u._id === me._id;
   const actionLabel = (action) => (t(actionKey(action)) === actionKey(action) ? action : t(actionKey(action)));
+  // Module 4: the worker summary is the first tab, the reputation breakdown the second
+  const workerSummary = w ? (
+              <section aria-labelledby="worker-summary">
+                <h3 id="worker-summary" className={styles.sectionTitle}>{t('adminx.users.workerSummary')}</h3>
+                {!w.profileId ? (
+                  <p className={styles.method}>{t('adminx.users.noProfile')}</p>
+                ) : (
+                  <dl className={styles.details}>
+                    <div><dt>{t('adminx.users.workerId')}</dt><dd className="tabular" dir="ltr">{w.workerIdCode}</dd></div>
+                    <div><dt>{t('adminx.users.trade')}</dt><dd>{w.occupation || t('common.empty')} · {categoryLabel(w.category) || t('common.empty')}</dd></div>
+                    <div><dt>{t('adminx.users.identity')}</dt><dd><StatusChip kind="identity" status={w.verificationStatus} /></dd></div>
+                    <div><dt>{t('adminx.users.skills')}</dt><dd className="tabular">{formatNumber(w.skills)}</dd></div>
+                    <div><dt>{t('adminx.users.completion')}</dt><dd className="tabular">{formatNumber(w.profileCompletion)}%</dd></div>
+                    <div><dt>{t('adminx.users.proof')}</dt><dd>{t('adminx.users.proofCounts', w.evidence)}</dd></div>
+                  </dl>
+                )}
+                {w.workerIdCode && <p><Link to={`/admin/identity?status=All&q=${encodeURIComponent(w.workerIdCode)}`}>{t('adminx.users.openIdentity')}</Link></p>}
+              </section>
+  ) : null;
 
   return (
     <>
@@ -106,23 +127,17 @@ function UserDrawer({ id, onClose, onChanged }) {
               )}
             </dl>
 
-            {w && (
-              <section aria-labelledby="worker-summary">
-                <h3 id="worker-summary" className={styles.sectionTitle}>{t('adminx.users.workerSummary')}</h3>
-                {!w.profileId ? (
-                  <p className={styles.method}>{t('adminx.users.noProfile')}</p>
-                ) : (
-                  <dl className={styles.details}>
-                    <div><dt>{t('adminx.users.workerId')}</dt><dd className="tabular" dir="ltr">{w.workerIdCode}</dd></div>
-                    <div><dt>{t('adminx.users.trade')}</dt><dd>{w.occupation || t('common.empty')} · {categoryLabel(w.category) || t('common.empty')}</dd></div>
-                    <div><dt>{t('adminx.users.identity')}</dt><dd><StatusChip kind="identity" status={w.verificationStatus} /></dd></div>
-                    <div><dt>{t('adminx.users.skills')}</dt><dd className="tabular">{formatNumber(w.skills)}</dd></div>
-                    <div><dt>{t('adminx.users.completion')}</dt><dd className="tabular">{formatNumber(w.profileCompletion)}%</dd></div>
-                    <div><dt>{t('adminx.users.proof')}</dt><dd>{t('adminx.users.proofCounts', w.evidence)}</dd></div>
-                  </dl>
-                )}
-                {w.workerIdCode && <p><Link to={`/admin/identity?status=All&q=${encodeURIComponent(w.workerIdCode)}`}>{t('adminx.users.openIdentity')}</Link></p>}
-              </section>
+            {w && !w.profileId && workerSummary}
+            {w && w.profileId && (
+              <Tabs
+                label={t('adminm4.breakdown.tabs')}
+                value={workerTab}
+                onChange={setWorkerTab}
+                tabs={[
+                  { id: 'profile', label: t('adminx.users.workerSummary'), content: workerSummary },
+                  { id: 'reputation', label: t('reputation.title'), content: <ReputationBreakdown profileId={w.profileId} /> },
+                ]}
+              />
             )}
             {detail.data.customer && (
               <section aria-labelledby="customer-summary">

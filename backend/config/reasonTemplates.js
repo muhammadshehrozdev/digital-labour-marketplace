@@ -15,4 +15,9 @@ export const STARTER_TEMPLATES = Object.freeze([
   { kind: 'user_suspend', text: { en: 'Copied or false proof was uploaded more than once.', ur: 'نقل شدہ یا غلط ثبوت ایک سے زیادہ بار اپ لوڈ کیا گیا۔', 'ur-Latn': 'Naqal shuda ya ghalat saboot aik se zyada baar upload kiya gaya.' } },
   { kind: 'user_suspend', text: { en: 'The account is being checked after a report of misuse.', ur: 'غلط استعمال کی اطلاع کے بعد اکاؤنٹ کی جانچ کی جا رہی ہے۔', 'ur-Latn': 'Ghalat istemaal ki ittela ke baad account ki jaanch ki ja rahi hai.' } },
   { kind: 'user_reactivate', text: { en: 'The matter was checked with the user and is resolved.', ur: 'صارف کے ساتھ معاملہ چیک کر لیا گیا اور حل ہو گیا ہے۔', 'ur-Latn': 'Saarif ke saath mamla check kar liya gaya aur hal ho gaya hai.' } },
+  // Module 4 (Batch 6). A review is never hidden because it is negative (docs/ADMIN-GUIDE.md).
+  { kind: 'dispute_decision', text: { en: 'Both people were called. The worker confirmed that the work was not done.', ur: 'دونوں فریقوں سے فون پر بات ہوئی۔ کاریگر نے مانا کہ کام نہیں ہوا۔', 'ur-Latn': 'Dono fareeqon se phone par baat hui. Karigar ne mana ke kaam nahi hua.' } },
+  { kind: 'dispute_decision', text: { en: 'Both people were called. The customer confirmed that the worker came and did the work.', ur: 'دونوں فریقوں سے فون پر بات ہوئی۔ گاہک نے مانا کہ کاریگر آئے اور کام کیا۔', 'ur-Latn': 'Dono fareeqon se phone par baat hui. Gaahak ne mana ke karigar aaye aur kaam kiya.' } },
+  { kind: 'review_hide', text: { en: 'The review uses abusive words about the person, not about the work.', ur: 'ریویو میں کام کے بجائے شخص کے بارے میں گالی یا بدتمیزی ہے۔', 'ur-Latn': 'Review mein kaam ke bajaye shakhs ke baare mein gaali ya badtameezi hai.' } },
+  { kind: 'review_hide', text: { en: 'The review contains a phone number or other personal information.', ur: 'ریویو میں فون نمبر یا کوئی اور ذاتی معلومات ہیں۔', 'ur-Latn': 'Review mein phone number ya koi aur zaati maloomat hain.' } },
 ]);

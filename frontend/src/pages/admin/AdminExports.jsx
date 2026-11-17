@@ -1,7 +1,7 @@
 // Admin: CSV exports (Batch 4, feature 31). Four files; each download is written to the audit
 // log by the server before the file is sent. The page says plainly what is never in a file.
 import { useState } from 'react';
-import { Download, FileCheck2, ScrollText, ShieldCheck, ShieldOff, Users } from 'lucide-react';
+import { Download, FileCheck2, ScrollText, ShieldCheck, ShieldOff, Users, ClipboardList, MessagesSquare } from 'lucide-react';
 import API from '../../api';
 import { Alert, Button, PageHeader, Select, TextField, useToast } from '../../components/ui';
 import { filenameFrom, saveBlob } from '../../features/admin/adminHelpers';
@@ -13,7 +13,8 @@ const IDENTITY = ['Pending', 'Unverified', 'Verified', 'Rejected', 'All'];
 const EVIDENCE = ['pending', 'approved', 'rejected', 'suspected_fake', 'revoked', 'all'];
 const ACCOUNT = ['all', 'active', 'suspended'];
 
-function ExportCard({ kind, icon: Icon, children, params }) {
+// texts: where the card's title and text live (Module 4 cards use adminm4.exports)
+function ExportCard({ kind, icon: Icon, children, params, texts = 'adminx.exports' }) {
   const toast = useToast();
   const { t, te, formatNumber } = useT();
   const [busy, setBusy] = useState(false);
@@ -42,13 +43,13 @@ function ExportCard({ kind, icon: Icon, children, params }) {
     <section className={styles.exportCard} aria-labelledby={`export-${kind}`}>
       <span className={styles.exportIcon} aria-hidden="true"><Icon size={22} strokeWidth={1.75} /></span>
       <div className={styles.exportText}>
-        <h2 id={`export-${kind}`} className={styles.sectionTitle}>{t(`adminx.exports.${kind}.title`)}</h2>
-        <p className={styles.method}>{t(`adminx.exports.${kind}.text`)}</p>
+        <h2 id={`export-${kind}`} className={styles.sectionTitle}>{t(`${texts}.${kind}.title`)}</h2>
+        <p className={styles.method}>{t(`${texts}.${kind}.text`)}</p>
       </div>
       <div className={styles.exportFilters}>{children}</div>
       {error && <Alert tone="danger">{te(error)}</Alert>}
       {note && <Alert tone="warning">{note}</Alert>}
-      <Button icon={Download} loading={busy} onClick={download}>{t('adminx.exports.download')}<span className="visually-hidden">: {t(`adminx.exports.${kind}.title`)}</span></Button>
+      <Button icon={Download} loading={busy} onClick={download}>{t('adminx.exports.download')}<span className="visually-hidden">: {t(`${texts}.${kind}.title`)}</span></Button>
     </section>
   );
 }
@@ -60,6 +61,8 @@ export default function AdminExports() {
   const [identity, setIdentity] = useState('Pending');
   const [evidence, setEvidence] = useState('pending');
   const [account, setAccount] = useState('all');
+  const [bookingState, setBookingState] = useState('all'); // Module 4
+  const [reviewState, setReviewState] = useState('all');
 
   return (
     <div>
@@ -80,6 +83,13 @@ export default function AdminExports() {
         </ExportCard>
         <ExportCard kind="users" icon={Users} params={{ status: account }}>
           <Select label={t('adminx.exports.status')} value={account} onChange={(e) => setAccount(e.target.value)} options={ACCOUNT.map((s) => ({ value: s, label: t(`adminx.users.statuses.${s}`) }))} />
+        </ExportCard>
+        {/* Module 4: no phone numbers, no descriptions, no comment text (audited as export.bookings / export.reviews) */}
+        <ExportCard kind="bookings" icon={ClipboardList} params={{ status: bookingState }} texts="adminm4.exports">
+          <Select label={t('adminx.exports.status')} value={bookingState} onChange={(e) => setBookingState(e.target.value)} options={['all', 'requested', 'accepted', 'completed', 'declined', 'expired', 'cancelled'].map((s) => ({ value: s, label: t(s === 'all' ? 'adminm4.bookings.all' : `booking.status.${s}`) }))} />
+        </ExportCard>
+        <ExportCard kind="reviews" icon={MessagesSquare} params={{ status: reviewState }} texts="adminm4.exports">
+          <Select label={t('adminx.exports.status')} value={reviewState} onChange={(e) => setReviewState(e.target.value)} options={['all', 'visible', 'hidden'].map((s) => ({ value: s, label: t(`adminm4.reviews.filter.${s}`) }))} />
         </ExportCard>
       </div>
       <p className={styles.method}>{t('adminx.exports.limit')}</p>

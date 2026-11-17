@@ -93,7 +93,7 @@ for (const lang of LANGS) for (const mode of MODES) {
     await setLanguage(adminPage, 'en');
     await login(adminPage, 'e2e.admin@example.com', 'local e2e admin pass phrase');
     await adminPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
-    for (const [path, label] of [['/admin', 'admin overview'], ['/admin/identity?status=All', 'identity review'], ['/admin/evidence?status=all', 'evidence review'], ['/admin/users', 'users'], ['/admin/audit', 'audit log'], ['/admin/templates', 'reason templates'], ['/admin/exports', 'exports']]) {
+    for (const [path, label] of [['/admin', 'admin overview'], ['/admin/identity?status=All', 'identity review'], ['/admin/evidence?status=all', 'evidence review'], ['/admin/users', 'users'], ['/admin/audit', 'audit log'], ['/admin/templates', 'reason templates'], ['/admin/exports', 'exports'], ['/admin/bookings', 'bookings'], ['/admin/disputes', 'disputes'], ['/admin/reviews', 'review moderation'], ['/admin/flags', 'reputation flags']]) {
       await visit(adminPage, path, label);
     }
     await adminContext.close();

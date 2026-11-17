@@ -39,6 +39,10 @@ const Requests = lazyPage(() => import('../pages/worker/Requests'));
 const MyJobs = lazyPage(() => import('../pages/worker/MyJobs'));
 const MyReviews = lazyPage(() => import('../pages/worker/MyReviews'));
 const MyReputation = lazyPage(() => import('../pages/worker/MyReputation'));
+const AdminBookings = lazyPage(() => import('../pages/admin/AdminBookings'));
+const AdminDisputes = lazyPage(() => import('../pages/admin/AdminDisputes'));
+const AdminReviews = lazyPage(() => import('../pages/admin/AdminReviews'));
+const AdminFlags = lazyPage(() => import('../pages/admin/AdminFlags'));
 
 // Developer pages only in development builds (not shipped in production).
 const StyleGuide = import.meta.env.DEV ? lazy(() => import('../pages/dev/StyleGuide')) : null;
@@ -99,6 +103,10 @@ export const appRoutes = (
             <Route path="audit" element={<AdminAudit />} />
             <Route path="templates" element={<AdminTemplates />} />
             <Route path="exports" element={<AdminExports />} />
+            <Route path="bookings" element={<AdminBookings />} />
+            <Route path="disputes" element={<AdminDisputes />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="flags" element={<AdminFlags />} />
           </Route>
         </Route>
 

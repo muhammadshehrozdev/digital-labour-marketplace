@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { FileCheck2, FileDown, LayoutDashboard, MessageSquareQuote, ScrollText, ShieldCheck, Users } from 'lucide-react';
+import { ClipboardList, FileCheck2, FileDown, Flag, Gavel, LayoutDashboard, MessageSquareQuote, MessagesSquare, ScrollText, ShieldCheck, Users } from 'lucide-react';
 import { useT } from '../../i18n';
 import styles from './AdminSidebar.module.css';
 
@@ -7,6 +7,11 @@ const LINKS = [
   { to: '/admin', label: 'admin.nav.overview', icon: LayoutDashboard, end: true },
   { to: '/admin/identity', label: 'admin.nav.identity', icon: ShieldCheck },
   { to: '/admin/evidence', label: 'admin.nav.evidence', icon: FileCheck2 },
+  // Module 4 (Batch 6)
+  { to: '/admin/bookings', label: 'adminm4.nav.bookings', icon: ClipboardList },
+  { to: '/admin/disputes', label: 'adminm4.nav.disputes', icon: Gavel },
+  { to: '/admin/reviews', label: 'adminm4.nav.reviews', icon: MessagesSquare },
+  { to: '/admin/flags', label: 'adminm4.nav.flags', icon: Flag },
   { to: '/admin/users', label: 'admin.nav.users', icon: Users },
   { to: '/admin/audit', label: 'admin.nav.audit', icon: ScrollText },
   { to: '/admin/templates', label: 'admin.nav.templates', icon: MessageSquareQuote },

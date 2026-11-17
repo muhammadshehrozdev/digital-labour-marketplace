@@ -215,7 +215,8 @@ describe('admin overview (features 27, 28, 32, 33)', () => {
     mockApi(overviewRoutes());
     renderAt('/admin');
     const nav = await screen.findByRole('navigation', { name: 'Admin' });
-    expect(within(nav).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/admin', '/admin/identity', '/admin/evidence', '/admin/users', '/admin/audit', '/admin/templates', '/admin/exports']);
+    // Batch 6 (Module 4) added bookings, disputes, reviews and reputation flags
+    expect(within(nav).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/admin', '/admin/identity', '/admin/evidence', '/admin/bookings', '/admin/disputes', '/admin/reviews', '/admin/flags', '/admin/users', '/admin/audit', '/admin/templates', '/admin/exports']);
   });
 });
 

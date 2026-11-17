@@ -8,6 +8,7 @@ import { BarList, ColumnChart, SegmentBar } from '../../components/charts';
 import { Alert, PageHeader, Skeleton, StatusChip } from '../../components/ui';
 import ActivityFeed from '../../features/admin/ActivityFeed';
 import ChainStatus from '../../features/admin/ChainStatus';
+import BookingCharts from '../../features/admin/BookingCharts';
 import { waitingDays } from '../../features/admin/adminHelpers';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
@@ -119,6 +120,12 @@ export default function AdminOverview() {
             </div>
           </div>
         )}
+      </section>
+
+      {/* Module 4 (Batch 6): bookings, reviews and the new queues */}
+      <section aria-labelledby="m4-title" className={styles.block}>
+        <h2 id="m4-title" className={styles.blockTitle}>{t('adminm4.dash.title')}</h2>
+        <BookingCharts days={days} />
       </section>
 
       {s && (
