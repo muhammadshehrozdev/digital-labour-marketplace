@@ -7,6 +7,9 @@
   max-inline-size: var(--content-max);
   margin-inline: auto;
   padding: var(--space-12) var(--gutter) var(--space-10);
+  /* Batch 6B: the page help and scroll-to-top buttons are fixed at the bottom corners; at the very end of
+     the page they must not cover the last line (or the install button), also above the phone's safe area */
+  padding-block-end: calc(max(var(--space-10), 88px) + env(safe-area-inset-bottom));
   display: grid;
   gap: var(--space-8);
   font-size: var(--text-small);

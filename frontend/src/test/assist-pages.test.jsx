@@ -140,7 +140,8 @@ describe('notifications can be heard', () => {
     const synth = installSpeech({ voices: [VOICES.ur] });
     mockApi(workerRoutes({ 'GET /notifications': { status: 200, data: { notifications: N, unread: 1, page: 1, limit: 20, total: 1 } } }));
     renderAt('/notifications', { language: 'ur-Latn' });
-    const listen = await screen.findByRole('button', { name: new RegExp(`^${urLatn.assist.listenTo.split(':')[0]}: `) });
+    // in the page itself (Batch 6B: the footer has its own 🔊 for "Install this app")
+    const listen = await within(await screen.findByRole('main')).findByRole('button', { name: new RegExp(`^${urLatn.assist.listenTo.split(':')[0]}: `) });
     await userEvent.setup().click(listen);
     await waitFor(() => expect(synth.spoken).toHaveLength(1));
     expect(synth.last.voice.lang).toBe('ur-PK');

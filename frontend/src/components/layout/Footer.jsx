@@ -5,6 +5,7 @@ import { useT } from '../../i18n';
 import LanguageSwitcher from './LanguageSwitcher';
 import TextSizeControl from './TextSizeControl';
 import ThemeToggle from './ThemeToggle';
+import InstallButton from '../../features/app/install/InstallButton';
 import styles from './Footer.module.css';
 
 // People's names are written as the team writes them (Latin letters) in every language.
@@ -23,6 +24,8 @@ export default function Footer() {
             <Link to="/help">{t('nav.help')}</Link>
             <button type="button" className={styles.linkButton} onClick={() => window.dispatchEvent(new Event(OPEN_WHATS_NEW))}>{t('appx.whatsNew.title')}</button>
           </p>
+          {/* Batch 6B: on every page, for everyone (hidden only inside the installed app) */}
+          <InstallButton />
         </div>
         <div className={styles.langCol}>
           <p className={styles.colTitle}>{t('footer.languageTitle')}</p>

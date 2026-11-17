@@ -93,10 +93,12 @@ describe('onboarding forms: help everywhere, voice where it is allowed', () => {
     workerAt('about');
     renderAt('/onboarding/about');
     await screen.findByRole('heading', { level: 1, name: 'About you' });
-    expect(screen.getAllByRole('button', { name: /^Listen: / })).toHaveLength(8);
-    expect(screen.getByRole('button', { name: /^Listen: CNIC/ })).toBeInTheDocument();
+    // the form's own buttons (Batch 6B: the footer has its own 🔊 for "Install this app")
+    const form = within(screen.getByRole('main'));
+    expect(form.getAllByRole('button', { name: /^Listen: / })).toHaveLength(8);
+    expect(form.getByRole('button', { name: /^Listen: CNIC/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^Speak: CNIC/ })).toBeNull();
-    expect(screen.getAllByRole('button', { name: /^Speak: / })).toHaveLength(7);
+    expect(form.getAllByRole('button', { name: /^Speak: / })).toHaveLength(7);
   });
 
   test('years of experience can be said as a word ("paanch saal" -> 5)', async () => {

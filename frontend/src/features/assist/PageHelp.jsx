@@ -14,37 +14,8 @@ import { pageHelpName } from './pageHelp';
 import { getSettings, setSettings, useAssistSettings } from './settingsStore';
 import { useAudioState } from './useAudioState';
 import { useSay } from './useSay';
+import { useBottomLift } from '../app/useBottomLift';
 import styles from './PageHelp.module.css';
-
-// How far above the bottom edge the button must sit to stay clear of bars there.
-function useBottomLift() {
-  const [lift, setLift] = useState(0);
-  useEffect(() => {
-    let frame = 0;
-    const measure = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        let max = 0;
-        for (const el of document.querySelectorAll('[data-bottom-bar]')) {
-          const r = el.getBoundingClientRect();
-          if (r.height && r.bottom >= window.innerHeight - 4 && r.top < window.innerHeight) max = Math.max(max, window.innerHeight - r.top);
-        }
-        setLift((old) => (Math.abs(old - max) > 1 ? max : old));
-      });
-    };
-    measure();
-    window.addEventListener('scroll', measure, { passive: true });
-    window.addEventListener('resize', measure);
-    const timer = window.setInterval(measure, 700);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', measure);
-      window.removeEventListener('resize', measure);
-      window.clearInterval(timer);
-    };
-  }, []);
-  return lift;
-}
 
 export default function PageHelp() {
   const { pathname } = useLocation();

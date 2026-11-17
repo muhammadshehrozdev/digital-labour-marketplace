@@ -1,0 +1,74 @@
+/* Batch 6B, Part B: the install invitation, the steps dialog and the footer button. */
+
+/* The invitation: a friendly sheet at the bottom (phones: full width; wider screens: at the start side, so it
+   never sits under the toasts at the end side). It respects the phone's safe area; the page help and the
+   scroll-to-top buttons lift above it (data-bottom-bar). */
+.sheet {
+  position: fixed;
+  z-index: 30;
+  inset-inline: 12px;
+  inset-block-end: calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg), inset 0 0 0 1px var(--color-border);
+
+  @media (min-width: 640px) {
+    inset-inline: 16px auto;
+    max-inline-size: 440px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) { .sheet { animation: rise 360ms var(--ease-spring); } }
+@keyframes rise { from { transform: translateY(20px); opacity: 0; } }
+.sheetText { flex: 1; display: grid; gap: var(--space-2); min-inline-size: 0; }
+.sheetTitle { font-family: var(--font-sans); font-size: var(--text-body); font-weight: 700; letter-spacing: 0; }
+.line { margin: 0; font-size: var(--text-body); line-height: var(--leading-body); }
+:root[lang='ur'] .line { line-height: 2.1; }
+.sheetActions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-block-start: var(--space-1); }
+
+.listen {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  min-block-size: var(--touch-target); padding-inline: var(--space-3);
+  border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-elevated);
+  color: var(--color-primary-text); font: inherit; font-size: var(--text-small); font-weight: 700; cursor: pointer;
+  &[aria-pressed='true'] { border-color: var(--color-primary); background: var(--color-primary-soft); }
+}
+
+/* The steps dialog: one picture of the button to press per step, a big number, the words and a 🔊 */
+.steps { display: grid; gap: var(--space-4); }
+.intro { margin: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); font-size: var(--text-body); line-height: var(--leading-body); }
+:root[lang='ur'] .intro, :root[lang='ur'] .stepText { line-height: 2.1; }
+.stepList { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-3); }
+.step { display: flex; align-items: center; gap: var(--space-3); }
+.picture {
+  position: relative; flex-shrink: 0; display: grid; place-items: center; inline-size: 64px; block-size: 64px;
+  border-radius: var(--radius-lg); background: var(--color-primary-soft); color: var(--color-primary-text);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-primary) 30%, transparent);
+}
+.number {
+  position: absolute; inset-block-start: -8px; inset-inline-start: -8px; display: grid; place-items: center;
+  inline-size: 24px; block-size: 24px; border-radius: 50%; background: var(--color-primary); color: var(--color-on-primary);
+  font-size: var(--text-caption); font-weight: 700;
+}
+.stepText { flex: 1; font-size: var(--text-body); line-height: var(--leading-body); }
+.link { display: grid; gap: var(--space-2); }
+.linkLabel { display: grid; gap: var(--space-1); font-size: var(--text-small); font-weight: 600; }
+.linkLabel input {
+  min-block-size: var(--touch-target); padding-inline: var(--space-3); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); font: inherit;
+}
+
+/* The footer button (on the dark footer) */
+.footerRow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.footerButton {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  min-block-size: var(--touch-target); padding-inline: var(--space-4);
+  border: 1px solid color-mix(in oklch, var(--color-on-dark) 35%, transparent); border-radius: var(--radius-full);
+  background: color-mix(in oklch, var(--color-on-dark) 10%, transparent); color: var(--color-on-dark);
+  font: inherit; font-weight: 700; cursor: pointer;
+  &:hover { background: color-mix(in oklch, var(--color-on-dark) 18%, transparent); }
+}

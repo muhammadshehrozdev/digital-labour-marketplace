@@ -16,6 +16,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { LanguageProvider } from '../i18n';
 import { CrashScreen } from '../components/layout/ErrorBoundary';
 import { lazyPage } from '../routes/lazyPage';
+import { markInteracted } from '../features/assist/interaction';
 
 afterEach(() => {
   vi.useRealTimers();
@@ -311,17 +312,23 @@ describe('installable app (feature 6)', () => {
     expect(readFileSync('src/main.jsx', 'utf8')).toMatch(/import\.meta\.env\.PROD && 'serviceWorker' in navigator/);
   });
 
-  test('the install hint appears when the browser offers installation, and "Not now" hides it for a month', async () => {
+  // Batch 6B changed the rule on purpose (BATCH_6B section 4.3): the invitation waits for the second page
+  // (or 30 s) and the first touch, and "Not now" hides it for 14 days in one versioned key (was: at once,
+  // 30 days, dlm.installHint). Same checks: it appears when installation is possible; "Not now" hides it
+  // and is remembered.
+  test('the install hint appears when the browser offers installation, and "Not now" hides it for 14 days', async () => {
     mockApi({});
     const user = userEvent.setup();
     renderAt('/login');
     await screen.findByRole('heading', { level: 1, name: 'Log in' });
     const event = Object.assign(new Event('beforeinstallprompt'), { prompt: vi.fn(), userChoice: Promise.resolve({ outcome: 'dismissed' }) });
     act(() => { window.dispatchEvent(event); });
+    markInteracted();
+    await user.click(within(screen.getByRole('banner')).getByRole('link', { name: 'Create account' }));
     const hint = await screen.findByTestId('install-hint');
     await user.click(within(hint).getAllByRole('button', { name: 'Not now' })[0]);
     expect(screen.queryByTestId('install-hint')).toBeNull();
-    expect(Number(localStorage.getItem('dlm.installHint'))).toBeGreaterThan(Date.now() + 29 * 86400000);
+    expect(JSON.parse(localStorage.getItem('dlm.install.v1')).hideUntil).toBeGreaterThan(Date.now() + 13.9 * 86400000);
   });
 });
 

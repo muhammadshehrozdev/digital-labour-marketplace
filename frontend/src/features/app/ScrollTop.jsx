@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { useT } from '../../i18n';
+import { useBottomLift } from './useBottomLift';
 import styles from './AppFeatures.module.css';
 
 export const SHOW_AFTER_PX = 600;
@@ -15,6 +16,7 @@ function readProgress() {
 export default function ScrollTop() {
   const { t } = useT();
   const [state, setState] = useState({ show: false, progress: 0 });
+  const lift = useBottomLift(); // Batch 6B: above the install invitation and other bottom bars
 
   useEffect(() => {
     let frame = 0;
@@ -40,7 +42,7 @@ export default function ScrollTop() {
     document.getElementById('main')?.focus({ preventScroll: true });
   };
   return (
-    <button type="button" className={styles.scrollTop} onClick={top} aria-label={t('appx.scrollTop')} title={t('appx.scrollTop')} data-testid="scroll-top">
+    <button type="button" className={styles.scrollTop} style={{ '--lift': `${lift}px` }} onClick={top} aria-label={t('appx.scrollTop')} title={t('appx.scrollTop')} data-testid="scroll-top">
       <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
         <circle cx="24" cy="24" r={r} fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="3" />
         <circle cx="24" cy="24" r={r} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - state.progress)} transform="rotate(-90 24 24)" />
