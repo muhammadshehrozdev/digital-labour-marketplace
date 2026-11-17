@@ -2,6 +2,19 @@
   "generatedFrom": "docs/CHANGELOG.md",
   "sections": [
     {
+      "title": "Batch 6 — Module 4: bookings, reviews and the reputation engine (16–17 Nov 2026)",
+      "points": [
+        "Work Booking: a customer requests one worker (picture choices for work, day and time; area; description), the worker hears the request (🔊) and accepts or declines; both press \"Work done\", or one side and 72 hours pass; cancellations with reasons (a worker's late cancellation counts double); \"Worker did not come\" from the start + 2 hours; one small dispute step decided by an admin (D-039 to D-042, D-049, D-050, D-053, D-054).",
+        "Phone numbers (D-002 delivered, D-052): only inside GET /api/bookings/:id, only to the two people and admins, only while accepted and for 7 days after the close; never in lists, the directory, profiles, notifications or CSV files. Free texts are refused when they contain a phone number, email, link or CNIC-like number.",
+        "Reviews: after completed work only, once, never edited (1–5 stars, four quick thumbs, would hire again, optional comment with voice typing, read-back before sending); the worker replies once and can report; admins hide with a reason (never for being negative) or restore (D-041, D-051).",
+        "Reputation engine: a weighted Beta reputation model (Jøsang & Ismail 2002) with provenance, recency, reviewer-trust and repeat-customer weights; expected value, uncertainty, a cautious lower estimate and a depth word; a reliability record from booking outcomes; a snapshot on the worker profile rebuilt after every change and daily (D-043 to D-048). Pure functions, unit tested with hand-worked examples.",
+        "Display: public profile (stars with the count, depth in words, star bars, \"x of y\" quick answers, reliability counts, reviews with replies, \"Done through this platform\"), directory and compare lines, \"Best track record\" sort with an honest note, \"Has done jobs on this platform\" filter; the worker's \"My reputation\" page in plain words with 🔊 (D-045, D-047).",
+        "Admin: Bookings, Disputes, Reviews and Reputation flags pages, a Reputation tab per worker, Overview charts of bookings and stars, bookings and reviews CSV exports (no phone numbers).",
+        "Notifications: 16 new booking and review types; customers get a \"Notifications\" menu link with the unread count (D-057).",
+        "Evaluation by SIMULATION (backend/evaluation/reputation/, 30 seeds, 11 scenarios, four baselines, ablations). Finding: with the provisional parameters the model is not better than the plain average overall, and recent fake reviews still buy places; the individual defences reduce the attacks they target. Parameters were not changed (D-048, D-058). Simulation results only, not real-world results."
+      ]
+    },
+    {
       "title": "Batch 5 — Listen, Speak, See: audio help, voice typing and picture choices (14–16 Nov 2026)",
       "points": [
         "Listen (🔊): a Listen button under every box of the worker and customer screens says what to do there, and the same help opens in large text. The sound comes from a clip the team recorded, else a voice on the device, else the help is shown on screen with the words \"no voice on this device\" (D-034). Roman Urdu users hear the Urdu audio.",
@@ -20,17 +33,6 @@
         "Wordmark: \"Digital Labour Marketplace\" is one element, weight 700, in the logo's colour, the full name at every width (before: two weights, the second word grey and hidden on phones).",
         "Internal working notes (CLAUDE.md, the batch briefs, docs/audit/) are no longer tracked (kept on disk, in .gitignore); every reference now points to a tracked document. docs/SECURITY.md lists the project security rules.",
         "Go-live (D-032, docs/DEPLOY-RUNBOOK.md): backend/api/index.js as the one Vercel function, a modern backend/vercel.json (no legacy builds; only public/ served), frontend/vercel.json passes /api/:path* to the backend before the app fallback; production settings check (missing variable, local database, non-https origin, missing TRUST_PROXY -> the server refuses to start); optional SHOW_CLIENT_IP check; npm run db:indexes; scripts/atlas-create-admin.sh (first admin from Ubuntu in a throwaway node:24-bookworm container, secrets from a file outside the repository)."
-      ]
-    },
-    {
-      "title": "Mid-defence preparation (11 Nov 2026, feature freeze: bug fixes only)",
-      "points": [
-        "bash scripts/preview.sh start | demo | reset-demo | status | stop: one command for the whole local preview (MongoDB, API, website) in the dev container; demo uses a separate database dlm_demo.",
-        "npm run demo:reset (backend): wipes only a local _demo database and creates the three synthetic demo accounts (the admin through the create-admin script). The normal preview database is never touched.",
-        "Decisions D-030 (MERN on the supervisor's instruction) and D-031 (Urdu and Roman Urdu texts reviewed by the team), both reported on 11 Nov 2026.",
-        "docs/DEMO-SCRIPT.md: the 7-minute demo of Modules 1-3, with a drawn synthetic proof photo (docs/demo/work-photo-synthetic.jpg) and frontend/e2e/demo-script.e2e.js, which runs the same clicks.",
-        "Bug fixed (found by rehearsing the demo): onboarding Step 4 offered no skill for the proof photo until the page was reloaded. Test: onboarding.test.jsx (fails without the fix) and the demo e2e test.",
-        "Real results: backend 521/521, frontend 941/941, e2e 35/35 (12.6 min, Chromium), oxlint 0."
       ]
     }
   ]

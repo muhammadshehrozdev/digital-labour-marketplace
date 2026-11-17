@@ -37,7 +37,7 @@ customer is `local-demo-password-123`; the admin passphrase is `local admin demo
 
 | # | Do | Expected |
 |---|---|---|
-| 10 | B: My jobs → Work done → confirm | "Saved: work done"; A gets a notification (menu "Notifications" count) |
+| 10 | B: My jobs → the sockets job you just accepted (not "New light in the drawing room") → Work done → confirm | "Saved: work done"; A gets a notification (menu "Notifications" count) |
 | 11 | A: open the booking → Work done → confirm | State "Work done"; a "Rate this work" button |
 | 12 | A: Rate this work → press 🔊 next to each star | "Five stars: very good work" etc. |
 | 13 | A: use the keyboard: Tab to the stars, arrow keys | The chosen star moves; answer two thumbs; type or speak a comment |

@@ -2,6 +2,53 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 6 — Module 4: bookings, reviews and the reputation engine (16–17 Nov 2026)
+
+Why: Module 4 of the proposal (Reputation and Reliability Engine). The team reports supervisor approval
+(16 Nov 2026) for a minimal Work Booking inside Module 4 (D-037) and for evaluating the engine by
+simulation (D-038). No new package. Nothing here is AI: written formulas and fixed rules.
+
+- **Work Booking:** a customer requests one worker (picture choices for work, day and time; area;
+  description), the worker hears the request (🔊) and accepts or declines; both press "Work done", or one
+  side and 72 hours pass; cancellations with reasons (a worker's late cancellation counts double); "Worker
+  did not come" from the start + 2 hours; one small dispute step decided by an admin (D-039 to D-042,
+  D-049, D-050, D-053, D-054).
+- **Phone numbers (D-002 delivered, D-052):** only inside `GET /api/bookings/:id`, only to the two people
+  and admins, only while accepted and for 7 days after the close; never in lists, the directory, profiles,
+  notifications or CSV files. Free texts are refused when they contain a phone number, email, link or CNIC-like number.
+- **Reviews:** after completed work only, once, never edited (1–5 stars, four quick thumbs, would hire
+  again, optional comment with voice typing, read-back before sending); the worker replies once and can
+  report; admins hide with a reason (never for being negative) or restore (D-041, D-051).
+- **Reputation engine:** a weighted Beta reputation model (Jøsang & Ismail 2002) with provenance, recency,
+  reviewer-trust and repeat-customer weights; expected value, uncertainty, a cautious lower estimate and a
+  depth word; a reliability record from booking outcomes; a snapshot on the worker profile rebuilt after
+  every change and daily (D-043 to D-048). Pure functions, unit tested with hand-worked examples.
+- **Display:** public profile (stars with the count, depth in words, star bars, "x of y" quick answers,
+  reliability counts, reviews with replies, "Done through this platform"), directory and compare lines,
+  "Best track record" sort with an honest note, "Has done jobs on this platform" filter; the worker's "My
+  reputation" page in plain words with 🔊 (D-045, D-047).
+- **Admin:** Bookings, Disputes, Reviews and Reputation flags pages, a Reputation tab per worker,
+  Overview charts of bookings and stars, bookings and reviews CSV exports (no phone numbers).
+- **Notifications:** 16 new booking and review types; customers get a "Notifications" menu link with the
+  unread count (D-057).
+- **Evaluation by SIMULATION** (`backend/evaluation/reputation/`, 30 seeds, 11 scenarios, four baselines,
+  ablations). Finding: with the provisional parameters the model is not better than the plain average
+  overall, and recent fake reviews still buy places; the individual defences reduce the attacks they target.
+  Parameters were not changed (D-048, D-058). Simulation results only, not real-world results.
+- **Matching inputs for Module 7:** `toMatchingSignals` and `docs/contracts/MATCHING-INPUTS.md`.
+- **Daily cron:** `GET /api/cron/daily` with `CRON_SECRET` (optional), `vercel.json` cron entry (not deployed).
+- **Texts:** 619 new texts in English, Urdu and Roman Urdu (drafts for review, `docs/i18n/REVIEW-BATCH-6.md`).
+- **Docs:** `docs/modules/MODULE-4.md`, decisions D-037 to D-058, data model, API, security, use cases,
+  traceability, admin guide, demo script, manual test, pilot plan.
+- **Tests changed (D-056, D-057):** the frontend honesty test's star rule (planned), the profile contact
+  note text, the worker's top menu list and the admin sidebar list (still exact); backend honesty test
+  folder list and the error-catalog word list (NFKC).
+
+Tests (real runs on 17 Nov 2026, one suite at a time): backend **754/754** (40 files; before Batch 6: 540),
+frontend **1162/1162** (26 files; before: 1089), lint 0 problems (310 files), production build OK. Coverage
+(lines): backend 98.56% overall, services 98.11%, controllers 98.86%, middleware 100% (target 90%); frontend
+90.74% (target 80%), Module 4 screens 91.5%. End-to-end (Playwright, local `dlm_e2e` database): **50/50** (before: 45), including the five Module 4 flows and axe in 3 languages × 2 themes on the new pages.
+
 ## Batch 5 — Listen, Speak, See: audio help, voice typing and picture choices (14–16 Nov 2026)
 
 Why: at the mid defence the panel asked how labourers who cannot read will use the website. Design:
