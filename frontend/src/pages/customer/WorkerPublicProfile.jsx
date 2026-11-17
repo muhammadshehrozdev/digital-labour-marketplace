@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ArrowLeft, Scale } from 'lucide-react';
+import { ArrowLeft, CalendarPlus, Scale } from 'lucide-react';
 import { Alert, Button, EmptyState, useToast } from '../../components/ui';
 import ProfileDisplay from '../../features/profile/ProfileDisplay';
 import CompareTray from '../../features/customer/CompareTray';
@@ -60,6 +60,7 @@ export default function WorkerPublicProfile() {
       <div className={styles.profileBar} data-print="hide">
         <Button to="/find" variant="ghost" size="sm" icon={ArrowLeft} viewTransition>{t('publicProfile.back')}</Button>
         <div className={styles.profileActions}>
+          <Button size="sm" icon={CalendarPlus} to={`/workers/${encodeURIComponent(worker.workerIdCode)}/request`}>{t('booking.request.button')}</Button>
           {saved.enabled && <SaveButton name={name} saved={saved.isSaved(worker.workerIdCode)} onToggle={() => saved.toggle(worker.workerIdCode)} />}
           <Button size="sm" variant="secondary" icon={Scale} aria-pressed={inCompare} onClick={toggleCompare}>{t(inCompare ? 'customerx.compare.remove' : 'customerx.compare.add', { name })}</Button>
           <ShareButton workerIdCode={worker.workerIdCode} name={name} trade={categoryOccupation(worker.category) || worker.occupation} />

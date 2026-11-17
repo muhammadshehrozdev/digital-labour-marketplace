@@ -13,6 +13,8 @@ import ThemeToggle from './ThemeToggle';
 import SoundMenu from '../../features/assist/SoundMenu';
 import WorkerHeaderTools from '../../features/worker/WorkerHeaderTools';
 import { NAV_LINKS } from './navLinks';
+import RequestsCount from '../../features/booking/RequestsCount';
+import NotificationsCount from '../../features/notifications/NotificationsCount';
 import styles from './AppHeader.module.css';
 
 // Role-aware top navigation: links, language switcher, account menu (D-020).
@@ -60,7 +62,7 @@ export default function AppHeader() {
         {user && (
           <nav aria-label={t('nav.main')} className={styles.desktopNav}>
             {links.map((l) => (
-              <NavLink key={l.to} to={l.to} end={l.end} className={linkClass(styles.link)}>{t(l.label)}</NavLink>
+              <NavLink key={l.to} to={l.to} end={l.end} className={linkClass(styles.link)}>{t(l.label)}{l.badge === 'requests' && <RequestsCount />}{l.badge === 'notifications' && <NotificationsCount />}</NavLink>
             ))}
           </nav>
         )}
@@ -119,7 +121,7 @@ export default function AppHeader() {
       {user && menuOpen && (
         <nav id="mobile-menu" aria-label={t('nav.main')} className={styles.mobileNav}>
           {links.map((l) => (
-            <NavLink key={l.to} to={l.to} end={l.end} className={linkClass(styles.mobileLink)}>{t(l.label)}</NavLink>
+            <NavLink key={l.to} to={l.to} end={l.end} className={linkClass(styles.mobileLink)}>{t(l.label)}{l.badge === 'requests' && <RequestsCount />}{l.badge === 'notifications' && <NotificationsCount />}</NavLink>
           ))}
           <div className={styles.menuRow}>
             <span>{t('textSize.label')}</span>

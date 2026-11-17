@@ -9,12 +9,14 @@ import { Button } from '../../components/ui';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { usePolling } from '../../hooks/usePolling';
 import { useT } from '../../i18n';
+import { useAuth } from '../../context/auth';
 import NotificationItem from './NotificationItem';
 import { NOTIFICATION_POLL_MS, notificationLink } from './notificationText';
 import styles from './Notifications.module.css';
 
 export default function NotificationBell() {
   const { t, formatNumber } = useT();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const count = useApiQuery('/notifications/unread-count', undefined, { keepPrevious: true });
   usePolling(count.reload, NOTIFICATION_POLL_MS);
@@ -64,7 +66,7 @@ export default function NotificationBell() {
     setOpen(false);
     if (!n.read) await API.patch(`/notifications/${n._id}/read`).catch(() => {});
     count.reload();
-    navigate(notificationLink(n));
+    navigate(notificationLink(n, user?.role));
   };
 
   return (

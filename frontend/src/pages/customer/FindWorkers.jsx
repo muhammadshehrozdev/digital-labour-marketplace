@@ -23,7 +23,8 @@ import { useDocumentTitle, useT } from '../../i18n';
 import styles from '../../features/customer/Customer.module.css';
 
 const PAGE_SIZE = 12;
-const SORTS = ['updated', 'experience', 'evidence'];
+const SORTS = ['updated', 'experience', 'evidence', 'track_record']; // track_record: Module 4
+const sortLabel = (s) => (s === 'track_record' ? 'reputation.sortTrack' : `customerx.sort.${s}`);
 export const SEARCH_DELAY_MS = 350;
 
 // Batch 5: trade and availability are picture choices (each card can be heard), with "All" first.
@@ -62,6 +63,7 @@ function Filters({ value, set, categories, city, onCity }) {
       />
       <Switch label={t('find.verifiedOnly')} checked={value.identity} onChange={(on) => set({ identity: on ? 'verified' : '' })} />
       <Switch label={t('find.verifiedSkills')} hint={t('find.verifiedSkillsHint')} checked={value.skills} onChange={(on) => set({ skills: on ? 'verified' : '' })} />
+      <Switch label={t('reputation.hasJobs')} hint={t('reputation.hasJobsHint')} checked={value.hasJobs} onChange={(on) => set({ hasJobs: on ? 'true' : '' })} />
     </div>
   );
 }
@@ -86,6 +88,7 @@ export default function FindWorkers() {
     availability: AVAILABILITY.includes(params.get('availability')) ? params.get('availability') : 'All',
     identity: params.get('identity') === 'verified',
     skills: params.get('skills') === 'verified',
+    hasJobs: params.get('hasJobs') === 'true',
     sort: SORTS.includes(params.get('sort')) ? params.get('sort') : 'updated',
     page: Math.max(1, Number.parseInt(params.get('page') ?? '1', 10) || 1),
   };
@@ -119,6 +122,7 @@ export default function FindWorkers() {
   if (value.city) query.city = value.city;
   if (value.identity) query.identity = 'verified';
   if (value.skills) query.skills = 'verified';
+  if (value.hasJobs) query.hasJobs = 'true';
   const { data, error, stale, reload } = useApiQuery('/workers', query, { keepPrevious: true });
 
   const reset = () => {
@@ -135,6 +139,7 @@ export default function FindWorkers() {
   if (value.availability !== 'All') chips.push({ key: 'availability', label: t(`status.availability.${value.availability}`), clear: () => set({ availability: '' }) });
   if (value.identity) chips.push({ key: 'identity', label: t('customerx.chips.identity'), clear: () => set({ identity: '' }) });
   if (value.skills) chips.push({ key: 'skills', label: t('customerx.chips.skills'), clear: () => set({ skills: '' }) });
+  if (value.hasJobs) chips.push({ key: 'hasJobs', label: t('reputation.hasJobs'), clear: () => set({ hasJobs: '' }) });
 
   const toggleCompare = (w) => {
     const name = w.user?.name ?? t('common.worker');
@@ -153,11 +158,13 @@ export default function FindWorkers() {
           <TextField label={t('find.searchLabel')} hideLabel type="search" icon={Search} placeholder={t('find.searchPlaceholder')} maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} hint={t('customerx.instant')} assist="find.search" />
         </div>
         <div className={styles.sortField}>
-          <Select label={t('customerx.sort.label')} value={value.sort} onChange={(e) => set({ sort: e.target.value })} options={SORTS.map((s) => ({ value: s, label: t(`customerx.sort.${s}`) }))} assist="find.sort" icon={ArrowDownUp} />
+          <Select label={t('customerx.sort.label')} value={value.sort} onChange={(e) => set({ sort: e.target.value })} options={SORTS.map((s) => ({ value: s, label: t(sortLabel(s)) }))} assist="find.sort" icon={ArrowDownUp} />
         </div>
         <Button variant="secondary" icon={SlidersHorizontal} className={styles.filterButton} onClick={() => setDrawerOpen(true)}>{t('find.filters')}</Button>
       </form>
       {value.sort === 'evidence' && <p className={styles.sortHint}>{t('customerx.sort.hint')}</p>}
+      {/* Module 4: new workers have no track record yet, so they appear lower in this order (cold start, Module 7) */}
+      {value.sort === 'track_record' && <p className={styles.sortHint} data-testid="track-note">{t('reputation.sortTrackNote')}</p>}
 
       {chips.length === 0 && <RecentlyViewed />}
 

@@ -35,6 +35,7 @@ export default function SavedWorkers() {
                 worker={w}
                 index={i}
                 saved
+                showRequest
                 onToggleSave={() => saved.toggle(w.workerIdCode)}
                 compare={compare.has(w.workerIdCode)}
                 compareDisabled={compare.list.length >= MAX_COMPARE}

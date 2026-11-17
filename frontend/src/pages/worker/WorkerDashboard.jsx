@@ -15,6 +15,7 @@ import CountUp from '../../features/worker/CountUp';
 import PotentialSkills from '../../features/worker/PotentialSkills';
 import StrengthMeter from '../../features/worker/StrengthMeter';
 import WelcomeTour from '../../features/worker/WelcomeTour';
+import WorkTiles from '../../features/booking/WorkTiles';
 import { ShareButton } from '../../features/customer/ShareButtons';
 import { useMyFullProfile } from '../../hooks/useMyFullProfile';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
@@ -67,6 +68,8 @@ export default function WorkerDashboard() {
           </>
         }
       />
+      {/* Module 4: requests, jobs and reputation */}
+      <WorkTiles reputation={full.data.publicView?.reputation ?? profile.reputation} />
       <div className={styles.bento}>
         <Reveal className={styles.strengthCell}><StrengthMeter strength={strength} /></Reveal>
 

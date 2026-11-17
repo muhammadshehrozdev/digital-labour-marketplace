@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { lookup } from '../i18n/translate';
-import { PAGE_HELP_NAMES } from '../features/assist/pageHelp';
+import { PAGE_HELP_NAMES, pageHelpName } from '../features/assist/pageHelp';
 import en from '../i18n/dictionaries/en';
 import ur from '../i18n/dictionaries/ur';
 import urLatn from '../i18n/dictionaries/ur-Latn';
@@ -65,6 +65,24 @@ const workerRoutes = (steps = { about: true, work: true, skills: true }) => ({
   'GET /notifications/unread-count': { status: 200, data: { unread: 0 } },
 });
 
+// Module 4 fixtures (synthetic)
+const M4_CODE = 'DLM-2026-000077';
+const M4_WORKER = {
+  workerIdCode: M4_CODE, user: { name: 'Bilal Ahmed' }, occupation: 'Electrician', category: 'electrical_solar', city: 'Islamabad', availability: 'Available',
+  skills: [{ skillId: 'elec_wiring', name: 'House wiring', category: 'electrical_solar' }], verificationStatus: 'Verified', workHistory: [],
+};
+const M4_BOOKING = (extra = {}) => ({
+  _id: 'b1', code: 'BK-2026-000001', status: 'requested', skillId: 'elec_wiring', skillName: 'House wiring', category: 'electrical_solar', preferredDate: '2026-11-20',
+  timeSlot: 'morning', city: 'Islamabad', area: 'G-9', description: 'Two sockets.', worker: { name: 'Bilal Ahmed', workerIdCode: M4_CODE }, customer: { name: 'Sara K.' },
+  actions: [], timeline: [], dispute: null, review: null, contact: null, noShow: {}, ...extra,
+});
+const m4CustomerRoutes = (extra = {}) => ({
+  'GET /auth/me': me('customer', { _id: 'c1' }),
+  [`GET /workers/${M4_CODE}`]: { status: 200, data: M4_WORKER },
+  'GET /notifications/unread-count': { status: 200, data: { unread: 0 } },
+  ...extra,
+});
+
 const PAGES = [
   { path: '/register', routes: { 'GET /auth/me': { status: 401, data: {} } }, ready: async (user) => user.click(await screen.findByRole('radio', { name: /I want to find work/ })) },
   { path: '/login', routes: { 'GET /auth/me': { status: 401, data: {} } } },
@@ -83,6 +101,15 @@ const PAGES = [
     ready: () => screen.findByRole('radio', { name: 'Electrical & Solar' }),
   },
   { path: '/help', routes: { 'GET /auth/me': { status: 401, data: {} } } },
+  // Module 4 (Batch 6): the request form, the rating form, and the worker's reply form
+  { path: `/workers/${M4_CODE}/request`, routes: m4CustomerRoutes(), ready: () => screen.findByRole('radio', { name: 'House wiring' }) },
+  { path: `/workers/${M4_CODE}/request`, routes: m4CustomerRoutes(), ready: async (user) => user.click(await screen.findByRole('radio', { name: 'Pick a date' })) },
+  { path: '/bookings/b1/rate', routes: m4CustomerRoutes({ 'GET /bookings/b1': { status: 200, data: { booking: M4_BOOKING({ status: 'completed', actions: ['review'] }) } } }), ready: () => screen.findByRole('group', { name: 'How was the work?' }) },
+  {
+    path: '/worker/reviews',
+    routes: { ...workerRoutes(), [`GET /workers/${PROFILE.workerIdCode}/reviews`]: { status: 200, data: { reviews: [{ _id: 'r1', rating: 4, comment: 'Good [test].', reviewer: 'Sara K.', skillId: 'elec_wiring', createdAt: '2026-11-10T10:00:00Z', reply: null }], page: 1, limit: 10, total: 1 } } },
+    ready: async (user) => user.click(await screen.findByRole('button', { name: 'Reply' })),
+  },
 ];
 
 describe('coverage guard: help on every field of the in-scope forms', () => {
@@ -117,6 +144,20 @@ describe('coverage guard: every help key in the code exists in en, ur and ur-Lat
     for (const key of keys) expect(missingIn(key), key).toEqual([]);
   });
 
+  test('Module 4: the reason pickers inside dialogs have their help in all three languages', () => {
+    for (const group of ['cancel', 'decline', 'dispute', 'report']) expect(missingIn(`help.field.booking.${group}Reason`), group).toEqual([]);
+    for (const key of ['request.skill', 'request.day', 'request.date', 'request.time', 'request.city', 'request.area', 'request.description', 'rate.stars', 'rate.comment', 'booking.note', 'reviews.reply']) {
+      expect(missingIn(`help.field.${key}`), key).toEqual([]);
+    }
+    for (const name of ['requestWorker', 'myBookings', 'bookingDetail', 'rateWork', 'requests', 'myJobs', 'myReviews', 'myReputation']) expect(PAGE_HELP_NAMES).toContain(name);
+    // pages without form fields (lists and buttons) still have their page help
+    expect(Object.fromEntries(['/bookings', '/bookings/b1', '/bookings/b1/rate', `/workers/${M4_CODE}/request`, '/worker/requests', '/worker/jobs', '/worker/jobs/b1', '/worker/reviews', '/worker/reputation'].map((p) => [p, pageHelpName(p)]))).toEqual({
+      '/bookings': 'myBookings', '/bookings/b1': 'bookingDetail', '/bookings/b1/rate': 'rateWork', [`/workers/${M4_CODE}/request`]: 'requestWorker',
+      '/worker/requests': 'requests', '/worker/jobs': 'myJobs', '/worker/jobs/b1': 'bookingDetail', '/worker/reviews': 'myReviews', '/worker/reputation': 'myReputation',
+    });
+    expect(pageHelpName(`/workers/${M4_CODE}`)).toBe('workerProfile');
+  });
+
   test('page help of every in-scope page', () => {
     for (const name of PAGE_HELP_NAMES) expect(missingIn(`help.screen.${name}`), name).toEqual([]);
   });
@@ -126,6 +167,16 @@ describe('coverage guard: every help key in the code exists in en, ur and ur-Lat
       trade: ['All', 'electrical_solar', 'plumbing_sanitary', 'construction_masonry', 'carpentry_woodwork', 'painting_renovation', 'ac_appliance_repair', 'home_maintenance', 'domestic_work', 'moving_loading'],
       availability: ['All', 'Available', 'Busy', 'Offline'],
       evidenceType: ['certificate', 'work_photo', 'reference_letter'],
+      // Module 4 (Batch 6)
+      requestSkill: ['any'],
+      requestDay: ['today', 'tomorrow', 'pick'],
+      timeSlot: ['morning', 'afternoon', 'evening', 'any'],
+      thumb: ['yes', 'no', 'skip'],
+      stars: ['1', '2', '3', '4', '5'],
+      cancelReason: ['plans_changed', 'found_someone_else', 'cannot_come', 'emergency', 'price', 'other'],
+      declineReason: ['busy', 'too_far', 'not_my_work', 'other'],
+      disputeReason: ['work_was_done', 'work_not_done', 'i_did_come', 'not_my_fault', 'other'],
+      reportReason: ['abusive', 'personal_information', 'not_about_my_work', 'job_did_not_happen', 'other'],
     };
     for (const [group, values] of Object.entries(groups)) {
       for (const value of values) expect(missingIn(`help.option.${group}.${value}`), `${group}.${value}`).toEqual([]);

@@ -18,13 +18,27 @@ const EXACT = {
   '/find': 'find',
   '/saved': 'saved',
   '/compare': 'compare',
+  // Module 4 (Batch 6)
+  '/bookings': 'myBookings',
+  '/worker/requests': 'requests',
+  '/worker/jobs': 'myJobs',
+  '/worker/reviews': 'myReviews',
+  '/worker/reputation': 'myReputation',
 };
 
-export const PAGE_HELP_NAMES = [...new Set([...Object.values(EXACT), 'workerProfile'])];
+// Pages with an id in the address (Module 4 adds four).
+const PATTERNS = [
+  [/^\/workers\/[^/]+\/request$/, 'requestWorker'],
+  [/^\/workers\/[^/]+$/, 'workerProfile'],
+  [/^\/bookings\/[^/]+\/rate$/, 'rateWork'],
+  [/^\/bookings\/[^/]+$/, 'bookingDetail'],
+  [/^\/worker\/jobs\/[^/]+$/, 'bookingDetail'],
+];
+
+export const PAGE_HELP_NAMES = [...new Set([...Object.values(EXACT), ...PATTERNS.map(([, name]) => name)])];
 
 export function pageHelpName(pathname) {
   const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
   if (EXACT[path]) return EXACT[path];
-  if (/^\/workers\/[^/]+$/.test(path)) return 'workerProfile';
-  return null;
+  return PATTERNS.find(([pattern]) => pattern.test(path))?.[1] ?? null;
 }

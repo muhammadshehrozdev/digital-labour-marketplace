@@ -27,17 +27,18 @@ const LEAKY_WORKER = {
 };
 
 describe('worker navigation and the profile view/edit split (D-011, D-020)', () => {
-  test('the top menu has Dashboard and My profile only: no Module 2 / skills link, no "AI"', async () => {
+  // Batch 6 (Module 4, section 7): "Requests in the navigation with a count badge", and My jobs, were added.
+  test('the top menu has Dashboard, Requests, My jobs and My profile: no Module 2 / skills link, no "AI"', async () => {
     mockApi(workerRoutes());
     renderAt('/worker');
     const nav = await screen.findAllByRole('navigation', { name: 'Main' });
     for (const n of nav) {
       const names = within(n).queryAllByRole('link').map((l) => l.textContent);
-      expect(names).toEqual(['Dashboard', 'My profile']);
+      expect(names).toEqual(['Dashboard', 'Requests', 'My jobs', 'My profile']);
     }
     await userEvent.setup().click(screen.getByRole('button', { name: 'Open menu' }));
     const mobile = screen.getAllByRole('navigation', { name: 'Main' }).at(-1);
-    expect(within(mobile).queryAllByRole('link').map((l) => l.textContent)).toEqual(['Dashboard', 'My profile']);
+    expect(within(mobile).queryAllByRole('link').map((l) => l.textContent)).toEqual(['Dashboard', 'Requests', 'My jobs', 'My profile']);
     expect(document.querySelector('header').textContent).not.toMatch(/skill|profiler|\bAI\b/i);
   });
 
@@ -217,7 +218,7 @@ describe('customer pages (D-002)', () => {
     mockApi({ 'GET /auth/me': me('customer'), 'GET /workers/DLM-2026-000042': { status: 200, data: LEAKY_WORKER } });
     const { container } = renderAt('/workers/DLM-2026-000042');
     expect(await screen.findByRole('heading', { level: 1, name: 'Rashid Mehmood' })).toBeInTheDocument();
-    expect(screen.getByText('Contact details are shared after a booking is accepted (coming in a later module).')).toBeInTheDocument();
+    expect(screen.getByText("Send a request first. When the worker accepts it, you both see each other's phone number in the booking.")).toBeInTheDocument();
     expect(screen.getAllByText('Self-declared').length).toBe(1);
     for (const s of [...SECRETS, 'Satellite Town client']) expect(container.textContent).not.toContain(s);
   });

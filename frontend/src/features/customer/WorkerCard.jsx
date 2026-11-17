@@ -8,9 +8,12 @@ import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useT } from '../../i18n';
 import Highlight from './Highlight';
 import SaveButton from './SaveButton';
+import RatingBadge from '../reputation/RatingBadge';
+import { Button } from '../../components/ui';
+import { CalendarPlus } from 'lucide-react';
 import styles from './Customer.module.css';
 
-export default function WorkerCard({ worker: w, index = 0, query = '', saved, onToggleSave, compare, onToggleCompare, compareDisabled }) {
+export default function WorkerCard({ worker: w, index = 0, query = '', saved, onToggleSave, compare, onToggleCompare, compareDisabled, showRequest = false }) {
   const { t, formatNumber } = useT();
   const { categoryLabel, categoryOccupation, skillName } = useTaxonomy();
   const name = w.user?.name ?? t('common.worker');
@@ -36,6 +39,8 @@ export default function WorkerCard({ worker: w, index = 0, query = '', saved, on
         <StatusChip kind="identity" status={w.verificationStatus} />
         {verified.length > 0 && <Badge tone="success" icon={BadgeCheck}>{t('status.skill.verified')} · {verified.length}</Badge>}
       </div>
+      {/* Module 4: "4.6 (12) · 12 jobs" or "New on this platform" (public facts from the server) */}
+      <RatingBadge reputation={w.reputation} />
       <dl className={styles.facts}>
         <div><dt>{t('find.experience')}</dt><dd className="tabular">{t('common.yearsShort', { count: w.experienceYears ?? 0 })}</dd></div>
         <div><dt>{t('find.perHour')}</dt><dd className="tabular" dir="ltr">{rate(w.hourlyRate)}</dd></div>
@@ -54,6 +59,11 @@ export default function WorkerCard({ worker: w, index = 0, query = '', saved, on
           ))}
           {w.skills.length > 3 && <li><Badge>{t('find.more', { count: w.skills.length - 3 })}</Badge></li>}
         </ul>
+      )}
+      {showRequest && (
+        <span className={styles.compareCheck}>
+          <Button size="sm" icon={CalendarPlus} to={`/workers/${w.workerIdCode}/request`}>{t('booking.request.button')}<span className="visually-hidden">: {name}</span></Button>
+        </span>
       )}
       {onToggleCompare && (
         <label className={styles.compareCheck}>

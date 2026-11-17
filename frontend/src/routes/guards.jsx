@@ -18,13 +18,14 @@ export function PageLoading() {
   );
 }
 
+// role: one role, or a list of roles (Module 4: notifications are for workers and customers).
 export function RequireRole({ role }) {
   const { user, loading } = useAuth();
   const { t } = useT();
   const location = useLocation();
   if (loading) return <PageLoading />;
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
-  if (user.role !== role) {
+  if (!(Array.isArray(role) ? role : [role]).includes(user.role)) {
     return (
       <EmptyState
         icon={ShieldAlert}

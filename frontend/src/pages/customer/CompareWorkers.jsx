@@ -1,6 +1,7 @@
 // Compare two or three workers side by side (Batch 4, feature 24). The workers come from the
 // address (?ids=A,B,C), so a comparison can be bookmarked. Public fields only; a real table, so
 // screen readers can move by row and column.
+import RatingBadge from '../../features/reputation/RatingBadge';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, BadgeCheck, X } from 'lucide-react';
 import { Alert, Avatar, Badge, Button, EmptyState, PageHeader, Skeleton, StatusChip } from '../../components/ui';
@@ -40,6 +41,8 @@ export default function CompareWorkers() {
     ['perDay', (w) => rate(w.dailyRate)],
     ['availability', (w) => (w.availability ? t(`status.availability.${w.availability}`) : t('common.empty'))],
     ['identity', (w) => <StatusChip kind="identity" status={w.verificationStatus} />],
+    // Module 4: the same short reputation line as the directory card
+    ['reputation', (w) => <RatingBadge reputation={w.reputation} />],
     ['verifiedSkills', (w) => skillChips((w.skills ?? []).filter((s) => s.evidenceSummary?.status === 'verified'))],
     ['otherSkills', (w) => skillChips((w.skills ?? []).filter((s) => s.evidenceSummary?.status !== 'verified'))],
     ['languages', (w) => (w.languages ?? []).join(', ') || t('common.empty')],
@@ -73,6 +76,7 @@ export default function CompareWorkers() {
                         <span className={`${styles.meta} tabular`} dir="ltr">{w.workerIdCode}</span>
                         <span className={styles.compareActions} data-print="hide">
                           <Link to={`/workers/${w.workerIdCode}`}>{t('customerx.compare.viewProfile')}<span className="visually-hidden">: {name}</span></Link>
+                          <Link to={`/workers/${w.workerIdCode}/request`}>{t('booking.request.button')}<span className="visually-hidden">: {name}</span></Link>
                           <button type="button" className={styles.trayRemove} aria-label={t('customerx.compare.removeColumn', { name })} onClick={() => removeColumn(w.workerIdCode)}><X size={14} aria-hidden="true" /></button>
                         </span>
                       </div>
@@ -84,7 +88,7 @@ export default function CompareWorkers() {
             <tbody>
               {rows.map(([key, cell]) => (
                 <tr key={key}>
-                  <th scope="row">{t(`customerx.compare.rows.${key}`)}</th>
+                  <th scope="row">{t(key === 'reputation' ? 'reputation.title' : `customerx.compare.rows.${key}`)}</th>
                   {workers.map((w) => <td key={w.workerIdCode}>{cell(w)}</td>)}
                 </tr>
               ))}

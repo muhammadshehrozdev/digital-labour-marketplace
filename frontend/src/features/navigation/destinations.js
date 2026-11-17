@@ -4,6 +4,7 @@
 import {
   BadgeCheck, Bell, FileCheck2, FileDown, Hammer, Heart, History, Home, Languages, LayoutDashboard, LifeBuoy, LogIn, MessageSquareQuote,
   PencilLine, Scale, ScrollText, Search, ShieldCheck, Sparkles, UserPlus, UserRound, Users,
+  Inbox, BriefcaseBusiness, Star, Award, CalendarCheck, Gavel, MessagesSquare, Flag, ClipboardList,
 } from 'lucide-react';
 
 const PUBLIC = [
@@ -24,11 +25,17 @@ const BY_ROLE = {
     { id: 'edit-history', to: '/worker/profile/edit?section=history', label: 'palette.editHistory', icon: History },
     { id: 'edit-language', to: '/worker/profile/edit?section=language', label: 'palette.editLanguage', icon: Languages },
     { id: 'notifications', to: '/notifications', label: 'nav.notifications', icon: Bell },
+    { id: 'requests', to: '/worker/requests', label: 'booking.nav.requests', icon: Inbox },
+    { id: 'jobs', to: '/worker/jobs', label: 'booking.nav.jobs', icon: BriefcaseBusiness },
+    { id: 'my-reviews', to: '/worker/reviews', label: 'booking.nav.reviews', icon: Star },
+    { id: 'my-reputation', to: '/worker/reputation', label: 'booking.nav.reputation', icon: Award },
   ],
   customer: [
     { id: 'find', to: '/find', label: 'nav.findWorkers', icon: Search },
     { id: 'saved', to: '/saved', label: 'nav.saved', icon: Heart },
     { id: 'compare', to: '/compare', label: 'nav.compare', icon: Scale },
+    { id: 'bookings', to: '/bookings', label: 'booking.nav.bookings', icon: CalendarCheck },
+    { id: 'customer-notifications', to: '/notifications', label: 'nav.notifications', icon: Bell },
   ],
   admin: [
     { id: 'admin', to: '/admin', label: 'admin.nav.overview', icon: LayoutDashboard },
@@ -38,6 +45,10 @@ const BY_ROLE = {
     { id: 'admin-audit', to: '/admin/audit', label: 'admin.nav.audit', icon: ScrollText },
     { id: 'admin-templates', to: '/admin/templates', label: 'admin.nav.templates', icon: MessageSquareQuote },
     { id: 'admin-exports', to: '/admin/exports', label: 'admin.nav.exports', icon: FileDown },
+    { id: 'admin-bookings', to: '/admin/bookings', label: 'adminm4.nav.bookings', icon: ClipboardList },
+    { id: 'admin-disputes', to: '/admin/disputes', label: 'adminm4.nav.disputes', icon: Gavel },
+    { id: 'admin-reviews', to: '/admin/reviews', label: 'adminm4.nav.reviews', icon: MessagesSquare },
+    { id: 'admin-flags', to: '/admin/flags', label: 'adminm4.nav.flags', icon: Flag },
   ],
 };
 

@@ -1,4 +1,4 @@
-// All notifications of the logged-in worker (Batch 4, feature 19), newest first.
+// All notifications of the logged-in worker or customer (Batch 4, feature 19; customers since Module 4), newest first.
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCheck } from 'lucide-react';
@@ -7,17 +7,19 @@ import { Alert, Button, EmptyState, PageHeader, Pagination, Skeleton } from '../
 import NotificationItem from '../../features/notifications/NotificationItem';
 import NotificationListen from '../../features/notifications/NotificationListen';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
-import { notificationLink } from '../../features/notifications/notificationText';
+import { notificationLink, notificationTextKey } from '../../features/notifications/notificationText';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { useDocumentTitle, useT } from '../../i18n';
+import { useAuth } from '../../context/auth';
 import styles from '../../features/notifications/Notifications.module.css';
 
 const PAGE_SIZE = 20;
 
 export default function Notifications() {
   const { t, te } = useT();
+  const { user } = useAuth();
   const { skillName } = useTaxonomy();
-  const titleOf = (n) => t(`workerx.notifications.types.${n.type}.title`, { skill: n.params?.skillId ? skillName({ skillId: n.params.skillId, name: n.params.skillName }) : n.params?.skillName ?? '' });
+  const titleOf = (n) => t(`${notificationTextKey(n.type)}.title`, { code: n.params?.bookingCode ?? '', count: Number(n.params?.rating) || 0, skill: n.params?.skillId ? skillName({ skillId: n.params.skillId, name: n.params.skillName }) : n.params?.skillName ?? '' });
   useDocumentTitle(t('workerx.notifications.title'));
   const [page, setPage] = useState(1);
   const { data, error, reload } = useApiQuery('/notifications', { page: String(page), limit: String(PAGE_SIZE) });
@@ -29,18 +31,18 @@ export default function Notifications() {
     <div>
       <PageHeader
         title={t('workerx.notifications.title')}
-        description={t('workerx.notifications.lead')}
+        description={t(user?.role === 'customer' ? 'booking.notify.leadCustomer' : 'booking.notify.leadWorker')}
         actions={data?.unread > 0 ? <Button variant="secondary" icon={CheckCheck} onClick={markAll}>{t('workerx.notifications.markAll')}</Button> : null}
       />
       {error && <Alert tone="danger">{te(error)}</Alert>}
       {!data && !error && <Skeleton variant="block" height={240} />}
-      {data && data.notifications.length === 0 && <EmptyState art="no-notifications" title={t('workerx.notifications.empty')} description={t('workerx.notifications.emptyText')} />}
+      {data && data.notifications.length === 0 && <EmptyState art="no-notifications" title={t('workerx.notifications.empty')} description={t(user?.role === 'customer' ? 'booking.notify.emptyCustomer' : 'booking.notify.emptyWorker')} />}
       {data && data.notifications.length > 0 && (
         <>
           <ul className={styles.pageList}>
             {data.notifications.map((n) => (
               <li key={n._id} className={styles.pageRow}>
-                <Link to={notificationLink(n)} className={styles.pageItem} onClick={() => !n.read && API.patch(`/notifications/${n._id}/read`).catch(() => {})}>
+                <Link to={notificationLink(n, user?.role)} className={styles.pageItem} onClick={() => !n.read && API.patch(`/notifications/${n._id}/read`).catch(() => {})}>
                   <NotificationItem n={n} />
                 </Link>
                 {/* Batch 5: the notification can be heard (a button may not sit inside the link) */}

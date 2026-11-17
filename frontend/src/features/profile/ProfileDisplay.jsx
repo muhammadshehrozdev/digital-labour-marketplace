@@ -11,6 +11,9 @@ import { evidenceFileUrl } from '../evidence/evidenceText';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useT } from '../../i18n';
 import styles from './ProfileDisplay.module.css';
+import ReputationPanel from '../reputation/ReputationPanel';
+import ReviewList from '../reputation/ReviewList';
+import WorkHistoryList from '../reputation/WorkHistoryList';
 
 function Fact({ icon: Icon, label, children }) {
   return (
@@ -119,8 +122,18 @@ export default function ProfileDisplay({ profile, evidence = [], mode = 'public'
           </Reveal>
         )}
 
+        {/* Module 4 (Batch 6): reputation, verified work history and reviews, from the server's public data only */}
+        {!owner && profile.workerIdCode && (
+          <div className={styles.wide} style={{ display: 'grid', gap: 'var(--space-4)' }} data-testid="public-reputation">
+            <ReputationPanel reputation={profile.reputation} headingLevel={headingLevel + 1} />
+            <WorkHistoryList workerIdCode={profile.workerIdCode} headingLevel={headingLevel + 1} />
+            <ReviewList workerIdCode={profile.workerIdCode} headingLevel={headingLevel + 1} />
+          </div>
+        )}
+
         <Reveal as={Card} index={5} className={styles.wide}>
           <S className={styles.sectionTitle}>{t('profile.history')}</S>
+          {!owner && <p className={styles.muted}>{t('reputation.selfDeclared')}</p>}
           {(profile.workHistory ?? []).length ? (
             <ol className={styles.timeline}>
               {profile.workHistory.map((w, i) => (

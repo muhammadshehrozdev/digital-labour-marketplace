@@ -30,6 +30,15 @@ const AdminEvidence = lazyPage(() => import('../pages/admin/AdminEvidence'));
 const AdminUsers = lazyPage(() => import('../pages/admin/AdminUsers'));
 const AdminTemplates = lazyPage(() => import('../pages/admin/AdminTemplates'));
 const AdminExports = lazyPage(() => import('../pages/admin/AdminExports'));
+// Module 4 (Batch 6): bookings, reviews and reputation
+const RequestWorker = lazyPage(() => import('../pages/customer/RequestWorker'));
+const MyBookings = lazyPage(() => import('../pages/customer/MyBookings'));
+const RateWork = lazyPage(() => import('../pages/customer/RateWork'));
+const BookingDetail = lazyPage(() => import('../pages/booking/BookingDetail'));
+const Requests = lazyPage(() => import('../pages/worker/Requests'));
+const MyJobs = lazyPage(() => import('../pages/worker/MyJobs'));
+const MyReviews = lazyPage(() => import('../pages/worker/MyReviews'));
+const MyReputation = lazyPage(() => import('../pages/worker/MyReputation'));
 
 // Developer pages only in development builds (not shipped in production).
 const StyleGuide = import.meta.env.DEV ? lazy(() => import('../pages/dev/StyleGuide')) : null;
@@ -52,13 +61,22 @@ export const appRoutes = (
         <Route element={<RequireRole role="worker" />}>
           <Route path="onboarding" element={<Navigate to="/onboarding/about" replace />} />
           <Route path="onboarding/:step" element={<Onboarding />} />
-          <Route path="notifications" element={<Notifications />} />
           <Route element={<RequireOnboarding />}>
             <Route path="worker" element={<WorkerDashboard />} />
             <Route path="worker/profile" element={<WorkerProfileView />} />
             <Route path="worker/profile/edit" element={<WorkerProfileEdit />} />
             <Route path="worker/skills" element={<OldSkillsLink />} />
+            <Route path="worker/requests" element={<Requests />} />
+            <Route path="worker/jobs" element={<MyJobs />} />
+            <Route path="worker/jobs/:id" element={<BookingDetail />} />
+            <Route path="worker/reviews" element={<MyReviews />} />
+            <Route path="worker/reputation" element={<MyReputation />} />
           </Route>
+        </Route>
+
+        {/* Module 4: booking and review notifications are for customers too */}
+        <Route element={<RequireRole role={['worker', 'customer']} />}>
+          <Route path="notifications" element={<Notifications />} />
         </Route>
 
         <Route element={<RequireRole role="customer" />}>
@@ -66,6 +84,10 @@ export const appRoutes = (
           <Route path="workers/:workerId" element={<WorkerPublicProfile />} />
           <Route path="saved" element={<SavedWorkers />} />
           <Route path="compare" element={<CompareWorkers />} />
+          <Route path="workers/:workerId/request" element={<RequestWorker />} />
+          <Route path="bookings" element={<MyBookings />} />
+          <Route path="bookings/:id" element={<BookingDetail />} />
+          <Route path="bookings/:id/rate" element={<RateWork />} />
         </Route>
 
         <Route element={<RequireRole role="admin" />}>
