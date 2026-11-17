@@ -99,8 +99,10 @@ export const REP2_PARAMS = REP2_SELECTED ? rep2Params(REP2_SELECTED) : null;
 
 export const PARAM_SETS = Object.freeze({ 'rep-1': REP1_PARAMS, ...(REP2_PARAMS ? { 'rep-2': REP2_PARAMS } : {}) });
 
-// Which engine the website uses (decided by the success criteria S1 and S3 on the test seeds).
-export const LIVE_ENGINE = 'rep-1';
+// Which engine the website uses, decided by the pre-registered rule: rep-2 if S1 and S3 hold on the test seeds.
+// Both held (SIMULATION, test seeds 20270101..20270130, results/SIMULATION-rep2-test-2026-11-17-*.json):
+// rep-2 went live on 17 Nov 2026 (Batch 6B). rep-1 stays here as a method of the evaluation.
+export const LIVE_ENGINE = 'rep-2';
 export const DEFAULT_REPUTATION_PARAMS = PARAM_SETS[LIVE_ENGINE];
 // Kept under its old name: the version of the live engine.
 export const REPUTATION_ENGINE_VERSION = LIVE_ENGINE;

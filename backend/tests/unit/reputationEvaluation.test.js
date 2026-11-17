@@ -7,6 +7,7 @@ import { simulateWorld, withoutAttacks, starsFrom } from '../../evaluation/reput
 import { SCENARIOS, scenarioNames, SIM_NOW } from '../../evaluation/reputation/config.js';
 import { evaluateSeed, evaluateScenario } from '../../evaluation/reputation/evaluate.js';
 import { computeReputation } from '../../services/reputation/reputationEngine.js';
+import { REP1_PARAMS } from '../../config/reputationParams.js';
 
 const r4 = (x) => Number(x.toFixed(4));
 
@@ -72,9 +73,10 @@ describe('baselines', () => {
     expect(wilsonLower(10, 10)).toBeLessThan(1);
   });
 
-  test('"ours" is the production engine itself (cautious), B4 the plain Beta with all weights 1', () => {
+  // Batch 6B: "ours" in the Batch 6 table is the rep-1 engine (production until rep-2 went live), by name
+  test('"ours" is the rep-1 engine itself (cautious), B4 the plain Beta with all weights 1', () => {
     const reviews = [{ id: 'a', customerId: 'x', stars: 5, createdAt: new Date(SIM_NOW.getTime() - 400 * 864e5), completionMethod: 'auto', reviewerOtherWorkers: 0 }];
-    expect(METHODS.ours.score(reviews)).toBe(computeReputation(reviews, { now: SIM_NOW }).cautious);
+    expect(METHODS.ours.score(reviews)).toBe(computeReputation(reviews, { now: SIM_NOW, params: REP1_PARAMS }).cautious);
     expect(METHODS.B4.score(reviews)).toBeCloseTo(2 / 3, 10);
     const scores = scoreAll([{ reviews }, { reviews: [] }], ['B1', 'B2']);
     expect(scores.B1).toEqual([5, -1]);

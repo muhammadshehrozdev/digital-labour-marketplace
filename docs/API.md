@@ -38,6 +38,21 @@ examples: 10 Nov 2026) with **synthetic** accounts (ids and dates will differ on
 ### GET /api/health
 `200 {"ok":true,"db":"connected"}` — answers even when the database is down (then `db` is not `connected`).
 
+### GET /api/meta/reputation-rules (Batch 6B)
+Public, no login, no database, no input (`Cache-Control: public, max-age=300`). The reputation rules of the
+**live** engine as ids and numbers, generated from `backend/config/reputationParams.js`
+(`services/reputation/rules.js`); the website words them (Help Centre guide, My reputation). Never a score.
+```json
+{"engineVersion":"rep-2","rankBy":"expected","newReviewerBudget":1,"burstCheck":true,"halfLifeDays":null,
+ "lateCancelHours":24,
+ "items":[{"id":"onlyCustomers","values":{}},{"id":"sameCustomer","values":{}},
+          {"id":"newAccounts","values":{"budget":1}},{"id":"burst","values":{"days":14,"count":4}},
+          {"id":"lateCancel","values":{"hours":24}}]}
+```
+`GET /api/workers/me/reputation` (worker) returns the same fields inside `rules`, next to `lateCancelHours`,
+`earlyCancelCounts`, `lateCancelCounts`, `disputeWindowDays`. Per-review `reasons` may now also be
+`new_reviewer_budget` and `burst` (rep-2); the snapshot carries `baseRate` and `engineVersion: "rep-2"`.
+
 ### GET /api/meta/taxonomy
 The one list of categories and skills (no matching terms). Batch 3: each category and skill carries
 `i18n` with the Urdu and Roman Urdu display names (`DISPLAY_NAMES` in `backend/config/skillTaxonomy.js`;

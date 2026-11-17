@@ -9,10 +9,22 @@
 // `baseRate` is the base rate (a) that the reputation numbers used (rep-1 always 0.5; rep-2 the platform prior at
 // that moment), so every number can be re-done by hand.
 import { computeReputation } from './reputationEngine.js';
+import { depthFrom } from './beta.js';
 import { computeReliability } from './reliabilityEngine.js';
 import { DEFAULT_REPUTATION_PARAMS, engineVersionOf, paramsHash } from '../../config/reputationParams.js';
 
 const pickNumbers = ({ r, s, belief, disbelief, uncertainty, expected, cautious, depth }) => ({ r, s, belief, disbelief, uncertainty, expected, cautious, depth });
+
+// The PUBLIC depth word (Batch 6B decision): rep-2 counts all reviews from first-time customers together as at
+// most B reviews, so twelve such reviews can leave little counted evidence; "Few reviews yet" next to "(12)"
+// would contradict what customers see. For rep-2 the public word therefore comes from the number of VISIBLE
+// reviews, with the same thresholds as if each weighed 1 (uncertainty W / (n + W)). The score's own depth
+// (owner, admin, matching) stays the evidence-based one. rep-1 snapshots are unchanged.
+export function publicDepth(reputation, params) {
+  if (engineVersionOf(params) === 'rep-1') return reputation.depth;
+  const n = reputation.reviewCount;
+  return depthFrom(params.priorWeight / (n + params.priorWeight), n > 0, params.depthThresholds);
+}
 
 // completedBookings: [{ skillId, completedAt }]; reviews: [{ skillId, stars, hidden }]
 export function perSkillFacts(completedBookings = [], reviews = []) {
@@ -54,7 +66,7 @@ export function buildReputationSnapshot({ reputation, reliability, completedBook
     public: {
       ratingAverage: reputation.ratingAverage,
       reviewCount: reputation.reviewCount,
-      depth: reputation.depth,
+      depth: publicDepth(reputation, params),
       distribution: { ...reputation.distribution },
       quick: JSON.parse(JSON.stringify(reputation.quick)),
       wouldHireAgain: { ...reputation.wouldHireAgain },

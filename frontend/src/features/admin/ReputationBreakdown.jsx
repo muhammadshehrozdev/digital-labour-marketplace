@@ -1,9 +1,10 @@
 // Admin: one worker's full reputation breakdown (Module 4): the numbers, how every review was weighed
-// (the four factors), hidden reviews, flags and bookings by state. Admin only (server checked).
+// (its factors: rep-1 four, rep-2 provenance, new-account budget, burst, pair), hidden reviews, flags and bookings by state. Admin only (server checked).
 import { Badge, DataTable, Skeleton, Alert } from '../../components/ui';
 import Stars from '../reputation/Stars';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { useT } from '../../i18n';
+import { reasonText } from '../reputation/reputationText';
 import styles from '../../pages/admin/Admin.module.css';
 
 const n2 = (x) => (Number.isFinite(x) ? x.toFixed(2) : '');
@@ -12,6 +13,7 @@ const n4 = (x) => (Number.isFinite(x) ? x.toFixed(4) : '');
 export default function ReputationBreakdown({ profileId }) {
   const { t, te, formatDate } = useT();
   const { data, error } = useApiQuery(profileId ? `/admin/workers/${profileId}/reputation` : null);
+  const rules = useApiQuery('/meta/reputation-rules').data; // Batch 6B: B for the reason text
   if (error) return <Alert tone="danger">{te(error)}</Alert>;
   if (!data) return <Skeleton variant="block" height={200} />;
   const { snapshot: s } = data;
@@ -19,8 +21,11 @@ export default function ReputationBreakdown({ profileId }) {
     { key: 'stars', header: t('adminm4.breakdown.stars'), render: (p) => <Stars value={p.stars} size={14} /> },
     { key: 'date', header: t('adminm4.breakdown.date'), sortable: true, sortValue: (p) => p.createdAt, render: (p) => <span className="tabular">{formatDate(p.createdAt)}</span>, sub: (p) => p.review?.customer?.name },
     { key: 'weight', header: t('adminm4.breakdown.weight'), sortable: true, sortValue: (p) => p.weight, render: (p) => <span className="tabular">{n2(p.weight)}</span> },
-    { key: 'factors', header: t('adminm4.breakdown.factors'), render: (p) => <span className="tabular">{t('adminm4.breakdown.factorValues', { provenance: n2(p.factors.provenance), recency: n2(p.factors.recency), trust: n2(p.factors.reviewerTrust), pair: n2(p.factors.pairFactor) })}</span> },
-    { key: 'reasons', header: t('adminm4.breakdown.reasons'), render: (p) => p.reasons.map((r) => t(`reputation.reason.${r}`)).join(' ') },
+    // rep-2 (Batch 6B) has the new-account budget and the burst check instead of recency and reviewer trust
+    { key: 'factors', header: t('adminm4.breakdown.factors'), render: (p) => <span className="tabular">{'newReviewerBudget' in p.factors
+      ? t('b6b.reputation.admin.factorValues', { provenance: n2(p.factors.provenance), budget: n2(p.factors.newReviewerBudget), burst: n2(p.factors.burst ?? 1), pair: n2(p.factors.pairFactor) })
+      : t('adminm4.breakdown.factorValues', { provenance: n2(p.factors.provenance), recency: n2(p.factors.recency), trust: n2(p.factors.reviewerTrust), pair: n2(p.factors.pairFactor) })}</span> },
+    { key: 'reasons', header: t('adminm4.breakdown.reasons'), render: (p) => p.reasons.map((r) => reasonText(t, r, { budget: rules?.newReviewerBudget ?? 1 })).join(' ') },
   ];
   return (
     <div style={{ display: 'grid', gap: 'var(--space-4)' }} data-testid="reputation-breakdown">

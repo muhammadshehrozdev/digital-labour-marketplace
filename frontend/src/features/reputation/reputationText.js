@@ -20,4 +20,21 @@ export const depthOf = (pub) => (pub && pub.reviewCount > 0 ? pub.depth : 'none'
 export const hasJobs = (pub) => Boolean(pub && pub.completedJobs > 0);
 
 export const QUICK_QUESTIONS = Object.freeze(['onTime', 'workQuality', 'polite', 'priceAsAgreed']);
-export const REASON_CODES = Object.freeze(['counted_fully', 'weeks_old', 'months_old', 'older_than_a_year', 'auto_completed', 'new_reviewer', 'repeat_reviewer']);
+export const REASON_CODES = Object.freeze(['counted_fully', 'weeks_old', 'months_old', 'older_than_a_year', 'auto_completed', 'new_reviewer', 'repeat_reviewer', 'new_reviewer_budget', 'burst']);
+
+// Batch 6B (rep-2): the two new per-review reasons have their own texts; `budget` is B from the rules.
+const NEW_REASONS = { new_reviewer_budget: 'b6b.reputation.reason.newReviewerBudget', burst: 'b6b.reputation.reason.burst' };
+export function reasonText(t, code, { budget = 1 } = {}) {
+  return NEW_REASONS[code] ? t(NEW_REASONS[code], { count: budget }) : t(`reputation.reason.${code}`);
+}
+
+// The rules of the live engine come from the server (services/reputation/rules.js) as ids and numbers.
+// rep-1 ids keep their Batch 6 texts; the rep-2 ids have new ones. Returns the title and text keys and values.
+const OLD_RULES = ['onlyCustomers', 'newerCount', 'sameCustomer', 'hiredOthers'];
+export function ruleText(item) {
+  const base = OLD_RULES.includes(item.id) ? `reputation.mine.rules.${item.id}` : `b6b.reputation.rules.${item.id}`;
+  const values = item.id === 'newAccounts' ? { count: item.values.budget } : item.values ?? {};
+  return { titleKey: `${base}.title`, textKey: `${base}.text`, values };
+}
+// One short line per rule for the Help Centre guide.
+export const guideLine = (t, item) => t(`b6b.reputation.guide.${item.id}`, item.id === 'newAccounts' ? { count: item.values.budget } : item.values ?? {});

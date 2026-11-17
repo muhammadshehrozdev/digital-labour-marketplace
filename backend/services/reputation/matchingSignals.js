@@ -1,6 +1,7 @@
 // The stable entry point for Module 7 (matching): the reputation fields it may read
 // (docs/contracts/MATCHING-INPUTS.md). PURE. Two rules for Module 7, repeated here on purpose:
-//   1. never rank by the plain average of stars (ratingAverage is for display only);
+//   1. never rank by the plain average of stars (ratingAverage is for display only); since rep-2 (Batch 6B)
+//      the platform's own ordering uses `expected` (engineVersion says which engine made the numbers);
 //   2. handle new workers on purpose (isNew): fair exposure is Module 7's own research part.
 import { computeReputation } from './reputationEngine.js';
 import { computeReliability } from './reliabilityEngine.js';
@@ -20,6 +21,9 @@ export function toMatchingSignals(snapshot) {
     uncertainty: score.uncertainty,
     cautious: score.cautious,
     depth: score.depth,
+    // Batch 6B: the base rate a the numbers used (rep-2: the platform prior when the snapshot was built;
+    // no snapshot: the engine's fixed 0.5). Module 7 needs it to place new workers on purpose.
+    baseRate: snapshot?.baseRate ?? score.baseRate ?? null,
     reliability: {
       expected: rel.expected,
       uncertainty: rel.uncertainty,

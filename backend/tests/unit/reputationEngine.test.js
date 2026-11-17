@@ -2,9 +2,16 @@
 // Hand-worked examples from the Batch 6 plan, section 4.6 (four decimal places), and property tests
 // with a seeded generator (the same seed always gives the same cases).
 import { describe, test, expect } from 'vitest';
-import { computeReputation, reviewWeight, reviewerTrustFor, starsToEvidence } from '../../services/reputation/reputationEngine.js';
+import { computeReputation as engineCompute, reviewWeight, reviewerTrustFor, starsToEvidence } from '../../services/reputation/reputationEngine.js';
 import { recencyWeight, betaNumbers, depthFrom, ageInDays } from '../../services/reputation/beta.js';
-import { DEFAULT_REPUTATION_PARAMS as P, withParams, paramsHash } from '../../config/reputationParams.js';
+import { REP1_PARAMS as P, withParams as withParamsOf, paramsHash as hashOf } from '../../config/reputationParams.js';
+
+// Batch 6B: rep-2 is the live engine now. This file keeps testing rep-1 BY NAME (it stays a method of the
+// evaluation); only these three lines changed, every expected value is the Batch 6 one. rep-2's own tests:
+// reputationEngineRep2.test.js.
+const computeReputation = (reviews, options) => engineCompute(reviews, { params: P, ...options });
+const withParams = (changes) => withParamsOf(changes, P);
+const paramsHash = (params = P) => hashOf(params);
 import { createRng, mulberry32 } from '../../evaluation/reputation/rng.js';
 
 const NOW = new Date('2026-11-16T12:00:00Z');

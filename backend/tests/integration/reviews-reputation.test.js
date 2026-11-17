@@ -102,7 +102,10 @@ describe('reputation snapshot and the public view', () => {
 
   test('the snapshot is rebuilt after each review; public profile shows words and counts, never the numbers', async () => {
     const snap = await snapshotOf(w);
-    expect(snap).toMatchObject({ engineVersion: 'rep-1', public: { reviewCount: 3, completedJobs: 3, depth: 'few' } });
+    // Batch 6B: rep-2 is live (rep-1 was 'rep-1' with depth 'few'; rep-1 stays tested by name in the unit tests).
+    // The public depth word follows the 3 visible reviews: uncertainty 2 / (3 + 2) = 0.4 -> 'some'.
+    expect(snap).toMatchObject({ engineVersion: 'rep-2', public: { reviewCount: 3, completedJobs: 3, depth: 'some' } });
+    expect(snap.baseRate).toEqual(expect.any(Number));
     expect(snap.public.ratingAverage).toBeCloseTo(11 / 3, 10);
     const c = await makeCustomer(app);
     const profile = (await get(c, `/api/workers/${w.code}`)).body;
@@ -156,7 +159,10 @@ describe('reputation snapshot and the public view', () => {
     expect(res.body.snapshot.score.cautious).toBeLessThan(res.body.snapshot.score.expected);
     expect(res.body.snapshot.reliability).toMatchObject({ completed: 3, workerCancelledLate: 1 });
     expect(res.body.perReview).toHaveLength(3);
-    expect(res.body.perReview[0].reasons).toContain('new_reviewer'); // these customers hired nobody else
+    // these customers hired nobody else: rep-2 counts the three together as one review (rep-1: 'new_reviewer')
+    expect(res.body.perReview[0].reasons).toContain('new_reviewer_budget');
+    expect(res.body.rules).toMatchObject({ engineVersion: 'rep-2', rankBy: 'expected', newReviewerBudget: 1, burstCheck: true });
+    expect(res.body.rules.items.map((i) => i.id)).toEqual(['onlyCustomers', 'sameCustomer', 'newAccounts', 'burst', 'lateCancel']);
     expect(res.body.cancellations[0]).toMatchObject({ outcome: 'cancelled_by_worker_late', code: b.code });
     expect(res.body.rules).toMatchObject({ lateCancelHours: 24, earlyCancelCounts: 0.5, lateCancelCounts: 1 });
     expect((await get(c, '/api/workers/me/reputation')).status).toBe(403);
@@ -294,7 +300,8 @@ describe('suspicious-pattern flags (never change a score)', () => {
 });
 
 describe('"Best track record" and "Has done jobs on this platform"', () => {
-  test('orders by cautious score; a worker without a snapshot counts as the no-review prior; the filter keeps workers with jobs', async () => {
+  // Batch 6B: the ranking number is the live engine's (rep-2: expected; rep-1 was cautious); the order is the same
+  test('orders by the ranking number; a worker without a snapshot counts as the no-review prior; the filter keeps workers with jobs', async () => {
     const strong = await makeWorker(app, { name: 'Track Strong (synthetic)', city: 'Trackville' });
     const weak = await makeWorker(app, { name: 'Track Weak (synthetic)', city: 'Trackville' });
     const fresh = await makeWorker(app, { name: 'Track New (synthetic)', city: 'Trackville' });
@@ -309,7 +316,7 @@ describe('"Best track record" and "Has done jobs on this platform"', () => {
     const viewer = await makeCustomer(app);
     const order = (await get(viewer, '/api/workers?city=Trackville&sort=track_record')).body;
     expect(order.sort).toBe('track_record');
-    expect(order.workers.map((x) => x.workerIdCode)).toEqual([strong.code, fresh.code, weak.code]); // 1 star (0.03) < new (0.13)
+    expect(order.workers.map((x) => x.workerIdCode)).toEqual([strong.code, fresh.code, weak.code]); // one 1 star < new (the prior a) < four 5 star
     for (const key of NUMBER_KEYS) expect(allKeys(order).has(key), key).toBe(false);
     const jobs = (await get(viewer, '/api/workers?city=Trackville&hasJobs=true')).body.workers.map((x) => x.workerIdCode);
     expect(jobs.sort()).toEqual([strong.code, weak.code].sort());

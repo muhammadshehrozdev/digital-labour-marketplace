@@ -2507,6 +2507,40 @@ export default {
         intro: 'Installing works in Chrome or Edge. Open this link there:',
       },
     },
+    reputation: {
+      rules: {
+        newAccounts: {
+          title: 'New customer accounts: counted, with a limit',
+          text: { one: 'Reviews from brand-new customer accounts count, but all of them together count as at most {count} review.', other: 'Reviews from brand-new customer accounts count, but all of them together count as at most {count} reviews.' },
+        },
+        burst: {
+          title: 'Many reviews in a few days',
+          text: 'Many reviews in a few days count less: when {count} or more arrive within {days} days, each of them counts half.',
+        },
+        lateCancel: {
+          title: 'Cancel early',
+          text: 'A late cancellation counts double: cancel at least {hours} hours before.',
+        },
+      },
+      mine: {
+        expected: 'Reputation score: {value} out of 1 (the middle estimate from your counted reviews). "Best track record" orders by this score.',
+        cautious: 'Careful score: {value} out of 1. We are about 90% sure your true score is at least this.',
+      },
+      reason: {
+        newReviewerBudget: { one: 'Counted less: a first-time customer account. All such reviews together count as {count} review.', other: 'Counted less: a first-time customer account. All such reviews together count as {count} reviews.' },
+        burst: 'Counted half: one of many reviews within a few days.',
+      },
+      guide: {
+        onlyCustomers: 'Only customers who finished a job with you can review you.',
+        sameCustomer: 'Many reviews from the same customer count less each time.',
+        newAccounts: { one: 'Reviews from brand-new customer accounts count, but all of them together count as at most {count} review.', other: 'Reviews from brand-new customer accounts count, but all of them together count as at most {count} reviews.' },
+        burst: 'Many reviews in a few days count less.',
+        lateCancel: 'A late cancellation counts double: cancel at least a day before.',
+      },
+      admin: {
+        factorValues: 'provenance {provenance} · new-account budget {budget} · burst {burst} · pair {pair}',
+      },
+    },
   },
   // ---- end of Batch 6B (top) ----
 };

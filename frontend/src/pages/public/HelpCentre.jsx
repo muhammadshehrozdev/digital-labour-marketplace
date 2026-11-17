@@ -8,6 +8,8 @@ import { SceneArt } from '../../components/illustrations';
 import { PageHeader, TextField } from '../../components/ui';
 import { useAuth } from '../../context/auth';
 import { useDocumentTitle, useT } from '../../i18n';
+import { useApiQuery } from '../../hooks/useApiQuery';
+import { guideLine } from '../../features/reputation/reputationText';
 import styles from './HelpCentre.module.css';
 
 const GROUPS = [
@@ -24,9 +26,15 @@ export default function HelpCentre() {
   const { user } = useAuth();
   useDocumentTitle(t('appx.help.title'));
   const [query, setQuery] = useState('');
+  // Batch 6B: the reputation guide is written from the live engine's rules (GET /api/meta/reputation-rules),
+  // so it always says what the code does; the Batch 6 text is kept for rep-1 and while the rules load.
+  const rules = useApiQuery('/meta/reputation-rules').data;
+  const stepsOf = (id, base, tt = t) => (id === 'reputation' && rules?.engineVersion === 'rep-2'
+    ? rules.items.map((item) => guideLine(tt, item))
+    : tt(`${base}.${id}.steps`).split('|'));
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const matches = (id, base = DEFAULT_BASE) => {
-    const text = `${t(`${base}.${id}.title`)} ${t(`${base}.${id}.steps`)}`.toLowerCase();
+    const text = `${t(`${base}.${id}.title`)} ${stepsOf(id, base).join(' ')}`.toLowerCase();
     return words.every((w) => text.includes(w));
   };
   // the person's own guides first
@@ -49,7 +57,7 @@ export default function HelpCentre() {
                 <SceneArt name={art} size={120} />
                 <h3 className={styles.guideTitle}>{t(`${base}.${id}.title`)}</h3>
                 <ol className={styles.steps}>
-                  {t(`${base}.${id}.steps`).split('|').map((step) => <li key={step}>{step}</li>)}
+                  {stepsOf(id, base).map((step) => <li key={step}>{step}</li>)}
                 </ol>
                 {id === 'voiceTyping' && (
                   <>
@@ -63,7 +71,7 @@ export default function HelpCentre() {
                   name={t(`${base}.${id}.title`)}
                   params={{
                     title: (lang, spokenT) => spokenT(`${base}.${id}.title`),
-                    steps: (lang, spokenT) => spokenT(`${base}.${id}.steps`).split('|').join(' '),
+                    steps: (lang, spokenT) => stepsOf(id, base, spokenT).join(' '),
                   }}
                 />
               </article>

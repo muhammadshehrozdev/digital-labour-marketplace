@@ -5,7 +5,7 @@ import { computeReliability, OUTCOMES } from '../../services/reputation/reliabil
 import { computeReputation } from '../../services/reputation/reputationEngine.js';
 import { buildReputationSnapshot, perSkillFacts, snapshotFrom } from '../../services/reputation/snapshot.js';
 import { toMatchingSignals, NEW_WORKER_CAUTIOUS } from '../../services/reputation/matchingSignals.js';
-import { paramsHash, withParams, REPUTATION_ENGINE_VERSION } from '../../config/reputationParams.js';
+import { paramsHash, withParams, REPUTATION_ENGINE_VERSION, REP1_PARAMS } from '../../config/reputationParams.js';
 import { createRng } from '../../evaluation/reputation/rng.js';
 
 const NOW = new Date('2026-11-16T12:00:00Z');
@@ -111,11 +111,11 @@ describe('snapshot (buildReputationSnapshot) and matching signals', () => {
     ]);
   });
 
+  // Batch 6B: rep-2 is live; this test keeps checking a rep-1 snapshot BY NAME (rep-2: the next test)
   test('the snapshot keeps the numbers out of its public part', () => {
-    const { snapshot } = snapshotFrom({ reviews, closedBookings: closed, now: NOW });
-    expect(snapshot.engineVersion).toBe(REPUTATION_ENGINE_VERSION);
+    const { snapshot } = snapshotFrom({ reviews, closedBookings: closed, now: NOW, params: REP1_PARAMS });
     expect(snapshot.engineVersion).toBe('rep-1');
-    expect(snapshot.paramsHash).toBe(paramsHash());
+    expect(snapshot.paramsHash).toBe(paramsHash(REP1_PARAMS));
     expect(snapshot.computedAt).toBe(NOW);
     expect(snapshot.public).toMatchObject({ ratingAverage: 4, reviewCount: 2, depth: 'few', completedJobs: 3, workerCancelledLate: 1, repeatCustomers: 1, lastCompletedAt: daysAgo(1) });
     expect(JSON.stringify(snapshot.public)).not.toMatch(/expected|uncertainty|cautious|belief/);
@@ -124,10 +124,28 @@ describe('snapshot (buildReputationSnapshot) and matching signals', () => {
     expect(() => buildReputationSnapshot({ reputation: computeReputation([], { now: NOW }), reliability: computeReliability([], { now: NOW }) })).toThrow(/computedAt/);
   });
 
+  test('rep-2 (live since Batch 6B): the snapshot names rep-2, stores the base rate, and its public depth word follows the visible reviews', () => {
+    const { snapshot } = snapshotFrom({ reviews, closedBookings: closed, now: NOW, baseRate: 0.8 });
+    expect(snapshot.engineVersion).toBe(REPUTATION_ENGINE_VERSION);
+    expect(snapshot.engineVersion).toBe('rep-2');
+    expect(snapshot.paramsHash).toBe(paramsHash());
+    expect(snapshot.baseRate).toBe(0.8);
+    expect(JSON.stringify(snapshot.public)).not.toMatch(/expected|uncertainty|cautious|belief|baseRate/);
+    // twelve 5 star reviews from twelve first-time customers: little counted evidence (B = 1), but the public
+    // word follows what customers see ("Many reviews"), never "Few reviews yet" next to "(12)"
+    const twelve = Array.from({ length: 12 }, (_, i) => ({ id: `t${i}`, customerId: `n${i}`, stars: 5, createdAt: new Date(NOW.getTime() - i * 20 * DAY), completionMethod: 'both', reviewerOtherWorkers: 0 }));
+    const fresh = snapshotFrom({ reviews: twelve, closedBookings: [], now: NOW, baseRate: 0.8 }).snapshot;
+    expect(fresh.score.depth).toBe('few');
+    expect(fresh.public).toMatchObject({ reviewCount: 12, depth: 'many' });
+    expect(snapshotFrom({ reviews: twelve, closedBookings: [], now: NOW, params: REP1_PARAMS }).snapshot.public.depth).toBe('some'); // rep-1 unchanged
+    expect(toMatchingSignals(fresh)).toMatchObject({ baseRate: 0.8, engineVersion: 'rep-2', depth: 'few' });
+  });
+
   test('toMatchingSignals: the documented fields only; a worker with no snapshot gets the prior and isNew', () => {
     const { snapshot } = snapshotFrom({ reviews, closedBookings: closed, now: NOW });
     const signals = toMatchingSignals(snapshot);
-    expect(Object.keys(signals).sort()).toEqual(['cautious', 'depth', 'engineVersion', 'expected', 'isNew', 'perSkill', 'reliability', 'repeatCustomers', 'uncertainty']);
+    // Batch 6B added baseRate to the contract (docs/contracts/MATCHING-INPUTS.md); every old field stays
+    expect(Object.keys(signals).sort()).toEqual(['baseRate', 'cautious', 'depth', 'engineVersion', 'expected', 'isNew', 'perSkill', 'reliability', 'repeatCustomers', 'uncertainty']);
     expect(signals).toMatchObject({ expected: snapshot.score.expected, cautious: snapshot.score.cautious, depth: 'few', repeatCustomers: 1, isNew: false });
     expect(signals.reliability).toMatchObject({ completed: 3, acceptedTotal: 4 });
     expect(signals.perSkill).toHaveLength(2);

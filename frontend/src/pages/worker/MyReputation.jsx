@@ -1,25 +1,23 @@
 // /worker/reputation — "My reputation" (Batch 6, section 7). One summary sentence that can be heard,
-// four rules in simple words (each can be heard), how every review was counted (perReview from the
+// the rules of the live engine in simple words (from the server's rule list, Batch 6B; each can be heard), how every review was counted (perReview from the
 // server), the reliability counts, tips, and the worker's own cancellations. The numbers are the
 // worker's own (customers never see them), always with words next to them.
-import { CalendarClock, History, Repeat2, UserRoundCheck, UsersRound } from 'lucide-react';
+import { AlarmClock, CalendarClock, CalendarRange, History, Repeat2, UserRoundCheck, UserRoundPlus, UsersRound } from 'lucide-react';
 import { Alert, Badge, Button, PageHeader } from '../../components/ui';
 import OptionListen from '../../features/assist/OptionListen';
 import ReputationPanel from '../../features/reputation/ReputationPanel';
 import Stars from '../../features/reputation/Stars';
-import { depthOf, oneDecimal } from '../../features/reputation/reputationText';
+import { depthOf, oneDecimal, reasonText, ruleText } from '../../features/reputation/reputationText';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useDocumentTitle, useT } from '../../i18n';
 import { PageLoading } from '../../routes/guards';
 import styles from '../../features/booking/Booking.module.css';
 
-const RULES = [
-  ['onlyCustomers', UserRoundCheck],
-  ['newerCount', CalendarClock],
-  ['sameCustomer', Repeat2],
-  ['hiredOthers', UsersRound],
-];
+// The rules come from the server (the live engine's parameters, Batch 6B); these four are the rep-1 ones,
+// used only if an older server sends no list.
+const RULE_ICONS = { onlyCustomers: UserRoundCheck, newerCount: CalendarClock, sameCustomer: Repeat2, hiredOthers: UsersRound, newAccounts: UserRoundPlus, burst: CalendarRange, lateCancel: AlarmClock };
+const REP1_RULES = ['onlyCustomers', 'newerCount', 'sameCustomer', 'hiredOthers'].map((id) => ({ id, values: {} }));
 const two = (n) => (Number.isFinite(n) ? n.toFixed(2) : '');
 
 export default function MyReputation() {
@@ -47,23 +45,28 @@ export default function MyReputation() {
       <section className={styles.section} aria-labelledby="rules-title">
         <h2 id="rules-title" className={styles.sectionTitle}>{t('reputation.mine.rulesTitle')}</h2>
         <ul className={styles.rules}>
-          {RULES.map(([id, Icon]) => (
-            <li key={id} className={styles.rule}>
-              <span className={styles.ruleIcon} aria-hidden="true"><Icon size={22} /></span>
-              <span className={styles.ruleText}>
-                <h3>{t(`reputation.mine.rules.${id}.title`)}</h3>
-                <p>{t(`reputation.mine.rules.${id}.text`)}</p>
-                <OptionListen helpKey={`reputation.mine.rules.${id}.text`} name={t(`reputation.mine.rules.${id}.title`)} />
-              </span>
-            </li>
-          ))}
+          {(rules.items ?? REP1_RULES).map((item) => {
+            const Icon = RULE_ICONS[item.id] ?? UserRoundCheck;
+            const { titleKey, textKey, values } = ruleText(item);
+            return (
+              <li key={item.id} className={styles.rule} data-testid="reputation-rule">
+                <span className={styles.ruleIcon} aria-hidden="true"><Icon size={22} /></span>
+                <span className={styles.ruleText}>
+                  <h3>{t(titleKey)}</h3>
+                  <p>{t(textKey, values)}</p>
+                  <OptionListen helpKey={textKey} params={Object.keys(values).length ? values : undefined} name={t(titleKey)} />
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </section>
 
       <section className={styles.section} aria-labelledby="numbers-title">
         <h2 id="numbers-title" className={styles.sectionTitle}>{t('reputation.mine.numbersTitle')}</h2>
-        <p>{t('reputation.mine.expected', { value: two(snapshot.score.expected) })}</p>
-        <p>{t('reputation.mine.cautious', { value: two(snapshot.score.cautious) })}</p>
+        {/* rep-2 orders "Best track record" by the reputation score; rep-1 ordered by the careful one */}
+        <p>{t(rules.rankBy === 'expected' ? 'b6b.reputation.mine.expected' : 'reputation.mine.expected', { value: two(snapshot.score.expected) })}</p>
+        <p>{t(rules.rankBy === 'expected' ? 'b6b.reputation.mine.cautious' : 'reputation.mine.cautious', { value: two(snapshot.score.cautious) })}</p>
         <p>{t('reputation.mine.reliability', { value: two(snapshot.reliability.expected) })}</p>
         <p className={styles.muted}>{t('reputation.mine.numbersNote')}</p>
       </section>
@@ -77,7 +80,7 @@ export default function MyReputation() {
               <Stars value={p.stars} />
               <span className={styles.ruleText}>
                 <span className={styles.muted}>{formatDate(p.createdAt)}{p.skillId ? ` · ${skillName({ skillId: p.skillId })}` : ''}</span>
-                <span>{p.reasons.map((r) => t(`reputation.reason.${r}`)).join(' ')}</span>
+                <span>{p.reasons.map((r) => reasonText(t, r, { budget: rules.newReviewerBudget ?? 1 })).join(' ')}</span>
                 <span className={styles.muted}>{t('reputation.mine.weight', { value: two(p.weight) })}</span>
               </span>
             </li>

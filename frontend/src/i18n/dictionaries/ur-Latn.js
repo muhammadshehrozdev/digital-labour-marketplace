@@ -1693,7 +1693,7 @@ export default {
       disputeReason: {
         work_was_done: 'Kaam ho chuka tha.',
         work_not_done: 'Kaam nahi hua.',
-        i_did_come: 'Main kaam par aaya tha ya aayi thi.',
+        i_did_come: 'Main ne kaam par hazri di thi.',
         not_my_fault: 'Meri ghalati nahi thi.',
         other: 'Kuch aur hua.',
       },
@@ -2154,7 +2154,7 @@ export default {
       dispute: {
         work_was_done: 'Kaam ho chuka tha',
         work_not_done: 'Kaam nahi hua',
-        i_did_come: 'Main aaya tha / aayi thi',
+        i_did_come: 'Main ne hazri di thi',
         not_my_fault: 'Meri ghalati nahi thi',
         other: 'Kuch aur',
       },
@@ -2503,6 +2503,40 @@ export default {
       },
       other: {
         intro: 'Install karna Chrome ya Edge mein hota hai. Yeh link wahan kholein:',
+      },
+    },
+    reputation: {
+      rules: {
+        newAccounts: {
+          title: 'Naye gaahak account: ginay jatay hain, ek had tak',
+          text: { one: 'Bilkul naye gaahak accounts ke review ginay jatay hain, lekin sab mil kar zyada se zyada {count} review ke barabar ginay jatay hain.', other: 'Bilkul naye gaahak accounts ke review ginay jatay hain, lekin sab mil kar zyada se zyada {count} reviews ke barabar ginay jatay hain.' },
+        },
+        burst: {
+          title: 'Chand dinon mein bohat se review',
+          text: 'Chand dinon mein bohat se review kam ginay jatay hain: jab {days} din ke andar {count} ya zyada aayein to har ek aadha gina jata hai.',
+        },
+        lateCancel: {
+          title: 'Jaldi mansookh karein',
+          text: 'Der se mansookhi dugni gini jati hai: kam az kam {hours} ghantay pehle mansookh karein.',
+        },
+      },
+      mine: {
+        expected: 'Saakh ka score: 1 mein se {value} (aap ke ginay gaye reviews se darmiyani andaza). "Behtareen record" isi score se tarteeb deta hai.',
+        cautious: 'Mohtaat score: 1 mein se {value}. Hamein taqreeban 90% yaqeen hai ke aap ka asal score kam az kam itna hai.',
+      },
+      reason: {
+        newReviewerBudget: { one: 'Kam gina gaya: pehli baar ka gaahak account. Aise sab review mil kar {count} review ke barabar ginay jatay hain.', other: 'Kam gina gaya: pehli baar ka gaahak account. Aise sab review mil kar {count} reviews ke barabar ginay jatay hain.' },
+        burst: 'Aadha gina gaya: chand dinon ke andar bohat se reviews mein se ek.',
+      },
+      guide: {
+        onlyCustomers: 'Sirf woh gaahak review de saktay hain jin ka aap ke saath kaam mukammal hua.',
+        sameCustomer: 'Ek hi gaahak ke bohat se review har baar kam ginay jatay hain.',
+        newAccounts: { one: 'Bilkul naye gaahak accounts ke review ginay jatay hain, lekin sab mil kar zyada se zyada {count} review ke barabar.', other: 'Bilkul naye gaahak accounts ke review ginay jatay hain, lekin sab mil kar zyada se zyada {count} reviews ke barabar.' },
+        burst: 'Chand dinon mein bohat se review kam ginay jatay hain.',
+        lateCancel: 'Der se mansookhi dugni gini jati hai: kam az kam ek din pehle mansookh karein.',
+      },
+      admin: {
+        factorValues: 'tasdeeq {provenance} · naye account ki had {budget} · jhurmat {burst} · jori {pair}',
       },
     },
   },
