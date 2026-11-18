@@ -31,9 +31,10 @@ not better than a plain average. No new package. Nothing here is AI: written for
   "Best track record" explains that new workers start in the middle. Urdu "I did come" is gender-neutral.
 - **Texts:** new and changed texts in English, Urdu and Roman Urdu (`docs/i18n/REVIEW-BATCH-6B.md`).
 - **Tests (real runs, 17 Nov 2026):** backend 823/823 (43 files; coverage lines 98.6%, reputation services
-  99.24%); frontend 1211/1211 (29 files; coverage lines 90.99%); lint 0; build OK; e2e: full run 55/57 — the two
-  header tests flagged the planned email "…" in the account menu; with that check corrected (test only) they pass
-  3/3. Baseline before the batch: backend 754/754, frontend 1161/1162 (one timing flake, passes alone), Batch 6
+  99.24%); frontend 1211/1211 (29 files; coverage lines 90.99%); lint 0; build OK; e2e (full run, 18 Nov 2026,
+  15:24–15:46 UTC, 10 files): 56/57 passed, 1 failed — the defence demo (`demo-script.e2e.js`): after "Create
+  account" in Urdu the page was still on `/register` after 10 s, although the worker was logged in; run alone right
+  after, it passed (1/1). Baseline before the batch: backend 754/754, frontend 1161/1162 (one timing flake, passes alone), Batch 6
   e2e 50/50. Existing tests changed: listed in `docs/DECISIONS.md` D-065 and the Batch 6B report.
 
 ## Batch 6 — Module 4: bookings, reviews and the reputation engine (16–17 Nov 2026)

@@ -5,6 +5,10 @@ Every row is an automated test in the repository; "Actual" and "Result" come fro
 
 - Backend (`backend/tests`): 823/823 passed, 0 failed, 43 files
 - Frontend (`frontend/src`): 1211/1211 passed, 0 failed, 29 files
+- End-to-end (`frontend/e2e`, Playwright, separate full run on 2026-11-18 15:24–15:46 UTC): 56/57 passed, 1 failed,
+  10 files. The failure: the defence demo (`demo-script.e2e.js`) was still on `/register` 10 s after "Create account"
+  (the worker was logged in); run alone right after, it passed. The e2e tests are not listed row by row below (the
+  generator reads only the Vitest reports).
 - The file-by-file honesty scans are shown as one row per side (all files listed in the test output).
 
 | Module | Rows | Pass |
