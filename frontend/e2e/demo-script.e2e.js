@@ -14,6 +14,12 @@ const en = T('en');
 const PHOTO = fileURLToPath(new URL('../../docs/demo/work-photo-synthetic.jpg', import.meta.url));
 const SENTENCE = 'میں پانچ سال سے وائرنگ اور سولر پینل کا کام کرتا ہوں۔'; // the sentence said in the demo
 const WORKER = { name: 'Bilal Ahmed (synthetic)', phone: '03000000071', password: 'demo pass phrase 2026' };
+// Steps that wait for a server write (registration hashes the password; the upload re-encodes the photo) wait for
+// the server's answer as long as the app itself does (src/api.js: timeout 20000), check that it succeeded, and then
+// give the screen the usual 10 s. On an overloaded machine (the full suite next to the preview and the editor, or
+// just after a restart) such a write once took more than 10 s and the test failed although the app was right.
+const API_ANSWER_MS = 20_000;
+const answer = (page, method, path) => page.waitForResponse((r) => r.request().method() === method && new URL(r.url()).pathname === path, { timeout: API_ANSWER_MS });
 
 test('defence demo: Urdu onboarding -> suggested skills -> proof -> admin approves -> customer sees verified skill, no phone', async ({ browser }) => {
   test.setTimeout(180_000);
@@ -32,7 +38,9 @@ test('defence demo: Urdu onboarding -> suggested skills -> proof -> admin approv
   await worker.getByLabel(startsWith(ur('auth.register.email'))).fill(uniqueEmail('demo.bilal'));
   await worker.getByLabel(startsWith(ur('auth.register.mobile'))).fill(WORKER.phone);
   await worker.locator('input[type=password]').fill(WORKER.password);
+  const registered = answer(worker, 'POST', '/api/auth/register');
   await worker.getByRole('button', { name: ur('auth.register.submit') }).click();
+  expect((await registered).status()).toBe(201);
 
   // Step 1 "About you": name and mobile are already filled; city, and a synthetic CNIC (masked, encrypted)
   await expect(worker).toHaveURL(/\/onboarding\/about$/);
@@ -65,7 +73,9 @@ test('defence demo: Urdu onboarding -> suggested skills -> proof -> admin approv
   await worker.getByRole('radio', { name: new RegExp(ur('evidence.types.work_photo.title')) }).check();
   await worker.locator('input[type=file]').setInputFiles(PHOTO);
   await worker.getByRole('checkbox', { name: startsWith(ur('evidence.consent')) }).check();
+  const uploaded = answer(worker, 'POST', '/api/evidence');
   await worker.getByRole('button', { name: ur('evidence.form.submit') }).click();
+  expect((await uploaded).status()).toBe(201);
   await expect(worker.getByText(ur('status.evidence.pending')).first()).toBeVisible();
   await worker.getByRole('button', { name: ur('common.continue'), exact: true }).click();
   await expect(worker).toHaveURL(/\/onboarding\/done$/);

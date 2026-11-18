@@ -34,7 +34,12 @@ not better than a plain average. No new package. Nothing here is AI: written for
   99.24%); frontend 1211/1211 (29 files; coverage lines 90.99%); lint 0; build OK; e2e (full run, 18 Nov 2026,
   15:24–15:46 UTC, 10 files): 56/57 passed, 1 failed — the defence demo (`demo-script.e2e.js`): after "Create
   account" in Urdu the page was still on `/register` after 10 s, although the worker was logged in; run alone right
-  after, it passed (1/1). Baseline before the batch: backend 754/754, frontend 1161/1162 (one timing flake, passes alone), Batch 6
+  after, it passed (1/1). Five more runs (19 Nov) failed once, at the photo upload (still uploading after 10 s).
+  Cause: on an overloaded machine (the full suite next to the preview and the editor; minutes after a restart) a
+  server write such as registration or the photo upload took longer than the 10 s the test allowed; measured
+  otherwise at 0.5–3.5 s, also under heavy CPU and disk load (15 instrumented runs, none failed). Fix, test only,
+  no check removed: those two steps wait for the server's answer as long as the app does (20 s), check that it is
+  201, then give the screen the usual 10 s. Then 5/5 runs passed. Baseline before the batch: backend 754/754, frontend 1161/1162 (one timing flake, passes alone), Batch 6
   e2e 50/50. Existing tests changed: listed in `docs/DECISIONS.md` D-065 and the Batch 6B report.
 
 ## Batch 6 — Module 4: bookings, reviews and the reputation engine (16–17 Nov 2026)
