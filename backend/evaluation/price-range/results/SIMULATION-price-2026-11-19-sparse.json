@@ -1,0 +1,198 @@
+{
+  "label": "SIMULATION",
+  "warning": "SIMULATION RESULTS: assumed price spreads and assumed attacks. They show how the rules behave IF the assumptions hold, not what real prices look like.",
+  "scenario": "sparse",
+  "description": "a young platform: mean 3 jobs per market",
+  "scenarioSettings": {
+    "description": "a young platform: mean 3 jobs per market",
+    "meanJobs": 3,
+    "attack": null
+  },
+  "seeds": {
+    "count": 30,
+    "first": 20261119,
+    "last": 20261148
+  },
+  "simulation": {
+    "markets": 40,
+    "trueMin": 1000,
+    "trueMax": 6000,
+    "sigma": 0.35,
+    "meanJobs": 8,
+    "workersMin": 2,
+    "workersMax": 10,
+    "repeatPairShare": 0.15,
+    "autoShare": 0.1,
+    "proposedOnlyShare": 0.2,
+    "holdout": 20,
+    "maxAgeDays": 330
+  },
+  "simulatedToday": "2026-11-19",
+  "rules": {
+    "MIN_JOBS": 5,
+    "MIN_WORKERS": 3,
+    "MIN_CUSTOMERS": 3,
+    "PRICE_WINDOW_DAYS": 365,
+    "ROUND_TO": 50
+  },
+  "parametersHash": "b8cf112cccdd",
+  "meanCounts": {
+    "markets": 40,
+    "jobs": 122.8,
+    "attacked": 0,
+    "attackJobs": 0
+  },
+  "methods": {
+    "M1": {
+      "label": "M1 plain mean (no rules)",
+      "metrics": {
+        "availability": {
+          "n": 30,
+          "mean": 0.7691666666666667,
+          "sd": 0.06554918307880618,
+          "p2_5": 0.6681250000000001,
+          "p97_5": 0.906875
+        },
+        "error": {
+          "n": 30,
+          "mean": 0.1410759346434888,
+          "sd": 0.03578029213222767,
+          "p2_5": 0.08118958683980507,
+          "p97_5": 0.19810201954630263
+        },
+        "coverage": {
+          "n": 30,
+          "mean": 0.41142315553708797,
+          "sd": 0.05437477082348143,
+          "p2_5": 0.3227992424242424,
+          "p97_5": 0.5142348345588235
+        },
+        "attackShift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        }
+      },
+      "flips": {
+        "appeared": 0,
+        "vanished": 0
+      }
+    },
+    "M2": {
+      "label": "M2 plain median (no rules)",
+      "metrics": {
+        "availability": {
+          "n": 30,
+          "mean": 0.7691666666666667,
+          "sd": 0.06554918307880618,
+          "p2_5": 0.6681250000000001,
+          "p97_5": 0.906875
+        },
+        "error": {
+          "n": 30,
+          "mean": 0.1483390879796495,
+          "sd": 0.0379271529949633,
+          "p2_5": 0.08085712015378507,
+          "p97_5": 0.2086680158053485
+        },
+        "coverage": {
+          "n": 30,
+          "mean": 0.2228870474824967,
+          "sd": 0.03426986745809046,
+          "p2_5": 0.16458333333333336,
+          "p97_5": 0.28427696078431375
+        },
+        "attackShift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        }
+      },
+      "flips": {
+        "appeared": 0,
+        "vanished": 0
+      }
+    },
+    "ours": {
+      "label": "ours (production priceRange)",
+      "metrics": {
+        "availability": {
+          "n": 30,
+          "mean": 0.10583333333333335,
+          "sd": 0.04765326151831933,
+          "p2_5": 0.018125000000000002,
+          "p97_5": 0.18874999999999992
+        },
+        "error": {
+          "n": 29,
+          "mean": 0.12333270282822602,
+          "sd": 0.06728182533030717,
+          "p2_5": 0.033790885792025015,
+          "p97_5": 0.28326835750005863
+        },
+        "coverage": {
+          "n": 29,
+          "mean": 0.36967843459222766,
+          "sd": 0.10051705320408054,
+          "p2_5": 0.171,
+          "p97_5": 0.5483333333333333
+        },
+        "attackShift": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "p2_5": null,
+          "p97_5": null
+        }
+      },
+      "flips": {
+        "appeared": 0,
+        "vanished": 0
+      }
+    }
+  },
+  "paired": [
+    {
+      "ours": "ours",
+      "other": "M1",
+      "metrics": {
+        "availability": {
+          "seeds": 30,
+          "meanDifference": -0.6633333333333334,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "error": {
+          "seeds": 29,
+          "meanDifference": -0.018829785933856175,
+          "shareOursBetter": 0.6896551724137931,
+          "shareEqual": 0
+        }
+      }
+    },
+    {
+      "ours": "ours",
+      "other": "M2",
+      "metrics": {
+        "availability": {
+          "seeds": 30,
+          "meanDifference": -0.6633333333333334,
+          "shareOursBetter": 0,
+          "shareEqual": 0
+        },
+        "error": {
+          "seeds": 29,
+          "meanDifference": -0.025836927916821465,
+          "shareOursBetter": 0.6551724137931034,
+          "shareEqual": 0
+        }
+      }
+    }
+  ],
+  "date": "2026-11-19",
+  "gitCommit": "be625c2"
+}
