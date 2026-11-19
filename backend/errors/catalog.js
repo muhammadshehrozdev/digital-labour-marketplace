@@ -194,6 +194,36 @@ export const ERRORS = Object.freeze({
   FLAG_ALREADY_DECIDED: 'An admin already decided this flag. Please reload the page.',
   CRON_UNAUTHORIZED: 'Not allowed.',
 
+  // ---- Module 5: price terms, payment records, price information (Batch 7) ----
+  TERMS_NOT_ALLOWED: 'The price cannot be changed or agreed on this booking now. Please reload the page.',
+  TERMS_CHANGED: 'The price on this booking changed just now. Please look at the new price before you answer.',
+  TERMS_OWN_VERSION: 'You proposed this price. The other person agrees to it, not you.',
+  TERMS_LIMIT: 'This booking already has {max} price versions. Agree to one of them.',
+  UNIT_INVALID: 'Choose how the price is counted: whole job, per day or per hour.',
+  DURATION_INVALID: 'Choose how long the work will take.',
+  MATERIALS_INVALID: 'Choose who buys the materials.',
+  PAYMENT_TIMING_INVALID: 'Choose when the payment is made.',
+  PAYMENT_METHOD_INVALID: 'Choose how the money is paid: cash, Easypaisa, JazzCash, bank or other.',
+  VISIT_CHARGE_INVALID: 'Choose what happens with the visit charge.',
+  QUANTITY_INVALID: 'For {unit} the number must be from 1 to {max}.',
+  ADVANCE_TOO_HIGH: 'The advance cannot be more than the total price.',
+  PAYMENT_NOT_ALLOWED: 'A payment cannot be recorded on this booking now.',
+  PAYMENT_WINDOW_PASSED: 'Payments can be recorded up to {days} days after the work closed. That time has passed.',
+  PAYMENT_LIMIT: 'This booking already has {max} payment records.',
+  PAYMENT_NOT_FOUND: 'Payment record not found',
+  PAYMENT_OWN_RECORD: 'You recorded this payment. The other person confirms it, not you.',
+  PAYMENT_CHANGED: 'This payment record was already answered. Please reload the page.',
+  PAYMENT_DATE_FUTURE: 'The payment date cannot be in the future.',
+  PAYMENT_DATE_TOO_EARLY: 'The payment date cannot be before the booking was made.',
+  PAYMENT_KIND_INVALID: 'Choose what the payment was for.',
+  PAYMENT_REASON_INVALID: 'Choose what is not right: not received, wrong amount or other.',
+  PRICE_GUIDE_NOT_FOUND: 'Price guide entry not found',
+  PRICE_GUIDE_EXISTS: 'An active price guide entry for this work, unit and region already exists. Edit that one.',
+  PRICE_GUIDE_LOW_HIGH: 'The low price cannot be more than the high price.',
+  SOURCE_NOTE_REQUIRED: 'Write where these numbers come from (at least 10 characters).',
+  REGION_INVALID: 'Choose a region of Pakistan, or all of Pakistan.',
+  PRICE_GUIDE_ARCHIVED: 'This price guide entry is archived and cannot be changed.',
+
   // ---- server ----
   ROUTE_NOT_FOUND: 'Route not found',
   DUPLICATE_RECORD: 'This record already exists',
@@ -222,6 +252,10 @@ export const FIELD_LABELS = Object.freeze({
   preferredDate: 'Day', timeSlot: 'Time', area: 'Area', rating: 'Stars', onTime: 'On time', workQuality: 'Good work', polite: 'Polite',
   priceAsAgreed: 'Price as agreed', wouldHireAgain: 'Would hire again', comment: 'Comment', decision: 'Decision', answer: 'Answer',
   as: 'Role', hasJobs: 'Has done jobs', reported: 'Reported', workerId: 'Worker',
+  // Module 5
+  amount: 'Amount', unit: 'Unit', quantity: 'Number', materials: 'Materials', advance: 'Advance', paymentTiming: 'Payment time',
+  paymentMethod: 'Payment method', visitCharge: 'Visit charge', baseVersion: 'Price version', version: 'Price version', offer: 'Offer',
+  paidOn: 'Payment date', method: 'Payment method', low: 'Low price', high: 'High price', sourceNote: 'Source', region: 'Region', year: 'Year',
 });
 
 export const isErrorCode = (value) => typeof value === 'string' && Object.prototype.hasOwnProperty.call(ERRORS, value);
