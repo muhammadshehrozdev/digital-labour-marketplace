@@ -18,6 +18,7 @@ import { sweepBookings } from '../services/booking/sweep.js';
 import { afterClose, applyStep, trusted } from '../services/booking/lifecycle.js';
 import { bookingParams } from '../services/booking/notify.js';
 import { bookingView } from '../services/booking/views.js';
+import { rangeForBooking } from '../services/wage/load.js';
 import { peopleFor } from './bookingsController.js';
 import { loadReputationInput, reputationExplanation, safeRecompute } from '../services/reputation/recompute.js';
 import { snapshotFrom } from '../services/reputation/snapshot.js';
@@ -60,11 +61,11 @@ export const getBookingForAdmin = async (req, res) => {
   if (!(await Booking.exists({ _id: id }))) throw httpError(404, 'BOOKING_NOT_FOUND');
   await sweepBookings({ now, filter: { _id: new mongoose.Types.ObjectId(id) } });
   const b = await Booking.findById(id).lean();
-  const [people, review] = await Promise.all([peopleFor([b]), Review.findOne({ booking: b._id }).lean()]);
+  const [people, review, range] = await Promise.all([peopleFor([b]), Review.findOne({ booking: b._id }).lean(), rangeForBooking(b, now)]);
   res.set('Cache-Control', 'no-store');
   res.json({
     booking: {
-      ...bookingView(b, { viewer: 'admin', now, people: people(b), hasReview: Boolean(review), detail: true }),
+      ...bookingView(b, { viewer: 'admin', now, people: people(b), hasReview: Boolean(review), detail: true, range }),
       allowedDecisions: b.dispute?.status === 'open' ? DISPUTE_DECISIONS[b.dispute.type] : [],
       review: review ? { _id: review._id, rating: review.rating, status: review.status, createdAt: review.createdAt } : null,
     },

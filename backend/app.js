@@ -19,6 +19,7 @@ import savedRoutes from './routes/saved.js';
 import bookingsRoutes from './routes/bookings.js';
 import reviewsRoutes from './routes/reviews.js';
 import cronRoutes from './routes/cron.js';
+import pricesRoutes from './routes/prices.js';
 
 export function createApp() {
   const env = getEnv();
@@ -76,6 +77,8 @@ export function createApp() {
   app.use('/api/bookings', bookingsRoutes);
   app.use('/api/reviews', reviewsRoutes);
   app.use('/api/cron', cronRoutes);
+  // Module 5 (Batch 7): price information (terms and payments live under /api/bookings)
+  app.use('/api/prices', pricesRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

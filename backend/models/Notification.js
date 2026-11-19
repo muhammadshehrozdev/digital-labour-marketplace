@@ -13,6 +13,8 @@ export const NOTIFICATION_TYPES = Object.freeze([
   'booking_confirm_request', 'booking_completed', 'review_requested', 'review_reminder',
   'review_received', 'review_reply', 'review_hidden', 'review_restored',
   'no_show_reported', 'dispute_opened', 'dispute_decided',
+  // Module 5: price terms and payment records (Batch 7, section 4.9). A low-pay warning is never a notification.
+  'terms_proposed', 'terms_agreed', 'payment_recorded', 'payment_confirmed', 'payment_disputed',
 ]);
 export const NOTIFICATION_KEEP_DAYS = 180;
 
@@ -21,7 +23,7 @@ const notificationSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     type: { type: String, required: true, enum: NOTIFICATION_TYPES },
     // Only these keys (see services/notifications.js): skillId, skillName, evidenceId, reasonCode, note,
-    // and for Module 4 bookingId, bookingCode, rating, outcome. Never a phone number or a name.
+    // for Module 4 bookingId, bookingCode, rating, outcome; for Module 5 amount, unit, paymentId. Never a phone number or a name.
     params: { type: mongoose.Schema.Types.Mixed, default: () => ({}) },
     readAt: { type: Date, default: null },
     createdAt: { type: Date, default: () => new Date() },

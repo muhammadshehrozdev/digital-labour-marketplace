@@ -8,6 +8,7 @@ import {
 import { HIDE_REASONS, REPORT_REASONS, REVIEW_ANSWERS, REVIEW_TEXT_MAX } from '../models/Review.js';
 import { hasContactInfo } from '../services/booking/contactInfo.js';
 import { noCnic, objectId, queryInt } from './common.js';
+import { offerSchema } from './wage.js';
 
 const text = (max) => z.string({ error: 'TEXT_MUST_BE_TEXT' }).trim().max(max, 'TEXT_TOO_LONG');
 const noContact = (schema) => schema.refine((t) => !hasContactInfo(t), { message: 'TEXT_HAS_CONTACT_INFO' });
@@ -40,6 +41,7 @@ export const createBookingSchema = z
     city: text(50).min(2, 'TEXT_TOO_SHORT'),
     area: noContact(noCnic(text(BOOKING_TEXT_MAX.area).min(2, 'TEXT_TOO_SHORT'))),
     description: noContact(noCnic(text(BOOKING_TEXT_MAX.description))).optional().default(''),
+    offer: offerSchema.optional(), // Module 5: an optional price offer (amount, unit, quantity, duration)
   })
   .strict();
 

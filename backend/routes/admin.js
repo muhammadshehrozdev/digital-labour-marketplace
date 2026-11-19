@@ -21,6 +21,8 @@ import {
   adminBookingsQuerySchema, bookingIdParams, disputesQuerySchema, disputeDecisionSchema, adminReviewsQuerySchema, reviewIdParams,
   reviewModerationSchema, flagsQuerySchema, flagIdParams, flagDecisionSchema, adminWorkerIdParams, statsQuerySchema,
 } from '../validators/bookings.js';
+import { listPriceGuides, createPriceGuide, updatePriceGuide, listPayments } from '../controllers/adminWageController.js';
+import { priceGuideQuerySchema, priceGuideCreateSchema, priceGuideUpdateSchema, priceGuideIdParams, adminPaymentsQuerySchema } from '../validators/wage.js';
 
 const router = express.Router();
 
@@ -44,6 +46,8 @@ router.get('/audit/verify', verifyAudit);
 router.get('/exports/:kind', validate(exportParams, 'params'), validate(exportQuerySchema, 'query'), downloadExport);
 // Module 4 names for the two new exports (same handler, same checks)
 router.get('/export/bookings.csv', (req, res, next) => { req.params.kind = 'bookings'; next(); }, validate(exportParams, 'params'), validate(exportQuerySchema, 'query'), downloadExport);
+// Module 5 name for the payments export (same handler, same checks)
+router.get('/export/payments.csv', (req, res, next) => { req.params.kind = 'payments'; next(); }, validate(exportParams, 'params'), validate(exportQuerySchema, 'query'), downloadExport);
 router.get('/export/reviews.csv', (req, res, next) => { req.params.kind = 'reviews'; next(); }, validate(exportParams, 'params'), validate(exportQuerySchema, 'query'), downloadExport);
 
 // Batch 4: reason templates
@@ -69,5 +73,11 @@ router.get('/reputation-flags', validate(flagsQuerySchema, 'query'), listFlags);
 router.patch('/reputation-flags/:id', validate(flagIdParams, 'params'), validate(flagDecisionSchema), decideFlag);
 router.get('/workers/:id/reputation', validate(adminWorkerIdParams, 'params'), getWorkerReputationForAdmin);
 router.get('/stats/bookings', validate(statsQuerySchema, 'query'), getBookingStats);
+
+// Module 5 (Batch 7): the price guide (always with a written source) and the read-only Payments page
+router.get('/price-guides', validate(priceGuideQuerySchema, 'query'), listPriceGuides);
+router.post('/price-guides', validate(priceGuideCreateSchema), createPriceGuide);
+router.patch('/price-guides/:id', validate(priceGuideIdParams, 'params'), validate(priceGuideUpdateSchema), updatePriceGuide);
+router.get('/payments', validate(adminPaymentsQuerySchema, 'query'), listPayments);
 
 export default router;

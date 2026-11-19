@@ -2,8 +2,9 @@
 // action that caused it (the decision is already saved and audited): the error is only logged.
 import Notification, { NOTIFICATION_TYPES } from '../models/Notification.js';
 
-// Module 4 adds bookingId, bookingCode, rating and outcome; never a phone number or a person's name.
-export const ALLOWED_PARAMS = Object.freeze(['skillId', 'skillName', 'evidenceId', 'reasonCode', 'note', 'bookingId', 'bookingCode', 'rating', 'outcome']);
+// Module 4 adds bookingId, bookingCode, rating and outcome; Module 5 adds amount, unit and paymentId (Batch 7).
+// Never a phone number or a person's name.
+export const ALLOWED_PARAMS = Object.freeze(['skillId', 'skillName', 'evidenceId', 'reasonCode', 'note', 'bookingId', 'bookingCode', 'rating', 'outcome', 'amount', 'unit', 'paymentId']);
 
 // Keeps only known keys and short text, so nothing private can slip into a notification.
 export function cleanParams(params = {}) {

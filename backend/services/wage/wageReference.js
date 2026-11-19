@@ -31,6 +31,8 @@ export function wageReferenceFor(region, refs = WAGE_REFERENCES) {
     statusNote: ref.statusNote ?? null,
     notifiedFound: ref.notifiedFound ?? null,
     checkedOn: ref.checkedOn,
+    workingDaysPerMonth: WORKING_DAYS_PER_MONTH,
+    hoursPerDay: HOURS_PER_DAY,
   };
 }
 

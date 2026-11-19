@@ -19,10 +19,13 @@ import { sweepBookings } from '../services/booking/sweep.js';
 import { afterClose, applyStep, closeValues, nextBookingCode, trusted } from '../services/booking/lifecycle.js';
 import { bookingParams } from '../services/booking/notify.js';
 import { bookingView } from '../services/booking/views.js';
+import { regionOf } from '../config/regions.js';
+import { snapshotOf, termsFields } from '../services/wage/termsRules.js';
+import { rangeForBooking } from '../services/wage/load.js';
 
-const roleOf = (req) => req.user.role; // 'customer' | 'worker' (routes allow only these two and admin)
+export const roleOf = (req) => req.user.role; // 'customer' | 'worker' (routes allow only these two and admin)
 const mineFilter = (req) => (roleOf(req) === 'worker' ? { workerUser: req.user._id } : { customer: req.user._id });
-const otherSide = (b, role) => (role === 'customer' ? b.workerUser : b.customer);
+export const otherSide = (b, role) => (role === 'customer' ? b.workerUser : b.customer);
 
 // Names for the views: the worker's public name and ID, the customer's name (shortened for the worker).
 export async function peopleFor(bookings) {
@@ -44,7 +47,7 @@ async function reviewedSet(bookings) {
 }
 
 // Loads one of MY bookings (or any, for an admin), after applying its due timers.
-async function loadOwn(req, now) {
+export async function loadOwn(req, now) {
   const { id } = req.validated.params;
   const filter = roleOf(req) === 'admin' ? { _id: id } : { _id: id, ...mineFilter(req) };
   if (!(await Booking.exists(filter))) throw httpError(404, 'BOOKING_NOT_FOUND');
@@ -53,8 +56,12 @@ async function loadOwn(req, now) {
 }
 
 async function detailResponse(b, viewer, now) {
-  const [people, review] = await Promise.all([peopleFor([b]), Review.findOne({ booking: b._id }).select('rating createdAt status').lean()]);
-  const view = bookingView(b, { viewer, now, people: people(b), hasReview: Boolean(review), detail: true });
+  const [people, review, range] = await Promise.all([
+    peopleFor([b]),
+    Review.findOne({ booking: b._id }).select('rating createdAt status').lean(),
+    rangeForBooking(b, now), // Module 5: for the "lower than most prices on this platform" check
+  ]);
+  const view = bookingView(b, { viewer, now, people: people(b), hasReview: Boolean(review), detail: true, range });
   view.review = review ? { rating: review.rating, createdAt: review.createdAt, status: review.status } : null;
   view.contact = await contactBlock(b, viewer, now); // null unless the contact window is open (D-002)
   return view;
@@ -66,7 +73,7 @@ function check(action, b, role, now, extra) {
   return result;
 }
 
-const respond = async (res, b, req, now, status = 200) => {
+export const respond = async (res, b, req, now, status = 200) => {
   res.set('Cache-Control', 'no-store');
   res.status(status).json({ booking: await detailResponse(b, roleOf(req), now) });
 };
@@ -99,6 +106,9 @@ export const createBooking = async (req, res) => {
   if (openCount >= RULES.MAX_OPEN_PER_CUSTOMER) throw httpError(409, 'BOOKING_LIMIT_OPEN', { max: RULES.MAX_OPEN_PER_CUSTOMER });
   if (dayCount >= RULES.MAX_NEW_PER_DAY) throw httpError(429, 'BOOKING_LIMIT_DAY', { max: RULES.MAX_NEW_PER_DAY });
 
+  // Module 5: an optional offer creates price terms version 1, proposed by the customer (accepting the
+  // request does NOT agree to it). The region comes from the city table (unknown city: null).
+  const offer = body.offer ? termsFields(body.offer) : null;
   const booking = await Booking.create({
     code: await nextBookingCode(now),
     customer: req.user._id,
@@ -114,8 +124,20 @@ export const createBooking = async (req, res) => {
     area: body.area,
     description: body.description,
     statusHistory: [{ from: null, to: 'requested', by: 'customer', at: now, reason: null }],
+    region: regionOf(body.city),
+    ...(offer ? {
+      terms: { status: 'proposed', version: 1, proposedBy: 'customer', proposedAt: now, ...offer, agreed: null },
+      termsHistory: [{ version: 1, by: 'customer', action: 'proposed', at: now, snapshot: snapshotOf(offer) }],
+      moneyVersion: 1,
+    } : {}),
   });
-  await notify(profile.user, 'booking_requested', bookingParams(booking));
+  if (offer) {
+    await writeAudit({
+      actor: req.user._id, actorRole: 'customer', action: 'terms.proposed', targetType: 'Booking', targetId: booking._id, toState: 'proposed',
+      reason: `Price offer with the request ${booking.code}`, details: { code: booking.code, version: 1, amount: offer.amount, unit: offer.unit, total: offer.total },
+    });
+  }
+  await notify(profile.user, 'booking_requested', bookingParams(booking, offer ? { amount: offer.amount, unit: offer.unit } : {}));
   await respond(res, booking.toObject(), req, now, 201);
 };
 
@@ -131,7 +153,7 @@ export const listMyBookings = async (req, res) => {
   else if (status === 'past') filter.status = trusted({ $nin: OPEN_STATUSES });
   else if (status !== 'all') filter.status = status;
   const [items, total, requested, accepted] = await Promise.all([
-    Booking.find(filter).select('-statusHistory -dispute.note -dispute.decisionNote').sort({ createdAt: -1, _id: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+    Booking.find(filter).select('-statusHistory -dispute.note -dispute.decisionNote -termsHistory -payments').sort({ createdAt: -1, _id: -1 }).skip((page - 1) * limit).limit(limit).lean(),
     Booking.countDocuments(filter),
     Booking.countDocuments({ ...mine, status: 'requested' }),
     Booking.countDocuments({ ...mine, status: 'accepted' }),

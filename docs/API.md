@@ -636,7 +636,7 @@ table lists every code in the catalog. Regenerate it with `node docs/tools/gener
 | `PAYMENT_TIMING_INVALID` | Choose when the payment is made. |
 | `PAYMENT_METHOD_INVALID` | Choose how the money is paid: cash, Easypaisa, JazzCash, bank or other. |
 | `VISIT_CHARGE_INVALID` | Choose what happens with the visit charge. |
-| `QUANTITY_INVALID` | For {unit} the number must be from 1 to {max}. |
+| `QUANTITY_INVALID` | Days: choose 1 to 60. Hours: choose 1 to 200. |
 | `ADVANCE_TOO_HIGH` | The advance cannot be more than the total price. |
 | `PAYMENT_NOT_ALLOWED` | A payment cannot be recorded on this booking now. |
 | `PAYMENT_WINDOW_PASSED` | Payments can be recorded up to {days} days after the work closed. That time has passed. |
@@ -654,6 +654,7 @@ table lists every code in the catalog. Regenerate it with `node docs/tools/gener
 | `SOURCE_NOTE_REQUIRED` | Write where these numbers come from (at least 10 characters). |
 | `REGION_INVALID` | Choose a region of Pakistan, or all of Pakistan. |
 | `PRICE_GUIDE_ARCHIVED` | This price guide entry is archived and cannot be changed. |
+| `PRICE_GUIDE_CHANGED` | Another admin changed this entry just now. Please reload the page. |
 | `ROUTE_NOT_FOUND` | Route not found |
 | `DUPLICATE_RECORD` | This record already exists |
 | `DB_VALIDATION` | Invalid value for: {fields} |

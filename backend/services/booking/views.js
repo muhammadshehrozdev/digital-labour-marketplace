@@ -1,6 +1,7 @@
 // What each person may see of a booking (Module 4). Explicit field lists only. Phone numbers are never
 // here: they come only from contact.js, and only in GET /api/bookings/:id (decision D-002).
 import { availableActions } from './transitions.js';
+import { termsListView, wageDetailView } from '../wage/views.js';
 
 // "Sara Khan" -> "Sara K.": the first word and the first letter of the last word that starts with a
 // letter ("Demo Customer (synthetic)" -> "Demo C."). Never the phone number, email or account id.
@@ -55,7 +56,8 @@ function base(b) {
 }
 
 // people: { workerName, workerIdCode, customerName } (loaded by the controller)
-export function bookingView(b, { viewer, now, people = {}, hasReview = false, detail = false }) {
+// range (Module 5, detail only): the platform price range for the current terms' unit, loaded by the caller
+export function bookingView(b, { viewer, now, people = {}, hasReview = false, detail = false, range = null }) {
   const view = {
     ...base(b),
     worker: { name: people.workerName ?? '', workerIdCode: people.workerIdCode ?? null },
@@ -68,6 +70,13 @@ export function bookingView(b, { viewer, now, people = {}, hasReview = false, de
   if (detail) {
     view.timeline = (b.statusHistory ?? []).map(timelineView);
     view.dispute = disputeView(b.dispute, viewer);
+    // Module 5: terms, history, payments, summary, checks and the terms / payment buttons (separate from
+    // `actions`, so the Module 4 buttons are unchanged)
+    Object.assign(view, wageDetailView(b, { viewer, now, range }));
+  } else {
+    // Module 5 in lists: only the terms state, the agreed total, a waiting offer's price and the payment state
+    view.terms = termsListView(b);
+    view.paymentSummary = { state: b.paymentState ?? 'no_price' };
   }
   return view;
 }

@@ -7,6 +7,8 @@ import { extractSchema, addSkillsSchema, customSkillSchema, skillIdParams } from
 import { profileUpdateSchema, directoryQuerySchema, workerIdCodeParams, compareQuerySchema } from '../validators/workers.js';
 import { getMyReputation, listWorkerReviews, getWorkHistory } from '../controllers/reviewsController.js';
 import { workerReviewsQuerySchema } from '../validators/bookings.js';
+import { myEarnings } from '../controllers/wageController.js';
+import { earningsQuerySchema } from '../validators/wage.js';
 
 const router = express.Router();
 
@@ -17,6 +19,8 @@ router.get('/me/onboarding', protect, requireRole('worker'), getMyOnboarding);
 router.get('/me/full', protect, requireRole('worker'), getMyFullProfile);
 // Module 4: the worker's own reputation page data (numbers, per-review explanation, own cancellations)
 router.get('/me/reputation', protect, requireRole('worker'), getMyReputation);
+// Module 5 (Batch 7): confirmed money by month
+router.get('/me/earnings', protect, requireRole('worker'), validate(earningsQuerySchema, 'query'), myEarnings);
 
 // Own skills (Module 2). Extract gives suggestions and saves nothing.
 router.post('/me/skills/extract', protect, requireRole('worker'), validate(extractSchema), extract);

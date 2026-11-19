@@ -12,6 +12,8 @@ import Review from '../models/Review.js';
 import { toCsv } from '../services/csv.js';
 import { writeAudit } from '../services/audit.js';
 import { pktDay } from './adminInsightsController.js';
+import { paymentSummary } from '../services/wage/paymentSummary.js';
+import { PAYMENT_STATES } from '../config/workTerms.js';
 
 export const EXPORT_MAX_ROWS = 5000;
 
@@ -192,6 +194,42 @@ const EXPORTS = {
       { header: 'has_reply', value: (r) => (r.reply?.at ? 'yes' : 'no') },
       { header: 'created_at_utc', value: (r) => r.createdAt },
       { header: 'synthetic', value: (r) => (r.synthetic ? 'yes' : 'no') },
+    ],
+  },
+  // Module 5: payment records per booking. Codes, amounts, states and dates only: never a name, a phone
+  // number, a description or a note (the terms note and the dispute notes are not even loaded).
+  payments: {
+    auditAction: 'export.payments',
+    async rows({ status = 'all', from, to }) {
+      const filter = PAYMENT_STATES.includes(status)
+        ? { paymentState: status }
+        : { $or: [{ paymentState: mongoose.trusted({ $ne: 'no_price' }) }, { 'payments.0': mongoose.trusted({ $exists: true }) }] };
+      const range = dateRange(from, to);
+      if (range) filter.createdAt = range;
+      return Booking.find(filter)
+        .select('code skillId category region status createdAt completedAt terms.agreed.unit terms.agreed.total terms.agreed.agreedAt payments.kind payments.amount payments.status payments.paidOn paymentState synthetic')
+        .sort({ createdAt: 1, _id: 1 })
+        .limit(EXPORT_MAX_ROWS + 1)
+        .lean();
+    },
+    columns: [
+      { header: 'booking_code', value: (b) => b.code },
+      { header: 'skill', value: (b) => b.skillId },
+      { header: 'category', value: (b) => b.category },
+      { header: 'region', value: (b) => b.region },
+      { header: 'booking_status', value: (b) => b.status },
+      { header: 'unit', value: (b) => b.terms?.agreed?.unit },
+      { header: 'agreed_total', value: (b) => b.terms?.agreed?.total },
+      { header: 'confirmed_paid', value: (b) => paymentSummary(b).confirmedPaid },
+      { header: 'awaiting', value: (b) => paymentSummary(b).awaiting },
+      { header: 'disputed', value: (b) => paymentSummary(b).disputed },
+      { header: 'payment_records', value: (b) => (b.payments ?? []).length },
+      { header: 'payment_state', value: (b) => paymentSummary(b).state },
+      { header: 'created_at_utc', value: (b) => b.createdAt },
+      { header: 'agreed_at_utc', value: (b) => b.terms?.agreed?.agreedAt },
+      { header: 'completed_at_utc', value: (b) => b.completedAt },
+      { header: 'last_paid_on', value: (b) => (b.payments ?? []).map((p) => p.paidOn).sort().pop() ?? '' },
+      { header: 'synthetic', value: (b) => (b.synthetic ? 'yes' : 'no') },
     ],
   },
 };
