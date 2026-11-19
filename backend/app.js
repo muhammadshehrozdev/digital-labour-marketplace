@@ -42,7 +42,11 @@ export function createApp() {
 
   app.get('/', (req, res) => res.json({ message: 'Digital Labour Marketplace API' }));
 
-  // Health check works even when the database is down, and reports its state.
+  // Health check: mounted BEFORE requireDb, so it answers even when the database is down. It only REPORTS
+  // dbState() and never opens a connection, so it proves that the function starts, not that the database
+  // works: right after a deploy a fresh serverless function says "db":"disconnected" although Atlas is fine.
+  // The database check is GET /api/auth/session (behind requireDb): 200 {"user":null} = reachable, 503 = not
+  // (docs/DEPLOY-RUNBOOK.md 4.8, 8.1, 8.3; decision D-079).
   // SHOW_CLIENT_IP=1 (one-off check after deployment): also the caller's own IP as the server sees it,
   // so TRUST_PROXY can be set right (docs/DEPLOY-RUNBOOK.md). Only the caller's own data.
   app.get('/api/health', (req, res) => res.json({

@@ -1051,3 +1051,13 @@ of visible reviews (uncertainty W / (n + W), the same thresholds); `score.depth`
 the frozen parameters did not change. Also: the reputation rules are served by `GET /api/meta/reputation-rules` and
 worded by the website, so My reputation and the Help Centre always say what the live engine does; the Urdu answer
 "I did come" became gender-neutral ("میں نے حاضری دی تھی"), for team review.
+
+## D-079 — `/api/health` proves the function starts; `/api/auth/session` is the database check (Batch 7, Part A, 19 Nov 2026)
+
+After a new deploy, `/api/health` can say `"db":"disconnected"` although the database works: the route is mounted
+before `requireDb` and only reports `dbState()`, the state of a connection that a fresh serverless function has not
+opened yet. The runbook (steps 4.8, 8.1, 8.3, 9 and the rollback table) and `docs/API.md` treated that answer as a
+database failure. Corrected: `/api/health` proves that the function starts; `"db":"disconnected"` right after a
+deploy is normal; `GET /api/auth/session` (behind `requireDb`) is the database check, `200 {"user":null}` =
+reachable, `503 SERVICE_UNAVAILABLE` = not. Docs and the comment in `app.js` only; the route's behaviour and its
+tests are unchanged.

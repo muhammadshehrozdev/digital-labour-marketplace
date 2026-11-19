@@ -36,7 +36,14 @@ examples: 10 Nov 2026) with **synthetic** accounts (ids and dates will differ on
 ## Public
 
 ### GET /api/health
-`200 {"ok":true,"db":"connected"}` — answers even when the database is down (then `db` is not `connected`).
+`200 {"ok":true,"db":"connected"}`. The route runs **before** the database step (`requireDb`) and only **reports**
+`dbState()`: it never opens a connection. So it proves that the function **starts**, not that the database works.
+Right after a deploy, a fresh serverless function has not opened its connection yet and the answer is
+`{"ok":true,"db":"disconnected"}` although Atlas is fine: that is normal (Batch 7, decision D-079).
+
+**The database check is `GET /api/auth/session`** (it runs behind `requireDb`): `200 {"user":null}` for a visitor =
+the database is reachable; `503 {"code":"SERVICE_UNAVAILABLE",…}` = it is not. `docs/DEPLOY-RUNBOOK.md` steps 4.8,
+8.1 and 8.3 use both, in this order.
 
 ### GET /api/meta/reputation-rules (Batch 6B)
 Public, no login, no database, no input (`Cache-Control: public, max-age=300`). The reputation rules of the

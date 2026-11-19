@@ -189,8 +189,16 @@ Push the branch first (from Ubuntu): `git push origin feature/modules-1-3`.
    ```
 
    then `git commit -am "chore(deploy): backend address" && git push origin feature/modules-1-3`.
-8. Open `https://digital-labour-api.vercel.app/api/health`. Expected: `{"ok":true,"db":"connected"}`.
-   If it shows `"db":"disconnected"`, check `MONGO_URI` and Atlas Network Access.
+8. Two checks, in this order (corrected in Batch 7, decision D-079):
+   - `https://digital-labour-api.vercel.app/api/health` → `{"ok":true,…}`. This proves that the function
+     **starts**. Right after a deploy it often shows `"db":"disconnected"`: that is **normal**. The health
+     route runs before the database step and only reports a connection that a fresh serverless function has
+     not opened yet. It is **not** a database check.
+   - `https://digital-labour-api.vercel.app/api/auth/session` → **this is the database check**. `200` with
+     `{"user":null}` = the database is reachable. `503` with `SERVICE_UNAVAILABLE` = it is not: check
+     `MONGO_URI` and Atlas **Network Access**, then **Redeploy**.
+   (After the session check, `/api/health` usually shows `"db":"connected"` too, because the same function
+   has now opened its connection. Do not rely on that.)
 
 ---
 
@@ -259,14 +267,17 @@ docker run --rm -it --env-file ~/dlm-secrets/production.env -e DOTENV_CONFIG_QUI
 
 Use the **frontend** address for everything except 8.1 and 8.2. Tick each line.
 
-1. [ ] `https://digital-labour-api.vercel.app/api/health` → `{"ok":true,"db":"connected"}` (Node 24 build
-   works, Atlas reachable). In the backend project, **Deployments** → newest → **Build Logs** should show
-   Node 24.
+1. [ ] `https://digital-labour-api.vercel.app/api/health` → `{"ok":true,…}` (the Node 24 build works and
+   the function starts; `"db":"disconnected"` right after a deploy is normal, see 4.8). Then
+   `https://digital-labour-api.vercel.app/api/auth/session` → `200 {"user":null}` (Atlas is reachable; `503`
+   = it is not). In the backend project, **Deployments** → newest → **Build Logs** should show Node 24.
 2. [ ] `https://digital-labour-api.vercel.app/server.js` → a small JSON "not found" answer, **not** program
    code. `…/robots.txt` → the two-line robots file. (Only `public/` is served.)
-3. [ ] `https://digital-labour-web.vercel.app/api/health` → the same JSON as 8.1 (the rewrite works). If you
-   see a Vercel login page instead, turn off **Deployment Protection** for the backend's production domain
-   (backend → **Settings** → **Deployment Protection**).
+3. [ ] `https://digital-labour-web.vercel.app/api/health` → `{"ok":true,…}` as in 8.1 (the rewrite works;
+   `"db"` may say `disconnected`, which is normal), and `https://digital-labour-web.vercel.app/api/auth/session`
+   → `200 {"user":null}` (the database is reachable through the rewrite). If you see a Vercel login page
+   instead, turn off **Deployment Protection** for the backend's production domain (backend → **Settings** →
+   **Deployment Protection**).
 4. [ ] Log in as the admin on `https://digital-labour-web.vercel.app/login`. In Chrome press F12 →
    **Application** → **Cookies** → your frontend address: one session cookie with **HttpOnly** ✓,
    **Secure** ✓, **SameSite Strict**, **Path /api**. Refresh the page: you stay logged in.
@@ -296,7 +307,8 @@ Then every visitor would share one counter. This check finds out.
    Production) → **Save** → **Redeploy**.
 2. On your laptop open https://www.whatismyip.com and note your IP. Then open
    `https://digital-labour-web.vercel.app/api/health`: it now also shows `client.ip`, `forwardedFor` and
-   `realIp`.
+   `realIp`. (Only these three matter here. `"db":"disconnected"` in the same answer is normal after a
+   redeploy, see 4.8; the database check is `/api/auth/session`.)
 3. Do the same on your phone **with Wi-Fi off** (mobile data gives a different IP).
 4. Decide:
 
@@ -314,7 +326,7 @@ Then every visitor would share one counter. This check finds out.
 
 | Problem | What to do |
 |---|---|
-| A new deployment of the frontend or the backend is broken | That project → **Deployments** → the previous **Ready** production deployment → **⋮** → **Instant Rollback**. (On the free plan only the one before the current one.) Then fix the code and push again. |
+| A new deployment of the frontend or the backend is broken | First tell the two kinds of "broken" apart (4.8): `/api/health` does not answer = the function does not start; `/api/auth/session` gives `503` = the database is not reachable (check `MONGO_URI` and Atlas **Network Access** before rolling back). `"db":"disconnected"` in `/api/health` alone is **not** a reason to roll back. If the code is the problem: that project → **Deployments** → the previous **Ready** production deployment → **⋮** → **Instant Rollback**. (On the free plan only the one before the current one.) Then fix the code and push again. |
 | A variable is wrong | Fix it in **Settings → Environment Variables**, then **Redeploy** (variables only change on a deploy). |
 | The whole go-live has to wait | Leave the new projects as they are (or set their **Ignored Build Step** to **Don't build anything** too). The old projects still show their last version. The defence demo runs on the laptop anyway (`docs/DEMO-SCRIPT.md`). |
 | The database needs a clean start (before real users only) | Atlas → **Browse Collections** → database `dlm_production` → delete it, then repeat part 7. |
