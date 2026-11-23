@@ -15,6 +15,7 @@ Team: Muhammad Shehroz, Shahzaib Khan, Usama Asif. Supervisor: Ms. Tooba Abdul Q
 | **2 — Experience and Skill Profiler** | A **rule-based (dictionary) skill extractor**: the worker describes their work in Urdu, Roman Urdu or English and gets skill suggestions with the matched words; nothing is saved until the worker ticks and adds. An evaluation harness (precision, recall, F1) for real labelled data. No "AI", no external AI service |
 | **3 — Skill Evidence and Verification** | Workers upload photos of certificates, finished work or reference letters for one skill; an admin approves, rejects, flags as suspected fake or revokes; each skill shows Self-declared / Evidence pending / Verified by evidence / Disputed and a strength word (no percentages) |
 | **4 — Reputation and Reliability Engine** | A minimal **Work Booking** (request → accept → both confirm "Work done"; cancel, no-show, a small dispute step); phone numbers shared only inside an accepted booking (D-002); **reviews** after completed work (never edited); a **weighted Beta reputation model** (Jøsang & Ismail 2002) that says how sure it is — version 2 (rep-2, Batch 6B) live after a pre-registered test — a reliability record, verified work history, "Best track record" order, rule-based flags for admins; **evaluated by simulation** (`backend/evaluation/reputation/`, results are simulation results only). No "AI" |
+| **5 — Fair Wage and Work Protection** | Price information for a piece of work (the typical price on this platform from enough confirmed jobs, else an admin price guide **with a written source**, and the government **minimum wage as a reference** with its sources), the price both people agree on the booking (versions, read-back, rule-based checks of important payment and work conditions that warn but never block), work-protection tips, and payment records both people confirm (My earnings, a printable record). **The app never moves money.** A small simulation of the price range (`backend/evaluation/price-range/`, simulation results only). No "AI" |
 
 Across all modules (Batch 3): the website works in **English, اردو (Urdu, right to left) and Roman
 Urdu** (chooser on the first visit, switcher at the top, the choice is saved to the account); a bold
@@ -48,6 +49,14 @@ Batch 6B fixes the header (it never cuts off the name or a menu, at any window w
 **install the website as an app** (an invitation after the second page and an "Install this app" button at the
 bottom of every page; the browser always asks the person, no site can install itself), and makes **rep-2** the
 live reputation engine after a pre-registered test (simulation only; `docs/modules/MODULE-4.md` §5.4).
+
+Batch 7 (**Module 5**, team choice "option C", 19 Nov 2026) adds price information, agreed prices and conditions on
+the booking, work-protection tips (Help Centre "Fair pay and safe work") and payment records both people confirm;
+workers see "My earnings"; admins keep a price guide (only with a source) and watch payments (read-only). The
+minimum wage figures live only in `backend/config/wageReferences.js` with their sources and must be checked against
+the official notifications before going live and every July. Details, formulas, the simulation results and the viva
+answers: `docs/modules/MODULE-5.md`. Batch 7 also corrects the deploy runbook's health check (`/api/health` proves the
+function starts; `/api/auth/session` is the database check, D-079).
 
 The website has been live since 12 Nov 2026 (Vercel). New batches are deployed by the team after review.
 
@@ -221,6 +230,8 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 | `npm run evaluate:rep2-criteria` | Batch 6B: S1, S2, S3 from the committed test-seed files (no simulation) |
 | `npm run reputation:recompute -- --worker <workerIdCode>` / `-- --all` | Rebuilds reputation snapshots; local database only unless `--allow-remote` **and** you type `yes` |
 | `npm run demo:module4` | Adds the synthetic Module 4 demo data to the demo database (`preview.sh demo` and `reset-demo` run it for you) |
+| `npm run demo:module5` | Adds the synthetic Module 5 demo data (prices, payments, one "[Demo]" guide entry) after the Module 4 demo data (`preview.sh` runs it for you) |
+| `npm run evaluate:price-range -- --scenario all --seeds 30` | Module 5 evaluation **by simulation**; writes `evaluation/price-range/results/SIMULATION-price-*.json` |
 | `npm run evaluate:skills -- --file <dataset.csv>` | Module 2 evaluation on a labelled dataset (`docs/evaluation/README.md`) |
 | `npm run agreement:skills -- --a <file> --b <file>` | Agreement between two annotators (Cohen's kappa, Krippendorff's alpha) |
 | `npm run migrate:cnic` / `migrate:categories` / `migrate:skills` | Data migrations; dry run unless `-- --apply`; local database only unless `--allow-remote` (ask the team first) |
@@ -267,6 +278,9 @@ The clip recorder is a development page: `http://127.0.0.1:5173/dev/recorder` (n
 | `docs/audio/RECORDING-GUIDE.md` | How the team records the spoken help (recorder page, file names, tips) |
 | `docs/EASY-MODE-MANUAL-TEST.md` | Checklist to test sound and microphone by hand (Chrome, Edge, Android) |
 | `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format); the easy-mode usability test **plan** (`EASY-MODE-USABILITY-PLAN.md`, no results yet) |
+| `docs/modules/MODULE-5.md` | Module 5: what it does, diagrams, formulas with worked examples, the minimum wage table with sources and the yearly update, the **simulation** results, limitations, extension points, viva answers, deployment notes |
+| `docs/MODULE-5-MANUAL-TEST.md` | Module 5 manual checklist: **check the wage figures first**, then three browser windows and an Android phone |
+| `docs/i18n/REVIEW-BATCH-7.md` | The new Module 5 texts side by side, **waiting for the team's review**, with the clips to record |
 | `docs/modules/MODULE-4.md` | Module 4: what it does, diagrams, formulas with worked examples, the **simulation** results, limitations, extension points, how to explain it in the viva, deployment notes |
 | `docs/contracts/MATCHING-INPUTS.md` | The reputation fields Module 7 (matching) may read, and its two rules |
 | `docs/MODULE-4-MANUAL-TEST.md` | Checklist for three browser windows and an Android phone |

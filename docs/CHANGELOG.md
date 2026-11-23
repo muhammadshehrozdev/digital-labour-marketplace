@@ -33,10 +33,15 @@ No new package. Nothing here is AI: written formulas and fixed rules. The app ne
   or pair (0.039 against 0.469 in `pair_flood`). Attacks can still make a range appear in a market with too few jobs.
 - **Part A, docs only (D-079):** the deploy runbook's health check corrected: `/api/health` proves the function
   starts; `/api/auth/session` (200 / 503) is the database check.
-- Decisions D-067 to D-079. Texts: 511 new keys in three languages, drafts for team review
+- Decisions D-067 to D-079. Texts: 512 new keys in three languages, drafts for team review
   (`docs/i18n/REVIEW-BATCH-7.md`, 57 clips to record). Manual checklist: `docs/MODULE-5-MANUAL-TEST.md` — check the
   wage figures against the official notifications first.
-- Tests (real runs, the numbers are in the last section of this entry): TESTS_PLACEHOLDER
+- Tests (real runs, 23 Nov 2026): backend **1018/1018** (baseline 823; line coverage 98.63%, services 98.51%,
+  controllers 98.54%, middleware 100%); frontend **1282/1282** (baseline 1211; line coverage 89.83%); e2e **68/68**
+  (baseline 57; 11 new Module 5 tests incl. axe); lint 0; build OK. A full browser walk-through on the demo preview
+  (432 views: visitor, worker, customer, admin × English and Urdu × light and dark × 360 / 768 / 1280 px) found 12
+  views wider than a 360 px phone (the new payment record, My reputation, admin Reviews and Reputation flags); fixed
+  and checked again. The full run also found that two "Agree" presses at once could answer 400 instead of 409; fixed.
 
 ## Batch 6B — header fix, "Install this app", reputation engine v2 (17 Nov 2026)
 
