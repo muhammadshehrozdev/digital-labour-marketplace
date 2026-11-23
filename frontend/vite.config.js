@@ -37,6 +37,11 @@ export default defineConfig({
     testTimeout: 15000,
     // At most 3 test files at once: with the dev servers running on a 4-core machine, more
     // parallel files made some page tests slow enough to time out (seen in Batch 4).
+    // Measured on 24 Nov 2026 (Batch 8A, decision D-089) on the user's laptop (8 GB RAM, dev container with 4 cores),
+    // the preview running in demo mode, the whole suite 3 times per value, interleaved:
+    //   maxWorkers 2: 93 / 98 / 99 s (median 98), 0 failures
+    //   maxWorkers 3: 95 / 87 / 85 s (median 87), 0 failures   <- chosen: clean every time, lowest median
+    //   maxWorkers 4: 89 / 97 / 86 s (median 89), 0 failures
     maxWorkers: 3,
     exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
     // Code coverage (Batch 4, Part 6.3): npm run coverage. Target: at least 80% of lines in src/.
