@@ -401,3 +401,19 @@ describe('the printable payment record', () => {
     expect(screen.getByRole('button', { name: 'Print' })).toBeInTheDocument();
   });
 });
+
+describe('the price part of a request the worker has not accepted yet', () => {
+  test('the worker reads "Accept the request first", and no "not answered yet" notes before acceptance', async () => {
+    mockApi(workerRoutes({ 'GET /bookings/b1': { status: 200, data: { booking: booking({
+      status: 'requested', actions: ['accept', 'decline'],
+      terms: { status: 'proposed', version: 1, proposedBy: 'customer', current: PRICE({ amount: 1000, total: 1000, duration: 'one_day' }), agreed: null },
+      termsChecks: [{ id: 'below_minimum_job', severity: 'warning', audience: 'both', params: { region: 'ICT', reference: 1200, days: 1 } }, { id: 'missing_condition', severity: 'info', audience: 'both', params: { condition: 'materials' } }],
+    }) } } }));
+    renderAt('/worker/jobs/b1');
+    const summary = await screen.findByTestId('terms-summary');
+    expect(within(summary).getByTestId('terms-waiting')).toHaveTextContent('Accept the request first. Then you can agree to this price or propose another.');
+    expect(within(summary).getByText(/for one day of work in Islamabad/)).toBeInTheDocument();
+    expect(within(summary).queryByText(/Not answered yet/)).toBeNull();
+    expect(within(summary).queryByRole('button', { name: 'Agree' })).toBeNull();
+  });
+});

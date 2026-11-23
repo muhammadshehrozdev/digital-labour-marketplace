@@ -2995,6 +2995,7 @@ export default {
         worker: 'karigar',
       },
       waitingForYou: 'Aap ke jawab ka intezar hai.',
+      acceptFirst: 'Pehle darkhwast qabool karein. Phir aap yeh qeemat manzoor kar sakte hain ya doosri qeemat bata sakte hain.',
       waitingForOther: 'Doosre shakhs ke manzoor karne ka intezar hai.',
       agree: 'Manzoor karein',
       agreeTitle: 'Kya yeh qeemat manzoor hai?',

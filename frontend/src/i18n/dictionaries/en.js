@@ -2997,6 +2997,7 @@ export default {
         worker: 'worker',
       },
       waitingForYou: 'Waiting for your answer.',
+      acceptFirst: 'Accept the request first. Then you can agree to this price or propose another.',
       waitingForOther: 'Waiting for the other person to agree.',
       agree: 'Agree',
       agreeTitle: 'Agree to this price?',

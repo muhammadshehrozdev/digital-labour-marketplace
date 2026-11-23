@@ -74,10 +74,11 @@ export default function TermsSummary({ booking: b, viewer, onChanged }) {
           title={terms.agreed ? t('wage.terms.changeWaiting', { by: who(terms.proposedBy) }) : t('wage.terms.proposedBy', { by: who(terms.proposedBy) })}
           p={terms.current}
           category={b.category}
-          extra={<p className={styles.muted} data-testid="terms-waiting">{other ? t('wage.terms.waitingForYou') : t('wage.terms.waitingForOther')}</p>}
+          extra={<p className={styles.muted} data-testid="terms-waiting">{other ? t(b.status === 'requested' ? 'wage.terms.acceptFirst' : 'wage.terms.waitingForYou') : t('wage.terms.waitingForOther')}</p>}
         />
       )}
-      {terms.status !== 'none' && <ChecksList checks={b.termsChecks ?? []} names={b.wageReference?.names} viewer={viewer} />}
+      {/* on a request the conditions are agreed after acceptance, so "not answered yet" notes wait until then */}
+      {terms.status !== 'none' && <ChecksList checks={(b.termsChecks ?? []).filter((c) => b.status !== 'requested' || c.id !== 'missing_condition')} names={b.wageReference?.names} viewer={viewer} />}
       <p className={styles.rule}>{t('wage.form.extraWorkRule')}</p>
       {error && <Alert tone="danger">{te(error)}</Alert>}
       {!editing && (

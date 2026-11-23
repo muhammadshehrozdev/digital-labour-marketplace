@@ -1,6 +1,6 @@
 # Batch 7 texts for team review (Module 5: fair wage and work protection)
 
-511 new texts, each in English, Urdu and Roman Urdu; no existing text was changed. Date: 2026-11-23.
+512 new texts, each in English, Urdu and Roman Urdu; no existing text was changed. Date: 2026-11-23.
 Every Urdu and Roman Urdu text below is a **draft** written by Claude Code until a team member who reads Urdu has
 checked it (D-031). 57 of them are fixed help texts that can be recorded as clips (Clip = yes).
 
@@ -154,7 +154,7 @@ development builds) under their keys. Texts with a value in braces are spoken by
 | `wage.priceInfo.city` | City | شہر | Shehar |  | |
 | `wage.priceInfo.pick` | Choose a trade and a work to see its prices. For a day or an hour, the trade is enough. | قیمتیں دیکھنے کے لیے شعبہ اور کام چنیں۔ دن یا گھنٹے کے لیے صرف شعبہ کافی ہے۔ | Qeematein dekhne ke liye shoba aur kaam chunein. Din ya ghantay ke liye sirf shoba kaafi hai. |  | |
 
-## Terms form, conditions, checks, read-back, summary, offer, cards (127)
+## Terms form, conditions, checks, read-back, summary, offer, cards (128)
 
 | Key | English | اردو (Urdu) | Roman Urdu | Clip | Checked by |
 |---|---|---|---|---|---|
@@ -263,6 +263,7 @@ development builds) under their keys. Texts with a value in braces are spoken by
 | `wage.terms.by.customer` | customer | گاہک | gahak |  | |
 | `wage.terms.by.worker` | worker | کاریگر | karigar |  | |
 | `wage.terms.waitingForYou` | Waiting for your answer. | آپ کے جواب کا انتظار ہے۔ | Aap ke jawab ka intezar hai. |  | |
+| `wage.terms.acceptFirst` | Accept the request first. Then you can agree to this price or propose another. | پہلے درخواست قبول کریں۔ پھر آپ یہ قیمت منظور کر سکتے ہیں یا دوسری قیمت بتا سکتے ہیں۔ | Pehle darkhwast qabool karein. Phir aap yeh qeemat manzoor kar sakte hain ya doosri qeemat bata sakte hain. |  | |
 | `wage.terms.waitingForOther` | Waiting for the other person to agree. | دوسرے شخص کے منظور کرنے کا انتظار ہے۔ | Doosre shakhs ke manzoor karne ka intezar hai. |  | |
 | `wage.terms.agree` | Agree | منظور کریں | Manzoor karein |  | |
 | `wage.terms.agreeTitle` | Agree to this price? | کیا یہ قیمت منظور ہے؟ | Kya yeh qeemat manzoor hai? |  | |
