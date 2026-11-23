@@ -27,6 +27,10 @@ let other;
 const HOUR = 60 * 60 * 1000;
 const PHONE_KEYS = ['phone', 'whatsapp', 'whatsappNumber', 'whatsappLink'];
 const today = () => pktDate(new Date());
+// Random ids and hashes (24+ hex characters: ObjectIds, the audit chain's SHA-256 values) can contain "03" and nine
+// digits by chance ("…a03459554085…"), which made the phone-number checks fail now and then (Batch 8A). A phone number
+// (11 digits) or a CNIC is never such a run, so blanking the runs keeps every real check.
+const withoutHexIds = (text) => text.replace(/\b[0-9a-f]{24,}\b/g, '<hex>');
 
 beforeAll(async () => {
   await startTestDb();
@@ -347,7 +351,7 @@ describe('phone numbers still only as D-002 / D-052 allow, with terms and paymen
       expect(JSON.stringify(list.body)).not.toContain(customer.phone);
     }
     const earnings = await get(workerA, '/api/workers/me/earnings');
-    expect(JSON.stringify(earnings.body)).not.toMatch(/03\d{9}/);
+    expect(withoutHexIds(JSON.stringify(earnings.body))).not.toMatch(/03\d{9}/);
     const notes = await Notification.find({ user: mongoose.trusted({ $in: [customer.user._id, workerA.user._id] }) }).lean();
     expect(JSON.stringify(notes)).not.toContain(workerA.phone);
     expect(JSON.stringify(notes)).not.toContain(customer.phone);
@@ -565,7 +569,7 @@ describe('earnings, meta routes and the audit chain', () => {
     const entries = await AuditLog.find({ action: /^(terms|payment|priceguide|export\.payments)/ }).lean();
     expect(entries.length).toBeGreaterThan(10);
     const text = JSON.stringify(entries);
-    expect(text).not.toMatch(/03\d{9}|\d{5}-\d{7}-\d/);
+    expect(withoutHexIds(text)).not.toMatch(/03\d{9}|\d{5}-\d{7}-\d/);
     expect(text).not.toContain('Wires from the customer');
   });
 });

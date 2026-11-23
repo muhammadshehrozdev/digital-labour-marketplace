@@ -428,6 +428,10 @@ describe('no-show answers and disputes', () => {
     ['no_fault', 'closed_no_fault'],
   ])('cancellation fault -> %s keeps or changes the outcome', async (decision, outcome) => {
     const b = await acceptedBooking(app, other, workerB);
+    // Tomorrow 09:00 is 9 to 33 hours away, depending on the hour the suite runs. Moving the booking 12 hours back puts
+    // the start less than 24 hours away at ANY hour, so the worker's cancellation is always "late" (Batch 8A: this
+    // test failed between 00:00 and 09:00 Pakistan time).
+    await shiftBooking(b._id, 12);
     await act(app, workerB, b._id, 'cancel', { reason: 'emergency' });
     const res = await act(app, workerB, b._id, 'dispute', { reasonCode: 'not_my_fault', note: 'The customer asked me to cancel.' });
     expect(res.body.booking.dispute.type).toBe('cancellation_fault');
