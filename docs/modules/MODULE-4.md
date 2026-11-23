@@ -435,7 +435,7 @@ booking is accepted and for 7 days after it closes.
 | Module | Expected additions to `Booking` |
 |---|---|
 | 5 (wages) | `agreedPrice`, `priceUnit`, a wage-estimate reference |
-| 6 (job posting) | `jobRequest` (the posted job the booking came from) |
+| 6 (job requests) | **built in Batch 8A:** `jobRequest`, `jobCode`, `jobTaskType` (only on bookings sent from a job; `docs/modules/MODULE-6.md`) |
 | 8 (agreement) | `agreement { terms, acceptedByCustomerAt, acceptedByWorkerAt }`, `beforeEvidence[]`, `afterEvidence[]` |
 | 9 (disputes) | a full dispute record; the small `dispute` here is only what reliability needs |
 | 10 (check-in) | `checkIn { at, location }`, `checkOut { at, location }`; no-shows could then be confirmed by data |

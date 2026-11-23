@@ -27,6 +27,9 @@ erDiagram
   BOOKING ||--o{ TERMS_VERSION : "termsHistory (Module 5)"
   BOOKING ||--o{ PAYMENT_RECORD : "payments (Module 5)"
   USER ||--o{ PRICE_GUIDE : "createdBy / updatedBy (admin)"
+  USER ||--o{ JOB_REQUEST : "customer (Module 6)"
+  JOB_REQUEST ||--o{ BOOKING : "jobRequest (one open at a time)"
+  COUNTER ||..o{ JOB_REQUEST : "issues code JR-year-n"
 
   USER {
     ObjectId _id
@@ -261,6 +264,29 @@ query uses it), `{ status, category, terms.agreed.unit, completedAt }` (the day/
 `{ workerUser, completedAt }` (earnings), `{ paymentState, updatedAt }` (admin Payments). Module 8 will read
 `terms.agreed` and `termsHistory` (comment in the model).
 
+Module 6 (Batch 8A) adds, **only on bookings sent from a job request** (no defaults, so other bookings are unchanged):
+`jobRequest` (JobRequest), `jobCode` (`JR-<year>-<6 digits>`), `jobTaskType` (a task type or `null`): a snapshot of what
+the worker was sent. The job's budget and analysis are never copied. New index: `{ jobRequest, createdAt: -1 }` with
+`partialFilterExpression: { jobRequest: { $exists: true } }`.
+
+## jobrequests (Module 6, D-080 to D-084)
+
+`code`* (unique, `JR-<year>-<6 digits>`, counter `jobRequestCode-<year>`), `customer`* (User), `status` (`open |
+closed`; the state the customer sees is derived: open, requested, accepted, done, expired, closed —
+`services/jobs/state.js`), `version` (from 1, + 1 on every edit; each edit is conditional on it), `description`* (3–500,
+the customer's own words; contact-info and CNIC checks), `inputMode`* (`text | voice`), `category`* (a taxonomy id),
+`skills[]` (0–5 `{ skillId, name }`, all of `category`), `taskType` (`install | repair | service | new_work | cleaning
+| moving | household_help | null`), `city`* (2–50), `region` (`regionOf(city)` at save time; `null` = not in the table),
+`area`* (2–80; contact-info and CNIC checks), `preferredDate` (`YYYY-MM-DD | null`), `timeSlot` (a booking slot |
+`null`), `urgent` (default false), `budget` (`null | { amount (whole rupees, 100–5,000,000), unit: job|day|hour }`,
+**private** to the customer and admins), `activeBooking` (Booking | `null`: the one-request reservation, D-082),
+`analysis`* `{ method: rules|nb|hybrid, versions { analyzer, taxonomy, phrases, model }, analyzedAt, suggested {
+category, categoryTie[], skills[] (ids), taskType, city, preferredDate, timeSlot, urgent, budget, notes[] }, changed {
+category, skills, taskType, city, preferredDate, timeSlot, urgent, budget: true | false | null } }` (computed on the
+server, never taken from the client; no text), `closedAt`, `closeReason` (`work_done | not_needed | found_elsewhere |
+other`), `synthetic` (demo only), timestamps. Indexes: `{ code }` unique; `{ customer, createdAt: -1 }`; `{ status,
+category, createdAt: -1 }`. After the deploy: `npm run db:indexes` once.
+
 ## priceguides (Module 5, D-072)
 
 `skillId` (taxonomy id or `null` = the whole category), `category`*, `unit`* (`job | day | hour`), `region`* (a region
@@ -296,5 +322,5 @@ Public responses select only `reputation.public` (or four of its fields on direc
 
 ## counters
 
-Module 4 adds `bookingCode-<year>` (booking codes).
+Module 4 adds `bookingCode-<year>` (booking codes); Module 6 adds `jobRequestCode-<year>` (job request codes; the same helper, `services/codes.js`).
 `{ _id: "workerId-<year>", seq }`, increased with an atomic `$inc` (year = Pakistan time).

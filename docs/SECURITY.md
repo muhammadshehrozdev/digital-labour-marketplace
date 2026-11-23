@@ -137,6 +137,41 @@ server.
 | Tampering with the money record | `terms.proposed`, `terms.agreed`, `payment.recorded`, `payment.confirmed`, `payment.disputed`, `priceguide.*`, `export.payments` are in the hash-chained audit log (no note text, no phone), so the money record of every booking is tamper-evident (`npm run audit:verify`) | `module5.test.js` "every Module 5 audit entry is in the hash chain…" |
 | CSV export leaks | Explicit columns: codes, amounts, states, dates; no names, phone numbers or notes (not even loaded); audited | `module5.test.js` "…the CSV has no names, phone numbers or notes and is audited" |
 
+## Threats, mitigations and tests (Module 6, Batch 8A)
+
+Who sees what (also in `docs/modules/MODULE-6.md` §6):
+
+| Data | Customer (owner) | The requested worker | Other workers | Other customers | Admin |
+|---|---|---|---|---|---|
+| Job description | yes | yes, as the booking's description | no | no | yes |
+| Category, skills, task type | yes | task type + the booking's skill | no | no | yes |
+| City, area | yes | yes, as the booking's city and area | no | no | yes |
+| Preferred day, time | yes | the booking's own day and time | no | no | yes |
+| Budget | yes | **no** | no | no | yes |
+| Analysis (suggested, changed) | yes | no | no | no | yes |
+| Any list of jobs | own only | **no** | **no** | **no** | yes |
+
+| Threat | Defence | Test |
+|---|---|---|
+| Reading or changing someone else's job | Found only through `{ _id, customer: req.user._id }` → 404 `JOB_NOT_FOUND` on every route (never 403, so nobody learns it exists) | `job-requests.test.js` "another customer's job is 404 on every route" |
+| Workers browsing jobs (a job board) | Every `/api/job-requests` route is customer-only (`analyze`: customer or admin): 403 for workers; a worker sees a job only as a booking sent to them | `job-requests.test.js` "roles: workers get 403 everywhere" |
+| A client sending its own analysis, owner or code | Strict zod schemas (unknown keys → 400); the analysis is computed on the server at save and on every edit | `job-requests.test.js` "strict: the analysis, the customer or the code can never be sent" |
+| Contact details or a CNIC in the job text (around D-002) | The description and the area go through the contact-info check (`TEXT_HAS_CONTACT_INFO`) and the CNIC check (`NOTE_HAS_CNIC`), like a booking's text, because they are copied into the booking the worker reads | `job-requests.test.js` "400 for …"; "contact details and CNIC numbers are refused" |
+| An exact address in the job text | The analyzer's note `address_in_text` ("house no 12", "gali number 5"); Batch 8B asks the customer to remove it; the area field is the place for the neighbourhood. A hint, never a block | `jobAnalyzer.test.js` "address hint" |
+| The budget reaching a worker | Never copied into the booking; booking views carry only `job { code, taskType }` for a worker; the worker list and notifications carry no budget; the admin list has none either | `job-requests.test.js` "the worker sees the job code and kind, never the budget" |
+| Private worker fields in "workers for this job" | The directory's `PUBLIC_WORKER_FIELDS` and the user's name only; suspended and unlisted workers hidden | `job-requests.test.js` "… no private field" |
+| Two requests from one job (two taps, two tabs) | The reservation `activeBooking`: one conditional update from the value read to a new booking id (`_id, customer, status: open, version, activeBooking`); the loser gets 409; a failed write releases it; edits and deletes are conditional on the value read too (D-082) | `job-requests.test.js` "two requests at the same moment", "the reservation …" |
+| Job spam | 10 jobs open, requested or accepted (409 `JOB_LIMIT_OPEN`); 10 new jobs in 24 hours (429 `JOB_LIMIT_DAY`); the booking limits still apply to each request | `job-requests.test.js` "limits …" |
+| Job text in logs or the audit log | `POST /analyze` stores nothing and logs no text; no audit entry holds job text; a 500 answers the generic message | `job-requests.test.js` "… the database is unchanged; no text in any log", "a failed write releases it" |
+| A model trained on synthetic data going live | `services/jobAnalyzer/live.js` refuses it in production (rules instead, one log line without text); live method `rules` in 8A | `naiveBayes.test.js` "the production loader check" |
+| A model file that identifies people | The writer refuses `minDf < 2`; no feature with 3+ digits; the 30 rarest features are printed for a person to check; `trainedOn.file` is the file name only; real data never in Git (`.gitignore`) | `naiveBayes.test.js` "the file writer refuses minDf < 2", "no feature with 3 or more digits" |
+| A RegExp from user text | The admin `q` (a JR code) is escaped (`escapeRegex`) | `job-requests.test.js` "q=(.*) … escaped" |
+
+**Why `POST /api/job-requests/analyze` has no extra rate limiter:** it is cheap (word lists, no database, no external
+service), saves nothing, needs a login (customer or admin), and only returns the analysis of the caller's own text, so
+there is nothing to scrape or flood. Saving a job (the only write) has its own daily limit. The global protections
+(login, CSRF origin check, body size limit) still apply.
+
 ## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET; Module 4 adds the optional CRON_SECRET)
 
 - Each key is 32 random bytes, written in base64. Make one in PowerShell (in `.\backend`):

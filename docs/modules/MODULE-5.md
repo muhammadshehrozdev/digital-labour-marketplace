@@ -144,8 +144,8 @@ changes it, not Claude.
 
 ## 7. Extension points (do not build them in this module)
 
-- **Module 6 (job posting):** may read `terms.agreed.unit`, `terms.agreed.total` and the `priceRange` output to
-  suggest a budget (docs/contracts/PRICE-INPUTS.md).
+- **Module 6 (job requests): built in Batch 8A** (`docs/modules/MODULE-6.md`). The job's budget is private and never
+  ranks workers; a budget hint from the `priceRange` output (docs/contracts/PRICE-INPUTS.md) may be shown in Batch 8B.
 - **Module 7 (matching):** may read the same, plus `paymentSummary.state`; never rank workers by price alone.
 - **Module 8 (digital work agreement):** reads `Booking.terms.agreed` and `termsHistory` to build the formal
   agreement (work timeline, written scope, before-and-after photos, a sealed version). The comment block in

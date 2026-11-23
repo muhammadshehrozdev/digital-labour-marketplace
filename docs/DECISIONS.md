@@ -1167,3 +1167,94 @@ database failure. Corrected: `/api/health` proves that the function starts; `"db
 deploy is normal; `GET /api/auth/session` (behind `requireDb`) is the database check, `200 {"user":null}` =
 reachable, `503 SERVICE_UNAVAILABLE` = not. Docs and the comment in `app.js` only; the route's behaviour and its
 tests are unchanged.
+
+## D-080 — Module 6 design and naming: `JobRequest`, `/api/job-requests`, `JR-` codes (Batch 8A, 23–24 Nov 2026)
+
+The customer describes a job in their own words; the server suggests a structured job profile; the customer confirms
+or changes every suggestion and saves a **job request** (`models/JobRequest.js`). The frontend route `/worker/jobs`
+already means the worker's bookings ("My jobs"), so the API is `/api/job-requests` and the code prefix is `JR-`
+(`JR-2026-000001`, from the shared yearly-code helper `services/codes.js`; `BK-` codes are unchanged). Only `status`
+(open | closed) is stored; the state (open, requested, accepted, done, expired, closed) is derived from the job and
+its bookings, with no cron job (`services/jobs/state.js`, pure). Every edit is one conditional update on `version`.
+Batch 8B chooses the words customers see.
+
+## D-081 — The customer chooses the worker; one request at a time (Batch 8A)
+
+Team decision 2 (23 Nov 2026): the customer picks a worker from "workers for this job" and sends the request with the
+job attached; workers never see a list of jobs. A job has at most one open request: if a customer could send one job
+to several workers at once, the workers who accept second and third would be dropped, which wastes their time and
+counts against nobody. Sequential requests are fairer to workers. The request still expires after 48 hours
+(`BOOKING_RULES.REQUEST_EXPIRY_HOURS`), and the customer may cancel an unanswered request and ask someone else.
+
+## D-082 — The one-request reservation: a compare-and-swap on `activeBooking` (Batch 8A)
+
+Two quick taps or two tabs must never create two open requests from one job. The request route reads the job, runs
+every check of `POST /api/bookings` (one shared code path, `services/booking/create.js`), then moves `activeBooking`
+from the value it read to a booking id made in advance, with ONE conditional update on `_id`, `customer`,
+`status: open`, `version` and `activeBooking`. The loser gets 409 `JOB_HAS_OPEN_REQUEST`; if writing the booking
+fails, the reservation is released to the value read. A reservation that points to a closed booking is free; one that
+points to no booking at all is taken for 60 seconds (`JOB_RULES.STALE_RESERVATION_SECONDS`; the ObjectId holds its
+own creation time, so no new field) and free afterwards, so a request that crashed in between never blocks a job for
+ever. Edits and deletes are conditional on the `activeBooking` they read, so an edit can never slip in after a request
+was reserved.
+
+## D-083 — Text privacy, budget privacy, and no extra rate limiter on analyze (Batch 8A)
+
+The description and the area go through the contact-info check and the CNIC check (they are copied into the booking
+that the worker reads). The analyzer adds the note `address_in_text` when the text looks like an exact address (a
+hint, never a block). The **budget is private** to the customer and admins: it is never copied into a booking, never
+in a worker's view, a notification or the admin list. `POST /api/job-requests/analyze` stores nothing, logs no text and
+has no extra rate limiter: it is cheap, needs a login, and only analyses the caller's own text; saving a job has its
+own daily limit. The audit log gets no job text.
+
+## D-084 — One trade per job; "workers for this job" is a filter, not a ranking (Batch 8A)
+
+A job has one trade (`category`) and up to 5 skills of that trade; a text that asks for two trades gets a tie and the
+customer picks one. The worker list is a filter: listed, not-suspended workers who offer a skill of the trade, in the
+customer's chosen directory sort, at most 500 candidates, then only the same city (`marketCity`). Each worker shows the
+reasons it is listed (`matchedSkills`, `sameCity`). No new ranking and no price-based order; Module 7 replaces this list
+with ranking and fair exposure (`docs/contracts/JOB-PROFILE.md`).
+
+## D-085 — The live method is the rule-based word lists until Batch 8C (Batch 8A)
+
+`config/jobAnalyzer.js`: `LIVE_METHOD = 'rules'`, `LIVE_MODEL = null`. The classifier goes live only if the frozen rule
+of `PROTOCOL.md` step 7 says so on the real test set. A model is shipped as an ES module that the code imports
+statically (Vercel bundles only what is imported).
+
+## D-086 — The pre-registered evaluation protocol (Batch 8A)
+
+`docs/evaluation/job-analysis/PROTOCOL.md` was written before any real description existed and **frozen at commit
+`81ba8f6`** (24 Nov 2026). It fixes the collection, the double labelling with a kappa threshold of 0.60, the split
+(seed 20261124, 40/60), the cross-validation grid, the systems, the metrics, the decision rule (a method goes live only
+with at least 3 points more category accuracy than the rules; hybrid if nb and hybrid are within 1 point) and the
+claim rule (McNemar's exact p after Holm below 0.05, at least 60 test items). Changes only before the test run, dated,
+with the reason.
+
+## D-087 — The rules for a model file (Batch 8A)
+
+A model written to disk keeps only features seen in at least 2 training descriptions (the writer refuses less), never a
+feature with 3 or more digits in a row, and only the training file's **name**; `jobs:train` prints the 30 rarest kept
+features for a person to check. In production a model with `trainedOn.synthetic === true` is refused (the server uses
+the rules and logs one line without text). Real data never goes into Git.
+
+## D-088 — "Kept a suggestion" is use, not accuracy (Batch 8A)
+
+The stored `analysis.changed` flags and `GET /api/admin/job-requests/stats` count how often customers kept or changed a
+suggestion. A customer may keep a wrong suggestion or change a right one, so these numbers describe use, not
+correctness; accuracy comes only from the labelled test set. Aggregates only, no text.
+
+## D-089 — Frontend test workers from a measurement (Batch 8A)
+
+The full frontend suite was run 3 times each with 2, 3 and 4 workers, interleaved, with the preview running: all nine
+runs passed; medians 98 s, 87 s and 89 s. The rule (zero failures in all runs, the lowest median, a tie → the smaller
+number) keeps `maxWorkers: 3`; the table is in `frontend/vite.config.js`.
+
+## D-090 — The word lists, version 1 (Batch 8A)
+
+`config/jobPhrases.js` version `2026-11-24-v1`, written before any real data and for team review: spelling variants are
+one word for one word (inflected forms are phrases); problem phrases per skill count as strong evidence; `a + b`
+phrases need both parts anywhere; a household-help word list comes before the new-work words (because "banana" is also
+in "khana banana"); "lagane / lagwane" are not install words (so "tiles lagwane" reaches new work); four city
+spellings that are everyday words (`atak`, `wah`, `mari`, `مری`) are not used alone; a longer city name wins; a budget
+unit counts only within 3 words of the amount. Module 2's taxonomy terms are not changed. Batch 8C may improve the
+lists on the development set only.

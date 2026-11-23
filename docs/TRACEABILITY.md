@@ -225,3 +225,34 @@ Owner in the proposal: Shahzaib Khan. Team choice of 19 Nov 2026: option C (D-06
 | D-078 payment disputes only marked | `AdminPayments.jsx` (read-only), `paymentRules` (refused during an open booking dispute) | `module5.test.js` "admin payments page…", "terms are refused … during an open dispute"; e2e "a disputed payment…" |
 | D-079 runbook health check (Part A) | `docs/DEPLOY-RUNBOOK.md` 4.8, 8.1, 8.3, 9, rollback; `docs/API.md`; `app.js` comment | `foundation.test.js`, `db-down.test.js`, `health-client-ip.test.js` (behaviour unchanged) |
 
+
+## Proposal: Module 6 — Problem/Job Analyzer (Batch 8A, 23–24 Nov 2026)
+
+Owner in the proposal: Usama Asif. Team decisions of 23 Nov 2026 (`docs/modules/MODULE-6.md` §1). Honest status: the
+**backend** is done; the **screens** are Batch 8B; the **evaluation on real data** is Batch 8C (no real data yet; the
+protocol is frozen at `81ba8f6`).
+
+| # | Proposal bullet | Where (code) | Checked by (tests) | State |
+|---|---|---|---|---|
+| M6.a | Submission of a new job or work requirement by the customer | `models/JobRequest.js`, `controllers/jobRequestsController.js`, `routes/jobRequests.js`, `validators/jobRequests.js`, `services/jobs/{state,load,views}.js` (D-080, D-081, D-082) | `integration/job-requests.test.js` (create, limits, states, edit with versions, close, delete, request with the job, the reservation); `unit/jobState.test.js` (state table, actions, reservation) | Backend done; screens in 8B |
+| M6.b | Text-based analysis of customer job descriptions | `services/jobAnalyzer/{tokens,rules,fields,budget,naiveBayes,index,live}.js`, `config/jobPhrases.js`, `config/jobAnalyzer.js`, `POST /api/job-requests/analyze` (D-085, D-087, D-090) | `unit/jobAnalyzer.test.js` (the 13 required examples, ablation options, property tests); `unit/naiveBayes.test.js` (hand-worked numbers, properties, hybrid, production check); `job-requests.test.js` "analyze … nothing saved" | Backend done; screens in 8B; real evaluation in 8C |
+| M6.c | Identification of required skills, task type, location and work requirements | `rules.js` (trade, skills, task type), `fields.js` (city, day, time, urgency, address hint), `budget.js` | `jobAnalyzer.test.js` "task type", "city, day, time, urgency", "budget (raw text)", "address hint" | Backend done; measured in 8C |
+| M6.d | Extraction of important job attributes for matching | `services/jobs/matchingQuery.js` (`docs/contracts/JOB-PROFILE.md`), `services/jobs/workersForJob.js` (D-084: a filter, not a ranking) | `jobState.test.js` "the documented fields only"; `job-requests.test.js` "workers for this job …" | Contract done; ranking is Module 7 |
+| M6.e | Generation of a structured job profile for the marketplace | the confirmed `JobRequest` with `analysis { suggested, changed }` (`services/jobs/analysis.js`), admin views and use statistics (D-088) | `jobState.test.js` "the stored analysis", "use statistics"; `job-requests.test.js` "admin: read-only views and the use statistics" | Backend done; screens in 8B |
+| — | Evaluation harness and the pre-registered protocol | `backend/evaluation/job-analysis/`, `docs/evaluation/job-analysis/PROTOCOL.md` (D-086), data-collection documents | `unit/jobEvaluation.test.js` (every hand-worked metric of 7.3, split and CV determinism, no leakage, decision and claim rules, a synthetic run) | Harness done; synthetic only; real run in 8C |
+
+### Batch 8A decisions
+
+| Decision | Where | Checked by |
+|---|---|---|
+| D-080 Module 6 design and naming (`JobRequest`, `/api/job-requests`, `JR-`) | `models/JobRequest.js`, `routes/jobRequests.js`, `services/codes.js` | `job-requests.test.js`; `indexes.test.js` |
+| D-081 the customer chooses; one request at a time | `jobRequestsController.requestWorkerForJob`, `services/jobs/state.js` | `job-requests.test.js` "one request at a time …" |
+| D-082 the reservation (compare-and-swap) | `requestWorkerForJob`, `reservationIsFree` | `job-requests.test.js` "two requests at the same moment", "the reservation …"; `jobState.test.js` |
+| D-083 text privacy, budget privacy, no rate limiter on analyze | `validators/jobRequests.js`, `services/booking/views.js` (`job` key), `services/jobs/views.js` | `job-requests.test.js` "… never the budget", "analyze … nothing saved" |
+| D-084 one trade per job; the worker list is a filter | `services/jobs/workersForJob.js` | `job-requests.test.js` "workers for this job …" |
+| D-085 live method = rules until 8C | `config/jobAnalyzer.js`, `services/jobAnalyzer/live.js` | `naiveBayes.test.js` "the live analyzer of Batch 8A is the rules"; `job-requests.test.js` meta |
+| D-086 the pre-registered protocol | `docs/evaluation/job-analysis/PROTOCOL.md`, `evaluation/job-analysis/evaluate.js` (`liveDecision`, `claimFor`) | `jobEvaluation.test.js` "the pre-registered rules" |
+| D-087 the model file rules | `naiveBayes.checkModelForDisk`, `train.js`, `live.js` | `naiveBayes.test.js`, `jobEvaluation.test.js` "jobs:train …" |
+| D-088 "kept" is not accuracy | `services/jobs/stats.js`, `GET /api/admin/job-requests/stats` | `jobState.test.js`, `job-requests.test.js` "stats …" |
+| D-089 `maxWorkers` from measurement | `frontend/vite.config.js` | the measured table in its comment |
+| D-090 the word lists, version 1 | `config/jobPhrases.js` | `jobAnalyzer.test.js` "the word lists themselves" |

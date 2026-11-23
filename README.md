@@ -16,6 +16,7 @@ Team: Muhammad Shehroz, Shahzaib Khan, Usama Asif. Supervisor: Ms. Tooba Abdul Q
 | **3 — Skill Evidence and Verification** | Workers upload photos of certificates, finished work or reference letters for one skill; an admin approves, rejects, flags as suspected fake or revokes; each skill shows Self-declared / Evidence pending / Verified by evidence / Disputed and a strength word (no percentages) |
 | **4 — Reputation and Reliability Engine** | A minimal **Work Booking** (request → accept → both confirm "Work done"; cancel, no-show, a small dispute step); phone numbers shared only inside an accepted booking (D-002); **reviews** after completed work (never edited); a **weighted Beta reputation model** (Jøsang & Ismail 2002) that says how sure it is — version 2 (rep-2, Batch 6B) live after a pre-registered test — a reliability record, verified work history, "Best track record" order, rule-based flags for admins; **evaluated by simulation** (`backend/evaluation/reputation/`, results are simulation results only). No "AI" |
 | **5 — Fair Wage and Work Protection** | Price information for a piece of work (the typical price on this platform from enough confirmed jobs, else an admin price guide **with a written source**, and the government **minimum wage as a reference** with its sources), the price both people agree on the booking (versions, read-back, rule-based checks of important payment and work conditions that warn but never block), work-protection tips, and payment records both people confirm (My earnings, a printable record). **The app never moves money.** A small simulation of the price range (`backend/evaluation/price-range/`, simulation results only). No "AI" |
+| **6 — Problem/Job Analyzer** | **Backend and evaluation harness (Batch 8A); screens in Batch 8B.** The customer describes a job in their own words (English, Urdu, Roman Urdu); **rule-based word lists** suggest the trade, skills, kind of work, city, day, time, urgency and budget with the words that led to each; the customer confirms every suggestion and saves a job request, then picks a worker from "workers for this job" (a filter, not a ranking) and sends one request at a time with the job attached. Workers never see a list of jobs; the budget stays private. The team's own small **naive Bayes classifier** and a hybrid are compared with the word lists under a **pre-registered protocol** (frozen before any real data; `docs/evaluation/job-analysis/PROTOCOL.md`); no real data yet, so no result. No "AI", no external service, no pre-trained model |
 
 Across all modules (Batch 3): the website works in **English, اردو (Urdu, right to left) and Roman
 Urdu** (chooser on the first visit, switcher at the top, the choice is saved to the account); a bold
@@ -57,6 +58,11 @@ minimum wage figures live only in `backend/config/wageReferences.js` with their 
 the official notifications before going live and every July. Details, formulas, the simulation results and the viva
 answers: `docs/modules/MODULE-5.md`. Batch 7 also corrects the deploy runbook's health check (`/api/health` proves the
 function starts; `/api/auth/session` is the database check, D-079).
+
+Batch 8A (**Module 6**, backend only, 23–24 Nov 2026) adds job requests, the rule-based job analyzer (try it in
+`./backend`: `npm run jobs:try -- "Kal subah AC ki service karwani hai"`), the team's naive Bayes classifier and the
+hybrid (not live), the evaluation harness tested on synthetic data only, the pre-registered protocol (frozen at
+`81ba8f6`) and the documents for collecting real descriptions with consent. Details: `docs/modules/MODULE-6.md`.
 
 The website has been live since 12 Nov 2026 (Vercel). New batches are deployed by the team after review.
 
@@ -233,6 +239,8 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 | `npm run demo:module5` | Adds the synthetic Module 5 demo data (prices, payments, one "[Demo]" guide entry) after the Module 4 demo data (`preview.sh` runs it for you) |
 | `npm run evaluate:price-range -- --scenario all --seeds 30` | Module 5 evaluation **by simulation**; writes `evaluation/price-range/results/SIMULATION-price-*.json` |
 | `npm run evaluate:skills -- --file <dataset.csv>` | Module 2 evaluation on a labelled dataset (`docs/evaluation/README.md`) |
+| `npm run jobs:try -- "<text>"` | Module 6: the job analyzer's suggestions for one text, in a table (no database, nothing saved) |
+| `npm run jobs:split` / `jobs:train` / `evaluate:jobs` / `agreement:jobs` | Module 6 evaluation scripts (`backend/evaluation/job-analysis/README.md`); real data only under `docs/evaluation/job-analysis/PROTOCOL.md` |
 | `npm run agreement:skills -- --a <file> --b <file>` | Agreement between two annotators (Cohen's kappa, Krippendorff's alpha) |
 | `npm run migrate:cnic` / `migrate:categories` / `migrate:skills` | Data migrations; dry run unless `-- --apply`; local database only unless `--allow-remote` (ask the team first) |
 
@@ -278,6 +286,9 @@ The clip recorder is a development page: `http://127.0.0.1:5173/dev/recorder` (n
 | `docs/audio/RECORDING-GUIDE.md` | How the team records the spoken help (recorder page, file names, tips) |
 | `docs/EASY-MODE-MANUAL-TEST.md` | Checklist to test sound and microphone by hand (Chrome, Edge, Android) |
 | `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format); the easy-mode usability test **plan** (`EASY-MODE-USABILITY-PLAN.md`, no results yet) |
+| `docs/modules/MODULE-6.md` | Module 6: the job request and its states, the request flow, the analyzer's rules with the 13 examples, the naive Bayes formulas and hand-worked numbers, the hybrid, who sees what, limitations, the honest statement of novelty, open questions for the supervisor, viva answers, deployment notes |
+| `docs/evaluation/job-analysis/` | Module 6 evaluation: the frozen protocol, dataset format, annotation guide, collection plan, consent text, form draft, data handling |
+| `docs/i18n/REVIEW-BATCH-8A.md` | The new Module 6 texts (errors, Urdu word lists, consent and form), **waiting for the team's review** |
 | `docs/modules/MODULE-5.md` | Module 5: what it does, diagrams, formulas with worked examples, the minimum wage table with sources and the yearly update, the **simulation** results, limitations, extension points, viva answers, deployment notes |
 | `docs/MODULE-5-MANUAL-TEST.md` | Module 5 manual checklist: **check the wage figures first**, then three browser windows and an Android phone |
 | `docs/i18n/REVIEW-BATCH-7.md` | The new Module 5 texts side by side, **waiting for the team's review**, with the clips to record |

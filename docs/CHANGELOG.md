@@ -2,6 +2,41 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 8A — Module 6, Problem/Job Analyzer: backend, analyzers, evaluation harness (23–24 Nov 2026)
+
+Why: the proposal's Module 6, as the team decided on 23 Nov 2026 (D-080 to D-090): a rule-based analyzer **and** the
+team's own small classifier, compared on real data under a pre-registered protocol; the customer confirms every
+suggestion and chooses the worker; workers never see a list of jobs. Backend, evaluation and documents only; the
+screens are Batch 8B, the real evaluation Batch 8C. No new package, no external service, no pre-trained model; the
+website never says "AI".
+
+- **Job requests** (`/api/job-requests`): analyze a text (nothing saved), save the confirmed job (`JR-2026-000001`),
+  list, read, edit with versions (only while open), close, delete (never after a booking); derived states open,
+  requested, accepted, done, expired (30 days), closed; limits 10 open and 10 new per day.
+- **Workers for this job**: a filter (same trade, same city — "Pindi" = "Rawalpindi" —, listed, not suspended) in the
+  customer's directory sort, with the reasons; never a phone number, WhatsApp, CNIC, email or address.
+- **The request with the job**: the same checks as a normal request (one shared code path) plus "a skill of the job's
+  trade"; one open request per job by a reservation (two taps: one 201, one 409); the booking copies the job's city,
+  area and description; the worker sees the job code and the kind of work, **never the budget**.
+- **The rule-based analyzer `job-rules-1`**: Module 2's normalisation plus Roman Urdu spelling variants, 188 problem
+  phrases (44 in Urdu script), task-type words, city, day, time, urgency, budget and an address hint, with the words
+  that led to each suggestion and no score. `npm run jobs:try -- "<text>"`. Module 2's output is unchanged.
+- **The team's naive Bayes classifier** (plain JavaScript) and the hybrid: hand-worked numbers as unit tests; the
+  production server refuses a model trained on synthetic data; **live method: rules** until Batch 8C.
+- **Evaluation harness** (`backend/evaluation/job-analysis/`): split, cross-validation, the compared systems, McNemar
+  exact and mid-p, Holm, bootstrap intervals, agreement; tested on **SYNTHETIC data only** (no number from it is a
+  result). **The protocol is pre-registered and frozen at `81ba8f6`** (`docs/evaluation/job-analysis/PROTOCOL.md`).
+- **Documents for real data**: consent text (three languages, drafts), form draft, collection plan, annotation guide,
+  data-handling note. Questions for the supervisor in `docs/modules/MODULE-6.md` §11.
+- **Admins**: a read-only job list (no budget), the detail (budget, analysis, bookings, the customer's name only) and
+  use statistics "kept / changed / not suggested" (use, not accuracy).
+- **Part F**: `maxWorkers` measured (2, 3, 4 workers, three runs each, interleaved; all nine runs clean; medians 98 s,
+  87 s, 89 s) → stays 3 (D-089).
+- **Two pre-existing tests fixed** (not Module 6): a booking test that failed between 00:00 and 09:00 Pakistan time,
+  and two Module 5 phone-number checks that a random hash could trip; both keep every check.
+- Decisions D-080 to D-090. Texts: 14 new error codes in three languages, the Urdu word lists, the consent and form
+  texts for team review (`docs/i18n/REVIEW-BATCH-8A.md`; no clips in this batch).
+
 ## Batch 7 — Module 5, fair wage and work protection (19–23 Nov 2026)
 
 Why: the proposal's Module 5, as the team's "option C" of 19 Nov 2026 (D-067): the government minimum wage as a
