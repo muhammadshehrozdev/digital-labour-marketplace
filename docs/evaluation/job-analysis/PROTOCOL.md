@@ -10,8 +10,9 @@ ever found to disagree, that is written in "Protocol changes" before step 6, and
 
 ## Frozen at
 
-- Commit: `(written by the next commit)`
+- Commit: `81ba8f6bb8a3c44955dd1b64e785ada50ff572ab` (short `81ba8f6`), 24 Nov 2026 01:10:06 +05:00 (Pakistan time)
 - Date: 24 Nov 2026
+- Check: `git log --format='%H %cd' -1 81ba8f6 -- docs/evaluation/job-analysis/PROTOCOL.md`
 
 ## What is compared, and why
 
