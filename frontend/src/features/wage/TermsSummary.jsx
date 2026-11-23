@@ -13,13 +13,14 @@ import TermsForm from './TermsForm';
 import { conditionWords, priceLine, readBack, rupees, spokenRupees } from './wageText';
 import styles from './Wage.module.css';
 
-function Version({ title, p, category, extra }) {
+// headline: the main line (the agreed version says "Price agreed: …" instead of the bare price, so it is not said twice)
+function Version({ title, p, category, extra, headline }) {
   const { t, formatNumber } = useT();
   const money = (n) => rupees(t, formatNumber, n);
   return (
     <div className={styles.version}>
       <p className={styles.versionTitle}>{title}</p>
-      <p className={styles.big}>{priceLine(t, money, p)}</p>
+      {headline ?? <p className={styles.big}>{priceLine(t, money, p)}</p>}
       {conditionWords(t, money, p, { category }).map((w) => <p key={w} className={styles.muted}>{w}</p>)}
       {p.note && <p className={styles.noteText} dir="auto">{p.note}</p>}
       {extra}
@@ -65,7 +66,7 @@ export default function TermsSummary({ booking: b, viewer, onChanged }) {
           title={t('wage.terms.agreedOn', { date: formatDate(terms.agreed.agreedAt, { day: 'numeric', month: 'long', year: 'numeric' }) })}
           p={terms.agreed}
           category={b.category}
-          extra={<p className={styles.agreedLine} data-testid="price-agreed">{t('wage.terms.priceAgreed', { price: priceLine(t, money, terms.agreed) })}</p>}
+          headline={<p className={styles.agreedLine} data-testid="price-agreed">{t('wage.terms.priceAgreed', { price: priceLine(t, money, terms.agreed) })}</p>}
         />
       )}
       {terms.status === 'proposed' && terms.current && (

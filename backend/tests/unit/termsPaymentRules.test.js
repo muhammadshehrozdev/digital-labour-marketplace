@@ -62,6 +62,12 @@ describe('canTerms: agree_terms', () => {
     const b = booking(extra);
     expect(canTerms('agree_terms', b, 'worker', { seen: b.terms.version })).toEqual({ ok: false, code });
   });
+  test('agreeing to a version that is already agreed (a double tap, two presses at once) -> BOOKING_CHANGED (409), whatever the timing', () => {
+    const agreed = booking({ terms: { status: 'agreed', version: 1, proposedBy: 'customer', agreed: { version: 1 } } });
+    expect(canTerms('agree_terms', agreed, 'worker', { seen: 1 })).toEqual({ ok: false, code: 'BOOKING_CHANGED' });
+    // without a version, or for another version, it stays "not allowed now"
+    expect(canTerms('agree_terms', agreed, 'worker')).toEqual({ ok: false, code: 'TERMS_NOT_ALLOWED' });
+  });
   test('a stale version -> TERMS_CHANGED (nobody agrees to a price that changed a second ago)', () => {
     expect(canTerms('agree_terms', booking({ terms: { status: 'proposed', version: 3, proposedBy: 'customer' } }), 'worker', { seen: 2 })).toEqual({ ok: false, code: 'TERMS_CHANGED' });
   });

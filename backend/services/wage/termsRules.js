@@ -32,6 +32,8 @@ export function canTerms(action, b, role, { seen, params = WAGE_RULES } = {}) {
     if (!open || workDonePressed(b) || noShowReported(b)) return { ok: false, code: 'TERMS_NOT_ALLOWED' };
     if (currentVersion(b) >= params.MAX_TERMS_VERSIONS) return { ok: false, code: 'TERMS_LIMIT' };
   } else {
+    // the version is already agreed (a double tap, or both presses at once): 409, as Module 4's steps do
+    if (b.status === 'accepted' && terms.status === 'agreed' && seen !== undefined && terms.agreed?.version === seen) return { ok: false, code: 'BOOKING_CHANGED' };
     if (b.status !== 'accepted' || terms.status !== 'proposed' || workDonePressed(b) || noShowReported(b)) return { ok: false, code: 'TERMS_NOT_ALLOWED' };
     if (terms.proposedBy === role) return { ok: false, code: 'TERMS_OWN_VERSION' };
   }

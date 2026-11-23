@@ -23,7 +23,7 @@ import { wageReferenceView } from '../services/wage/views.js';
 import { guideFor, platformRange } from '../services/wage/load.js';
 
 const trusted = (value) => mongoose.trusted(value);
-const STATUS_OF = { FORBIDDEN: 403, TERMS_CHANGED: 409, PAYMENT_CHANGED: 409, PAYMENT_NOT_FOUND: 404 };
+const STATUS_OF = { FORBIDDEN: 403, TERMS_CHANGED: 409, BOOKING_CHANGED: 409, PAYMENT_CHANGED: 409, PAYMENT_NOT_FOUND: 404 };
 const PARAMS_OF = { TERMS_LIMIT: { max: WAGE_RULES.MAX_TERMS_VERSIONS }, PAYMENT_LIMIT: { max: WAGE_RULES.MAX_PAYMENTS }, PAYMENT_WINDOW_PASSED: { days: WAGE_RULES.PAYMENT_RECORD_DAYS } };
 const refuse = (result) => httpError(STATUS_OF[result.code] ?? 400, result.code, PARAMS_OF[result.code]);
 const prefixed = (prefix, fields) => Object.fromEntries(Object.entries(fields).map(([k, v]) => [`${prefix}${k}`, v]));

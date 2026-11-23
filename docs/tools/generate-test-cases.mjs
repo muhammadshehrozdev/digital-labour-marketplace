@@ -47,6 +47,9 @@ const MODULE = {
   // Batch 6B: header, install, rep-2
   'reputationEngineRep2.test.js': 'Module 4 (rep-2)', 'reputationRep2Evaluation.test.js': 'Module 4 (rep-2 evaluation)', 'reputationRules.test.js': 'Module 4 (rep-2)',
   'reputation-rep2.test.jsx': 'Module 4 (rep-2, UI)', 'header-fit.test.jsx': 'UI (header, Batch 6B)', 'install.test.jsx': 'App-wide (install, Batch 6B)',
+  // Batch 7: Module 5
+  'wageReference.test.js': 'Module 5', 'termsChecks.test.js': 'Module 5', 'priceRange.test.js': 'Module 5', 'termsPaymentRules.test.js': 'Module 5',
+  'priceRangeEvaluation.test.js': 'Module 5 (evaluation)', 'module5.test.js': 'Module 5', 'demo-module5.test.js': 'Infrastructure', 'module5.test.jsx': 'Module 5 (UI)',
 };
 
 const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ').trim();
