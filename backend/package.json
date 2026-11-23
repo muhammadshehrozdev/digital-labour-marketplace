@@ -28,7 +28,8 @@
     "evaluate:rep2-criteria": "node evaluation/reputation/rep2Criteria.js",
     "demo:module4": "node scripts/seedModule4Demo.js",
     "demo:module5": "node scripts/seedModule5Demo.js",
-    "evaluate:price-range": "node evaluation/price-range/evaluate.js"
+    "evaluate:price-range": "node evaluation/price-range/evaluate.js",
+    "jobs:try": "node scripts/jobsTry.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

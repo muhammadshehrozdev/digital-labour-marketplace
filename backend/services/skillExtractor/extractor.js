@@ -52,13 +52,13 @@ function compile(options) {
 }
 
 // English plural tolerance (only with normalisation): "fans" matches "fan", "geysers" matches "geyser".
-function tokenEquals(textToken, termToken, allowPlural) {
+export function tokenEquals(textToken, termToken, allowPlural) {
   if (textToken === termToken) return true;
   if (!allowPlural || !/^[a-z]+$/.test(termToken)) return false;
   return textToken === `${termToken}s` || textToken === `${termToken}es`;
 }
 
-function containsSequence(tokens, seq, allowPlural) {
+export function containsSequence(tokens, seq, allowPlural) {
   outer: for (let i = 0; i + seq.length <= tokens.length; i += 1) {
     for (let j = 0; j < seq.length; j += 1) {
       const last = j === seq.length - 1;

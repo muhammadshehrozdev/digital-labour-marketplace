@@ -95,6 +95,13 @@ for (const [region, cities] of Object.entries(CITIES_BY_REGION)) {
   }
 }
 
+// Every known spelling of every city, with its English name and region: [{ spelling, city, region }].
+// Module 6 (Batch 8A) looks for these in a job's text (services/jobAnalyzer/fields.js).
+export const CITY_SPELLINGS = Object.freeze(
+  Object.entries(CITIES_BY_REGION).flatMap(([region, cities]) => cities.flatMap(([en, ur, others]) =>
+    [...new Set([en, ur, ...others])].map((spelling) => Object.freeze({ spelling, city: en, region }))))
+);
+
 // The city table for the API and the docs: [{ city, ur, region }].
 export const CITY_REGIONS = Object.freeze(
   Object.entries(CITIES_BY_REGION).flatMap(([region, cities]) => cities.map(([city, ur]) => Object.freeze({ city, ur, region })))
