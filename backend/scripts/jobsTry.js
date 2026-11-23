@@ -2,9 +2,12 @@
 // Run in ./backend:
 //   npm run jobs:try -- "Kal subah AC ki service karwani hai"
 //   npm run jobs:try -- "..." --now 2026-11-24T10:00:00+05:00      (the clock for "aaj / kal")
+//   npm run jobs:try -- "..." --model <model.json>                  (also the classifier and the hybrid)
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { analyzeJob } from '../services/jobAnalyzer/index.js';
+import { checkModel } from '../services/jobAnalyzer/naiveBayes.js';
 
 const list = (xs) => (xs && xs.length ? xs.join(', ') : '-');
 const show = (v) => (v === null || v === undefined || v === '' ? '-' : String(v));
@@ -40,10 +43,10 @@ export function table(title, a) {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const flag = (n) => { const i = args.indexOf(`--${n}`); return i === -1 ? undefined : args[i + 1]; };
-  const flagPositions = new Set(['--now'].map((f) => args.indexOf(f)).filter((i) => i >= 0).flatMap((i) => [i, i + 1]));
+  const flagPositions = new Set(['--now', '--model'].map((f) => args.indexOf(f)).filter((i) => i >= 0).flatMap((i) => [i, i + 1]));
   const text = args.filter((a, i) => !flagPositions.has(i) && !a.startsWith('--')).join(' ');
   if (!text.trim()) {
-    console.error('Usage: npm run jobs:try -- "<job description>" [--now <ISO time>]');
+    console.error('Usage: npm run jobs:try -- "<job description>" [--now <ISO time>] [--model <model.json>]');
     process.exit(1);
   }
   const now = flag('now') ? new Date(flag('now')) : new Date();
@@ -53,5 +56,16 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   }
   console.log(`Text: ${text}\nClock: ${now.toISOString()}\n`);
   console.log(table('Rules', analyzeJob(text, { now, method: 'rules' })));
+  if (flag('model')) {
+    try {
+      const model = checkModel(JSON.parse(readFileSync(flag('model'), 'utf8')));
+      if (model.trainedOn?.synthetic) console.log('\n*** This model was trained on SYNTHETIC data: it only shows that the code works. ***');
+      console.log(`\n${table('Naive Bayes', analyzeJob(text, { now, method: 'nb', model }))}`);
+      console.log(`\n${table('Hybrid', analyzeJob(text, { now, method: 'hybrid', model }))}`);
+    } catch (err) {
+      console.error(`Could not use the model: ${err.message}`);
+      process.exit(1);
+    }
+  }
   console.log('\nNothing was saved. These are suggestions; the customer confirms or changes every one.');
 }
