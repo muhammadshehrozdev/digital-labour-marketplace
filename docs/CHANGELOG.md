@@ -36,6 +36,13 @@ website never says "AI".
   and two Module 5 phone-number checks that a random hash could trip; both keep every check.
 - Decisions D-080 to D-090. Texts: 14 new error codes in three languages, the Urdu word lists, the consent and form
   texts for team review (`docs/i18n/REVIEW-BATCH-8A.md`; no clips in this batch).
+- **Independent review** (one fresh review agent, Stage 9): 8 findings; 7 fixed with tests (the main one: an edit could
+  slip in while a request's booking was being written), 1 kept as a documented decision. Word lists `2026-11-24-v2`.
+  The per-script report gap is entry 1 of the protocol's "Protocol changes" (the protocol text is unchanged).
+- Tests (real runs, 24 Nov 2026 PKT): backend **1270/1270** in 55 files (baseline 1018 in 50; line coverage 98.83%,
+  services 98.84%, controllers 98.83%, middleware 100%); frontend **1282/1282** in 30 files (unchanged count; the
+  dictionary test covers the new codes); e2e **71/71** in 12 files; lint and build clean; Module 2's `evaluate:skills`
+  output identical to the reference run (without the date field).
 
 ## Batch 7 — Module 5, fair wage and work protection (19–23 Nov 2026)
 
