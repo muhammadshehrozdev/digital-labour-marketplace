@@ -58,7 +58,7 @@ export default function PaymentRecord() {
         </dl>
         <h2 className={styles.sectionTitle}>{t('wage.pay.title')}</h2>
         {(b.payments ?? []).length === 0 ? <p>{t('wage.record.noPayments')}</p> : (
-          <table className={styles.table}>
+          <div className={styles.tableWrap}><table className={styles.table}>
             <thead><tr><th scope="col">{t('wage.record.paidOn')}</th><th scope="col">{t('wage.pay.kind')}</th><th scope="col">{t('wage.pay.amount')}</th><th scope="col">{t('wage.pay.method')}</th><th scope="col">{t('wage.record.recordedBy')}</th><th scope="col">{t('wage.record.status')}</th></tr></thead>
             <tbody>
               {b.payments.map((p) => (
@@ -72,7 +72,7 @@ export default function PaymentRecord() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         )}
         <p className={styles.big}>{summaryLine(t, money, b.paymentSummary)} <PaymentStateChip state={b.paymentSummary.state} /></p>
         <p className={styles.notice} data-testid="not-a-receipt">{t('wage.record.notBank')}</p>

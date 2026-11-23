@@ -61,7 +61,7 @@ export default function AdminFlags() {
       {data && data.flags.length > 0 && (
         <ul className={styles.templateList}>
           {data.flags.map((f) => (
-            <li key={f._id} className={styles.template} data-testid="flag">
+            <li key={f._id} className={`${styles.template} ${styles.stackSmall}`} data-testid="flag">
               <h2 className={styles.sectionTitle}><Flag size={18} aria-hidden="true" /> {t(`adminm4.flags.type.${f.type}`)}</h2>
               <p>{t(`adminm4.flags.explain.${f.type}`)}</p>
               <p className={styles.method}>{f.worker.name} (<span dir="ltr">{f.worker.workerIdCode}</span>) · {formatDate(f.createdAt)} · {f.status === 'open' ? <WaitingBadge since={f.createdAt} /> : t(`adminm4.flags.status.${f.status}`)}</p>

@@ -58,7 +58,7 @@ export function AdminReviewCard({ review: r, onModerate }) {
   const { t, formatDate } = useT();
   const { skillName } = useTaxonomy();
   return (
-    <li className={styles.template} data-testid="admin-review">
+    <li className={`${styles.template} ${styles.stackSmall}`} data-testid="admin-review">
       <div className={styles.statusRow}>
         <Stars value={r.rating} />
         <Badge tone={r.status === 'hidden' ? 'danger' : 'success'} icon={r.status === 'hidden' ? EyeOff : undefined}>{t(`adminm4.reviews.status.${r.status}`)}</Badge>

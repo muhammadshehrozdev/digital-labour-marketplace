@@ -45,6 +45,11 @@
 .template + .template { border-block-start: 1px solid var(--color-border); }
 .templateTexts { display: grid; gap: 4px; min-inline-size: 0; }
 .templateActions { display: flex; gap: var(--space-1); flex-shrink: 0; }
+/* Batch 7 walk-through: review and flag cards stack their parts on small screens instead of squeezing them */
+@media (max-width: 48rem) {
+  .stackSmall { flex-direction: column; align-items: stretch; }
+  .stackSmall > * { min-inline-size: 0; overflow-wrap: anywhere; }
+}
 .exportGrid { display: grid; gap: var(--space-4); margin-block: var(--space-6) var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 .exportCard { display: grid; gap: var(--space-3); align-content: start; padding: var(--space-5); border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent); }
 .exportCard > button, .exportCard > a { justify-self: start; }

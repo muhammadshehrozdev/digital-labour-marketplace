@@ -104,7 +104,7 @@ export default function MyReputation() {
       <section className={styles.section} aria-labelledby="cancel-title">
         <h2 id="cancel-title" className={styles.sectionTitle}><History size={20} aria-hidden="true" /> {t('reputation.mine.cancellationsTitle')}</h2>
         {cancellations.length === 0 ? <p className={styles.muted}>{t('reputation.mine.noCancellations')}</p> : (
-          <ul className={styles.rules}>
+          <ul className={`${styles.rules} ${styles.stackedRules}`}>
             {cancellations.map((c) => (
               <li key={c._id} className={styles.rule}>
                 <Badge tone={c.outcome === 'cancelled_by_worker_early' ? 'warning' : 'danger'}>{t(`booking.outcome.${c.outcome}`)}</Badge>
