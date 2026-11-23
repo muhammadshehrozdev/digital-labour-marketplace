@@ -175,6 +175,21 @@ window B Incognito: worker.demo; window C Guest: admin.demo (passwords as above)
 | C | **Disputes** → open the painter's dispute → decision → note → Save. **Reputation flags** → the carpenter. | "A small dispute step for reliability, decided by a person with a note in the audit log. The flag is a fixed rule; it never changes a score by itself." |
 | C | Point at `docs/modules/MODULE-4.md` §5 (or the printed table). | "We measured the model by simulation, against four simple baselines. Honestly: with our first settings it is not better overall, and recent fake reviews still buy places. That is a simulation result, and it is why the settings are a decision for the real pilot." |
 
+## Module 5 part (Batch 7): price, conditions, payments (about 5 minutes, three windows)
+
+Before: `bash scripts/preview.sh reset-demo` (fresh synthetic demo data: every amount is synthetic test data, never a
+real price). Window A normal Chrome: customer.demo; window B Incognito: worker.demo; window C Guest: admin.demo.
+
+| Window | Click | Say |
+|---|---|---|
+| A | Find workers → **Demo Worker** → **Request this worker** → House wiring. Point at the price card; press 🔊. | "The typical price on this platform comes only from jobs both people confirmed, at least five jobs from three workers and three customers, one per pair. It is a range, not a 'fair price'. Below it: the government minimum wage, shown as a reference with its source." |
+| A | **Offer a price** → Whole job → type 1,200 → One day. | "Less than the minimum wage reference for one day in Islamabad: a gentle warning for both. It never blocks: it is the worker's choice." |
+| B | **Requests** → the card shows the offer → **Hear this request** (it reads the offer) → Accept → **Agree** (read-back, 🔊). | "A worker who cannot read hears the price and the conditions before agreeing." |
+| A | My bookings → the **plumber** job → "Change waiting" → **Agree**. Then **Record a payment**. | "Every price change is a new version; the agreed one stays until both agree again. A payment is only a record: the app never moves money." |
+| B | My jobs → the completed job of yesterday → **Yes, I received it**. Then **My earnings**. | "Only money the other person confirmed counts in the total. A record is never edited: a mistake is marked 'not right' and recorded again." |
+| C | **Payments** (disputed first) → open the booking. **Price guide** → point at "Never guess". | "Read-only: Module 9 will decide payment disputes. The guide is only a fallback, always with a written source." |
+| C | Point at `docs/modules/MODULE-5.md` §8. | "We measured the rules by simulation: they make the range appear later on a young platform, and one dishonest worker or pair moves it much less than a plain average. Simulation, with assumed prices; real prices come from the pilot." |
+
 ## If something goes wrong
 
 | Problem | What to do |

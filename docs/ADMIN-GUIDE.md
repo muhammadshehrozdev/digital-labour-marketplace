@@ -146,6 +146,23 @@ photos; it has at most 5,000 rows.
   worker-cancelled jobs (real counts). **Exports:** bookings and reviews CSV files (no phone numbers, no
   descriptions, no comment text; audited).
 
+### Module 5 pages (Batch 7)
+
+- **Price guide (`/admin/price-guide`):** price ranges typed by the admin team, shown to users **only where the
+  platform has no range of its own** (order: the work in the region, the work in Pakistan, the trade in the region,
+  the trade in Pakistan). **Never type a price without a source.** Type only numbers you can show a source for
+  (for example "Team survey of 6 electricians in G-9, Nov 2026, n = 6"); the source and the month are shown to users.
+  One active entry per work, unit and region. Changing the numbers needs the source again. **Archive** an old entry
+  (it stays in the history); every change is in the audit log with the old and new numbers. The production guide
+  starts empty.
+- **Payments (`/admin/payments`):** bookings by payment state, disputed first; open a row for its timeline, price
+  history and payment records. **Read-only:** a disputed payment is only marked; decisions about payments come with
+  Module 9. The app never moves money.
+- **Overview:** a banner appears when a minimum wage figure was checked more than 365 days ago: tell the team to check
+  the notifications and update `backend/config/wageReferences.js` (every July).
+- **Exports:** the payments CSV (codes, amounts, states, dates; no names, phone numbers or notes; audited).
+- **Bookings drawer:** the price and payment sections are shown read-only.
+
 ## 4. Daily tasks (15 minutes)
 
 1. Open **Overview**. Look at the chain status: it must say "Chain intact".

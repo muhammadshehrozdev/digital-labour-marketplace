@@ -2,6 +2,19 @@
   "generatedFrom": "docs/CHANGELOG.md",
   "sections": [
     {
+      "title": "Batch 7 — Module 5, fair wage and work protection (19–23 Nov 2026)",
+      "points": [
+        "Price information: under the chosen skill on \"Request this worker\" and on a new Price information page: the typical price on this platform (the middle half of agreed prices, only from at least 5 jobs by 3 workers for 3 customers, one job per pair, both-confirmed, last 12 months), else the admin team's price guide with its source and month, the government minimum wage reference for the region (with its status, date and sources), and the worker's own rates. 🔊 reads it all, amounts in words.",
+        "Agreed price and conditions on the booking: an optional offer with the request; then either person proposes, the other agrees, with picture cards (whole job / per day / per hour, a −/+ stepper, how long), the important conditions of the trade (materials, advance, payment time and method, visit charge), the fixed rule \"Extra work only after a new price is agreed in the app\", and a read-back with 🔊 before Send or Agree. Every version is kept.",
+        "Rule-based checks that warn and never block: below the minimum wage reference for a day, an hour or a job of one or 2–3 days; a large advance; materials bought by the worker without an advance; missing conditions; below most prices on this platform. Shown to both people.",
+        "Payment records: \"I paid\" / \"I received\", confirmed only by the other person (\"Yes, I received it\"), or \"This is not right\" with a reason; never edited, never confirmed automatically. A summary line, a printable record (\"not a bank receipt\"), and My earnings for workers (only confirmed money in the total).",
+        "Work protection: short tips for workers and customers on the request, the Requests card, the booking and the payment card; a Help Centre guide \"Fair pay and safe work\" with the minimum wage table and helplines with sources.",
+        "Admins: Price guide (only with a written source; edit, archive, history), Payments (read-only, disputed first; Module 9 will decide), a payments CSV, an Overview banner when a wage figure is more than a year old.",
+        "SIMULATION (30 seeds per scenario; docs/modules/MODULE-5.md §8; not real prices): the rules make the range appear in fewer markets (availability 0.348 against 0.887 for a plain average in base), with a slightly smaller error (0.097 against 0.108) and a much smaller shift from one dishonest worker (0.086 against 0.600 in inflator) or pair (0.039 against 0.469 in pair_flood). Attacks can still make a range appear in a market with too few jobs.",
+        "Part A, docs only (D-079): the deploy runbook's health check corrected: /api/health proves the function starts; /api/auth/session (200 / 503) is the database check."
+      ]
+    },
+    {
       "title": "Batch 6B — header fix, \"Install this app\", reputation engine v2 (17 Nov 2026)",
       "points": [
         "Header (D-059): measured, never cut off: it hides the \"Ctrl K\" hint, then the name next to the avatar, then moves Sound and language into the account menu (visitors: \"More\"), then switches to the mobile menu. Every menu stays inside the window (8 px margin); a long email ends with \"…\". Checked in the browser for every role, English and Urdu, at 10 widths from 360 to 1920 px.",
@@ -24,19 +37,6 @@
         "Admin: Bookings, Disputes, Reviews and Reputation flags pages, a Reputation tab per worker, Overview charts of bookings and stars, bookings and reviews CSV exports (no phone numbers).",
         "Notifications: 16 new booking and review types; customers get a \"Notifications\" menu link with the unread count (D-057).",
         "Evaluation by SIMULATION (backend/evaluation/reputation/, 30 seeds, 11 scenarios, four baselines, ablations). Finding: with the provisional parameters the model is not better than the plain average overall, and recent fake reviews still buy places; the individual defences reduce the attacks they target. Parameters were not changed (D-048, D-058). Simulation results only, not real-world results."
-      ]
-    },
-    {
-      "title": "Batch 5 — Listen, Speak, See: audio help, voice typing and picture choices (14–16 Nov 2026)",
-      "points": [
-        "Listen (🔊): a Listen button under every box of the worker and customer screens says what to do there, and the same help opens in large text. The sound comes from a clip the team recorded, else a voice on the device, else the help is shown on screen with the words \"no voice on this device\" (D-034). Roman Urdu users hear the Urdu audio.",
-        "Speak (🎤): voice typing on names, city, trade, job, search, skills description and numbers (phone digit by digit, years and rupees as amounts; nothing is written when a number is not understood). Never on password, CNIC or email (D-035). A one-time notice explains that the browser sends the voice to its maker's service. After voice typing the website reads back what it wrote, and Undo brings the old text back.",
-        "See: picture choices instead of drop-downs for trade (the nine trade drawings), availability, the skill of a proof photo and the proof kind; every picture can be heard; field icons; buttons with an icon and a word.",
-        "Page help: a round speaker button in the same corner of every in-scope page, and a Sound menu in the header (show Listen/Speak, read aloud by itself). Settings stay on this device only.",
-        "Language chooser: each language card can be heard (\"press here for Urdu\"), and the one-time question \"Should the website read aloud?\" follows the choice.",
-        "Voice check page (/voice-check, linked from the Help Centre): which voices and clips this device has, test sentences, a microphone test, and how to add an Urdu voice on Android.",
-        "Recorded clips: /dev/recorder (development builds only) for the team to record the Urdu help in their own voices; npm run audio:manifest; docs/audio/RECORDING-GUIDE.md. The service worker (v2) keeps clips for offline use; API answers are still never cached. No clips are recorded yet.",
-        "Texts: 152 new or changed texts in English, Urdu and Roman Urdu are drafts until the team checks them (docs/i18n/REVIEW-BATCH-5.md, D-031)."
       ]
     }
   ]

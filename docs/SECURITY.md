@@ -122,6 +122,21 @@ the live parameters' numbers (budget, burst window, late-cancel hours), never a 
 The install service keeps one versioned `localStorage` key (`dlm.install.v1`, a date only) and sends nothing to the
 server.
 
+## Threats, mitigations and tests (Module 5, Batch 7)
+
+| Threat | Defence | Test |
+|---|---|---|
+| One person (or one friendly pair) sets the "typical price" | Only completed, both-confirmed jobs with AGREED terms; one job per customer–worker pair (the newest); at least 5 jobs from 3 workers and 3 customers; the median and the middle half, not the mean (D-070) | `unit/priceRange.test.js` cases E, F, G, H and the property tests; `integration/module5.test.js` "a fifth job (new pair)…", "below the minimums…"; simulation `inflator`, `pair_flood` (SIMULATION only; a worker with 3+ fake customer accounts is a stated limit, MODULE-5.md §8) |
+| Price leaks (one person's price read from the statistics) | Aggregates only, only above the minimums; never a list of amounts, a booking id, a name or a worker id | `priceRange.test.js` "aggregates only"; `module5.test.js` "…aggregates only" (no ids, no amounts list) |
+| The terms changed after someone looked at them | Every call sends `baseVersion` / `version`; one conditional update on `terms.version` and `moneyVersion`; 409 `TERMS_CHANGED`; `terms.agreed` changes only when the other person agrees; terms frozen after "Work done" | `termsPaymentRules.test.js`; `module5.test.js` "a stale baseVersion or version gets 409", "two agrees at the same time…", "a change still waiting when both press Work done…" |
+| Fake or changed payment records | Only the OTHER person confirms or disputes; a record is never edited, deleted or confirmed automatically; 30-day window; at most 10; `paidOn` not in the future or before the booking | `termsPaymentRules.test.js` "payment rules"; `module5.test.js` "record, confirm, dispute…", "the 11th record…", "a customer cannot confirm his own record" |
+| Contact leaks in notes (around D-002) | Terms notes, payment dispute notes and guide notes go through the contact-info check and the CNIC check; notifications carry only `amount`, `unit`, `paymentId`; lists carry no notes | `module5.test.js` "a note with a phone number, a link or a CNIC is refused", "lists, notifications and the earnings never hold a phone" |
+| Double actions | One conditional update per step (`moneyVersion`, the record's status): 409 `PAYMENT_CHANGED` / `TERMS_CHANGED` / `BOOKING_CHANGED` / `PRICE_GUIDE_CHANGED` | `module5.test.js` "double confirm 409", "two agrees at the same time" |
+| Someone else's booking | The same `loadOwn` filter as Module 4 → 404 on every terms and payment route; admins read but cannot act | `module5.test.js` "ownership…" |
+| Invented guide numbers | `sourceNote` required (10–300) and shown with the month; admin only; one active entry per key; every change audited with the old and new numbers; production starts empty | `module5.test.js` "the admin price guide…"; e2e `module5.e2e.js` "the admin creates, edits and archives…" |
+| Tampering with the money record | `terms.proposed`, `terms.agreed`, `payment.recorded`, `payment.confirmed`, `payment.disputed`, `priceguide.*`, `export.payments` are in the hash-chained audit log (no note text, no phone), so the money record of every booking is tamper-evident (`npm run audit:verify`) | `module5.test.js` "every Module 5 audit entry is in the hash chain…" |
+| CSV export leaks | Explicit columns: codes, amounts, states, dates; no names, phone numbers or notes (not even loaded); audited | `module5.test.js` "…the CSV has no names, phone numbers or notes and is audited" |
+
 ## Keys (CNIC_ENC_KEY, CNIC_HASH_KEY, JWT_SECRET; Module 4 adds the optional CRON_SECRET)
 
 - Each key is 32 random bytes, written in base64. Make one in PowerShell (in `.\backend`):

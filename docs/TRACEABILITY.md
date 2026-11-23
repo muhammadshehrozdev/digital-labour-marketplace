@@ -194,3 +194,34 @@ Every audit ID is mapped to its control and test in `docs/SECURITY.md`; the shor
 | D-061 to D-064 rep-2: recency off, new-reviewer budget, burst check, platform prior, rank by expected | `config/reputationParams.js` (`rep2Params`, `REP2_SELECTED`), `services/reputation/{reputationEngine,recompute,snapshot,matchingSignals}.js` | `reputationEngineRep2.test.js` (11 hand-worked cases, property tests per candidate), `reliabilityEngine.test.js` (rep-2 snapshot) |
 | D-065 pre-registered protocol; S1-S3; rep-2 live | `evaluation/reputation/{selectRep2,rep2Criteria,evaluate}.js`, README "rep-2 protocol"; results `SIMULATION-rep2-*` | `reputationRep2Evaluation.test.js` (rule, guard, criteria, scenarios); commits b4b4b09 → d634b3f → fd946a2 → f063aa4 |
 | D-066 public depth from visible reviews; rules from the parameters | `snapshot.publicDepth`, `services/reputation/rules.js`, `GET /api/meta/reputation-rules`, `MyReputation.jsx`, `HelpCentre.jsx` | `reliabilityEngine.test.js`, `reputationRules.test.js`, `reputation-rep2.test.jsx`, `reviews-reputation.test.js` |
+
+## Proposal: Module 5 — Fair Wage and Work Protection (Batch 7, 19–23 Nov 2026)
+
+Owner in the proposal: Shahzaib Khan. Team choice of 19 Nov 2026: option C (D-067).
+
+| # | Proposal bullet | Where (code) | Checked by (tests) | State |
+|---|---|---|---|---|
+| M5.a | Display of estimated wage or price information for selected work categories | `services/wage/priceRange.js` (D-070, D-071), `services/wage/wageReference.js` + `config/wageReferences.js` (D-068), `config/regions.js` (D-069), `models/PriceGuide.js` (D-072), `GET /api/prices/estimate`, `GET /api/meta/wage-references`; `features/wage/{PriceInfoCard,WageReferenceLine,RateReference}.jsx`, `pages/wage/PriceInfo.jsx`, request form | `unit/priceRange.test.js` (cases A–H, property tests), `unit/wageReference.test.js` (table, conversions, regions, age); `integration/module5.test.js` "GET /api/prices/estimate…", "the admin price guide…"; `module5.test.jsx` "price information card…"; e2e `module5.e2e.js` first test and "the admin creates…"; simulation `evaluate:price-range` (SIMULATION only) | Done (no real price data yet: MODULE-5.md §9) |
+| M5.b | Recording of agreed payment amounts between customers and workers | `Booking.terms`, `termsHistory`, `services/wage/termsRules.js` (D-073, D-074), `POST /api/bookings/:id/terms`, `/terms/agree`, offer in `POST /api/bookings`; `features/wage/{TermsForm,TermsSummary,PriceFields,ConditionFields}.jsx` | `unit/termsPaymentRules.test.js` "canTerms…"; `module5.test.js` "an offer with the request…", "propose, agree, propose a change, agree again"; `module5.test.jsx` "the terms form on a booking"; e2e `module5.e2e.js` "offer -> … agree", "a price change…" | Done |
+| M5.c | Identification of important payment and work conditions | `config/workTerms.js` (conditions per category), `services/wage/termsChecks.js` (7 checks, D-075), `POST /api/prices/check`; `features/wage/ChecksList.jsx` | `unit/termsChecks.test.js` (every check fires and does not fire; low-pay examples); `module5.test.js` "POST /api/prices/check…"; `module5.test.jsx` "electrical work… live checks", "domestic work…"; e2e "an offer below the minimum wage reference warns both people" | Done |
+| M5.d | Presentation of work-protection information to workers and customers | `features/wage/{ProtectionCard,FairPayGuide}.jsx` + `wageLogic.js` (tips, safety per trade, helplines with sources), Help Centre "Fair pay and safe work", the wage table from `GET /api/meta/wage-references` | `module5.test.jsx` "safety tips follow the trade…", the request form test (customer tip); e2e axe "…help centre fair pay"; manual `docs/MODULE-5-MANUAL-TEST.md` (texts and helplines reviewed by the team) | Done (texts are drafts for team review) |
+| M5.e | Maintenance of payment-related records associated with completed work | `Booking.payments`, `paymentState`, `services/wage/{paymentRules,paymentSummary}.js` (D-076, D-077, D-078), payment routes, `GET /api/workers/me/earnings`, `GET /api/admin/payments`, payments CSV; `features/wage/PaymentsCard.jsx`, `pages/worker/MyEarnings.jsx`, `pages/wage/PaymentRecord.jsx`, `pages/admin/AdminPayments.jsx` | `unit/termsPaymentRules.test.js` (rules, every summary state, the Pakistan month boundary); `module5.test.js` "payment records…", "admin payments page and the payments CSV", "My earnings…"; `module5.test.jsx` "payments card…", "My earnings…", "the printable payment record"; e2e `module5.e2e.js` first test and "a disputed payment…" | Done (disputes only marked until Module 9) |
+
+### Batch 7 decisions
+
+| Decision | Where | Checked by |
+|---|---|---|
+| D-067 option C (team choice, 19 Nov 2026) | `docs/modules/MODULE-5.md` | — (a scope decision) |
+| D-068 minimum wage as a reference | `config/wageReferences.js`, `services/wage/wageReference.js`, `WageReferenceLine.jsx` | `wageReference.test.js`; `module5.test.jsx` "…the minimum wage reference" |
+| D-069 regions from a city table | `config/regions.js` | `wageReference.test.js` "regionOf…" |
+| D-070 price range rules | `services/wage/priceRange.js`, `config/wageRules.js` | `priceRange.test.js`; `module5.test.js` estimate tests; `priceRangeEvaluation.test.js` |
+| D-071 level order, category only for day/hour | `priceRange.levelsFor` | `priceRange.test.js` "a whole job never falls back…" |
+| D-072 admin guide with a required source, empty start | `models/PriceGuide.js`, `controllers/adminWageController.js`, `scripts/seedModule5Demo.js` ("[Demo]" only) | `module5.test.js` "the admin price guide…"; `demo-module5.test.js` |
+| D-073 terms with versions and baseVersion | `services/wage/termsRules.js`, `controllers/wageController.js` | `termsPaymentRules.test.js`; `module5.test.js` |
+| D-074 price optional | `bookingView` (`termsActions`, `paymentActions` apart from `actions`) | Module 4 tests unchanged; `module5.test.js` "a request without an offer works exactly as in Module 4" |
+| D-075 checks never block | `termsChecks.js` | `termsChecks.test.js`; e2e "…warns both people (and never blocks)" |
+| D-076 payment records rules; materials apart; moneyVersion | `paymentRules.js`, `paymentSummary.js`, `wageController.js` | `termsPaymentRules.test.js`; `module5.test.js` |
+| D-077 the app never moves money | every payment screen ("The app does not move money…"), `PaymentRecord.jsx` ("not a bank receipt") | `module5.test.jsx` "payments card…", "the printable payment record" |
+| D-078 payment disputes only marked | `AdminPayments.jsx` (read-only), `paymentRules` (refused during an open booking dispute) | `module5.test.js` "admin payments page…", "terms are refused … during an open dispute"; e2e "a disputed payment…" |
+| D-079 runbook health check (Part A) | `docs/DEPLOY-RUNBOOK.md` 4.8, 8.1, 8.3, 9, rollback; `docs/API.md`; `app.js` comment | `foundation.test.js`, `db-down.test.js`, `health-client-ip.test.js` (behaviour unchanged) |
+

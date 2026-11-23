@@ -24,6 +24,9 @@ erDiagram
   WORKER_PROFILE ||--o{ REPUTATION_FLAG : "pattern found"
   REPUTATION_FLAG }o--o{ REVIEW : "lists"
   COUNTER ||..o{ BOOKING : "issues code BK-year-n"
+  BOOKING ||--o{ TERMS_VERSION : "termsHistory (Module 5)"
+  BOOKING ||--o{ PAYMENT_RECORD : "payments (Module 5)"
+  USER ||--o{ PRICE_GUIDE : "createdBy / updatedBy (admin)"
 
   USER {
     ObjectId _id
@@ -240,6 +243,32 @@ only), timestamps. Indexes: `{ code }` unique; `{ workerUser, status, createdAt 
 createdAt }`; `{ status, scheduledStart }`; `{ status, updatedAt }`; `{ dispute.status }`; `{ worker, closedAt }`.
 Never in a list or export: phone numbers (they are on `users` and `workerprofiles`, read only by
 `services/booking/contact.js`). Extension points for Modules 5, 6, 8, 9, 10 are listed in the model's header.
+
+Module 5 (Batch 7) adds to every booking: `region` (`ICT | PB | SD | KP | BA | GB | AJK | null`, from `city` through
+`config/regions.js` when the booking is created; D-069); `terms` `{ status: none|proposed|agreed, version,
+proposedBy: customer|worker, proposedAt, amount, unit: job|day|hour, quantity, total (amount × quantity, server),
+duration, materials, advance (0 = "No advance"; null = not answered), paymentTiming, paymentMethod, visitCharge,
+extraWork (always new_price_first), note (≤ 300), agreed: { the same fields, version, agreedAt } | null }` — the
+fields are the CURRENT version; `terms.agreed` is the last version both agreed and the only part that counts
+(D-073); `termsHistory[]` `{ version, by, action: proposed|agreed, at, snapshot }`; `payments[]` (own `_id`)
+`{ kind: advance|part|final|materials|extra_work, amount (1–5,000,000), method: cash|easypaisa|jazzcash|bank|other,
+paidOn (YYYY-MM-DD, Pakistan day), recordedBy, recordedAt, status: awaiting_confirmation|confirmed|disputed,
+respondedAt, disputeReason: not_received|wrong_amount|other, disputeNote (≤ 200) }` (D-076); `paymentState`
+(`has_dispute | no_price | paid | part_paid | not_paid`, the stored `paymentSummary().state`); `moneyVersion` (+1 on
+every terms or payment change; each change is conditional on it). New indexes: `{ status, skillId,
+terms.agreed.unit, region, completedAt }` (price statistics; the integration test checks with `explain()` that the
+query uses it), `{ status, category, terms.agreed.unit, completedAt }` (the day/hour category fallback),
+`{ workerUser, completedAt }` (earnings), `{ paymentState, updatedAt }` (admin Payments). Module 8 will read
+`terms.agreed` and `termsHistory` (comment in the model).
+
+## priceguides (Module 5, D-072)
+
+`skillId` (taxonomy id or `null` = the whole category), `category`*, `unit`* (`job | day | hour`), `region`* (a region
+code or `PK` = all of Pakistan), `low`*, `high`* (whole rupees, `low ≤ high`), `sourceNote`* (10–300: where the
+numbers come from; shown to users with the month), `note` (≤ 200, shown to users, contact-info check), `status`
+(`active | archived`), `createdBy`*, `updatedBy`, `archivedAt`, `synthetic` (local demo only), timestamps. Indexes:
+unique partial `{ skillId, category, unit, region }` where `status = 'active'` (one active entry per key);
+`{ status, category, updatedAt }`. Production starts empty; every change is audited (`priceguide.*`).
 
 ## reviews (Module 4, D-041)
 

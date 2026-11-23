@@ -78,6 +78,24 @@ code, no new package, no outside service: speech is the browser's own Web Speech
 - **Data flow:** booking outcome / review → recompute → `WorkerProfile.reputation` → public profile, directory
   card, "Best track record", `toMatchingSignals` for Module 7 (diagram in `docs/modules/MODULE-4.md` §3).
 
+## Module 5: fair wage and work protection (Batch 7, D-067 to D-078)
+
+- **Pure engines** (no database, no clock, no randomness): `config/{regions,wageReferences,wageRules,workTerms}.js`
+  and `services/wage/{wageReference,termsChecks,priceRange,termsRules,paymentRules,paymentSummary}.js`. The live API
+  and the simulation (`evaluation/price-range/`) import the same files.
+- **Database reads and writes:** `services/wage/load.js` (one indexed query per estimate, the admin guide fallback),
+  `controllers/wageController.js` (terms, payments, estimate, check, earnings; each step one conditional update on
+  `moneyVersion`), `controllers/adminWageController.js` (price guide, payments list), the payments CSV in
+  `adminExportController.js`. Views with explicit fields: `services/wage/views.js` (used by `bookingView`).
+- **Routes:** `/api/bookings/:id/terms|terms/agree|payments|payments/:pid/confirm|dispute`, `/api/prices/estimate`,
+  `/api/prices/check`, `/api/workers/me/earnings`, `/api/admin/price-guides`, `/api/admin/payments`,
+  `/api/admin/exports/payments`, `/api/meta/wage-references`, `/api/meta/work-terms` (`docs/API.md`).
+- **Frontend:** `features/wage/` (price card, terms form, terms summary, checks, payments card, protection cards,
+  Help Centre guide; helpers in `wageText.js` and `wageLogic.js`), pages `pages/wage/{PriceInfo,PaymentRecord}.jsx`,
+  `pages/worker/MyEarnings.jsx`, `pages/admin/{AdminPriceGuide,AdminPayments}.jsx`.
+- **Data flow:** booking (city → region) → terms → `terms.agreed` → price statistics, checks, payment summary,
+  earnings (diagram in `docs/modules/MODULE-5.md` §3). The app never moves money.
+
 ## Request flows
 
 ### Login (D-006)

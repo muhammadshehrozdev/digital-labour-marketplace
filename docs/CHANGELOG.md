@@ -2,6 +2,42 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 7 — Module 5, fair wage and work protection (19–23 Nov 2026)
+
+Why: the proposal's Module 5, as the team's "option C" of 19 Nov 2026 (D-067): the government minimum wage as a
+reference, the platform's own completed-job prices, and an admin price guide with a written source as the fallback.
+No new package. Nothing here is AI: written formulas and fixed rules. The app never moves money.
+
+- **Price information:** under the chosen skill on "Request this worker" and on a new Price information page: the
+  typical price on this platform (the middle half of agreed prices, only from at least 5 jobs by 3 workers for 3
+  customers, one job per pair, both-confirmed, last 12 months), else the admin team's price guide with its source and
+  month, the government minimum wage reference for the region (with its status, date and sources), and the worker's
+  own rates. 🔊 reads it all, amounts in words.
+- **Agreed price and conditions on the booking:** an optional offer with the request; then either person proposes,
+  the other agrees, with picture cards (whole job / per day / per hour, a −/+ stepper, how long), the important
+  conditions of the trade (materials, advance, payment time and method, visit charge), the fixed rule "Extra work
+  only after a new price is agreed in the app", and a read-back with 🔊 before Send or Agree. Every version is kept.
+- **Rule-based checks that warn and never block:** below the minimum wage reference for a day, an hour or a job of
+  one or 2–3 days; a large advance; materials bought by the worker without an advance; missing conditions; below
+  most prices on this platform. Shown to both people.
+- **Payment records:** "I paid" / "I received", confirmed only by the other person ("Yes, I received it"), or "This
+  is not right" with a reason; never edited, never confirmed automatically. A summary line, a printable record ("not
+  a bank receipt"), and **My earnings** for workers (only confirmed money in the total).
+- **Work protection:** short tips for workers and customers on the request, the Requests card, the booking and the
+  payment card; a Help Centre guide "Fair pay and safe work" with the minimum wage table and helplines with sources.
+- **Admins:** Price guide (only with a written source; edit, archive, history), Payments (read-only, disputed first;
+  Module 9 will decide), a payments CSV, an Overview banner when a wage figure is more than a year old.
+- **SIMULATION (30 seeds per scenario; `docs/modules/MODULE-5.md` §8; not real prices):** the rules make the range
+  appear in fewer markets (availability 0.348 against 0.887 for a plain average in `base`), with a slightly smaller
+  error (0.097 against 0.108) and a much smaller shift from one dishonest worker (0.086 against 0.600 in `inflator`)
+  or pair (0.039 against 0.469 in `pair_flood`). Attacks can still make a range appear in a market with too few jobs.
+- **Part A, docs only (D-079):** the deploy runbook's health check corrected: `/api/health` proves the function
+  starts; `/api/auth/session` (200 / 503) is the database check.
+- Decisions D-067 to D-079. Texts: 511 new keys in three languages, drafts for team review
+  (`docs/i18n/REVIEW-BATCH-7.md`, 57 clips to record). Manual checklist: `docs/MODULE-5-MANUAL-TEST.md` — check the
+  wage figures against the official notifications first.
+- Tests (real runs, the numbers are in the last section of this entry): TESTS_PLACEHOLDER
+
 ## Batch 6B — header fix, "Install this app", reputation engine v2 (17 Nov 2026)
 
 Why: a header that cut off the account name and its menu on Windows laptops (125–150% display scaling); the
