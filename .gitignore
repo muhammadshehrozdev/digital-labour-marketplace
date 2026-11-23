@@ -29,3 +29,7 @@ docs/audit/
 
 # Recorded demo video (docs/demo/demo-video.webm, made by npm run demo:video in ./frontend): large, not in Git
 docs/demo/demo-video.webm
+
+# Module 6: real job descriptions never go into Git (docs/evaluation/job-analysis/data-handling.md)
+backend/evaluation/job-analysis/data/
+backend/evaluation/job-analysis/results/SYNTHETIC-*

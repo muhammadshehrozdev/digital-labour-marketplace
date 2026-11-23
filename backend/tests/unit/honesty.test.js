@@ -9,7 +9,7 @@ import request from 'supertest';
 import { createApp } from '../../app.js';
 
 const ROOT = resolve(process.cwd());
-const DIRS = ['app.js', 'server.js', 'config', 'controllers', 'middleware', 'models', 'routes', 'services', 'validators', 'scripts', 'evaluation/skill-extraction', 'evaluation/reputation', 'evaluation/price-range'];
+const DIRS = ['app.js', 'server.js', 'config', 'controllers', 'middleware', 'models', 'routes', 'services', 'validators', 'scripts', 'evaluation/skill-extraction', 'evaluation/reputation', 'evaluation/price-range', 'evaluation/job-analysis'];
 const files = [];
 function walk(path) {
   if (statSync(path).isDirectory()) for (const n of readdirSync(path)) walk(join(path, n));

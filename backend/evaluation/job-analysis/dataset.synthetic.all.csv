@@ -1,0 +1,123 @@
+# SYNTHETIC — written by Claude Code to test the scripts only. Not real people. Never report numbers from this file.
+# Annotator A (synthetic). 120 items: all 9 trades, 10 "none", four scripts. The same author wrote the word lists, so the rules' numbers on this file mean nothing.
+id,source,prompt,script,text,gold_category,gold_skills,gold_task_type,gold_city,gold_when,gold_time_slot,gold_budget_amount,gold_budget_unit,gold_urgent
+j-0001,form,general,roman_urdu,"Ghar ki wiring purani ho gayi hai, nayi wiring karwani hai",electrical_solar,elec_wiring,install,,,,,,no
+j-0002,form,general,roman_urdu,"Pankha bohat awaz kar raha hai, theek karwana hai",electrical_solar,elec_fittings,repair,,,,,,no
+j-0003,form,general,english,Need an electrician to fix sockets in the kitchen tomorrow morning,electrical_solar,elec_general;elec_fittings,repair,,tomorrow,morning,,,no
+j-0004,form,general,urdu,سولر پینل لگوانا ہے، لاہور میں,electrical_solar,elec_solar,install,Lahore,,,,,no
+j-0005,in_person,general,roman_urdu,"Breaker baar baar gir jata hai, light chali jati hai",electrical_solar,elec_db;elec_general,repair,,,,,,no
+j-0006,form,general,mixed,"UPS lagwana hai aur battery bhi change karni hai, budget 25000",electrical_solar,elec_ups,install,,,,25000,job,no
+j-0007,form,general,urdu,گھر میں بجلی نہیں آ رہی، فوراً کوئی آ جائے,electrical_solar,elec_general,repair,,,,,,yes
+j-0008,form,general,roman_urdu,Generator ka changeover switch lagwana hai,electrical_solar,elec_generator,install,,,,,,no
+j-0009,in_person,general,roman_urdu,"Current lag raha hai fridge ke paas wali deewar se, earthing check karni hai",electrical_solar,elec_earthing;elec_general,repair,,,,,,no
+j-0010,form,general,english,Two ceiling fans and four lights need to be fitted in a new house,electrical_solar,elec_fittings,install,,,,,,no
+j-0011,form,general,roman_urdu,"Shaam ko switch board kharab ho gaya, sparking ho rahi hai, jaldi aa jayen",electrical_solar,elec_fittings;elec_general,repair,,,evening,,,yes
+j-0012,other,general,roman_urdu,Teen phase connection ki wiring karni hai factory mein,electrical_solar,elec_3phase;elec_wiring,install,,,,,,no
+j-0013,form,general,roman_urdu,"Kitchen ka sink band ho gaya hai, pani nikal nahi raha",plumbing_sanitary,plumb_drain,repair,,,,,,no
+j-0014,form,general,mixed,Washroom mein naya commode lagwana hai,plumbing_sanitary,plumb_fixtures,install,,,,,,no
+j-0015,in_person,general,roman_urdu,Motor chalti hai par tanki mein pani nahi charh raha,plumbing_sanitary,plumb_pump,repair,,,,,,no
+j-0016,form,general,roman_urdu,"Geyser se pani tapak raha hai, Islamabad, kal dopahar",plumbing_sanitary,plumb_geyser;plumb_leak,repair,Islamabad,tomorrow,afternoon,,,no
+j-0017,form,general,english,"Need a plumber, the bathroom shower has very low pressure",plumbing_sanitary,plumb_general;plumb_fixtures,repair,,,,,,no
+j-0018,form,general,urdu,چھت والی ٹینکی کا پائپ ٹوٹ گیا ہے,plumbing_sanitary,plumb_pipe;plumb_pump,repair,,,,,,no
+j-0019,in_person,general,roman_urdu,"Gutter ubal raha hai gali mein, sewerage wala chahiye abhi",plumbing_sanitary,plumb_drain,repair,,today,,,,yes
+j-0020,form,general,english,"PPRC pipe fitting for the whole upper portion, 2 bathrooms",plumbing_sanitary,plumb_pipe,install,,,,,,no
+j-0021,form,general,roman_urdu,"Nalkay se pani band nahi hota, washer badalna hai",plumbing_sanitary,plumb_fixtures;plumb_leak,repair,,,,,,no
+j-0022,form,general,urdu,گیزر کی سروس کروانی ہے، سردیاں آ گئی ہیں,plumbing_sanitary,plumb_geyser,service,,,,,,no
+j-0023,form,general,mixed,"Water pump ki pressure motor lagwani hai, Rs 3000 tak",plumbing_sanitary,plumb_pump,install,,,,3000,job,no
+j-0024,other,general,roman_urdu,Basin ke neeche se leakage ho rahi hai,plumbing_sanitary,plumb_leak;plumb_fixtures,repair,,,,,,no
+j-0025,form,general,roman_urdu,"Ghar ki chardiwari banwani hai, eent aur cement hamara hoga",construction_masonry,mason_general;mason_brick,new_work,,,,,,no
+j-0026,form,general,roman_urdu,"Kamray ki deewar mein seelan aa gayi hai, plaster kharab ho raha hai",construction_masonry,mason_waterproof;mason_plaster,repair,,,,,,no
+j-0027,form,general,english,Need a mason to repair cracks in the outer wall,construction_masonry,mason_general;mason_plaster,repair,,,,,,no
+j-0028,in_person,general,roman_urdu,"Kitchen mein tiles lagwane hain, takreeban 120 square feet",construction_masonry,mason_tile,new_work,,,,,,no
+j-0029,form,general,urdu,چھت پر واٹر پروفنگ کروانی ہے بارشوں سے پہلے,construction_masonry,mason_waterproof,new_work,,,,,,no
+j-0030,form,general,roman_urdu,"Lanter dalwana hai doosri manzil ka, raj mistri chahiye",construction_masonry,mason_concrete;mason_general,new_work,,,,,,no
+j-0031,form,general,roman_urdu,"Farsh ka marble toot gaya hai, do tile badalni hain",construction_masonry,mason_tile,repair,,,,,,no
+j-0032,form,general,mixed,"Bathroom renovation, purani tiles nikal kar nayi lagani hain, Karachi",construction_masonry,mason_tile,new_work,Karachi,,,,,no
+j-0033,in_person,general,roman_urdu,"Deewar mein bari darar aa gayi hai, kal subah koi dekh le",construction_masonry,mason_plaster,repair,,tomorrow,morning,,,no
+j-0034,form,general,roman_urdu,Mistri chahiye seedhiyan banane ke liye,construction_masonry,mason_general,new_work,,,,,,no
+j-0035,form,general,roman_urdu,"Boundary wall ki height barhani hai, Rawalpindi",construction_masonry,mason_general;mason_brick,new_work,Rawalpindi,,,,,no
+j-0036,other,general,roman_urdu,Garage ka farsh concrete ka banana hai,construction_masonry,mason_concrete,new_work,,,,,,no
+j-0037,form,general,roman_urdu,"Kamray ka darwaza theek se band nahi hota, chokhat dheeli hai",carpentry_woodwork,carp_doors,repair,,,,,,no
+j-0038,form,general,mixed,"Kitchen cabinets banwane hain MDF ke, 6 doors",carpentry_woodwork,carp_cabinets,new_work,,,,,,no
+j-0039,form,general,roman_urdu,Almari ka tala kharab ho gaya hai,carpentry_woodwork,carp_locks;carp_cabinets,repair,,,,,,no
+j-0040,form,general,english,Need a carpenter to make a study table and a bookshelf,carpentry_woodwork,carp_general;carp_furniture,new_work,,,,,,no
+j-0041,in_person,general,urdu,پرانے فرنیچر پر پالش کروانی ہے,carpentry_woodwork,carp_polish;carp_furniture,new_work,,,,,,no
+j-0042,form,general,roman_urdu,"Bed ki ek taang toot gayi hai, jaldi theek karni hai",carpentry_woodwork,carp_furniture,repair,,,,,,yes
+j-0043,form,general,roman_urdu,Main gate ki kundi lagwani hai,carpentry_woodwork,carp_locks,install,,,,,,no
+j-0044,form,general,mixed,Wardrobe ke sliding doors atak rahe hain,carpentry_woodwork,carp_cabinets,repair,,,,,,no
+j-0045,form,general,roman_urdu,"Khirki ka sheesha aur frame badalna hai, kal",carpentry_woodwork,carp_doors,install,,tomorrow,,,,no
+j-0046,other,general,roman_urdu,Sofa set ki marammat aur nayi foam,carpentry_woodwork,carp_furniture,repair,,,,,,no
+j-0047,form,general,roman_urdu,"Tarkhan chahiye, darwazon par laminate lagwana hai",carpentry_woodwork,carp_general;carp_polish;carp_doors,new_work,,,,,,no
+j-0048,form,general,urdu,لکڑی کی سیڑھی بنوانی ہے,carpentry_woodwork,carp_general,new_work,,,,,,no
+j-0049,form,general,roman_urdu,"Poore ghar ka rang karwana hai, 5 marlay ka ghar",painting_renovation,paint_interior,new_work,,,,,,no
+j-0050,form,general,english,Need a painter for weather shield on the front of the house,painting_renovation,paint_general;paint_exterior,new_work,,,,,,no
+j-0051,in_person,general,roman_urdu,Deewaron par putty aur primer ke baad paint karwana hai,painting_renovation,paint_putty;paint_interior,new_work,,,,,,no
+j-0052,form,general,urdu,کمرے میں وال پیپر لگوانا ہے,painting_renovation,paint_texture,new_work,,,,,,no
+j-0053,form,general,roman_urdu,"Ek kamray ki safaidi karwani hai, Rs 8000 budget",painting_renovation,paint_interior,new_work,,,,8000,job,no
+j-0054,form,general,english,"Texture paint for one wall in the lounge, Lahore, this week",painting_renovation,paint_texture,new_work,Lahore,,,,,no
+j-0055,form,general,roman_urdu,Gate aur grill par paint karna hai,painting_renovation,paint_interior,new_work,,,,,,no
+j-0056,other,general,roman_urdu,"Seelan ki wajah se rang utar gaya hai, dobara paint karna hai",painting_renovation,paint_interior,new_work,,,,,,no
+j-0057,form,general,roman_urdu,"Painter chahiye, 3 din ka kaam hai, 2500 rozana",painting_renovation,paint_general,new_work,,,,2500,day,no
+j-0058,in_person,general,urdu,رنگ ساز چاہیے، دو کمروں کا کام,painting_renovation,paint_general,new_work,,,,,,no
+j-0059,form,general,roman_urdu,Room ki distemper karwani hai parson,painting_renovation,paint_interior,new_work,,day_after,,,,no
+j-0060,form,general,mixed,Ceiling par POP ke baad paint,painting_renovation,paint_interior,new_work,,,,,,no
+j-0061,form,general,roman_urdu,Split AC lagwana hai naye kamray mein,ac_appliance_repair,ac_install,install,,,,,,no
+j-0062,form,general,roman_urdu,AC se pani tapak raha hai andar ki taraf,ac_appliance_repair,ac_general,repair,,,,,,no
+j-0063,in_person,general,roman_urdu,Fridge ka compressor band ho gaya hai,ac_appliance_repair,ac_fridge,repair,,,,,,no
+j-0064,form,general,mixed,Washing machine ka spinner nahi ghoom raha,ac_appliance_repair,ac_washing,repair,,,,,,no
+j-0065,form,general,roman_urdu,"AC ki chemical wash karwani hai, garmiyon se pehle",ac_appliance_repair,ac_service,service,,,,,,no
+j-0066,form,general,urdu,اے سی ٹھنڈا نہیں کر رہا، گیس ختم ہو گئی ہے,ac_appliance_repair,ac_general;ac_gas,repair,,,,,,no
+j-0067,form,general,mixed,"Inverter AC ki PCB kharab hai, Karachi, jaldi",ac_appliance_repair,ac_general,repair,Karachi,,,,,yes
+j-0068,other,general,english,Deep freezer cooling nahi kar raha,ac_appliance_repair,ac_fridge;ac_gas,repair,,,,,,no
+j-0069,form,general,english,"Need AC service for 3 units in the office, Islamabad, Rs 6000",ac_appliance_repair,ac_service,service,Islamabad,,,6000,job,no
+j-0070,form,general,mixed,Microwave oven kaam nahi kar raha,ac_appliance_repair,,repair,,,,,,no
+j-0071,in_person,general,roman_urdu,AC ka outdoor unit shift karna hai doosri deewar par,ac_appliance_repair,ac_install,install,,,,,,no
+j-0072,form,general,urdu,فریج کا دروازہ ٹھیک سے بند نہیں ہوتا,ac_appliance_repair,ac_fridge,repair,,,,,,no
+j-0073,form,general,roman_urdu,Parday ki rod aur do shelf lagani hain,home_maintenance,home_fixtures,install,,,,,,no
+j-0074,form,general,roman_urdu,"Chhota mota kaam hai, ek tasveer lagani hai aur ek hook",home_maintenance,home_fixtures;home_general,install,,,,,,no
+j-0075,form,general,english,Need a handyman for small repairs around the house,home_maintenance,home_general,repair,,,,,,no
+j-0076,in_person,general,roman_urdu,Deewar mein drill karke TV lagwana hai,home_maintenance,home_fixtures,install,,,,,,no
+j-0077,form,general,roman_urdu,"Ghar ki marammat ke chhote kaam, darwazon ke handle aur kundiyan",home_maintenance,home_general,repair,,,,,,no
+j-0078,form,general,roman_urdu,"Curtain rod gir gayi hai, dobara lagani hai",home_maintenance,home_fixtures,repair,,,,,,no
+j-0079,form,general,urdu,مرمت کا کاریگر چاہیے، باتھ روم کا شیشہ لگانا ہے,home_maintenance,home_general,install,,,,,,no
+j-0080,other,general,roman_urdu,Kitchen ki shelf dheeli ho gayi hai,home_maintenance,home_fixtures,repair,,,,,,no
+j-0081,form,general,roman_urdu,Mosquito net ki jaali lagwani hai khirkiyon par,home_maintenance,home_fixtures,install,,,,,,no
+j-0082,form,general,english,"House repair, a few things: a loose tap, a door hinge and a shelf",home_maintenance,home_general,repair,,,,,,no
+j-0083,form,general,roman_urdu,"Handyman chahiye kal shaam ko, Rawalpindi",home_maintenance,home_general,,Rawalpindi,tomorrow,evening,,,no
+j-0084,form,general,mixed,Wall clock aur mirror lagwana hai,home_maintenance,home_fixtures,install,,,,,,no
+j-0085,form,targeted,roman_urdu,"Ghar ki safai ke liye maasi chahiye, hafte mein teen din",domestic_work,dom_cleaning;dom_general,cleaning,,,,,,no
+j-0086,form,general,roman_urdu,"Khana banane wali chahiye, do waqt ka khana",domestic_work,dom_cooking,household_help,,,,,,no
+j-0087,form,general,english,"Need a cook for lunch and dinner, Islamabad",domestic_work,dom_cooking,household_help,Islamabad,,,,,no
+j-0088,form,targeted,urdu,بچوں کی دیکھ بھال کے لیے کوئی چاہیے,domestic_work,dom_childcare,household_help,,,,,,no
+j-0089,in_person,targeted,roman_urdu,"Ammi ki dekh bhaal ke liye attendant chahiye, raat ki duty",domestic_work,dom_eldercare,household_help,,,,,,no
+j-0090,form,general,roman_urdu,Kapray dhone aur istri ke liye haftay mein do din,domestic_work,dom_laundry,household_help,,,,,,no
+j-0091,form,general,english,Deep cleaning of a 3 bedroom flat before moving in,domestic_work,dom_cleaning,cleaning,,,,,,no
+j-0092,form,general,roman_urdu,"Jharu pocha aur bartan, roz subah",domestic_work,dom_cleaning,cleaning,,,morning,,,no
+j-0093,form,general,roman_urdu,"Kaam wali chahiye, Lahore, Rs 15000 mahana",domestic_work,dom_general,household_help,Lahore,,,15000,job,no
+j-0094,in_person,general,urdu,صفائی کروانی ہے، کل صبح,domestic_work,dom_cleaning,cleaning,,tomorrow,morning,,,no
+j-0095,form,targeted,english,Babysitter for two kids in the evenings,domestic_work,dom_childcare,household_help,,,evening,,,no
+j-0096,other,general,roman_urdu,Mehmanon ke liye ek din ka khana banana hai,domestic_work,dom_cooking,household_help,,,,,,no
+j-0097,form,targeted,roman_urdu,"Ghar ka samaan shift karna hai, do kamray",moving_loading,move_shifting,moving,,,,,,no
+j-0098,form,targeted,roman_urdu,Truck ke saath loading unloading ke liye 4 mazdoor chahiye,moving_loading,move_loading,moving,,,,,,no
+j-0099,form,targeted,english,"Need movers to shift a 2 bedroom apartment, Karachi, next week",moving_loading,move_shifting,moving,Karachi,,,,,no
+j-0100,form,general,mixed,Office ka furniture packing karke shift karna hai,moving_loading,move_packing;move_shifting,moving,,,,,,no
+j-0101,in_person,targeted,urdu,سامان اتارنا ہے ٹرک سے، ابھی,moving_loading,move_loading,moving,,today,,,,yes
+j-0102,form,general,roman_urdu,Fridge aur washing machine doosri manzil par charhani hai,moving_loading,move_loading,moving,,,,,,no
+j-0103,form,targeted,roman_urdu,"Lahore se Islamabad shifting, poora ghar",moving_loading,move_shifting,moving,,,,,,no
+j-0104,form,targeted,roman_urdu,Samaan packing ke liye boxes aur 2 bande chahiye kal,moving_loading,move_packing,moving,,tomorrow,,,,no
+j-0105,in_person,targeted,urdu,شفٹنگ کے لیے سوزوکی اور دو مزدور چاہیے,moving_loading,move_shifting,moving,,,,,,no
+j-0106,form,general,roman_urdu,Almari aur bed teesri manzil se neeche utarna hai,moving_loading,move_loading,moving,,,,,,no
+j-0107,form,targeted,english,"House shifting in Rawalpindi on Sunday, budget 20 hazar",moving_loading,move_shifting,moving,Rawalpindi,,,20000,job,no
+j-0108,other,general,mixed,"Godown mein bori loading, 3 ghante ka kaam, 800 rupay ghanta",moving_loading,move_loading,moving,,,,800,hour,no
+j-0109,form,general,roman_urdu,"Assalam o alaikum, bas check kar raha tha",none,,,,,,,,no
+j-0110,form,general,roman_urdu,"Mujhe abhi kuch nahi chahiye, shukriya",none,,,,,,,,no
+j-0111,form,general,roman_urdu,Is app par kaam kaise milta hai?,none,,,,,,,,no
+j-0112,form,general,roman_urdu,Gaari ka tyre puncture ho gaya hai,none,,repair,,,,,,no
+j-0113,in_person,general,mixed,Mobile phone ki screen toot gayi,none,,repair,,,,,,no
+j-0114,form,general,english,Need someone to teach maths to my son,none,,,,,,,,no
+j-0115,form,general,roman_urdu,Barber ghar par aa sakta hai?,none,,,,,,,,no
+j-0116,other,general,mixed,Laptop slow chal raha hai,none,,repair,,,,,,no
+j-0117,form,general,roman_urdu,Shaadi ke liye tent aur kursiyan chahiye,none,,,,,,,,no
+j-0118,form,general,urdu,کار کی سروس کروانی ہے,none,,service,,,,,,no
+j-0119,form,general,mixed,"AC aur fridge dono ki checking karni hai, Faisalabad, parson shaam",ac_appliance_repair,ac_general;ac_fridge,service,Faisalabad,day_after,evening,,,no
+j-0120,in_person,general,roman_urdu,"Bijli ka mistri chahiye, meter se ghar tak nayi taar dalni hai",electrical_solar,elec_general;elec_wiring,install,,,,,,no
