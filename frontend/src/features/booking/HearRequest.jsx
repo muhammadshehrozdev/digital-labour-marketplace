@@ -1,6 +1,8 @@
 // 🔊 "Hear this request" (Batch 6, section 7): reads a composed sentence in the SPOKEN language
 // ("New work: house wiring, tomorrow, morning, G-9 Markaz, Islamabad"), then, when that ends, the
 // customer's own words in their own script with Batch 5's read-back ("Written: ...").
+// Module 5 (Batch 7): when the request comes with a price offer, the sentence ends with it ("The customer offers
+// two thousand five hundred rupees for the whole job."); amounts are said as numbers, so the voice says them in words.
 import { useEffect, useId, useRef, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import { skillNameIn } from '../../hooks/useTaxonomy';
@@ -9,6 +11,7 @@ import { getAudioState, stopSound, subscribeAudio } from '../assist/audio';
 import { useAudioState } from '../assist/useAudioState';
 import { useSay } from '../assist/useSay';
 import { dayKey } from './bookingText';
+import { priceLine, spokenRupees } from '../wage/wageText';
 import styles from './Booking.module.css';
 
 export default function HearRequest({ booking: b }) {
@@ -29,13 +32,22 @@ export default function HearRequest({ booking: b }) {
     }
     cleanup.current?.();
     const day = dayKey(b.preferredDate);
-    const how = await say(id, 'booking.hear.sentence', {
+    const params = {
       skill: (lang) => skillNameIn({ skillId: b.skillId, name: b.skillName }, lang),
       day: (lang, spokenT) => (day ? spokenT(day) : formatDate(`${b.preferredDate}T12:00:00Z`, { weekday: 'long', day: 'numeric', month: 'long' })),
       slot: (lang, spokenT) => spokenT(`booking.slot.${b.timeSlot}`),
       area: b.area,
       city: b.city,
-    });
+    };
+    const offer = b.terms?.offer ?? (b.terms?.status === 'proposed' ? b.terms.current : null);
+    const how = offer
+      ? await say(id, 'help.wage.say', {
+        say: (lang, spokenT) => {
+          const values = Object.fromEntries(Object.entries(params).map(([k, v]) => [k, typeof v === 'function' ? v(lang, spokenT) : v]));
+          return `${spokenT('booking.hear.sentence', values)} ${spokenT('wage.spoken.offer', { price: priceLine(spokenT, spokenRupees(spokenT), offer, 'wage.spoken.price') })}`;
+        },
+      })
+      : await say(id, 'booking.hear.sentence', params);
     if (how === 'none') {
       setNoVoice(true);
       return;

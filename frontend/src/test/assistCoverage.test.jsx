@@ -76,6 +76,16 @@ const M4_BOOKING = (extra = {}) => ({
   timeSlot: 'morning', city: 'Islamabad', area: 'G-9', description: 'Two sockets.', worker: { name: 'Bilal Ahmed', workerIdCode: M4_CODE }, customer: { name: 'Sara K.' },
   actions: [], timeline: [], dispute: null, review: null, contact: null, noShow: {}, ...extra,
 });
+// Module 5 fixtures (synthetic): the work-terms lists and the price parts of a booking detail
+const M5_TERMS = {
+  categoryConditions: { electrical_solar: ['price', 'paymentTiming', 'paymentMethod', 'materials', 'advance', 'visitCharge'] },
+  defaultConditions: ['price', 'paymentTiming', 'paymentMethod'], categoryNotes: {}, limits: { amountMin: 100, amountMax: 5000000 },
+};
+const M5_PARTS = {
+  terms: { status: 'none', version: 0, proposedBy: null, current: null, agreed: null }, termsHistory: [], payments: [], termsChecks: [], wageReference: null,
+  paymentSummary: { agreedTotal: null, confirmedPaid: 0, awaiting: 0, disputed: 0, balance: null, materials: { confirmed: 0, awaiting: 0, disputed: 0 }, records: 0, state: 'no_price' },
+  paymentActions: { record: false, respond: [] }, termsActions: [],
+};
 const m4CustomerRoutes = (extra = {}) => ({
   'GET /auth/me': me('customer', { _id: 'c1' }),
   [`GET /workers/${M4_CODE}`]: { status: 200, data: M4_WORKER },
@@ -105,6 +115,25 @@ const PAGES = [
   { path: `/workers/${M4_CODE}/request`, routes: m4CustomerRoutes(), ready: () => screen.findByRole('radio', { name: 'House wiring' }) },
   { path: `/workers/${M4_CODE}/request`, routes: m4CustomerRoutes(), ready: async (user) => user.click(await screen.findByRole('radio', { name: 'Pick a date' })) },
   { path: '/bookings/b1/rate', routes: m4CustomerRoutes({ 'GET /bookings/b1': { status: 200, data: { booking: M4_BOOKING({ status: 'completed', actions: ['review'] }) } } }), ready: () => screen.findByRole('group', { name: 'How was the work?' }) },
+  // Module 5 (Batch 7): the request form with the offer step open, the terms form on a booking (worker), the
+  // price information page, My earnings and the printable payment record
+  {
+    path: `/workers/${M4_CODE}/request`,
+    routes: m4CustomerRoutes({ 'GET /meta/work-terms': { status: 200, data: M5_TERMS } }),
+    ready: async (user) => user.click(await screen.findByRole('button', { name: 'Offer a price' })),
+  },
+  {
+    path: '/worker/jobs/b1',
+    routes: { ...workerRoutes(), 'GET /meta/work-terms': { status: 200, data: M5_TERMS }, 'GET /bookings/b1': { status: 200, data: { booking: M4_BOOKING({ status: 'accepted', ...M5_PARTS, termsActions: ['propose_terms'] }) } } },
+    ready: async (user) => {
+      await user.click(await screen.findByRole('button', { name: 'Propose a price' }));
+      await user.click(await screen.findByRole('radio', { name: 'Some advance' })); // the advance amount field appears
+      await user.click(screen.getByRole('radio', { name: 'Per day' })); // the stepper appears
+    },
+  },
+  { path: '/prices', routes: { ...workerRoutes() }, ready: () => screen.findByRole('radio', { name: 'Electrical & Solar' }) },
+  { path: '/worker/earnings', routes: { ...workerRoutes(), 'GET /workers/me/earnings': { status: 200, data: { thisMonth: { month: '2026-11', confirmed: 0 }, months: [] } } } },
+  { path: '/bookings/b1/payment-record', routes: m4CustomerRoutes({ 'GET /bookings/b1': { status: 200, data: { booking: M4_BOOKING({ status: 'completed', ...M5_PARTS }) } } }) },
   {
     path: '/worker/reviews',
     routes: { ...workerRoutes(), [`GET /workers/${PROFILE.workerIdCode}/reviews`]: { status: 200, data: { reviews: [{ _id: 'r1', rating: 4, comment: 'Good [test].', reviewer: 'Sara K.', skillId: 'elec_wiring', createdAt: '2026-11-10T10:00:00Z', reply: null }], page: 1, limit: 10, total: 1 } } },

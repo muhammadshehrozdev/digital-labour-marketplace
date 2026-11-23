@@ -51,6 +51,8 @@ export default function AdminOverview() {
   const { categoryLabel } = useTaxonomy();
   const [days, setDays] = useState(30);
   const stats = useApiQuery('/admin/stats');
+  // Module 5: a banner when a minimum wage figure was checked too long ago (config/wageReferences.js, every July)
+  const wage = useApiQuery('/meta/wage-references').data;
   const charts = useApiQuery('/admin/charts', { days: String(days) });
   // While another period loads, the last charts stay on screen (dimmed) instead of jumping.
   const [kept, setKept] = useState(null);
@@ -64,6 +66,7 @@ export default function AdminOverview() {
     <div className={styles.page}>
       <PageHeader title={t('admin.overview.title')} description={t('admin.overview.lead')} />
       {(stats.error || charts.error) && <Alert tone="danger">{te(stats.error ?? charts.error)}</Alert>}
+      {wage?.anyStale && <Alert tone="warning" title={t('wage.admin.staleTitle')}>{t('wage.admin.staleText', { days: wage.staleAfterDays })}</Alert>}
 
       <section aria-labelledby="now-title" className={styles.block}>
         <h2 id="now-title" className={styles.blockTitle}>{t('adminx.dash.nowTitle')}</h2>

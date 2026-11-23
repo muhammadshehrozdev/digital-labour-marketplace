@@ -9,6 +9,8 @@ import { apiError, apiFieldErrors } from '../../utils/apiErrors';
 import { ALL_PARTS, validateWork, workPayload } from './workForm';
 import { AVAILABILITY, AVAILABILITY_ICONS } from './availability';
 import styles from './ProfileForms.module.css';
+import RateReference from '../wage/RateReference';
+import { useApiQuery } from '../../hooks/useApiQuery';
 
 
 
@@ -17,6 +19,8 @@ import styles from './ProfileForms.module.css';
 export default function WorkForm({ values, onChange, onSaved, submitLabel, secondary, parts = ALL_PARTS }) {
   const { t, te } = useT();
   const { categories, categoryOccupation, error: taxonomyError } = useTaxonomy();
+  // Module 5: the worker's city (from "About you") for the minimum wage reference next to the daily rate
+  const myCity = useApiQuery(parts.includes('work') ? '/workers/me' : null).data?.city ?? '';
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -75,6 +79,7 @@ export default function WorkForm({ values, onChange, onSaved, submitLabel, secon
             <MaskedField mask="rupees" prefix="Rs" label={t('work.hourly')} inputMode="numeric" placeholder="800" value={values.hourlyRate} onChange={set('hourlyRate')} error={errors.hourlyRate} assistIcon={Banknote} assist="work.hourly" />
             <MaskedField mask="rupees" prefix="Rs" label={t('work.daily')} inputMode="numeric" placeholder="4,000" value={values.dailyRate} onChange={set('dailyRate')} error={errors.dailyRate} hint={t('work.dailyHint')} assistIcon={Banknote} assist="work.daily" />
           </div>
+          <RateReference dailyRate={values.dailyRate} city={myCity} />
           <RadioCardGroup
             legend={t('work.availability')}
             name="availability"

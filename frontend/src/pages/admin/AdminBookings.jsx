@@ -12,6 +12,8 @@ import { useApiQuery } from '../../hooks/useApiQuery';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useDocumentTitle, useT } from '../../i18n';
 import styles from './Admin.module.css';
+import TermsSummary from '../../features/wage/TermsSummary';
+import PaymentsCard from '../../features/wage/PaymentsCard';
 
 const STATUSES = ['all', 'disputed', 'requested', 'accepted', 'completed', 'declined', 'expired', 'cancelled'];
 const PAGE_SIZE = 25;
@@ -39,6 +41,9 @@ export function BookingDrawer({ id, onClose, children }) {
             </section>
           )}
           {b.review && <p><Stars value={b.review.rating} /> {t(b.review.status === 'hidden' ? 'booking.detail.reviewHidden' : 'adminm4.bookings.reviewVisible')}</p>}
+          {/* Module 5: read-only for admins (the server sends no terms or payment buttons to an admin) */}
+          {b.terms && <TermsSummary booking={b} viewer="admin" />}
+          {b.paymentSummary && <PaymentsCard booking={b} viewer="admin" />}
           <BookingTimeline timeline={b.timeline} />
           {children?.(b)}
         </>

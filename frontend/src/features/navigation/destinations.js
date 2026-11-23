@@ -4,7 +4,7 @@
 import {
   BadgeCheck, Bell, FileCheck2, FileDown, Hammer, Heart, History, Home, Languages, LayoutDashboard, LifeBuoy, LogIn, MessageSquareQuote,
   PencilLine, Scale, ScrollText, Search, ShieldCheck, Sparkles, UserPlus, UserRound, Users,
-  Inbox, BriefcaseBusiness, Star, Award, CalendarCheck, Gavel, MessagesSquare, Flag, ClipboardList,
+  Inbox, BriefcaseBusiness, Star, Award, CalendarCheck, Gavel, MessagesSquare, Flag, ClipboardList, Wallet, ChartNoAxesColumn, NotebookText, HandCoins,
 } from 'lucide-react';
 
 const PUBLIC = [
@@ -29,6 +29,9 @@ const BY_ROLE = {
     { id: 'jobs', to: '/worker/jobs', label: 'booking.nav.jobs', icon: BriefcaseBusiness },
     { id: 'my-reviews', to: '/worker/reviews', label: 'booking.nav.reviews', icon: Star },
     { id: 'my-reputation', to: '/worker/reputation', label: 'booking.nav.reputation', icon: Award },
+    // Module 5 (Batch 7)
+    { id: 'my-earnings', to: '/worker/earnings', label: 'wage.nav.earnings', icon: Wallet },
+    { id: 'worker-prices', to: '/prices', label: 'wage.nav.prices', icon: ChartNoAxesColumn },
   ],
   customer: [
     { id: 'find', to: '/find', label: 'nav.findWorkers', icon: Search },
@@ -36,6 +39,7 @@ const BY_ROLE = {
     { id: 'compare', to: '/compare', label: 'nav.compare', icon: Scale },
     { id: 'bookings', to: '/bookings', label: 'booking.nav.bookings', icon: CalendarCheck },
     { id: 'customer-notifications', to: '/notifications', label: 'nav.notifications', icon: Bell },
+    { id: 'customer-prices', to: '/prices', label: 'wage.nav.prices', icon: ChartNoAxesColumn },
   ],
   admin: [
     { id: 'admin', to: '/admin', label: 'admin.nav.overview', icon: LayoutDashboard },
@@ -49,6 +53,8 @@ const BY_ROLE = {
     { id: 'admin-disputes', to: '/admin/disputes', label: 'adminm4.nav.disputes', icon: Gavel },
     { id: 'admin-reviews', to: '/admin/reviews', label: 'adminm4.nav.reviews', icon: MessagesSquare },
     { id: 'admin-flags', to: '/admin/flags', label: 'adminm4.nav.flags', icon: Flag },
+    { id: 'admin-price-guide', to: '/admin/price-guide', label: 'wage.admin.nav.guide', icon: NotebookText },
+    { id: 'admin-payments', to: '/admin/payments', label: 'wage.admin.nav.payments', icon: HandCoins },
   ],
 };
 

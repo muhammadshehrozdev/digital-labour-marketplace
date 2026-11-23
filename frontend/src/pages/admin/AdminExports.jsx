@@ -1,7 +1,7 @@
 // Admin: CSV exports (Batch 4, feature 31). Four files; each download is written to the audit
 // log by the server before the file is sent. The page says plainly what is never in a file.
 import { useState } from 'react';
-import { Download, FileCheck2, ScrollText, ShieldCheck, ShieldOff, Users, ClipboardList, MessagesSquare } from 'lucide-react';
+import { Download, FileCheck2, ScrollText, ShieldCheck, ShieldOff, Users, ClipboardList, MessagesSquare, HandCoins } from 'lucide-react';
 import API from '../../api';
 import { Alert, Button, PageHeader, Select, TextField, useToast } from '../../components/ui';
 import { filenameFrom, saveBlob } from '../../features/admin/adminHelpers';
@@ -63,6 +63,7 @@ export default function AdminExports() {
   const [account, setAccount] = useState('all');
   const [bookingState, setBookingState] = useState('all'); // Module 4
   const [reviewState, setReviewState] = useState('all');
+  const [paymentState, setPaymentState] = useState('all'); // Module 5
 
   return (
     <div>
@@ -90,6 +91,10 @@ export default function AdminExports() {
         </ExportCard>
         <ExportCard kind="reviews" icon={MessagesSquare} params={{ status: reviewState }} texts="adminm4.exports">
           <Select label={t('adminx.exports.status')} value={reviewState} onChange={(e) => setReviewState(e.target.value)} options={['all', 'visible', 'hidden'].map((s) => ({ value: s, label: t(`adminm4.reviews.filter.${s}`) }))} />
+        </ExportCard>
+        {/* Module 5: codes, amounts, states and dates only: no names, phone numbers or notes (audited as export.payments) */}
+        <ExportCard kind="payments" icon={HandCoins} params={{ status: paymentState }} texts="wage.admin.exports">
+          <Select label={t('adminx.exports.status')} value={paymentState} onChange={(e) => setPaymentState(e.target.value)} options={['all', 'has_dispute', 'not_paid', 'part_paid', 'paid', 'no_price'].map((s) => ({ value: s, label: s === 'all' ? t('wage.admin.payments.all') : t(`wage.state.${s}`) }))} />
         </ExportCard>
       </div>
       <p className={styles.method}>{t('adminx.exports.limit')}</p>

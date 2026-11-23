@@ -24,10 +24,16 @@ const EXACT = {
   '/worker/jobs': 'myJobs',
   '/worker/reviews': 'myReviews',
   '/worker/reputation': 'myReputation',
+  // Module 5 (Batch 7)
+  '/worker/earnings': 'myEarnings',
+  '/prices': 'priceInfo',
 };
 
 // Pages with an id in the address (Module 4 adds four).
 const PATTERNS = [
+  // Module 5: the printable payment record (before the booking detail patterns)
+  [/^\/bookings\/[^/]+\/payment-record$/, 'paymentRecord'],
+  [/^\/worker\/jobs\/[^/]+\/payment-record$/, 'paymentRecord'],
   [/^\/workers\/[^/]+\/request$/, 'requestWorker'],
   [/^\/workers\/[^/]+$/, 'workerProfile'],
   [/^\/bookings\/[^/]+\/rate$/, 'rateWork'],

@@ -1,6 +1,9 @@
 // One booking, for the customer (/bookings/:id) and the worker (/worker/jobs/:id) (Batch 6, section 7):
 // a timeline of what happened, the contact card with Call and WhatsApp when the server allows it
 // (D-002), the buttons that fit the state, and the dispute state when one is open.
+// Module 5 (Batch 7): the price terms (agree / propose a change, with the checks and the history), the payment
+// records (record, confirm, "This is not right"), a link to the printable payment record, and the work-protection
+// tips for this person (the safety tip for the booking's trade).
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ArrowLeft, Gavel } from 'lucide-react';
@@ -19,6 +22,9 @@ import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useDocumentTitle, useT } from '../../i18n';
 import { PageLoading } from '../../routes/guards';
 import styles from '../../features/booking/Booking.module.css';
+import TermsSummary from '../../features/wage/TermsSummary';
+import PaymentsCard from '../../features/wage/PaymentsCard';
+import ProtectionCard from '../../features/wage/ProtectionCard';
 
 function DisputeBox({ dispute }) {
   const { t, formatDate } = useT();
@@ -72,6 +78,9 @@ export default function BookingDetail() {
             <BookingActions booking={b} viewer={viewer} onChanged={setFresh} />
             {b.status === 'accepted' && viewer === 'worker' && <p className={styles.muted}>{t('booking.detail.workerTip')}</p>}
           </section>
+          {/* Module 5: the price and the payments (the server decides every button) */}
+          <TermsSummary booking={b} viewer={viewer} onChanged={setFresh} />
+          <PaymentsCard booking={b} viewer={viewer} onChanged={setFresh} recordPath={`${viewer === 'worker' ? '/worker/jobs' : '/bookings'}/${b._id}/payment-record`} />
           <DisputeBox dispute={b.dispute} />
           {b.review && (
             <section className={styles.section} aria-labelledby="review-title">
@@ -82,6 +91,17 @@ export default function BookingDetail() {
         </div>
         <div className={styles.page} style={{ paddingBlockEnd: 0 }}>
           <ContactCard contact={b.contact} viewer={viewer} />
+          {viewer === 'worker' ? (
+            <>
+              <ProtectionCard audience="worker" tip="safety" category={b.category} />
+              <ProtectionCard audience="worker" tip="record_payments" />
+            </>
+          ) : (
+            <>
+              <ProtectionCard audience="customer" tip="safe_workplace" category={b.category} />
+              <ProtectionCard audience="customer" tip="pay_on_time" />
+            </>
+          )}
           <BookingTimeline timeline={b.timeline} />
         </div>
       </div>

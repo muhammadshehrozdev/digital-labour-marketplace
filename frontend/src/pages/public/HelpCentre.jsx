@@ -11,6 +11,7 @@ import { useDocumentTitle, useT } from '../../i18n';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { guideLine } from '../../features/reputation/reputationText';
 import styles from './HelpCentre.module.css';
+import FairPayGuide from '../../features/wage/FairPayGuide';
 
 const GROUPS = [
   { role: 'worker', guides: [['profile', 'step-work'], ['proof', 'step-proof'], ['identity', 'step-about'], ['jobs', 'all-done', 'booking.guides'], ['reputation', 'step-done', 'booking.guides']] },
@@ -40,6 +41,8 @@ export default function HelpCentre() {
   // the person's own guides first
   const groups = [...GROUPS].sort((a, b) => (b.role === user?.role) - (a.role === user?.role));
   const shown = groups.map((g) => ({ ...g, guides: g.guides.filter(([id, , base]) => matches(id, base)) })).filter((g) => g.guides.length);
+  // Module 5 (Batch 7): "Fair pay and safe work", with the minimum wage table from the API
+  const fairPay = words.every((w) => `${t('wage.guide.title')} ${t('wage.guide.lead')} ${t('wage.guide.keywords')}`.toLowerCase().includes(w));
 
   return (
     <div className={styles.page}>
@@ -47,7 +50,7 @@ export default function HelpCentre() {
       <div role="search" className={styles.search}>
         <TextField label={t('appx.help.search')} type="search" icon={Search} value={query} onChange={(e) => setQuery(e.target.value)} assist="helpCentre.search" />
       </div>
-      {shown.length === 0 && <p className={styles.none} role="status">{t('appx.help.none')}</p>}
+      {shown.length === 0 && !fairPay && <p className={styles.none} role="status">{t('appx.help.none')}</p>}
       {shown.map((group) => (
         <section key={group.role} aria-labelledby={`help-${group.role}`} className={styles.group}>
           <h2 id={`help-${group.role}`} className={styles.groupTitle}>{t(`appx.help.forRole.${group.role}`)}</h2>
@@ -79,6 +82,7 @@ export default function HelpCentre() {
           </div>
         </section>
       ))}
+      {fairPay && <FairPayGuide role={user?.role} />}
     </div>
   );
 }

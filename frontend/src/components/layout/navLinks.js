@@ -6,6 +6,8 @@ export const NAV_LINKS = {
     // Module 4: new requests with a count badge (badge: 'requests'), jobs and reputation
     { to: '/worker/requests', label: 'booking.nav.requests', badge: 'requests' },
     { to: '/worker/jobs', label: 'booking.nav.jobs' },
+    // Module 5: confirmed money by month
+    { to: '/worker/earnings', label: 'wage.nav.earnings' },
     { to: '/worker/profile', label: 'nav.myProfile' },
   ],
   customer: [

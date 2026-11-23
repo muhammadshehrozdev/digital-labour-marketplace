@@ -2,9 +2,12 @@
 // skill (the worker's own skills, with their trade pictures), the day and the time; area and
 // description can be spoken (🎤). The phone number is shared only if the worker accepts (D-002).
 // Every rule (skill, date range, limits, contact details in the text) is checked again by the server.
+// Module 5 (Batch 7): under the chosen skill, the price information (platform range or admin guide, the minimum
+// wage reference, the worker's own rates) and an OPTIONAL "Offer a price" step (unit, amount, quantity or
+// duration) with the live checks; the offer becomes price version 1 (accepting it is not agreeing to it).
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CalendarCheck, CalendarDays, CalendarPlus, MapPin, Send } from 'lucide-react';
+import { ArrowLeft, CalendarCheck, CalendarDays, CalendarPlus, HandCoins, MapPin, Send } from 'lucide-react';
 import API from '../../api';
 import { TradeArt } from '../../components/illustrations';
 import { Alert, Button, EmptyState, PageHeader, RadioCardGroup, TextArea, TextField, useToast } from '../../components/ui';
@@ -15,6 +18,13 @@ import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useDocumentTitle, useT } from '../../i18n';
 import { PageLoading } from '../../routes/guards';
 import styles from '../../features/booking/Booking.module.css';
+import ChecksList from '../../features/wage/ChecksList';
+import { useLiveChecks } from '../../features/wage/useLiveChecks';
+import PriceFields from '../../features/wage/PriceFields';
+import { amountOf } from '../../features/wage/wageLogic';
+import PriceInfoCard from '../../features/wage/PriceInfoCard';
+import ProtectionCard from '../../features/wage/ProtectionCard';
+import wageStyles from '../../features/wage/Wage.module.css';
 
 export default function RequestWorker() {
   const { workerId } = useParams();
@@ -29,6 +39,20 @@ export default function RequestWorker() {
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const set = (changes) => setForm((f) => ({ ...f, ...changes }));
+  // Module 5: the optional offer (closed by default, so the request works exactly as before)
+  const [offerOpen, setOfferOpen] = useState(false);
+  const [offer, setOffer] = useState({ unit: 'job', amount: '', quantity: 1, duration: null });
+  const wSkills = worker.data?.skills ?? [];
+  const chosenSkill = wSkills.find((s) => s.skillId === (form.skillId ?? wSkills[0]?.skillId)) ?? null;
+  const offerAmount = amountOf(offer.amount);
+  const offerBody = offerOpen && offerAmount ? {
+    amount: offerAmount, unit: offer.unit,
+    ...(offer.unit === 'job' ? (offer.duration ? { duration: offer.duration } : {}) : { quantity: offer.quantity || 1 }),
+  } : null;
+  const live = useLiveChecks(
+    { skillId: chosenSkill?.skillId, category: chosenSkill?.category ?? worker.data?.category ?? null, city: (form.city ?? worker.data?.city ?? '').trim(), ...(offerBody ?? {}) },
+    { enabled: Boolean(offerBody && chosenSkill) },
+  );
 
   if (worker.loading) return <PageLoading />;
   if (worker.status === 404 || worker.status === 400) {
@@ -58,12 +82,13 @@ export default function RequestWorker() {
     try {
       const body = { workerIdCode: w.workerIdCode, skillId, preferredDate, timeSlot: form.timeSlot, city: city.trim(), area: form.area.trim() };
       if (form.description.trim()) body.description = form.description.trim();
+      if (offerBody) body.offer = offerBody;
       const { data } = await API.post('/bookings', body);
       toast.show({ tone: 'success', title: t('booking.request.sent'), message: t('booking.request.sentText', { name }) });
       navigate(`/bookings/${data.booking._id}`);
     } catch (err) {
       const fields = apiFieldErrors(err);
-      setErrors({ ...fields, date: fields.preferredDate });
+      setErrors({ ...fields, date: fields.preferredDate, amount: fields['offer.amount'] ?? fields.amount, unit: fields['offer.unit'] });
       setError(apiError(err));
     } finally {
       setBusy(false);
@@ -119,6 +144,24 @@ export default function RequestWorker() {
           listen="timeSlot"
           options={SLOTS.map((s) => ({ value: s, title: t(`booking.slot.${s}`), icon: SLOT_ICONS[s] }))}
         />
+        {skillId && (
+          <PriceInfoCard skillId={chosenSkill?.custom ? undefined : skillId} category={chosenSkill?.category ?? w.category} unit={offerOpen ? offer.unit : 'job'} city={city} workerIdCode={w.workerIdCode} testId="request-price-info" />
+        )}
+        <section className={wageStyles.section} aria-labelledby="offer-title" data-testid="offer-step">
+          <h2 id="offer-title" className={wageStyles.sectionTitle}><HandCoins size={20} aria-hidden="true" /> {t('wage.offer.title')}</h2>
+          <p className={wageStyles.muted}>{t('wage.offer.lead')}</p>
+          {!offerOpen ? (
+            <Button variant="secondary" icon={HandCoins} onClick={() => setOfferOpen(true)}>{t('wage.offer.open')}</Button>
+          ) : (
+            <>
+              <PriceFields value={offer} onChange={setOffer} errors={errors} name="offer" amountMax={5000000} />
+              <ChecksList checks={live.checks?.filter((c) => c.id !== 'missing_condition') ?? null} names={live.wageReference?.names} viewer="customer" busy={live.busy} />
+              <p className={wageStyles.muted}>{t('wage.offer.conditionsLater')}</p>
+              <Button variant="ghost" onClick={() => { setOfferOpen(false); setOffer({ unit: 'job', amount: '', quantity: 1, duration: null }); }}>{t('wage.offer.remove')}</Button>
+            </>
+          )}
+          <ProtectionCard audience="customer" tip="agree_first" />
+        </section>
         <TextField label={t('booking.request.city')} maxLength={50} value={city} onChange={(e) => set({ city: e.target.value })} error={errors.city} icon={MapPin} assist="request.city" urdu required />
         <TextField label={t('booking.request.area')} hint={t('booking.request.areaHint')} maxLength={80} value={form.area} onChange={(e) => set({ area: e.target.value })} error={errors.area} assist="request.area" urdu required />
         <TextArea label={t('booking.request.description')} hint={t('booking.request.descriptionHint')} maxLength={500} value={form.description} onChange={(e) => set({ description: e.target.value })} error={errors.description} assist="request.description" urdu />

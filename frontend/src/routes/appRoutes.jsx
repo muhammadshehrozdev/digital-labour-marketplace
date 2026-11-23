@@ -43,6 +43,12 @@ const AdminBookings = lazyPage(() => import('../pages/admin/AdminBookings'));
 const AdminDisputes = lazyPage(() => import('../pages/admin/AdminDisputes'));
 const AdminReviews = lazyPage(() => import('../pages/admin/AdminReviews'));
 const AdminFlags = lazyPage(() => import('../pages/admin/AdminFlags'));
+// Module 5 (Batch 7)
+const MyEarnings = lazyPage(() => import('../pages/worker/MyEarnings'));
+const PriceInfo = lazyPage(() => import('../pages/wage/PriceInfo'));
+const PaymentRecord = lazyPage(() => import('../pages/wage/PaymentRecord'));
+const AdminPriceGuide = lazyPage(() => import('../pages/admin/AdminPriceGuide'));
+const AdminPayments = lazyPage(() => import('../pages/admin/AdminPayments'));
 
 // Developer pages only in development builds (not shipped in production).
 const StyleGuide = import.meta.env.DEV ? lazy(() => import('../pages/dev/StyleGuide')) : null;
@@ -75,12 +81,16 @@ export const appRoutes = (
             <Route path="worker/jobs/:id" element={<BookingDetail />} />
             <Route path="worker/reviews" element={<MyReviews />} />
             <Route path="worker/reputation" element={<MyReputation />} />
+            <Route path="worker/earnings" element={<MyEarnings />} />
+            <Route path="worker/jobs/:id/payment-record" element={<PaymentRecord />} />
           </Route>
         </Route>
 
         {/* Module 4: booking and review notifications are for customers too */}
         <Route element={<RequireRole role={['worker', 'customer']} />}>
           <Route path="notifications" element={<Notifications />} />
+          {/* Module 5: price information for workers and customers */}
+          <Route path="prices" element={<PriceInfo />} />
         </Route>
 
         <Route element={<RequireRole role="customer" />}>
@@ -92,6 +102,7 @@ export const appRoutes = (
           <Route path="bookings" element={<MyBookings />} />
           <Route path="bookings/:id" element={<BookingDetail />} />
           <Route path="bookings/:id/rate" element={<RateWork />} />
+          <Route path="bookings/:id/payment-record" element={<PaymentRecord />} />
         </Route>
 
         <Route element={<RequireRole role="admin" />}>
@@ -107,6 +118,8 @@ export const appRoutes = (
             <Route path="disputes" element={<AdminDisputes />} />
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="flags" element={<AdminFlags />} />
+            <Route path="payments" element={<AdminPayments />} />
+            <Route path="price-guide" element={<AdminPriceGuide />} />
           </Route>
         </Route>
 

@@ -28,17 +28,18 @@ const LEAKY_WORKER = {
 
 describe('worker navigation and the profile view/edit split (D-011, D-020)', () => {
   // Batch 6 (Module 4, section 7): "Requests in the navigation with a count badge", and My jobs, were added.
-  test('the top menu has Dashboard, Requests, My jobs and My profile: no Module 2 / skills link, no "AI"', async () => {
+  // Batch 7 (Module 5, section 7): "My earnings (new page, in the navigation)" was added.
+  test('the top menu has Dashboard, Requests, My jobs, My earnings and My profile: no Module 2 / skills link, no "AI"', async () => {
     mockApi(workerRoutes());
     renderAt('/worker');
     const nav = await screen.findAllByRole('navigation', { name: 'Main' });
     for (const n of nav) {
       const names = within(n).queryAllByRole('link').map((l) => l.textContent);
-      expect(names).toEqual(['Dashboard', 'Requests', 'My jobs', 'My profile']);
+      expect(names).toEqual(['Dashboard', 'Requests', 'My jobs', 'My earnings', 'My profile']);
     }
     await userEvent.setup().click(screen.getByRole('button', { name: 'Open menu' }));
     const mobile = screen.getAllByRole('navigation', { name: 'Main' }).at(-1);
-    expect(within(mobile).queryAllByRole('link').map((l) => l.textContent)).toEqual(['Dashboard', 'Requests', 'My jobs', 'My profile']);
+    expect(within(mobile).queryAllByRole('link').map((l) => l.textContent)).toEqual(['Dashboard', 'Requests', 'My jobs', 'My earnings', 'My profile']);
     expect(document.querySelector('header').textContent).not.toMatch(/skill|profiler|\bAI\b/i);
   });
 

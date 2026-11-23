@@ -24,11 +24,13 @@ export function formatRupees(text) {
   const d = digits(String(text ?? '').split('.')[0]).replace(/^0+(?=\d)/, '').slice(0, 7);
   return d.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+// Urdu (۰-۹) and Arabic (٠-٩) digits typed on a phone keypad -> 0-9, so the rupees mask keeps them (Batch 7).
+export const westernDigits = (text) => String(text ?? '').replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0)).replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660));
 // "4,500" -> "4500" (what the forms validate and send)
 export const plainNumber = (text) => String(text ?? '').replace(/,/g, '');
 
 // state: 'empty' | 'typing' | 'ok' | 'problem'; message: a dictionary key (+ params) or null.
-export function maskStatus(mask, value) {
+export function maskStatus(mask, value, { max = MAX_RUPEES } = {}) {
   const d = digits(value);
   if (d.length === 0) return { state: 'empty', message: null };
   if (mask === 'cnic') {
@@ -40,7 +42,9 @@ export function maskStatus(mask, value) {
   }
   if (mask === 'rupees') {
     const amount = Number(d);
-    return amount > MAX_RUPEES ? { state: 'problem', message: 'workerx.masks.rupeesMax' } : { state: 'ok', message: 'workerx.masks.rupees', params: { amount: formatRupees(d) } };
+    // max (Batch 7): a price may go up to Rs 5,000,000; the Module 1 rates keep their Rs 1,000,000 limit
+    if (amount > max) return max === MAX_RUPEES ? { state: 'problem', message: 'workerx.masks.rupeesMax' } : { state: 'problem', message: 'wage.form.amountMax', params: { max: formatRupees(String(max)) } };
+    return { state: 'ok', message: 'workerx.masks.rupees', params: { amount: formatRupees(d) } };
   }
   return { state: 'empty', message: null };
 }

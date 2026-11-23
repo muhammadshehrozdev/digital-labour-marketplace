@@ -8,6 +8,8 @@ import { useT } from '../../i18n';
 import BookingStatusChip from './BookingStatusChip';
 import { DAY_ICON, SLOT_ICONS, bookingPath, dayWords } from './bookingText';
 import styles from './Booking.module.css';
+import { PaymentStateChip } from '../wage/PaymentsCard';
+import { priceLine, rupees } from '../wage/wageText';
 
 export function WhenWhere({ booking: b }) {
   const { t, formatDate } = useT();
@@ -18,6 +20,26 @@ export function WhenWhere({ booking: b }) {
       <li><SlotIcon size={18} aria-hidden="true" /> {t(`booking.slot.${b.timeSlot}`)}</li>
       <li><MapPin size={18} aria-hidden="true" /> <span dir="auto">{b.area}</span>, <span dir="auto">{b.city}</span></li>
     </ul>
+  );
+}
+
+// Module 5 (Batch 7): the price state from the list view (terms state, agreed total, a waiting offer's price)
+// and the payment state. Nothing is shown for a booking that comes without these fields.
+export function PriceState({ booking: b }) {
+  const { t, formatNumber } = useT();
+  if (!b.terms) return null;
+  const money = (n) => rupees(t, formatNumber, n);
+  const { terms } = b;
+  let text;
+  if (terms.agreedTotal !== null && terms.agreedTotal !== undefined) text = t('wage.card.agreed', { amount: money(terms.agreedTotal) });
+  else if (terms.offer) text = t(terms.proposedBy === 'customer' ? 'wage.card.offered' : 'wage.card.proposed', { price: priceLine(t, money, terms.offer) });
+  else text = t('wage.card.none');
+  return (
+    <div className={styles.when} data-testid="price-state">
+      <span>{text}</span>
+      {terms.agreedTotal !== null && terms.agreedTotal !== undefined && b.paymentSummary && <PaymentStateChip state={b.paymentSummary.state} />}
+      {terms.agreedTotal !== null && terms.agreedTotal !== undefined && terms.offer && <span>{t('wage.card.changeWaiting')}</span>}
+    </div>
   );
 }
 
@@ -38,6 +60,7 @@ export default function BookingCard({ booking: b, viewer, children }) {
         <BookingStatusChip booking={b} />
       </div>
       <WhenWhere booking={b} />
+      <PriceState booking={b} />
       <p className={styles.code}>{t('booking.card.code')} <span dir="ltr" className="tabular">{b.code}</span></p>
       {children}
     </li>
