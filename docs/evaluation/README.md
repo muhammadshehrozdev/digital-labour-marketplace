@@ -39,3 +39,11 @@ it is measured on **real, labelled** worker descriptions.
 | `annotation-guide.md` | How to label; how agreement is measured |
 | `consent-form.md` | Consent form (simple English and Urdu) |
 | `data-handling.md` | What may and may not be in the dataset; storage |
+
+## Other modules' evaluation plans
+| Folder or file | What |
+|---|---|
+| [`job-analysis/`](job-analysis/README.md) | **Module 6 (Batch 8A):** the job analyzers (rule-based word lists, the team's naive Bayes classifier, a hybrid); the pre-registered protocol [`job-analysis/PROTOCOL.md`](job-analysis/PROTOCOL.md) (frozen at `81ba8f6`), the consent text, the form draft, the collection plan, the annotation guide and the data-handling note |
+| `REPUTATION-PILOT-PLAN.md`, `REP2-SIMULATION-TABLES.md` | Module 4 |
+| `PRICE-PILOT-PLAN.md` | Module 5 |
+| `EASY-MODE-USABILITY-PLAN.md` | Easy mode (Batch 5) |
