@@ -58,8 +58,10 @@ describe('onboarding steps', () => {
     const user = userEvent.setup();
     await user.type(await screen.findByLabelText(/^City/), 'Rawalpindi');
     await user.click(screen.getByRole('button', { name: 'Save and continue' }));
+    // Both are still checked. The "Saved" message disappears after 4 s, so it is checked as soon as it appears:
+    // on a busy machine step 2 can take longer than 4 s to draw, and checking it afterwards failed by chance.
+    expect(await screen.findByText('Saved')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { level: 1, name: 'Your work' })).toBeInTheDocument();
-    expect(screen.getByText('Saved')).toBeInTheDocument();
     const put = calls.find((c) => c.key === 'PUT /workers/me');
     expect(put.body).toMatchObject({ name: 'Test Worker', phone: '03001234567', city: 'Rawalpindi', languages: ['Urdu'] });
     expect(put.body).not.toHaveProperty('cnicNumber'); // not typed -> not sent
