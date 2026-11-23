@@ -155,7 +155,7 @@ export default function FindWorkers() {
       <PageHeader title={t('find.title')} description={t('find.lead')} />
       <form role="search" className={styles.searchBar} onSubmit={(e) => { e.preventDefault(); set({ q: search.trim(), city: city.trim() }); }}>
         <div className={styles.searchField}>
-          <TextField label={t('find.searchLabel')} hideLabel type="search" icon={Search} placeholder={t('find.searchPlaceholder')} maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} hint={t('customerx.instant')} assist="find.search" />
+          <TextField label={t('find.searchLabel')} type="search" icon={Search} placeholder={t('find.searchPlaceholder')} maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} hint={t('customerx.instant')} assist="find.search" />
         </div>
         <div className={styles.sortField}>
           <Select label={t('customerx.sort.label')} value={value.sort} onChange={(e) => set({ sort: e.target.value })} options={SORTS.map((s) => ({ value: s, label: t(sortLabel(s)) }))} assist="find.sort" icon={ArrowDownUp} />

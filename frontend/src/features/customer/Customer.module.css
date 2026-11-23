@@ -56,6 +56,23 @@
 .page { display: grid; gap: var(--space-5); padding-block-end: var(--space-16); }
 .searchBar { border: 0; box-shadow: var(--shadow-md), inset 0 0 0 1px color-mix(in oklch, var(--color-border) 70%, transparent); border-radius: var(--radius-2xl); padding: var(--space-4); margin-block-end: 0; align-items: flex-start; }
 .sortField { flex: 0 1 15rem; min-inline-size: 11rem; }
+/* Batch 7 (layout fix): both search fields show their label. From 640 px the bar is a grid whose five rows (label,
+   box, Listen/Speak, hint, error) are SHARED by the two fields through subgrid, so the search box and the sort box
+   always start at the same height, also when a label wraps (Urdu); no pixel margins. Below 1024 px the Filters
+   button sits in the box row with the boxes' height. On a phone (below 640 px) the fields stack. */
+.searchBar { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); align-items: start; }
+.searchField, .sortField { min-inline-size: 0; }
+.filterButton { justify-self: start; }
+@media (min-width: 640px) {
+  .searchBar { grid-template-columns: minmax(0, 1fr) minmax(11rem, 15rem) auto; grid-template-rows: repeat(5, auto); column-gap: var(--space-3); row-gap: var(--space-1); }
+  .searchField, .sortField, .searchField > *, .sortField > * { display: grid; grid-row: 1 / span 5; grid-template-rows: subgrid; }
+  .searchField { grid-column: 1; }
+  .sortField { grid-column: 2; }
+  .filterButton { grid-column: 3; grid-row: 2; align-self: stretch; }
+}
+@media (min-width: 1024px) {
+  .searchBar { grid-template-columns: minmax(0, 1fr) minmax(11rem, 15rem); }
+}
 .sortHint { font-size: var(--text-small); color: var(--color-text-secondary); }
 .stale { opacity: 0.55; transition: opacity var(--duration-base) var(--ease-out); }
 
