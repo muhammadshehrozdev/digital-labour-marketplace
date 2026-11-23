@@ -286,6 +286,36 @@ describe('PATCH /api/job-requests/:id: edit with versions, only while open', () 
   });
 });
 
+describe('review findings 1 and 8 (Batch 8A, Stage 9)', () => {
+  test('1: no edit while a request is being written (a fresh reservation without its booking yet)', async () => {
+    const job = await newJob();
+    await JobRequest.updateOne({ _id: job._id }, { $set: { activeBooking: new mongoose.Types.ObjectId() } });
+    const r = await as(customer).patch(`/api/job-requests/${job._id}`).send({ baseVersion: 1, description: 'Other words now (synthetic)' });
+    expect([r.status, r.body.code]).toEqual([409, 'JOB_NOT_EDITABLE']);
+    expect((await JobRequest.findById(job._id).lean()).description).toBe(jobBody().description);
+    // a stale reservation (a request that crashed in between) does not block the edit
+    await JobRequest.updateOne({ _id: job._id }, { $set: { activeBooking: mongoose.Types.ObjectId.createFromTime(Math.floor(Date.now() / 1000) - 120) } });
+    expect((await as(customer).patch(`/api/job-requests/${job._id}`).send({ baseVersion: 1, urgent: false })).status).toBe(200);
+  });
+
+  test('8: a job deleted between the two reads of a list is skipped (200, never a 500)', async () => {
+    await newJob();
+    await newJob();
+    const original = JobRequest.find.bind(JobRequest);
+    for (const [who, url] of [[customer, '/api/job-requests/mine'], [admin, '/api/admin/job-requests']]) {
+      let calls = 0;
+      const spy = vi.spyOn(JobRequest, 'find').mockImplementation((filter, ...rest) => {
+        calls += 1;
+        return calls === 2 ? original({ _id: new mongoose.Types.ObjectId() }, ...rest) : original(filter, ...rest); // the page's jobs are gone
+      });
+      const res = await as(who).get(url);
+      spy.mockRestore();
+      expect([url, res.status, res.body.jobs]).toEqual([url, 200, []]);
+      expect(res.body.total).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
+
 describe('close and delete', () => {
   test('close: a reason is required; closing twice is 409; a closed job without bookings can be deleted', async () => {
     const job = await newJob();
@@ -538,7 +568,7 @@ describe('GET /api/meta/job-options (public, no database)', () => {
       inputModes: ['text', 'voice'],
       budgetUnits: ['job', 'day', 'hour'],
       limits: { descriptionMin: 3, descriptionMax: 500, areaMin: 2, areaMax: 80, maxSkills: 5, maxOpenPerCustomer: 10, maxNewPerDay: 10, openDays: 30, amountMin: 100, amountMax: 5000000 },
-      analyzer: { method: 'rules', methodName: 'rule-based word lists', versions: { analyzer: 'job-rules-1', taxonomy: '2026-11-09-v1', phrases: '2026-11-24-v1', model: null } },
+      analyzer: { method: 'rules', methodName: 'rule-based word lists', versions: { analyzer: 'job-rules-1', taxonomy: '2026-11-09-v1', phrases: '2026-11-24-v2', model: null } },
     });
   });
 });

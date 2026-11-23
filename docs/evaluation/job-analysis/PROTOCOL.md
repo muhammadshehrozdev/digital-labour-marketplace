@@ -157,4 +157,15 @@ change any compared value).
 
 ## Protocol changes
 
-None yet.
+1. **24 Nov 2026 (Batch 8A, Stage 9 independent review; before any real description exists).** The code disagreed
+   with the frozen text: the per-script and per-prompt category reports held only items, accuracy, coverage, selective
+   accuracy and macro-F1, while "Definitions" says "all of it also per script and per prompt" and step 8 asks for
+   macro-F1 with intervals per script and per prompt. **The text is unchanged; the code now follows it**: each script
+   and prompt subset holds the full single-label report (Wilson interval, per-class P/R/F1, macro-F1, confusion
+   matrix) and the bootstrap interval of macro-F1. Reason: the review found the gap; no data had been seen.
+2. **24 Nov 2026 (same review; no change to this text).** Three fixes outside the protocol's rules, recorded here so
+   the history is complete: the synthetic-file check now reads only the first line of a dataset (`# SYNTHETIC`), so a
+   real file with a comment mentioning "synthetic" is never treated as synthetic; the word lists became version
+   `2026-11-24-v2` (the Urdu spelling of "stuck", `اٹک`, is no longer read as the city Attock; a free-standing `k` is
+   no longer a "thousand"; see `backend/config/jobPhrases.js`); the "kept skills" use statistic counts a full 5-skill
+   save of more than 5 suggestions as kept.

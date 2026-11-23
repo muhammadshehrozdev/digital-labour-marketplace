@@ -77,7 +77,7 @@ one source) and stores `jobRequest`, `jobCode`, `jobTaskType`. A booking without
 
 ## 3. The rule-based analyzer `job-rules-1` (live)
 
-`services/jobAnalyzer/rules.js` (pure); word lists in `config/jobPhrases.js` (version `2026-11-24-v1`, written by
+`services/jobAnalyzer/rules.js` (pure); word lists in `config/jobPhrases.js` (version `2026-11-24-v2`: v1 plus two fixes from the independent review, written by
 Claude Code before any real data, for team review; improved in Batch 8C on the development set only).
 
 - **Normalisation:** Module 2's `normalizeText` + a Roman Urdu spelling-variant map (`nhi/nahin/nai → nahi`,
@@ -92,8 +92,8 @@ Claude Code before any real data, for team review; improved in Batch 8C on the d
   household help, new work; else the trade's usual work (masonry, painting, carpentry → new work; moving → moving;
   domestic → cleaning when the cleaning skill was found, else household help; the others → none).
 - **City:** any spelling of the city table as a whole word sequence; two different cities → no suggestion and the
-  note `city_conflict`; a longer name wins ("Mirpur Khas" is not also "Mirpur"); four everyday words are not used
-  (`atak` = stuck, `wah`, `mari`, `مری`); never a guess for an unknown place.
+  note `city_conflict`; a longer name wins ("Mirpur Khas" is not also "Mirpur"); five everyday words are not used
+  (`atak` / `اٹک` = stuck, `wah`, `mari`, `مری`); never a guess for an unknown place.
 - **Day, time, urgency** (with `now`, Pakistan time): aaj / kal / parson → today / tomorrow / day after and a date;
   subah / dopahar / shaam → morning / afternoon / evening (night: no slot); jaldi, foran, urgent, emergency, abhi.
 - **Budget** (from the raw text): a number is money only next to a money word (Rs, rupay, budget, روپے, …), with a
@@ -229,8 +229,8 @@ reported (the same author wrote the word lists and the synthetic sentences).
 - **Weekdays and calendar dates are not read** ("Sunday", "25 tareekh"). "kal" means yesterday and tomorrow (read as
   tomorrow); Urdu "کل" can also be "kul" (all); "abhi" in "abhi tak" is read as today and urgent.
 - **Spelling variants are a fixed list;** "nai" also means "new" in Roman Urdu (harmless here, but it shows the limit).
-- **Budget:** ranges ("2000-3000") and amounts without a money word ("2500 rozana") are not read; a monthly amount is a
-  whole-job budget.
+- **Budget:** ranges ("2000-3000", "10,12 hazar") and amounts without a money word ("2500 rozana") are not read; a "k"
+  with a space ("5 k") is not a thousand (it is usually "ke/ki"); a monthly amount is a whole-job budget.
 - **Voice typing** (8B) depends on the device's speech recognition; the analyzer only sees the text it produced.
 - **A self-written word list measured on data the same team labels:** the risk of fitting the lists to the team's own
   habits; the protocol limits it (general prompt without examples, development set only, a frozen test set, a second
@@ -238,6 +238,8 @@ reported (the same author wrote the word lists and the synthetic sentences).
 - **Small data means wide intervals;** with 150 items the test set has about 90, so only large differences can be
   significant.
 - **Naive Bayes ignores word order** (bigrams help a little) and assumes words are independent given the trade.
+- **The job lists read all of a customer's jobs** (and the admin list all jobs) to compute the derived states before
+  paging. Fine at this project's size; a larger platform would filter on the stored status and date in MongoDB first.
 
 ## 10. Honest statement of novelty
 

@@ -82,11 +82,14 @@ export function parseJobCsv(content) {
   return { comments, header, rows, items };
 }
 
-export const isSyntheticFile = (path, content) => /synthetic/i.test(basename(path)) || /^\s*#.*SYNTHETIC/im.test(content);
+// Synthetic = the file name says so, or its FIRST line starts with "# SYNTHETIC" (dataset-format.md). Only the first
+// line, case-sensitive: a real file with a comment such as "# real data, not synthetic" stays real (Batch 8A review).
+export const isSyntheticFile = (path, content) => /synthetic/i.test(basename(path)) || /^#\s*SYNTHETIC\b/.test(content.split(/\r?\n/, 1)[0] ?? '');
 
 export function loadJobDataset(path) {
   const content = readFileSync(path, 'utf8');
-  return { ...parseJobCsv(content), sha256: sha256(content), synthetic: isSyntheticFile(path, content), file: basename(path) };
+  const text = content.replace(/^\uFEFF/, ''); // a byte-order mark from a spreadsheet export; the hash stays the raw file's
+  return { ...parseJobCsv(text), sha256: sha256(content), synthetic: isSyntheticFile(path, text), file: basename(path) };
 }
 
 // One CSV field, quoted when needed (RFC 4180).

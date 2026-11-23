@@ -1251,10 +1251,12 @@ number) keeps `maxWorkers: 3`; the table is in `frontend/vite.config.js`.
 
 ## D-090 — The word lists, version 1 (Batch 8A)
 
-`config/jobPhrases.js` version `2026-11-24-v1`, written before any real data and for team review: spelling variants are
+`config/jobPhrases.js` version `2026-11-24-v1` (amended to `2026-11-24-v2` the same day after the independent review,
+still before any real data), written before any real data and for team review: spelling variants are
 one word for one word (inflected forms are phrases); problem phrases per skill count as strong evidence; `a + b`
 phrases need both parts anywhere; a household-help word list comes before the new-work words (because "banana" is also
-in "khana banana"); "lagane / lagwane" are not install words (so "tiles lagwane" reaches new work); four city
-spellings that are everyday words (`atak`, `wah`, `mari`, `مری`) are not used alone; a longer city name wins; a budget
+in "khana banana"); "lagane / lagwane" are not install words (so "tiles lagwane" reaches new work); five city
+spellings that are everyday words (`atak`, `اٹک`, `wah`, `mari`, `مری`) are not used alone; a "k" means a thousand only
+when joined to the digits ("5k"); a longer city name wins; a budget
 unit counts only within 3 words of the amount. Module 2's taxonomy terms are not changed. Batch 8C may improve the
 lists on the development set only.

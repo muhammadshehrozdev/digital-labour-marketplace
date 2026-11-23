@@ -5,7 +5,7 @@
 //              null = nothing was suggested. "Kept" is use, not correctness (D-088).
 import { skillById } from '../../config/skillTaxonomy.js';
 import { marketCity } from '../../config/regions.js';
-import { CHANGED_FIELDS } from '../../config/jobRules.js';
+import { CHANGED_FIELDS, JOB_RULES } from '../../config/jobRules.js';
 
 // The analyzer output (services/jobAnalyzer) -> what is stored as `suggested`.
 export function suggestedFrom(output) {
@@ -24,6 +24,10 @@ export function suggestedFrom(output) {
 }
 
 const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+// Kept: the same set; or, when more suggested skills fit the trade than a job may hold (MAX_SKILLS), the customer saved
+// the maximum and every saved skill was suggested (keeping all of them was not possible; Batch 8A review).
+export const keptSkills = (suggested, saved) => sameSet(suggested, saved)
+  || (suggested.length > JOB_RULES.MAX_SKILLS && saved.length === JOB_RULES.MAX_SKILLS && saved.every((id) => suggested.includes(id)));
 
 // The suggested skills that fit the job's (confirmed) trade: the ones the website can pre-select for it.
 export const suggestedSkillsFor = (suggested, category) => (suggested.skills ?? []).filter((id) => skillById(id)?.category === category);
@@ -34,7 +38,7 @@ export function changedFor(suggested, job) {
   const saved = (job.skills ?? []).map((x) => x.skillId ?? x);
   const differs = {
     category: s.category ? job.category !== s.category : null,
-    skills: skills.length ? !sameSet(skills, saved) : null,
+    skills: skills.length ? !keptSkills(skills, saved) : null,
     taskType: s.taskType ? (job.taskType ?? null) !== s.taskType : null,
     city: s.city ? marketCity(job.city) !== marketCity(s.city) : null,
     preferredDate: s.preferredDate ? (job.preferredDate ?? null) !== s.preferredDate : null,

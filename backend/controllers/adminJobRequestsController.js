@@ -38,7 +38,8 @@ export const listJobsForAdmin = async (req, res) => {
   const names = await customerNames(docs);
   res.set('Cache-Control', 'no-store');
   res.json({
-    jobs: pageIds.map((id) => {
+    // a job deleted between the two reads is skipped (never a 500)
+    jobs: pageIds.filter((id) => byId.has(String(id))).map((id) => {
       const job = byId.get(String(id));
       const { state: s, bookings } = states.get(String(id));
       return adminJobListView(job, { state: s, customerName: names.get(String(job.customer)), bookingsCount: bookings.length });

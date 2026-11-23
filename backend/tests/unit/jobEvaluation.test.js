@@ -114,6 +114,23 @@ describe('the dataset format (7.2)', () => {
     ['j-1,form,general,roman_urdu,x,none,,fixing,,,,,,no', /gold_task_type/],
     ['j-1,form,general,roman_urdu, ,none,,,,,,,,no', /text is empty/],
   ])('%s', (row, error) => expect(() => one(row)).toThrow(error));
+  test('review finding 5: only the file name or the FIRST line marks a file as synthetic; a byte-order mark is ignored', () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'dlm-syn-'));
+    const body = readFileSync(ALL, 'utf8').split('\n').filter((l) => !l.startsWith('#')).join('\n');
+    const real = join(tmp, 'gold.csv');
+    writeFileSync(real, `# Gold file, real data, not synthetic (labelled by two people)\n${body}`);
+    expect(loadJobDataset(real).synthetic).toBe(false);
+    const marked = join(tmp, 'marked.csv');
+    writeFileSync(marked, `\uFEFF# SYNTHETIC test file\n${body}`);
+    const d = loadJobDataset(marked);
+    expect(d.synthetic).toBe(true);
+    expect(d.items.length).toBe(120);
+    const bom = join(tmp, 'export.csv');
+    writeFileSync(bom, `\uFEFF${body}`);
+    expect(loadJobDataset(bom)).toMatchObject({ synthetic: false });
+    expect(loadJobDataset(join(tmp, '..', tmp.split(/[\\/]/).pop(), 'gold.csv')).file).toBe('gold.csv');
+  });
+
   test('duplicate ids and a missing column are refused', () => {
     expect(() => parseJobCsv(`${HEADER}\nj-1,form,general,urdu,x,none,,,,,,,,no\nj-1,form,general,urdu,y,none,,,,,,,,no\n`)).toThrow(/Duplicate/);
     expect(() => parseJobCsv('id,text\nj-1,x\n')).toThrow(/missing/);
@@ -245,6 +262,10 @@ describe('training, evaluation and agreement on the SYNTHETIC file (the scripts 
     expect(['rules', 'nb', 'hybrid']).toContain(report.category.liveDecision.method);
     expect(report.taskType.comparison).toMatchObject({ a: 'rules', b: 'nb' });
     expect(report.models.category.modelId).toMatch(/^[0-9a-f]{12}$/);
+    // review finding 4 (PROTOCOL.md "Protocol changes" 1): the whole report per script and per prompt, with intervals
+    const byScript = Object.values(report.category.systems.rules.byScript)[0];
+    expect(Object.keys(byScript)).toEqual(expect.arrayContaining(['accuracy', 'wilson95', 'coverage', 'selectiveAccuracy', 'macroF1', 'perClass', 'confusion', 'bootstrap95MacroF1']));
+    expect(Object.keys(Object.values(report.category.systems.nb.byPrompt)[0])).toContain('bootstrap95MacroF1');
     const keys = new Set();
     const walk = (v) => { if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { keys.add(k); walk(x); } };
     walk(report);

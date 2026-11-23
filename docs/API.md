@@ -557,7 +557,7 @@ holds a score, a probability or a percentage. Decisions D-080 to D-090; `docs/mo
 logged. No extra rate limiter (`docs/SECURITY.md`).
 ```json
 {"method":"rules","methodName":"rule-based word lists",
- "versions":{"analyzer":"job-rules-1","taxonomy":"2026-11-09-v1","phrases":"2026-11-24-v1","model":null},
+ "versions":{"analyzer":"job-rules-1","taxonomy":"2026-11-09-v1","phrases":"2026-11-24-v2","model":null},
  "category":{"suggested":"ac_appliance_repair","tie":false,"ranked":["ac_appliance_repair"],"matched":["ac","service"],"source":"rules","words":[]},
  "skills":[{"skillId":"ac_general","name":"AC repair (general)","category":"ac_appliance_repair","matched":["ac"]}, …],
  "taskType":{"suggested":"service","tie":false,"matched":["service"],"fromCategory":false},

@@ -66,7 +66,6 @@ export function pairedTest(gold, predA, predB) {
   return { onlyA: b, onlyB: c, discordantPairs: m.n, exactP: m.exactP, midP: m.midP, pairedBootstrap: pairedBootstrapDiff(gold, predA, predB) };
 }
 
-const brief = (r) => ({ items: r.items, accuracy: r.accuracy, coverage: r.coverage, selectiveAccuracy: r.selectiveAccuracy, macroF1: r.macroF1 });
 const sameBudget = (a, b) => a.amount === b.amount && a.unit === b.unit;
 
 /**
@@ -87,7 +86,11 @@ export function evaluateJobs(dataset, { model, nvModel = null, taskModel = null,
     const p = catOf(n);
     const subset = (key, value) => {
       const idx = withCat.map(({ it }, j) => (it[key] === value ? j : -1)).filter((j) => j >= 0);
-      return idx.length ? brief(singleLabelReport(idx.map((j) => gold[j]), idx.map((j) => p[j]), { order: CATEGORY_IDS })) : null;
+      if (!idx.length) return null;
+      // the whole report per script and per prompt, with both intervals (PROTOCOL.md, "Definitions"; Protocol changes 1)
+      const g = idx.map((j) => gold[j]);
+      const q = idx.map((j) => p[j]);
+      return { ...singleLabelReport(g, q, { order: CATEGORY_IDS }), bootstrap95MacroF1: bootstrapMacroF1(g, q) };
     };
     category.systems[n] = {
       ...singleLabelReport(gold, p, { order: CATEGORY_IDS }),

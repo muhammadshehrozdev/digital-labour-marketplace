@@ -4,7 +4,7 @@
 // notSuggested no suggestion
 // A customer may keep a wrong suggestion or change a right one, so these numbers describe USE, not correctness.
 // Aggregates only: no text, no ids.
-import { CHANGED_FIELDS } from '../../config/jobRules.js';
+import { CHANGED_FIELDS, JOB_RULES } from '../../config/jobRules.js';
 import { suggestedSkillsFor } from './analysis.js';
 
 const count = (list, key) => list.reduce((acc, x) => ({ ...acc, [x[key]]: (acc[x[key]] ?? 0) + 1 }), {});
@@ -24,7 +24,9 @@ export function keptStats(jobs) {
     const suggested = suggestedSkillsFor(job.analysis?.suggested ?? {}, job.category);
     const saved = (job.skills ?? []).map((s) => s.skillId);
     fields.skills.added += saved.filter((id) => !suggested.includes(id)).length;
-    fields.skills.removed += suggested.filter((id) => !saved.includes(id)).length;
+    // suggestions that could not fit the 5-skill limit are not "removed" by the customer
+    const notSaved = suggested.filter((id) => !saved.includes(id)).length;
+    fields.skills.removed += Math.max(0, notSaved - Math.max(0, suggested.length - JOB_RULES.MAX_SKILLS));
   }
   return {
     jobs: jobs.length,

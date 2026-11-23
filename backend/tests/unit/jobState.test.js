@@ -3,7 +3,7 @@
 import { describe, test, expect } from 'vitest';
 import mongoose from 'mongoose';
 import { jobState, jobActions, canJob, reservationIsFree, openUntil } from '../../services/jobs/state.js';
-import { suggestedFrom, changedFor, analysisRecord } from '../../services/jobs/analysis.js';
+import { suggestedFrom, changedFor, analysisRecord, keptSkills } from '../../services/jobs/analysis.js';
 import { keptStats } from '../../services/jobs/stats.js';
 import { toMatchingQuery } from '../../services/jobs/matchingQuery.js';
 import { analyzeJob } from '../../services/jobAnalyzer/index.js';
@@ -100,6 +100,23 @@ describe('the stored analysis: suggested and changed (4.2)', () => {
     expect(r.changed.category).toBeNull();
     expect(r.changed.skills).toBe(false);
     expect(r).toMatchObject({ method: 'rules', analyzedAt: NOW, versions: { analyzer: 'job-rules-1' } });
+  });
+});
+
+describe('review finding 7: more suggested skills than a job may hold', () => {
+  const seven = ['plumb_general', 'plumb_pipe', 'plumb_leak', 'plumb_fixtures', 'plumb_geyser', 'plumb_pump', 'plumb_drain'];
+  const s = { skills: seven };
+  test('saving 5 of 7 suggested skills is kept; a skill that was not suggested, or fewer than 5, is changed', () => {
+    expect(keptSkills(seven, seven.slice(0, 5))).toBe(true);
+    expect(changedFor(s, { category: 'plumbing_sanitary', skills: seven.slice(2).map((skillId) => ({ skillId })) }).skills).toBe(false);
+    expect(changedFor(s, { category: 'plumbing_sanitary', skills: [...seven.slice(0, 4), 'elec_wiring'].map((skillId) => ({ skillId })) }).skills).toBe(true); // one not suggested
+    expect(changedFor(s, { category: 'plumbing_sanitary', skills: seven.slice(0, 3).map((skillId) => ({ skillId })) }).skills).toBe(true);
+    expect(keptSkills(['a', 'b'], ['b', 'a'])).toBe(true);
+  });
+  test('the statistics count only the skills the customer removed by choice', () => {
+    const job = (saved) => ({ category: 'plumbing_sanitary', inputMode: 'text', skills: saved.map((skillId) => ({ skillId })), analysis: { method: 'rules', suggested: s, changed: {} } });
+    expect(keptStats([job(seven.slice(0, 5))]).fields.skills).toMatchObject({ added: 0, removed: 0 }); // 2 could not fit
+    expect(keptStats([job(seven.slice(0, 3))]).fields.skills).toMatchObject({ added: 0, removed: 2 }); // 4 left out, 2 had to be
   });
 });
 

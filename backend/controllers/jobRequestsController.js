@@ -111,7 +111,8 @@ export const listMyJobs = async (req, res) => {
   const docs = new Map((await JobRequest.find({ _id: trusted({ $in: pageIds }), customer: req.user._id }).lean()).map((j) => [String(j._id), j]));
   noStore(res);
   res.json({
-    jobs: pageIds.map((id) => {
+    // a job deleted between the two reads is skipped (never a 500)
+    jobs: pageIds.filter((id) => docs.has(String(id))).map((id) => {
       const job = docs.get(String(id));
       const { state: s, bookings } = states.get(String(id));
       return ownerJobView(job, { state: s, actions: jobActions(s, { hasBookings: bookings.length > 0 }), bookingsCount: bookings.length });
@@ -133,9 +134,12 @@ export const updateJob = async (req, res) => {
   const now = new Date();
   const { baseVersion, ...changes } = req.validated.body;
   const job = await loadOwnJob(req);
-  const { state } = await stateOf(job, now);
+  const { state, bookings } = await stateOf(job, now);
   if (!canJob('edit', state)) throw httpError(409, 'JOB_NOT_EDITABLE');
   if (baseVersion !== job.version) throw httpError(409, 'JOB_CHANGED');
+  // a request reserved the job and its booking is being written right now (D-082): the worker gets the text as it was
+  const current = job.activeBooking ? bookings.find((b) => String(b._id) === String(job.activeBooking)) ?? null : null;
+  if (!reservationIsFree(job.activeBooking, current, now)) throw httpError(409, 'JOB_NOT_EDITABLE');
 
   const set = confirmedFields(changes, now);
   const merged = { ...job, ...set };

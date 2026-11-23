@@ -236,6 +236,9 @@ describe('city, day, time, urgency', () => {
     expect(run('pipe mein kuch atak gaya hai').city.suggested).toBeNull();
     expect(run('wah kya kaam hai, plumber chahiye').city.suggested).toBeNull();
     expect(run('Attock mein plumber chahiye').city.suggested).toBe('Attock');
+    // review finding 2 (Batch 8A): the Urdu spelling of "stuck" is the same word as the city's Urdu name
+    expect(run('پائپ میں کچھ اٹک گیا ہے، پلمبر چاہیے').city.suggested).toBeNull();
+    expect(run('نالی میں کچرا اٹک گیا، کراچی').city).toMatchObject({ suggested: 'Karachi', conflict: false });
   });
 
   test('an unknown place gives no city (never a guess)', () => {
@@ -291,6 +294,15 @@ describe('budget (raw text)', () => {
     expect(b('Rs 2000 aur phir Rs 2000')).toEqual({ amount: 2000, unit: 'job' });
   });
 
+  test('review finding 3: a free-standing "k" is "ke/ki", not a thousand; digit groups must end in three digits', () => {
+    expect(b('Kal 3 k baad aa jayein, AC kharab hai')).toBeNull();
+    expect(b('subah 10 k qareeb')).toBeNull();
+    expect(b('5k rupay')).toEqual({ amount: 5000, unit: 'job' });
+    expect(b('10,12 hazar mein')).toEqual({ amount: 12000, unit: 'job' }); // "10 or 12 thousand", never 1,012,000
+    expect(b('Rs 1,000,000')).toEqual({ amount: 1000000, unit: 'job' });
+    expect(b('Rs 12,00,000')).toEqual({ amount: 1200000, unit: 'job' });
+  });
+
   test('a unit word far from the amount does not count', () => {
     expect(b('8 ghante ka kaam hai, poore kaam ka budget Rs 3000')).toEqual({ amount: 3000, unit: 'job' });
   });
@@ -336,7 +348,7 @@ describe('the word lists themselves', () => {
   });
 
   test('the city reader knows every spelling of the city table (except the skipped everyday words)', () => {
-    const skipped = new Set(['atak', 'wah', 'mari', 'مری']);
+    const skipped = new Set(['atak', 'اٹک', 'wah', 'mari', 'مری']);
     for (const { spelling, city } of CITY_SPELLINGS) {
       if (skipped.has(spelling)) continue;
       expect([spelling, findCity(jobTokens(spelling)).suggested]).toEqual([spelling, city]);

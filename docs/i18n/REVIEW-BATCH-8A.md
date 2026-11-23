@@ -29,7 +29,7 @@ English = the server catalog (tested). Urdu and Roman Urdu: drafts.
 | `TASK_TYPE_INVALID` | Choose the kind of work: install, repair, service, new work, cleaning, moving or household help. | کام کی قسم چنیں: لگانا، مرمت، سروس، نیا کام، صفائی، شفٹنگ یا گھریلو مدد۔ | Kaam ki qism chunein: lagana, marammat, service, naya kaam, safai, shifting ya gharelu madad. |
 | `CLOSE_REASON_INVALID` | Choose why you close the job: work done, not needed, found someone elsewhere, or other. | کام بند کرنے کی وجہ چنیں: کام ہو گیا، ضرورت نہیں رہی، کہیں اور سے کروا لیا، یا کوئی اور وجہ۔ | Kaam band karne ki wajah chunein: kaam ho gaya, zaroorat nahi rahi, kahin aur se karwa liya, ya koi aur wajah. |
 
-## 2. Urdu-script terms of the word lists (`backend/config/jobPhrases.js`, version 2026-11-24-v1)
+## 2. Urdu-script terms of the word lists (`backend/config/jobPhrases.js`, version 2026-11-24-v2)
 
 Please check the spelling and whether people really write it this way; suggest missing everyday words.
 
@@ -84,7 +84,7 @@ Please check the spelling and whether people really write it this way; suggest m
 - Budget units: day: روزانہ · دن کا · دن کے · دیہاڑی; hour: گھنٹہ · گھنٹے کا · گھنٹے کے
 - Address words: مکان نمبر · گلی نمبر · مکان · گلی
 - Negative phrases: کچھ نہیں چاہیے · کوئی کام نہیں
-- City spelling not used alone: مری
+- City spellings not used alone: اٹک · مری
 
 ### Roman Urdu spelling variants (please add the spellings you see)
 

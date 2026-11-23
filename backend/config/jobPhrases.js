@@ -16,8 +16,10 @@
 //
 // Change log
 //   2026-11-24-v1  first version (Batch 8A)
+//   2026-11-24-v2  after the Batch 8A independent review, still before any real data: the Urdu spelling "اٹک" (also
+//                  "stuck") is not used alone as the city Attock; a free-standing "k" is not a thousand (budget.js)
 
-export const JOB_PHRASES_VERSION = '2026-11-24-v1';
+export const JOB_PHRASES_VERSION = '2026-11-24-v2';
 
 // Roman Urdu spelling variants -> one spelling (Khan et al. 2020 describe why Roman Urdu spelling varies).
 // Spelling only: one word for one word. Inflected forms ("pankhay") are phrase terms below, not variants.
@@ -209,6 +211,7 @@ export const URGENT_WORDS = Object.freeze([
 export const MONEY_WORDS = Object.freeze([
   'rs', 'pkr', 'rupay', 'rupaye', 'rupees', 'rupee', 'rupey', 'budget', 'روپے', 'روپیہ', 'روپئے', 'بجٹ',
 ]);
+// "k" only when joined to the digits ("5k"); see services/jobAnalyzer/budget.js
 export const MONEY_MULTIPLIERS = Object.freeze({ sau: 100, hazar: 1000, hazaar: 1000, k: 1000, lakh: 100000, lac: 100000, 'سو': 100, 'ہزار': 1000, 'لاکھ': 100000 });
 // Spoken fractions before a multiplier: "dedh hazar" = 1,500, "dhai lakh" = 250,000.
 export const NUMBER_FRACTIONS = Object.freeze({ dedh: 1.5, dhai: 2.5, 'ڈیڑھ': 1.5, 'ڈھائی': 2.5 });
@@ -226,5 +229,6 @@ export const ADDRESS_WORDS = Object.freeze([
 ]);
 
 // City spellings from config/regions.js that are also everyday words; the analyzer does not suggest a city from
-// them alone ("atak" = stuck, "wah" = an exclamation, "mari" / "مری" = died). "Attock", "Wah Cantt" and "Murree" work.
-export const CITY_SPELLINGS_SKIPPED = Object.freeze(['atak', 'wah', 'mari', 'مری']);
+// them alone ("atak" / "اٹک" = stuck, "wah" = an exclamation, "mari" / "مری" = died). "Attock", "Wah Cantt" and
+// "Murree" work. Kept on purpose: "قصور" (Kasur; also "fault"), because in a job text it nearly always names the city.
+export const CITY_SPELLINGS_SKIPPED = Object.freeze(['atak', 'اٹک', 'wah', 'mari', 'مری']);
