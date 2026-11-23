@@ -42,6 +42,11 @@ No new package. Nothing here is AI: written formulas and fixed rules. The app ne
   (432 views: visitor, worker, customer, admin × English and Urdu × light and dark × 360 / 768 / 1280 px) found 12
   views wider than a 360 px phone (the new payment record, My reputation, admin Reviews and Reputation flags); fixed
   and checked again. The full run also found that two "Agree" presses at once could answer 400 instead of 409; fixed.
+- **Data correction, 23 Nov 2026 (the team's re-check of the wage figures):** Balochistan Rs 37,000 a month from
+  1 Jul 2024, notified (source: WageIndicator Balochistan page; the "maintained at Rs 40,000" claim removed) → Rs 1,423 a
+  day, Rs 178 an hour; Khyber Pakhtunkhwa Rs 40,000 from 1 Jul 2025, notified (source: Profit, KP notification) →
+  Rs 1,538 a day, Rs 192 an hour; the Rs 45,000 of the 2026-27 budget is kept only as a note (notification not found).
+  Both `checkedOn` 2026-11-23. The tests now expect the corrected figures (a data correction, not a loosened test).
 
 ## Batch 6B — header fix, "Install this app", reputation engine v2 (17 Nov 2026)
 

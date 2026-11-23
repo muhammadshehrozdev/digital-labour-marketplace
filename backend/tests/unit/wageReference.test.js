@@ -62,24 +62,32 @@ describe('regionOf: a city to its region (never a guess)', () => {
 });
 
 describe('the minimum wage references (§4.6): exactly the team\'s figures', () => {
-  test('the config holds exactly the table of §4.6, each with sources and checkedOn 2026-11-19', () => {
+  // Data correction of 23 Nov 2026 (the team's re-check): Balochistan and Khyber Pakhtunkhwa now hold the NOTIFIED
+  // figures (BA Rs 37,000 from 1 Jul 2024, KP Rs 40,000 from 1 Jul 2025), each with its one named source.
+  test('the config holds exactly the team\'s table (§4.6, corrected 23 Nov 2026 for BA and KP), each with sources and its checkedOn', () => {
     const table = Object.fromEntries(Object.entries(WAGE_REFERENCES).map(([k, r]) => [k, [r.monthly, r.effectiveFrom, r.status, r.statusDate]]));
     expect(table).toEqual({
       ICT: [40700, '2026-07-01', 'notified', '2026-08-19'],
       SD: [43000, '2026-07-01', 'notified', '2026-08-17'],
       PB: [40000, '2025-07-01', 'notified', '2025-09-08'],
-      KP: [45000, '2026-07-01', 'announced', '2026-06-19'],
-      BA: [40000, null, 'announced', null],
+      KP: [40000, '2025-07-01', 'notified', null],
+      BA: [37000, '2024-07-01', 'notified', null],
       GB: [null, null, 'none', null],
       AJK: [null, null, 'none', null],
     });
-    expect(WAGE_REFERENCES.KP.notifiedFound).toEqual({ monthly: 40000, effectiveFrom: '2025-07-01' });
-    expect(WAGE_REFERENCES.BA.notifiedFound).toEqual({ monthly: 37000, effectiveFrom: '2024-07-01' });
+    expect(WAGE_REFERENCES.KP.notifiedFound).toBeNull();
+    expect(WAGE_REFERENCES.BA.notifiedFound).toBeNull();
+    // KP keeps the budget announcement only as a note; BA no longer carries the "maintained at Rs 40,000" claim
+    expect(WAGE_REFERENCES.KP.statusNote).toBe('Rs 45,000 announced in the 2026-27 budget; notification not found (checked 23 Nov 2026)');
+    expect(WAGE_REFERENCES.KP.sources).toEqual([{ title: 'Profit, KP notification of Rs 40,000', url: 'https://profit.pakistantoday.com.pk/2025/09/10/kp-govt-notifies-rs40000-minimum-monthly-wage-for-workers' }]);
+    expect(WAGE_REFERENCES.BA.sources).toEqual([{ title: 'WageIndicator, Balochistan page: "Unskilled Workers Minimum wage with effect from July 1, 2024: PKR 37,000"', url: 'https://wageindicator.org/salary/minimum-wage/pakistan/162-balochistan' }]);
+    expect(WAGE_REFERENCES.BA.statusNote).toBeNull();
+    const checked = { ICT: '2026-11-19', SD: '2026-11-19', PB: '2026-11-19', KP: '2026-11-23', BA: '2026-11-23' };
     for (const code of ['ICT', 'SD', 'PB', 'KP', 'BA']) {
       const r = WAGE_REFERENCES[code];
       expect(r.region).toBe(code);
-      expect(r.checkedOn).toBe('2026-11-19');
-      expect(r.sources.length).toBeGreaterThanOrEqual(2);
+      expect(r.checkedOn).toBe(checked[code]);
+      expect(r.sources.length).toBeGreaterThanOrEqual(['KP', 'BA'].includes(code) ? 1 : 2);
       for (const s of r.sources) {
         expect(s.title.length).toBeGreaterThan(5);
         expect(s.url).toMatch(/^https:\/\//);
@@ -94,14 +102,14 @@ describe('the minimum wage references (§4.6): exactly the team\'s figures', () 
   //   ICT 40700 / 26 = 1565.38 -> 1565;  40700 / 208 = 195.67 -> 196
   //   PB  40000 / 26 = 1538.46 -> 1538;  40000 / 208 = 192.31 -> 192
   //   SD  43000 / 26 = 1653.85 -> 1654;  43000 / 208 = 206.73 -> 207
-  //   KP  45000 / 26 = 1730.77 -> 1731;  45000 / 208 = 216.35 -> 216
-  //   BA  40000 as PB
+  //   KP  40000 as PB (the notified figure, corrected 23 Nov 2026)
+  //   BA  37000 / 26 = 1423.08 -> 1423;  37000 / 208 = 177.88 -> 178 (corrected 23 Nov 2026)
   test.each([
     ['ICT', 40700, 1565, 196],
     ['PB', 40000, 1538, 192],
     ['SD', 43000, 1654, 207],
-    ['KP', 45000, 1731, 216],
-    ['BA', 40000, 1538, 192],
+    ['KP', 40000, 1538, 192],
+    ['BA', 37000, 1423, 178],
   ])('%s: Rs %i a month -> Rs %i a day, Rs %i an hour', (region, monthly, daily, hourly) => {
     expect(dailyFromMonthly(monthly)).toBe(daily);
     expect(hourlyFromMonthly(monthly)).toBe(hourly);
@@ -137,12 +145,13 @@ describe('referenceAge: the age of a figure is visible, with an injected `now`',
     expect(() => referenceAge(ref, new Date('nope'))).toThrow(/now/);
   });
   test('wageReferenceTable: every region in order, "none" for GB and AJK, the age at `now`, anyStale', () => {
-    const fresh = wageReferenceTable(new Date('2026-11-20T12:00:00Z'));
-    expect(fresh.regions.map((r) => [r.region, r.status, r.daily])).toEqual([
-      ['ICT', 'notified', 1565], ['PB', 'notified', 1538], ['SD', 'notified', 1654], ['KP', 'announced', 1731], ['BA', 'announced', 1538], ['GB', 'none', null], ['AJK', 'none', null],
+    const fresh = wageReferenceTable(new Date('2026-11-24T12:00:00Z'));
+    expect(fresh.regions.map((r) => [r.region, r.status, r.daily, r.hourly])).toEqual([
+      ['ICT', 'notified', 1565, 196], ['PB', 'notified', 1538, 192], ['SD', 'notified', 1654, 207], ['KP', 'notified', 1538, 192], ['BA', 'notified', 1423, 178], ['GB', 'none', null, null], ['AJK', 'none', null, null],
     ]);
     expect(fresh.anyStale).toBe(false);
-    expect(fresh.regions.find((r) => r.region === 'KP').notifiedFound).toEqual({ monthly: 40000, effectiveFrom: '2025-07-01', daily: 1538, hourly: 192 });
+    expect(fresh.regions.find((r) => r.region === 'KP')).toMatchObject({ notifiedFound: null, checkedOn: '2026-11-23', ageDays: 1 });
+    expect(fresh.regions.find((r) => r.region === 'ICT')).toMatchObject({ checkedOn: '2026-11-19', ageDays: 5 });
     expect(fresh).toMatchObject({ checkedOn: '2026-11-19', workingDaysPerMonth: 26, hoursPerDay: 8, staleAfterDays: 365 });
     const old = wageReferenceTable(new Date('2028-01-01T12:00:00Z'));
     expect(old.anyStale).toBe(true);

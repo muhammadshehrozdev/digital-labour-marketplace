@@ -7,7 +7,7 @@ three browser windows and later an Android phone. Write the result and the date 
 ## 1. Check the wage figures (do this FIRST, before going live)
 
 The figures in `backend/config/wageReferences.js` were given by the team and checked on 19 Nov 2026 against news and
-WageIndicator pages. Before the app goes live, compare each one with the **official notification**. If a figure, date
+WageIndicator pages; Balochistan and KP were checked again and corrected on 23 Nov 2026. Before the app goes live, compare each one with the **official notification**. If a figure, date
 or status differs, the team changes it in `backend/config/wageReferences.js` (with the source and `checkedOn`), runs
 `npm test` in `.\backend`, and commits. Do not change it in any other place.
 
@@ -16,8 +16,8 @@ or status differs, the team changes it in `backend/config/wageReferences.js` (wi
 | ICT | Rs 40,700 a month from 1 Jul 2026, notified 19 Aug 2026 | https://wageindicator.org/ai/work/minimum-wage/updates/2026/minimum-wage-increased-in-islamabad-pakistan-from-01-july-2026-august-20-2026/ ; https://www.thenews.pk/print/1420647-public-voices-concern-over-10pc-raise-in-minimum-wage | the federal notification for the Islamabad Capital Territory (Ministry of Interior / ICT Administration labour wing) | |
 | Sindh | Rs 43,000 from 1 Jul 2026, notified 17 Aug 2026 | https://wageindicator.org/ai/work/minimum-wage/updates/2026/minimum-wage-increased-in-sindh-pakistan-from-1-july-2026-august-19-2026/ ; https://tribune.com.pk/story/2622332/sindh-cabinet-okays-wheat-import-raises-minimum-wage-to-rs43000 | the Sindh Labour and Human Resources Department notification | |
 | Punjab | Rs 40,000 from 1 Jul 2025, notified 8 Sep 2025; reported unchanged in 2026-27 | https://www.brecorder.com/news/40382017 ; https://wageindicator.org/en-pk/work-in-pakistan/minimum-wage/168-punjab ; https://arynews.tv/kp-takes-lead-in-raising-minimum-wage | the Punjab Labour and Human Resource Department notification; whether a 2026-27 figure was notified | |
-| KP | Rs 45,000 from 1 Jul 2026, **announced** (budget, 19 Jun 2026); notified figure found Rs 40,000 from 1 Jul 2025 | https://tribune.com.pk/story/2614049/k-p-unveils-rs212tr-khushhal-khyber-pakhtunkhwa-budget-for-fy26-27 ; https://mettisglobal.news/KP-minimum-wage-implementation-sought-for-autonomous-bodies-63394 ; https://profit.pakistantoday.com.pk/2025/09/10/kp-govt-notifies-rs40000-minimum-monthly-wage-for-workers | the KP Labour Department notification for 2026-27: if found, change the status to `notified` with its date | |
-| Balochistan | Rs 40,000, start date **not confirmed**, **announced** ("maintained"); notified figure found Rs 37,000 from 1 Jul 2024 | https://arynews.tv/kp-takes-lead-in-raising-minimum-wage ; https://wageindicator.org/en-pk/work-in-pakistan/minimum-wage/162-balochistan | the Balochistan Labour and Manpower Department notification | |
+| KP | Rs 40,000 from 1 Jul 2025, **notified** (corrected 23 Nov 2026); note: Rs 45,000 announced in the 2026-27 budget, notification not found | https://profit.pakistantoday.com.pk/2025/09/10/kp-govt-notifies-rs40000-minimum-monthly-wage-for-workers | the KP Labour Department notification; whether a 2026-27 notification (Rs 45,000) now exists: if found, change the figure, `effectiveFrom`, the source and `checkedOn` | 23 Nov 2026 (team): Rs 40,000 notified; 2026-27 notification not found |
+| Balochistan | Rs 37,000 from 1 Jul 2024, **notified** (corrected 23 Nov 2026) | https://wageindicator.org/salary/minimum-wage/pakistan/162-balochistan | the Balochistan Labour and Manpower Department notification; whether a newer one exists | 23 Nov 2026 (team): Rs 37,000 from 1 Jul 2024 |
 | GB, AJK | no figure | — | whether a notified figure exists; if yes, add it with its source | |
 | General | 26 working days, 8 hours | https://fafen.org/minimum-wage-in-pakistan-laws-process-and-current-rates/ | that the notifications still count 26 days and 8 hours | |
 

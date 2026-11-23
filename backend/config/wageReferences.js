@@ -14,11 +14,13 @@
 // team checks every figure against the official notification (docs/MODULE-5-MANUAL-TEST.md, first section).
 // If a figure differs, the TEAM changes it here.
 //
-// Figures as given by the team (BATCH_7_PROMPT.md §4.6), checked on 19 Nov 2026. Region codes are object keys
-// (see config/regions.js for why).
+// Figures as given by the team (BATCH_7_PROMPT.md §4.6), checked on 19 Nov 2026. The team checked Balochistan and
+// Khyber Pakhtunkhwa again on 23 Nov 2026 and corrected them to the NOTIFIED figures (data correction; those two
+// entries carry their own `checkedOn`). Region codes are object keys (see config/regions.js for why).
 
 export const WORKING_DAYS_PER_MONTH = 26; // the notifications' convention (FAFEN)
 export const HOURS_PER_DAY = 8; // the notifications' convention (FAFEN)
+// the date of the OLDEST check (shown in the Help Centre as "checked on"); an entry checked later has its own checkedOn
 export const WAGE_CHECKED_ON = '2026-11-19';
 
 // notified  = an official notification was found;
@@ -73,29 +75,29 @@ const RAW = {
     ],
   },
   KP: {
-    monthly: 45000,
-    effectiveFrom: '2026-07-01',
-    status: 'announced',
-    statusDate: '2026-06-19', // the budget 2026-27
-    statusNote: 'budget_2026_27',
-    notifiedFound: { monthly: 40000, effectiveFrom: '2025-07-01' },
+    monthly: 40000,
+    effectiveFrom: '2025-07-01',
+    status: 'notified',
+    statusDate: null, // no notification date confirmed
+    // a note only (not shown as a figure; the app uses the notified Rs 40,000 above)
+    statusNote: 'Rs 45,000 announced in the 2026-27 budget; notification not found (checked 23 Nov 2026)',
+    notifiedFound: null,
     sources: [
-      { title: 'Express Tribune, 19 Jun 2026', url: 'https://tribune.com.pk/story/2614049/k-p-unveils-rs212tr-khushhal-khyber-pakhtunkhwa-budget-for-fy26-27' },
-      { title: 'Mettis Global, 11 Sep 2026', url: 'https://mettisglobal.news/KP-minimum-wage-implementation-sought-for-autonomous-bodies-63394' },
       { title: 'Profit, KP notification of Rs 40,000', url: 'https://profit.pakistantoday.com.pk/2025/09/10/kp-govt-notifies-rs40000-minimum-monthly-wage-for-workers' },
     ],
+    checkedOn: '2026-11-23',
   },
   BA: {
-    monthly: 40000,
-    effectiveFrom: null, // not confirmed
-    status: 'announced',
-    statusDate: null, // "maintained" in the 2026-27 budget; no date confirmed
-    statusNote: 'maintained_2026_27',
-    notifiedFound: { monthly: 37000, effectiveFrom: '2024-07-01' },
+    monthly: 37000,
+    effectiveFrom: '2024-07-01',
+    status: 'notified',
+    statusDate: null, // no notification date confirmed
+    statusNote: null,
+    notifiedFound: null,
     sources: [
-      ARY_2026,
-      { title: 'WageIndicator, Balochistan page', url: 'https://wageindicator.org/en-pk/work-in-pakistan/minimum-wage/162-balochistan' },
+      { title: 'WageIndicator, Balochistan page: "Unskilled Workers Minimum wage with effect from July 1, 2024: PKR 37,000"', url: 'https://wageindicator.org/salary/minimum-wage/pakistan/162-balochistan' },
     ],
+    checkedOn: '2026-11-23',
   },
   GB: { monthly: null, effectiveFrom: null, status: 'none', statusDate: null, statusNote: null, notifiedFound: null, sources: [] },
   AJK: { monthly: null, effectiveFrom: null, status: 'none', statusDate: null, statusNote: null, notifiedFound: null, sources: [] },
@@ -111,5 +113,5 @@ const freezeDeep = (value) => {
 
 // region code -> { region, monthly, effectiveFrom, status, statusDate, statusNote, notifiedFound, sources, checkedOn }
 export const WAGE_REFERENCES = freezeDeep(
-  Object.fromEntries(Object.entries(RAW).map(([region, entry]) => [region, { region, ...entry, checkedOn: WAGE_CHECKED_ON }]))
+  Object.fromEntries(Object.entries(RAW).map(([region, entry]) => [region, { region, ...entry, checkedOn: entry.checkedOn ?? WAGE_CHECKED_ON }]))
 );

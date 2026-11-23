@@ -98,16 +98,18 @@ check (`backend/tests/unit/termsChecks.test.js`, all pass).
 
 ## 5. The minimum wage reference: figures, sources and the yearly update
 
-Figures as given by the team, checked on **19 Nov 2026** (monthly minimum wage for adult unskilled workers; the
-notifications count 26 working days a month and 8 hours a day). They live only in `backend/config/wageReferences.js`.
+Figures as given by the team, checked on **19 Nov 2026**; **Balochistan and Khyber Pakhtunkhwa checked again and
+corrected on 23 Nov 2026** to the notified figures (a data correction; see `docs/CHANGELOG.md`). Monthly minimum wage for
+adult unskilled workers; the notifications count 26 working days a month and 8 hours a day. They live only in
+`backend/config/wageReferences.js`.
 
 | Region | Monthly (Rs) | Day | Hour | Effective from | Status | Sources (in the config and the Help Centre) |
 |---|---|---|---|---|---|---|
 | ICT | 40,700 | 1,565 | 196 | 1 Jul 2026 | notified (19 Aug 2026) | WageIndicator (Islamabad, 1 Jul 2026); The News |
 | SD | 43,000 | 1,654 | 207 | 1 Jul 2026 | notified (17 Aug 2026) | WageIndicator (Sindh, 1 Jul 2026); Express Tribune, 6 Aug 2026 |
 | PB | 40,000 | 1,538 | 192 | 1 Jul 2025 | notified (8 Sep 2025); reported unchanged in the 2026-27 budget | Business Recorder, 10 Sep 2025; WageIndicator Punjab page; ARY News, 19 Jun 2026 |
-| KP | 45,000 | 1,731 | 216 | 1 Jul 2026 | announced (budget 2026-27, 19 Jun 2026); notified figure found: Rs 40,000 from 1 Jul 2025 | Express Tribune, 19 Jun 2026; Mettis Global, 11 Sep 2026; Profit |
-| BA | 40,000 | 1,538 | 192 | not confirmed | announced ("maintained" in the 2026-27 budget); notified figure found: Rs 37,000 from 1 Jul 2024 | ARY News, 19 Jun 2026; WageIndicator Balochistan page |
+| KP | 40,000 | 1,538 | 192 | 1 Jul 2025 | notified (date not confirmed); checked 23 Nov 2026. Note only: Rs 45,000 announced in the 2026-27 budget, notification not found | Profit, KP notification of Rs 40,000 |
+| BA | 37,000 | 1,423 | 178 | 1 Jul 2024 | notified (date not confirmed); checked 23 Nov 2026 | WageIndicator Balochistan page ("Unskilled Workers Minimum wage with effect from July 1, 2024: PKR 37,000") |
 | GB, AJK | — | — | — | — | no figure: no minimum-wage check | — |
 
 General source for the laws and the 26-day / 8-hour convention: FAFEN, "Minimum Wage in Pakistan: Laws, Process and
@@ -226,8 +228,9 @@ more fake customer accounts is not stopped by the rules. The coverage of the mid
   measures how late (availability). Until then the admin guide (empty in production) or nothing is shown.
 - **Minimum wages are written for establishments** (shops and factories), not for a household hiring a plumber for
   a day; they are shown as a reference, never as a legal requirement. Enforcement in Pakistan is weak (PIDE 2026).
-- The KP and BA figures are **announced** in budgets; the notified figures found are lower and older. The table can
-  become outdated: it must be checked every July.
+- The KP and BA figures are the **notified** figures found on 23 Nov 2026 (KP from 1 Jul 2025, BA from 1 Jul 2024). KP
+  announced Rs 45,000 in the 2026-27 budget, but no notification was found; when one is found, the team updates the
+  config. The table can become outdated: it must be checked every July.
 - **Unknown cities** (not in the table) get no minimum-wage check and no region level.
 - **Fake accounts:** the minimums limit one person or one pair; three or more fake customers can still move a young
   market (§8). Admin review of unusual patterns remains necessary.

@@ -1069,7 +1069,7 @@ commercial establishments. A household hiring a plumber for a day may not be cov
 this"), always with the region, the status in words (notified / announced), the effective date and the sources,
 and the line "These laws are written for workers in shops and factories". It never says "illegal", never blocks a
 price, and is never legal advice. Day = round(monthly / 26), hour = round(monthly / 26 / 8), halves up, the
-notifications' own convention (FAFEN). The figures are the team's table of 19 Nov 2026; the team checks them against
+notifications' own convention (FAFEN). The figures are the team's table of 19 Nov 2026 (Balochistan and KP corrected to the notified figures on 23 Nov 2026); the team checks them against
 the official notifications before going live and every July; `referenceAge` makes their age visible (Help Centre
 date, admin Overview banner after 365 days).
 
