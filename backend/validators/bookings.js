@@ -7,21 +7,13 @@ import {
 } from '../config/bookingRules.js';
 import { HIDE_REASONS, REPORT_REASONS, REVIEW_ANSWERS, REVIEW_TEXT_MAX } from '../models/Review.js';
 import { hasContactInfo } from '../services/booking/contactInfo.js';
-import { noCnic, objectId, queryInt } from './common.js';
+import { isoDate, noCnic, objectId, queryInt } from './common.js';
 import { offerSchema } from './wage.js';
 
 const text = (max) => z.string({ error: 'TEXT_MUST_BE_TEXT' }).trim().max(max, 'TEXT_TOO_LONG');
 const noContact = (schema) => schema.refine((t) => !hasContactInfo(t), { message: 'TEXT_HAS_CONTACT_INFO' });
 const one = (max) => z.string({ error: 'ONE_VALUE' }).trim().max(max, 'TEXT_TOO_LONG');
 const WORKER_ID = /^DLM-\d{4}-\d{4,6}$/;
-
-const isoDate = z
-  .string({ error: 'DATE_INVALID' })
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'DATE_INVALID')
-  .refine((d) => {
-    const t = Date.parse(`${d}T00:00:00Z`);
-    return !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === d;
-  }, { message: 'DATE_NOT_REAL' });
 
 // Express leaves req.body undefined when a POST has no body; the action routes accept "no body" as {}.
 export const allowEmptyBody = (req, res, next) => {

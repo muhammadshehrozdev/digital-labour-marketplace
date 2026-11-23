@@ -276,6 +276,22 @@ export default {
     PRICE_GUIDE_ARCHIVED: 'Qeemat guide ka yeh indiraj archive ho chuka hai aur badla nahin ja sakta.',
     PRICE_GUIDE_CHANGED: 'Kisi aur admin ne abhi yeh indiraj badla hai. Barah-e-karam safha dobara kholein.',
     // ---- end of Batch 7 (errors) ----
+    // ---- Batch 8A (errors): Module 6 job requests, drafts until the team reviews them ----
+    JOB_NOT_FOUND: 'Kaam ki darkhwast nahi mili',
+    JOB_LIMIT_OPEN: 'Aap ki pehle hi {max} khuli kaam ki darkhwastein hain. Pehle koi ek band karein.',
+    JOB_LIMIT_DAY: 'Aap ne pichhle 24 ghanton mein {max} kaam ki darkhwastein save kin. Meharbani karke kal dobara koshish karein.',
+    JOB_SKILL_CATEGORY: 'Sirf chune hue kaam ki maharatein chunein.',
+    JOB_BUDGET_INCOMPLETE: 'Budget ki raqam aur yeh kaise gini jayegi (poora kaam, rozana ya fi ghanta) dono likhein, ya dono khali chhor dein.',
+    JOB_CHANGED: 'Yeh kaam ki darkhwast abhi badli gayi hai. Meharbani karke safha dobara kholein.',
+    JOB_NOT_EDITABLE: 'Yeh kaam ki darkhwast ab badli nahi ja sakti. Sirf woh khula kaam badla ja sakta hai jis ki koi darkhwast intezar mein ya qabool shuda na ho.',
+    JOB_NOT_OPEN: 'Yeh kaam ki darkhwast band, mukammal ya khatam ho chuki hai.',
+    JOB_HAS_OPEN_REQUEST: 'Is kaam ki ek darkhwast pehle hi ek karigar ke paas hai. Jawab ka intezar karein, ya pehle woh darkhwast cancel karein.',
+    JOB_HAS_BOOKINGS: 'Yeh kaam pehle hi ek karigar ko bheja ja chuka hai, is liye mitaya nahi ja sakta. Is ke bajaye ise band karein.',
+    JOB_EDIT_EMPTY: 'Save karne se pehle kam az kam ek cheez badlein.',
+    BOOKING_JOB_MISMATCH: 'Yeh maharat is kaam ke shobe ki nahi. Is kaam ke shobe ki koi maharat chunein.',
+    TASK_TYPE_INVALID: 'Kaam ki qism chunein: lagana, marammat, service, naya kaam, safai, shifting ya gharelu madad.',
+    CLOSE_REASON_INVALID: 'Kaam band karne ki wajah chunein: kaam ho gaya, zaroorat nahi rahi, kahin aur se karwa liya, ya koi aur wajah.',
+    // ---- end of Batch 8A (errors) ----
     // ---- Batch 6 (errors): Module 4 texts, drafts until the team reviews them ----
     BOOKING_NOT_FOUND: 'Booking nahi mili',
     BOOKING_ID_INVALID: 'Booking number is tarah hona chahiye: BK-2026-000123',

@@ -40,6 +40,9 @@ describe('npm run db:indexes', () => {
     expect(await unique('users', 'email')).toBe(true);
     expect(await unique('auditlogs', 'seq')).toBe(true);
     expect(await unique('workerprofiles', 'workerIdCode')).toBe(true);
+    // Module 6 (Batch 8A): the job request codes, and the partial index of bookings sent from a job
+    expect(await unique('jobrequests', 'code')).toBe(true);
+    expect((await db.collection('bookings').indexes()).some((i) => i.key.jobRequest === 1 && i.partialFilterExpression)).toBe(true);
     expect(await db.collection('users').countDocuments()).toBe(0); // no data written
   }, 120000);
 });

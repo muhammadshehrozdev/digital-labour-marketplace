@@ -5,6 +5,8 @@ import User from '../../models/User.js';
 import WorkerProfile from '../../models/WorkerProfile.js';
 import Notification from '../../models/Notification.js';
 import SavedWorker from '../../models/SavedWorker.js';
+import JobRequest from '../../models/JobRequest.js';
+import Booking from '../../models/Booking.js';
 
 const keysOf = (model) => model.schema.indexes().map(([keys]) => JSON.stringify(keys));
 
@@ -27,5 +29,14 @@ describe('indexes', () => {
     expect(ttl[1].expireAfterSeconds).toBe(180 * 24 * 60 * 60);
     const unique = SavedWorker.schema.indexes().find(([keys]) => keys.customer === 1 && keys.profile === 1);
     expect(unique[1].unique).toBe(true);
+  });
+  test('Module 6: job requests by code (unique), by customer and by state and trade; bookings by job (partial)', () => {
+    expect(keysOf(JobRequest)).toEqual(expect.arrayContaining([
+      JSON.stringify({ code: 1 }), JSON.stringify({ customer: 1, createdAt: -1 }), JSON.stringify({ status: 1, category: 1, createdAt: -1 }),
+    ]));
+    expect(JobRequest.schema.indexes().find(([keys]) => keys.code === 1)[1].unique).toBe(true);
+    const byJob = Booking.schema.indexes().find(([keys]) => keys.jobRequest === 1);
+    expect(byJob[0]).toEqual({ jobRequest: 1, createdAt: -1 });
+    expect(byJob[1].partialFilterExpression).toEqual({ jobRequest: { $exists: true } });
   });
 });

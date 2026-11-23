@@ -278,6 +278,22 @@ export default {
     PRICE_GUIDE_ARCHIVED: 'This price guide entry is archived and cannot be changed.',
     PRICE_GUIDE_CHANGED: 'Another admin changed this entry just now. Please reload the page.',
     // ---- end of Batch 7 (errors) ----
+    // ---- Batch 8A (errors): Module 6 job requests ----
+    JOB_NOT_FOUND: 'Job request not found',
+    JOB_LIMIT_OPEN: 'You already have {max} open job requests. Close one first.',
+    JOB_LIMIT_DAY: 'You saved {max} job requests in the last 24 hours. Please try again tomorrow.',
+    JOB_SKILL_CATEGORY: 'Choose skills of the chosen trade only.',
+    JOB_BUDGET_INCOMPLETE: 'Write the budget amount and how it is counted (whole job, per day or per hour), or leave both empty.',
+    JOB_CHANGED: 'This job request was changed just now. Please reload the page.',
+    JOB_NOT_EDITABLE: 'This job request cannot be changed now. Only an open job without a waiting or accepted request can be changed.',
+    JOB_NOT_OPEN: 'This job request is closed, done or expired.',
+    JOB_HAS_OPEN_REQUEST: 'This job already has a request to a worker. Wait for the answer, or cancel that request first.',
+    JOB_HAS_BOOKINGS: 'This job was already sent to a worker, so it cannot be deleted. Close it instead.',
+    JOB_EDIT_EMPTY: 'Change at least one thing before saving.',
+    BOOKING_JOB_MISMATCH: "This skill is not in the trade of the job. Choose a skill of the job's trade.",
+    TASK_TYPE_INVALID: 'Choose the kind of work: install, repair, service, new work, cleaning, moving or household help.',
+    CLOSE_REASON_INVALID: 'Choose why you close the job: work done, not needed, found someone elsewhere, or other.',
+    // ---- end of Batch 8A (errors) ----
     // ---- Batch 6 (errors): Module 4 texts, drafts until the team reviews them ----
     BOOKING_NOT_FOUND: 'Booking not found',
     BOOKING_ID_INVALID: 'Booking number must look like BK-2026-000123',

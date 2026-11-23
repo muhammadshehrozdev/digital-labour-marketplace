@@ -65,6 +65,15 @@ export const cnic = z
   .refine((s) => /^\d{5}-?\d{7}-?\d$/.test(s), { message: 'CNIC_INVALID' })
   .transform((s) => s.replace(/-/g, ''));
 
+// A calendar day 'YYYY-MM-DD' that really exists (Module 4 bookings, Module 5 payments, Module 6 jobs).
+export const isoDate = z
+  .string({ error: 'DATE_INVALID' })
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'DATE_INVALID')
+  .refine((d) => {
+    const t = Date.parse(`${d}T00:00:00Z`);
+    return !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === d;
+  }, { message: 'DATE_NOT_REAL' });
+
 // Query-string number (query values always arrive as text).
 export const queryInt = (min, max) =>
   z

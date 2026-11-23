@@ -7,8 +7,11 @@
 // paymentSummary().state for admin filters). The app never moves money. Each terms or payment step is ONE
 // conditional update on `terms.version` / the record's status (409 on conflict).
 //
+// Module 6 (Batch 8A, DONE): `jobRequest`, `jobCode` and `jobTaskType` when the booking was sent from a customer's job
+// request (POST /api/job-requests/:id/request). A snapshot of what the worker was sent. NO defaults, so bookings made
+// without a job stay exactly as they were. The job's budget is never copied here (it is private to the customer).
+//
 // EXTENSION POINTS (do not add these now; docs/modules/MODULE-4.md and MODULE-5.md list them):
-//   Module 6  (job posting) jobRequest (ref JobRequest) when the booking came from a posted job
 //   Module 8  (agreement)   READS `terms.agreed` (and `termsHistory`) to build the formal agreement: work timeline,
 //                           written scope of work, beforeEvidence[], afterEvidence[], a sealed agreement version
 //   Module 9  (disputes)    a full dispute record (the small `dispute` below is only what reliability needs)
@@ -24,6 +27,7 @@ import {
 } from '../config/workTerms.js';
 import { PAYMENT_NOTE_MAX, TERMS_NOTE_MAX, WAGE_RULES } from '../config/wageRules.js';
 import { REGION_CODES } from '../config/regions.js';
+import { TASK_TYPES } from '../config/jobRules.js';
 
 export const ACTORS = Object.freeze(['customer', 'worker', 'system', 'admin']);
 const ALL_DECISIONS = ['work_done', 'not_done_worker_fault', 'not_done_no_fault', 'no_show_confirmed', 'no_show_rejected', 'worker_fault', 'no_fault'];
@@ -158,6 +162,10 @@ const bookingSchema = new mongoose.Schema(
     // is always computed from exactly the data it is stored with (a concurrent change gets 409)
     moneyVersion: { type: Number, min: 0, default: 0 },
     synthetic: { type: Boolean, default: false }, // demo data only
+    // Module 6 (Batch 8A): only on bookings sent from a job request (no defaults on purpose)
+    jobRequest: { type: mongoose.Schema.Types.ObjectId, ref: 'JobRequest' },
+    jobCode: { type: String, maxlength: 20 }, // JR-2026-000001
+    jobTaskType: { type: String, enum: [...TASK_TYPES, null] },
   },
   { timestamps: true }
 );
@@ -176,5 +184,7 @@ bookingSchema.index({ status: 1, skillId: 1, 'terms.agreed.unit': 1, region: 1, 
 bookingSchema.index({ status: 1, category: 1, 'terms.agreed.unit': 1, completedAt: -1 });
 bookingSchema.index({ workerUser: 1, completedAt: -1 });
 bookingSchema.index({ paymentState: 1, updatedAt: -1 });
+// Module 6: the bookings of one job request (only bookings that have one)
+bookingSchema.index({ jobRequest: 1, createdAt: -1 }, { partialFilterExpression: { jobRequest: { $exists: true } } });
 
 export default mongoose.model('Booking', bookingSchema);

@@ -58,7 +58,7 @@ export const DIRECTORY_SORT = Object.freeze({
 });
 
 // "Best track record" needs a default for workers without a snapshot, so it is an aggregation.
-async function trackRecordPage(filter, { page, limit }) {
+export async function trackRecordPage(filter, { page, limit }) {
   const projection = Object.fromEntries(PUBLIC_WORKER_FIELDS.split(' ').map((f) => [f, 1]));
   const rankField = `$reputation.score.${rankFieldOf(DEFAULT_REPUTATION_PARAMS)}`;
   const newRank = newWorkerRank(await currentBaseRate());

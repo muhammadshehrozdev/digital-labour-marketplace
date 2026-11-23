@@ -22,6 +22,8 @@ import {
   reviewModerationSchema, flagsQuerySchema, flagIdParams, flagDecisionSchema, adminWorkerIdParams, statsQuerySchema,
 } from '../validators/bookings.js';
 import { listPriceGuides, createPriceGuide, updatePriceGuide, listPayments } from '../controllers/adminWageController.js';
+import { listJobsForAdmin, jobStatsForAdmin, getJobForAdmin } from '../controllers/adminJobRequestsController.js';
+import { adminJobsQuerySchema, jobIdParams } from '../validators/jobRequests.js';
 import { priceGuideQuerySchema, priceGuideCreateSchema, priceGuideUpdateSchema, priceGuideIdParams, adminPaymentsQuerySchema } from '../validators/wage.js';
 
 const router = express.Router();
@@ -79,5 +81,10 @@ router.get('/price-guides', validate(priceGuideQuerySchema, 'query'), listPriceG
 router.post('/price-guides', validate(priceGuideCreateSchema), createPriceGuide);
 router.patch('/price-guides/:id', validate(priceGuideIdParams, 'params'), validate(priceGuideUpdateSchema), updatePriceGuide);
 router.get('/payments', validate(adminPaymentsQuerySchema, 'query'), listPayments);
+
+// Module 6 (Batch 8A): job requests, read-only (stats before :id)
+router.get('/job-requests', validate(adminJobsQuerySchema, 'query'), listJobsForAdmin);
+router.get('/job-requests/stats', validate(statsQuerySchema, 'query'), jobStatsForAdmin);
+router.get('/job-requests/:id', validate(jobIdParams, 'params'), getJobForAdmin);
 
 export default router;

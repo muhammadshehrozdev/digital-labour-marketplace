@@ -225,6 +225,22 @@ export const ERRORS = Object.freeze({
   PRICE_GUIDE_ARCHIVED: 'This price guide entry is archived and cannot be changed.',
   PRICE_GUIDE_CHANGED: 'Another admin changed this entry just now. Please reload the page.',
 
+  // ---- Module 6: job requests (Batch 8A) ----
+  JOB_NOT_FOUND: 'Job request not found',
+  JOB_LIMIT_OPEN: 'You already have {max} open job requests. Close one first.',
+  JOB_LIMIT_DAY: 'You saved {max} job requests in the last 24 hours. Please try again tomorrow.',
+  JOB_SKILL_CATEGORY: 'Choose skills of the chosen trade only.',
+  JOB_BUDGET_INCOMPLETE: 'Write the budget amount and how it is counted (whole job, per day or per hour), or leave both empty.',
+  JOB_CHANGED: 'This job request was changed just now. Please reload the page.',
+  JOB_NOT_EDITABLE: 'This job request cannot be changed now. Only an open job without a waiting or accepted request can be changed.',
+  JOB_NOT_OPEN: 'This job request is closed, done or expired.',
+  JOB_HAS_OPEN_REQUEST: 'This job already has a request to a worker. Wait for the answer, or cancel that request first.',
+  JOB_HAS_BOOKINGS: 'This job was already sent to a worker, so it cannot be deleted. Close it instead.',
+  JOB_EDIT_EMPTY: 'Change at least one thing before saving.',
+  BOOKING_JOB_MISMATCH: 'This skill is not in the trade of the job. Choose a skill of the job\'s trade.',
+  TASK_TYPE_INVALID: 'Choose the kind of work: install, repair, service, new work, cleaning, moving or household help.',
+  CLOSE_REASON_INVALID: 'Choose why you close the job: work done, not needed, found someone elsewhere, or other.',
+
   // ---- server ----
   ROUTE_NOT_FOUND: 'Route not found',
   DUPLICATE_RECORD: 'This record already exists',
@@ -257,6 +273,8 @@ export const FIELD_LABELS = Object.freeze({
   amount: 'Amount', unit: 'Unit', quantity: 'Number', materials: 'Materials', advance: 'Advance', paymentTiming: 'Payment time',
   paymentMethod: 'Payment method', visitCharge: 'Visit charge', baseVersion: 'Price version', version: 'Price version', offer: 'Offer',
   paidOn: 'Payment date', method: 'Payment method', low: 'Low price', high: 'High price', sourceNote: 'Source', region: 'Region', year: 'Year',
+  // Module 6
+  taskType: 'Kind of work', urgent: 'Urgent', budget: 'Budget', jobVersion: 'Job version', state: 'State',
 });
 
 export const isErrorCode = (value) => typeof value === 'string' && Object.prototype.hasOwnProperty.call(ERRORS, value);

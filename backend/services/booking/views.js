@@ -67,6 +67,13 @@ export function bookingView(b, { viewer, now, people = {}, hasReview = false, de
     hasReview,
     actions: viewer === 'admin' ? [] : availableActions(b, viewer, now, { hasReview }),
   };
+  // Module 6: only on a booking sent from a job request. The worker gets the code and the kind of work only; the
+  // customer and admins also the job's id (to link back). Never the budget or the analysis (they are not on the booking).
+  if (b.jobRequest) {
+    view.job = viewer === 'worker'
+      ? { code: b.jobCode ?? null, taskType: b.jobTaskType ?? null }
+      : { _id: b.jobRequest, code: b.jobCode ?? null, taskType: b.jobTaskType ?? null };
+  }
   if (detail) {
     view.timeline = (b.statusHistory ?? []).map(timelineView);
     view.dispute = disputeView(b.dispute, viewer);

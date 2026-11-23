@@ -3,25 +3,13 @@
 // tap or two sweeps at the same time can never apply a step twice: the loser gets null (-> 409).
 import mongoose from 'mongoose';
 import Booking from '../../models/Booking.js';
-import Counter from '../../models/Counter.js';
 import { writeAudit } from '../audit.js';
-import { karachiYear } from '../workerId.js';
+import { nextYearlyCode } from '../codes.js';
 import { safeRecompute } from '../reputation/recompute.js';
 import { runPatternCheck } from '../reputation/patternCheck.js';
 
 // Booking code BK-<year>-<6 digits> from one atomic counter per year (like the worker ID).
-export async function nextBookingCode(date = new Date()) {
-  const year = karachiYear(date);
-  const key = `bookingCode-${year}`;
-  let counter;
-  try {
-    counter = await Counter.findOneAndUpdate({ _id: key }, { $inc: { seq: 1 } }, { upsert: true, returnDocument: 'after' });
-  } catch (err) {
-    if (err.code !== 11000) throw err; // two "first ever" upserts at once: retry once
-    counter = await Counter.findOneAndUpdate({ _id: key }, { $inc: { seq: 1 } }, { returnDocument: 'after' });
-  }
-  return `BK-${year}-${String(counter.seq).padStart(6, '0')}`;
-}
+export const nextBookingCode = (date = new Date()) => nextYearlyCode('bookingCode', 'BK', date);
 
 /**
  * Applies one step if the booking is still as expected.

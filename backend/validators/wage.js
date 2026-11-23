@@ -9,7 +9,7 @@ import { GUIDE_NOTE_MAX, GUIDE_SOURCE_MAX, GUIDE_SOURCE_MIN, PAYMENT_NOTE_MAX, T
 import { GUIDE_REGIONS } from '../models/PriceGuide.js';
 import { hasContactInfo } from '../services/booking/contactInfo.js';
 import { toWesternDigits } from '../services/skillExtractor/normalize.js';
-import { noCnic, objectId, queryInt } from './common.js';
+import { isoDate, noCnic, objectId, queryInt } from './common.js';
 
 const text = (max) => z.string({ error: 'TEXT_MUST_BE_TEXT' }).trim().max(max, 'TEXT_TOO_LONG');
 const noContact = (schema) => schema.refine((t) => !hasContactInfo(t), { message: 'TEXT_HAS_CONTACT_INFO' });
@@ -28,14 +28,6 @@ export const rupees = (min, max) => z.preprocess(
 const whole = (min, max) => z.preprocess(toNumber, z.number({ error: 'NUMBER_REQUIRED' }).int('WHOLE_NUMBER').min(min, 'NUMBER_TOO_SMALL').max(max, 'NUMBER_TOO_LARGE'));
 // null = "not answered yet" (allowed on purpose); a missing key means the same
 const choice = (list, code) => z.enum(list, { error: code }).nullable().optional();
-
-const isoDate = z
-  .string({ error: 'DATE_INVALID' })
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'DATE_INVALID')
-  .refine((d) => {
-    const t = Date.parse(`${d}T00:00:00Z`);
-    return !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === d;
-  }, { message: 'DATE_NOT_REAL' });
 
 const amount = rupees(WAGE_RULES.AMOUNT_MIN, WAGE_RULES.AMOUNT_MAX);
 const unit = z.enum(UNITS, { error: 'UNIT_INVALID' });

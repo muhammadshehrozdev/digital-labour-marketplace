@@ -34,3 +34,5 @@ export const JOB_STATES = Object.freeze(['open', 'requested', 'accepted', 'done'
 export const ACTIVE_JOB_STATES = Object.freeze(['open', 'requested', 'accepted']);
 export const JOB_LIST_STATES = Object.freeze([...JOB_STATES, 'active', 'all']);
 export const JOB_ACTIONS = Object.freeze(['edit', 'find_workers', 'request', 'close', 'delete']);
+// The fields whose suggestion the customer may keep or change (analysis.changed, the admin use statistics).
+export const CHANGED_FIELDS = Object.freeze(['category', 'skills', 'taskType', 'city', 'preferredDate', 'timeSlot', 'urgent', 'budget']);

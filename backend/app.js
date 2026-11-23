@@ -20,6 +20,7 @@ import bookingsRoutes from './routes/bookings.js';
 import reviewsRoutes from './routes/reviews.js';
 import cronRoutes from './routes/cron.js';
 import pricesRoutes from './routes/prices.js';
+import jobRequestsRoutes from './routes/jobRequests.js';
 
 export function createApp() {
   const env = getEnv();
@@ -79,6 +80,8 @@ export function createApp() {
   app.use('/api/cron', cronRoutes);
   // Module 5 (Batch 7): price information (terms and payments live under /api/bookings)
   app.use('/api/prices', pricesRoutes);
+  // Module 6 (Batch 8A): job requests (the request with a job creates a normal booking)
+  app.use('/api/job-requests', jobRequestsRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

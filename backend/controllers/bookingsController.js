@@ -7,20 +7,17 @@ import Booking from '../models/Booking.js';
 import Review from '../models/Review.js';
 import User from '../models/User.js';
 import WorkerProfile from '../models/WorkerProfile.js';
+import { prepareBookingRequest, createBookingRecord, afterBookingRequest } from '../services/booking/create.js';
 import { httpError } from '../utils/httpError.js';
-import { BOOKING_RULES as RULES, OPEN_STATUSES } from '../config/bookingRules.js';
+import { OPEN_STATUSES } from '../config/bookingRules.js';
 import { notify } from '../services/notifications.js';
 import { writeAudit } from '../services/audit.js';
 import { canDo, cancelOutcome } from '../services/booking/transitions.js';
-import { isAllowedDate, scheduledStartFor, addHours } from '../services/booking/schedule.js';
-import { normalizePhone } from '../services/booking/contactInfo.js';
 import { contactBlock } from '../services/booking/contact.js';
 import { sweepBookings } from '../services/booking/sweep.js';
-import { afterClose, applyStep, closeValues, nextBookingCode, trusted } from '../services/booking/lifecycle.js';
+import { afterClose, applyStep, closeValues, trusted } from '../services/booking/lifecycle.js';
 import { bookingParams } from '../services/booking/notify.js';
 import { bookingView } from '../services/booking/views.js';
-import { regionOf } from '../config/regions.js';
-import { snapshotOf, termsFields } from '../services/wage/termsRules.js';
 import { rangeForBooking } from '../services/wage/load.js';
 
 export const roleOf = (req) => req.user.role; // 'customer' | 'worker' (routes allow only these two and admin)
@@ -78,67 +75,15 @@ export const respond = async (res, b, req, now, status = 200) => {
   res.status(status).json({ booking: await detailResponse(b, roleOf(req), now) });
 };
 
-// POST /api/bookings  (customer) — a hire request to one worker
+// POST /api/bookings  (customer) — a hire request to one worker. The checks, the limits, the notification and the
+// audit entry are shared with Module 6's request with a job (services/booking/create.js).
 export const createBooking = async (req, res) => {
   const now = new Date();
   const body = req.validated.body;
-  const profile = await WorkerProfile.findOne({ workerIdCode: body.workerIdCode }).select('user skills occupation category whatsappNumber').lean();
-  if (!profile) throw httpError(404, 'WORKER_NOT_FOUND');
-  const workerUser = await User.findById(profile.user).select('phone status role').lean();
-  if (!workerUser || workerUser.role !== 'worker' || workerUser.status === 'suspended' || !profile.occupation || !profile.category) {
-    throw httpError(409, 'BOOKING_WORKER_UNAVAILABLE');
-  }
-  const skill = (profile.skills ?? []).find((s) => s.skillId === body.skillId);
-  if (!skill) throw httpError(400, 'BOOKING_SKILL_NOT_OFFERED');
-  if (!isAllowedDate(body.preferredDate, now)) throw httpError(400, 'BOOKING_DATE_RANGE', { max: RULES.MAX_DAYS_AHEAD });
-
-  // the same person on both sides (one phone number), for example to praise himself
-  const mine = normalizePhone(req.user.phone);
-  if (mine && [workerUser.phone, profile.whatsappNumber].some((p) => normalizePhone(p) === mine)) throw httpError(400, 'BOOKING_SELF');
-
-  const open = { customer: req.user._id, status: trusted({ $in: OPEN_STATUSES }) };
-  const [openCount, pairCount, dayCount] = await Promise.all([
-    Booking.countDocuments(open),
-    Booking.countDocuments({ ...open, workerUser: profile.user }),
-    Booking.countDocuments({ customer: req.user._id, createdAt: trusted({ $gte: addHours(now, -24) }) }),
-  ]);
-  if (pairCount >= RULES.MAX_OPEN_PER_PAIR) throw httpError(409, 'BOOKING_LIMIT_PAIR');
-  if (openCount >= RULES.MAX_OPEN_PER_CUSTOMER) throw httpError(409, 'BOOKING_LIMIT_OPEN', { max: RULES.MAX_OPEN_PER_CUSTOMER });
-  if (dayCount >= RULES.MAX_NEW_PER_DAY) throw httpError(429, 'BOOKING_LIMIT_DAY', { max: RULES.MAX_NEW_PER_DAY });
-
-  // Module 5: an optional offer creates price terms version 1, proposed by the customer (accepting the
-  // request does NOT agree to it). The region comes from the city table (unknown city: null).
-  const offer = body.offer ? termsFields(body.offer) : null;
-  const booking = await Booking.create({
-    code: await nextBookingCode(now),
-    customer: req.user._id,
-    worker: profile._id,
-    workerUser: profile.user,
-    skillId: skill.skillId,
-    skillName: skill.name,
-    category: skill.category ?? profile.category,
-    preferredDate: body.preferredDate,
-    timeSlot: body.timeSlot,
-    scheduledStart: scheduledStartFor(body.preferredDate, body.timeSlot),
-    city: body.city,
-    area: body.area,
-    description: body.description,
-    statusHistory: [{ from: null, to: 'requested', by: 'customer', at: now, reason: null }],
-    region: regionOf(body.city),
-    ...(offer ? {
-      terms: { status: 'proposed', version: 1, proposedBy: 'customer', proposedAt: now, ...offer, agreed: null },
-      termsHistory: [{ version: 1, by: 'customer', action: 'proposed', at: now, snapshot: snapshotOf(offer) }],
-      moneyVersion: 1,
-    } : {}),
-  });
-  if (offer) {
-    await writeAudit({
-      actor: req.user._id, actorRole: 'customer', action: 'terms.proposed', targetType: 'Booking', targetId: booking._id, toState: 'proposed',
-      reason: `Price offer with the request ${booking.code}`, details: { code: booking.code, version: 1, amount: offer.amount, unit: offer.unit, total: offer.total },
-    });
-  }
-  await notify(profile.user, 'booking_requested', bookingParams(booking, offer ? { amount: offer.amount, unit: offer.unit } : {}));
-  await respond(res, booking.toObject(), req, now, 201);
+  const checked = await prepareBookingRequest(req.user, body, now);
+  const created = await createBookingRecord(req.user, checked, body, now);
+  await afterBookingRequest(req.user, created);
+  await respond(res, created.booking.toObject(), req, now, 201);
 };
 
 // GET /api/bookings/mine?as=&status=active|past|all|<status>&page=  — own bookings, no phone numbers

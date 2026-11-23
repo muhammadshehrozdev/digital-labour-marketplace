@@ -543,6 +543,112 @@ Months in Pakistan time (of `paidOn`); only confirmed money in `confirmed`.
   payment_records, payment_state, created_at_utc, agreed_at_utc, completed_at_utc, last_paid_on, synthetic. No names,
   phone numbers or notes. Audited (`export.payments`).
 
+## Module 6: job requests and the job analyzer (Batch 8A)
+
+All behind the login. **Workers get 403 on every route here**: a worker sees a job only through a booking request
+sent to that worker. Strict zod schemas (unknown keys → 400 `UNKNOWN_FIELD`; `analysis`, `customer`, `code` or
+`status` can never be sent). Someone else's job answers **404 `JOB_NOT_FOUND`** (the job is found only through a filter
+with the customer's id), never 403. The description and the area pass the contact-info check (`TEXT_HAS_CONTACT_INFO`)
+and the CNIC check (`NOTE_HAS_CNIC`). The budget appears only in the owner's and the admin's job views. No answer
+holds a score, a probability or a percentage. Decisions D-080 to D-090; `docs/modules/MODULE-6.md`.
+
+### POST /api/job-requests/analyze { text, inputMode? } (customer, admin) — nothing saved
+`text` 1–500 characters. The live analyzer's output (Batch 8A: `method: "rules"`); nothing is stored and no text is
+logged. No extra rate limiter (`docs/SECURITY.md`).
+```json
+{"method":"rules","methodName":"rule-based word lists",
+ "versions":{"analyzer":"job-rules-1","taxonomy":"2026-11-09-v1","phrases":"2026-11-24-v1","model":null},
+ "category":{"suggested":"ac_appliance_repair","tie":false,"ranked":["ac_appliance_repair"],"matched":["ac","service"],"source":"rules","words":[]},
+ "skills":[{"skillId":"ac_general","name":"AC repair (general)","category":"ac_appliance_repair","matched":["ac"]}, …],
+ "taskType":{"suggested":"service","tie":false,"matched":["service"],"fromCategory":false},
+ "city":{"suggested":"Rawalpindi","region":"PB","matched":["rawalpindi"],"conflict":false},
+ "when":{"suggested":"tomorrow","date":"2026-11-25","matched":["kal"]},
+ "timeSlot":{"suggested":"morning","matched":["subah"]},
+ "urgent":{"suggested":false,"matched":[]},
+ "budget":{"suggested":null,"matched":[]},
+ "notes":[],"missing":["area"]}
+```
+`notes`: `no_trade_words`, `negative_phrase`, `category_tie`, `city_conflict`, `budget_out_of_range`,
+`address_in_text`. `missing`: always `area`; `category` and `city` when not suggested. On a tie `suggested` is `null`,
+`tie` is `true` and `ranked` holds the tied trades. `urgent.suggested: false` means "no urgency word found".
+
+### POST /api/job-requests (customer)
+`{ description (3–500), inputMode: text|voice, category, skills: [skillId] (0–5, all of the category), taskType: install|repair|service|new_work|cleaning|moving|household_help|null, city (2–50), area (2–80), preferredDate?: YYYY-MM-DD|null, timeSlot?: morning|afternoon|evening|any|null, urgent?: boolean, budget?: { amount, unit: job|day|hour } | null }`
+→ 201 `{ job }` (the owner view below). The analysis is computed on the server. Errors: 400 `JOB_SKILL_CATEGORY`,
+`SKILL_UNKNOWN`, `CATEGORY_INVALID`, `TASK_TYPE_INVALID`, `INPUT_MODE_INVALID`, `TIME_SLOT_INVALID`,
+`JOB_BUDGET_INCOMPLETE`, `UNIT_INVALID`, `NUMBER_TOO_SMALL`, `DATE_INVALID`, `DATE_NOT_REAL`, `BOOKING_DATE_RANGE`
+(today up to 30 days ahead), `TEXT_HAS_CONTACT_INFO`, `NOTE_HAS_CNIC`; 409 `JOB_LIMIT_OPEN` (10 jobs open, requested
+or accepted); 429 `JOB_LIMIT_DAY` (10 new jobs in 24 hours).
+
+The **owner view**: `_id, code (JR-2026-000001), state (open|requested|accepted|done|expired|closed), version, actions
+([edit, find_workers, request, close, delete] as allowed), category, skills [{skillId, name}], taskType, description,
+inputMode, city, region, area, preferredDate, timeSlot, urgent, budget, openUntil, closedAt, closeReason, createdAt,
+updatedAt, bookingsCount`; the detail also `analysis { method, versions, analyzedAt, suggested { category, categoryTie,
+skills, taskType, city, preferredDate, timeSlot, urgent, budget, notes }, changed { category, skills, taskType, city,
+preferredDate, timeSlot, urgent, budget } }` (true = changed, false = kept, null = nothing suggested) and `bookings
+[{ _id, code, status, skillId, skillName, preferredDate, timeSlot, worker { name, workerIdCode }, createdAt }]`.
+
+### GET /api/job-requests/mine?state=&page=&limit= (customer)
+`state`: `open|requested|accepted|done|expired|closed|active|all` (`active` = open, requested, accepted; bad value →
+400 `STATUS_UNKNOWN`). → `{ jobs [owner view without analysis and bookings], counts { open, requested, accepted, done,
+expired, closed, active }, page, limit, total }`, newest first. Expired requests are swept first.
+
+### GET /api/job-requests/:id (customer, owner) → `{ job }` (the detail view)
+
+### PATCH /api/job-requests/:id { baseVersion, ...any editable field } (customer, owner)
+Only in state `open`. 409 `JOB_NOT_EDITABLE` (another state), 409 `JOB_CHANGED` (a stale `baseVersion`, or a request
+was reserved meanwhile), 400 `JOB_EDIT_EMPTY` (no field). A changed description is analysed again; the `changed`
+flags are always recomputed. `version` + 1.
+
+### POST /api/job-requests/:id/close { reason: work_done|not_needed|found_elsewhere|other } (customer, owner)
+→ state `closed` (400 `CLOSE_REASON_INVALID`; 409 `JOB_NOT_OPEN` when already closed). Never changes the bookings.
+
+### DELETE /api/job-requests/:id (customer, owner)
+204. A job that was ever sent to a worker → 409 `JOB_HAS_BOOKINGS` (close it instead); a request being written right
+now → 409 `JOB_HAS_OPEN_REQUEST`.
+
+### GET /api/job-requests/:id/workers?sort=&availability=&identity=&skills=&page=&limit= (customer, owner)
+"Workers for this job": **a filter, not a ranking** (D-084). Listed, not-suspended workers who offer a skill of the
+job's trade, in the customer's chosen directory sort (`updated` default, `experience`, `evidence`, `track_record`), at
+most 500 candidates, then only the **same city** (`marketCity`: "Pindi" = "Rawalpindi"). States done, expired, closed →
+409 `JOB_NOT_OPEN`.
+```json
+{"workers":[{"workerIdCode":"DLM-2026-000012","occupation":"Plumber","city":"Pindi", "skills":[…], "user":{"name":"…"},
+   "matchedSkills":[{"skillId":"plumb_leak","name":"Water leak repair"}],"sameCity":true}],
+ "page":1,"limit":20,"total":1,"sort":"updated","truncated":false,
+ "filter":{"category":"plumbing_sanitary","city":"Rawalpindi","marketCity":"Rawalpindi","cityKnown":true}}
+```
+Only the directory's public fields (`PUBLIC_WORKER_FIELDS`, the user's name); never a phone, WhatsApp, CNIC, email or
+address. `truncated: true` when the candidate limit was reached (Module 7 replaces this list).
+
+### POST /api/job-requests/:id/request { jobVersion, workerIdCode, skillId, preferredDate, timeSlot, offer? } (customer, owner)
+201 `{ booking }`, the same answer as `POST /api/bookings`. One open request per job (a reservation, D-082): 409
+`JOB_HAS_OPEN_REQUEST` (one is waiting or accepted, or two taps at once), 409 `JOB_NOT_OPEN` (done, expired, closed),
+409 `JOB_CHANGED` (stale `jobVersion`). Every check of `POST /api/bookings` (`WORKER_NOT_FOUND`,
+`BOOKING_WORKER_UNAVAILABLE`, `BOOKING_SKILL_NOT_OFFERED`, `BOOKING_DATE_RANGE`, `BOOKING_SELF`, `BOOKING_LIMIT_*`, the
+offer) plus 400 `BOOKING_JOB_MISMATCH` (the skill is not in the job's trade). `city`, `area` and `description` are
+copied from the job (sending them → 400 `UNKNOWN_FIELD`).
+
+### Bookings — changed (only bookings sent from a job)
+`GET /api/bookings/mine`, `GET /api/bookings/:id` and the admin booking views gain `job` **only** on a booking sent from
+a job: the worker gets `{ code, taskType }`; the customer and admins `{ _id, code, taskType }`. Never the budget or the
+analysis. A booking without a job has no `job` key at all.
+
+### Admin (admin only; others 403)
+- `GET /api/admin/job-requests?state=&category=&q=<JR code>&page=&limit=` → `{ jobs [list view: no budget; customer
+  { name }, bookingsCount, analysisMethod], page, limit, total }` (`q` is matched literally).
+- `GET /api/admin/job-requests/stats?days=7..90` (default 30) → `{ days, jobs, byMethod, byInputMode, fields: {
+  category|taskType|city|preferredDate|timeSlot|urgent|budget: { kept, changed, notSuggested }, skills: { kept, changed,
+  notSuggested, added, removed } }, note }`. *A customer may keep a wrong suggestion or change a right one, so these
+  numbers describe use, not correctness* (D-088). Aggregates only.
+- `GET /api/admin/job-requests/:id` → `{ job }`: everything, including the budget, the analysis and the bookings; the
+  customer's name only (no phone, no email).
+
+### GET /api/meta/job-options (anyone, no database)
+`{ taskTypes, closeReasons, inputModes, budgetUnits, limits { descriptionMin 3, descriptionMax 500, areaMin 2, areaMax
+80, maxSkills 5, maxOpenPerCustomer 10, maxNewPerDay 10, openDays 30, amountMin 100, amountMax 5000000 }, analyzer {
+method, methodName, versions } }`.
+
 ## Removed earlier
 Phase 3: `/auth/*` and `/worker/*` without `/api`, `/api/worker/profile`, `/api/worker/all`,
 `/api/worker/verify/:id`, `/api/worker/admin/users`. Batch 1: `/api/worker/ai-skill-profiler`,
@@ -560,6 +666,8 @@ Phase 3: `/auth/*` and `/worker/*` without `/api`, `/api/worker/profile`, `/api/
 | `npm run evaluate:reputation -- --scenario <name\|all> --seeds 30` | Module 4 simulation; writes `evaluation/reputation/results/SIMULATION-*.json` (**simulation results only**) |
 | `npm run reputation:recompute -- --worker <workerIdCode>` / `-- --all` | Rebuilds reputation snapshots; local only unless `--allow-remote` **and** typing `yes` after seeing the host |
 | `npm run evaluate:skills -- --file <dataset>` / `npm run agreement:skills -- --a <f> --b <f>` | Module 2 evaluation (`docs/evaluation/`) |
+| `npm run jobs:try -- "<text>" [--now <ISO>] [--model <file>]` | Module 6: the analysis of one text in a table (no database, nothing saved) |
+| `npm run jobs:split` / `jobs:train` / `evaluate:jobs` / `agreement:jobs` | Module 6 evaluation (`backend/evaluation/job-analysis/README.md`, `docs/evaluation/job-analysis/PROTOCOL.md`) |
 | `npm run migrate:cnic` / `migrate:categories` / `migrate:skills` | Dry run unless `-- --apply`; local only unless `--allow-remote` |
 | `npm run db:local`, `npm run seed:local` | Local preview database and synthetic demo accounts (dev container) |
 
@@ -771,6 +879,20 @@ table lists every code in the catalog. Regenerate it with `node docs/tools/gener
 | `REGION_INVALID` | Choose a region of Pakistan, or all of Pakistan. |
 | `PRICE_GUIDE_ARCHIVED` | This price guide entry is archived and cannot be changed. |
 | `PRICE_GUIDE_CHANGED` | Another admin changed this entry just now. Please reload the page. |
+| `JOB_NOT_FOUND` | Job request not found |
+| `JOB_LIMIT_OPEN` | You already have {max} open job requests. Close one first. |
+| `JOB_LIMIT_DAY` | You saved {max} job requests in the last 24 hours. Please try again tomorrow. |
+| `JOB_SKILL_CATEGORY` | Choose skills of the chosen trade only. |
+| `JOB_BUDGET_INCOMPLETE` | Write the budget amount and how it is counted (whole job, per day or per hour), or leave both empty. |
+| `JOB_CHANGED` | This job request was changed just now. Please reload the page. |
+| `JOB_NOT_EDITABLE` | This job request cannot be changed now. Only an open job without a waiting or accepted request can be changed. |
+| `JOB_NOT_OPEN` | This job request is closed, done or expired. |
+| `JOB_HAS_OPEN_REQUEST` | This job already has a request to a worker. Wait for the answer, or cancel that request first. |
+| `JOB_HAS_BOOKINGS` | This job was already sent to a worker, so it cannot be deleted. Close it instead. |
+| `JOB_EDIT_EMPTY` | Change at least one thing before saving. |
+| `BOOKING_JOB_MISMATCH` | This skill is not in the trade of the job. Choose a skill of the job's trade. |
+| `TASK_TYPE_INVALID` | Choose the kind of work: install, repair, service, new work, cleaning, moving or household help. |
+| `CLOSE_REASON_INVALID` | Choose why you close the job: work done, not needed, found someone elsewhere, or other. |
 | `ROUTE_NOT_FOUND` | Route not found |
 | `DUPLICATE_RECORD` | This record already exists |
 | `DB_VALIDATION` | Invalid value for: {fields} |
