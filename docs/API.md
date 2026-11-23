@@ -427,6 +427,122 @@ every booking and rebuilds the snapshot of every worker who has a booking; answe
 New params: `bookingId`, `bookingCode`, `rating`, `outcome` (with the existing `skillId`, `skillName`,
 `reasonCode`). Never a phone number or a name.
 
+## Module 5: price terms, payment records, price information (Batch 7)
+
+Strict zod schemas on every body, query and URL parameter (unknown keys → 400 `UNKNOWN_FIELD`). Amounts are whole
+rupees; a string with Urdu or Arabic digits or commas (`"۲,۵۰۰"`) is read as a number. The app never moves money.
+Every terms or payment update is ONE conditional update on `moneyVersion` (and the state it checked): a stale screen
+or a double tap gets 409. Phone numbers never appear in any of these answers (D-002).
+
+### GET /api/meta/wage-references?city= (anyone, no database)
+The minimum wage table of `backend/config/wageReferences.js` with the daily (÷ 26) and hourly (÷ 26 ÷ 8) values, the
+status, dates, sources, names in three languages, and the age of the figures. `?city=` (max 50) also answers that
+city's region (`null` = not in the city table, so no reference).
+```json
+{"checkedOn":"2026-11-19","workingDaysPerMonth":26,"hoursPerDay":8,"staleAfterDays":365,"anyStale":false,
+ "generalSource":{"title":"FAFEN, \"Minimum Wage in Pakistan: Laws, Process and Current Rates\"","url":"https://fafen.org/…"},
+ "regions":[{"region":"ICT","status":"notified","monthly":40700,"daily":1565,"hourly":196,"effectiveFrom":"2026-07-01",
+   "statusDate":"2026-08-19","statusNote":null,"notifiedFound":null,"sources":[{"title":"WageIndicator, …","url":"https://…"}],
+   "checkedOn":"2026-11-19","ageDays":4,"stale":false,"names":{"en":"Islamabad Capital Territory","ur":"…","ur-Latn":"…","short":{…}}}, …,
+   {"region":"GB","status":"none","monthly":null,"daily":null,"hourly":null,…}],
+ "city":{"name":"pindi","region":"PB"}}
+```
+
+### GET /api/meta/work-terms (anyone, no database)
+Units, durations, the condition options, the important conditions per trade category, the category notes, the check
+ids with severity and audience, payment kinds, statuses, dispute reasons, payment states, and the limits
+(`amountMin` 100, `amountMax` 5,000,000, `quantityMax` { day 60, hour 200 }, `maxTermsVersions` 10, `maxPayments` 10,
+`paymentRecordDays` 30, `largeAdvanceShare` 0.5).
+
+### GET /api/prices/estimate?skillId=&category=&unit=&city=&workerIdCode= (customer, worker, admin)
+`unit` is required; `skillId` (from the taxonomy) or `category`; `city` max 50. One indexed query loads the
+completed jobs; `priceRange` applies the rules (D-070, D-071). The admin guide only when there is no platform range.
+Aggregates only: never a list of amounts, a booking id, a name or a worker id. No extra rate limiter (aggregates only).
+```json
+{"query":{"skillId":"elec_wiring","category":"electrical_solar","unit":"job","city":"Islamabad","region":"ICT"},
+ "platform":{"level":"city","scope":"skill","unit":"job","low":2000,"median":2500,"high":2800,"jobs":9,"workers":4},
+ "guide":null,
+ "wageReference":{"region":"ICT","monthly":40700,"daily":1565,"hourly":196,"status":"notified","effectiveFrom":"2026-07-01",…,"names":{…}},
+ "workerRates":{"hourlyRate":600,"dailyRate":null},
+ "rules":{"minJobs":5,"minWorkers":3,"minCustomers":3,"windowDays":365}}
+```
+(Numbers from the synthetic local demo.) Without a range: `"platform":null,"guide":{"scope":"skill","region":"PK","low":1500,"high":3000,"sourceNote":"[Demo] …","note":"…","updatedAt":"…"}`.
+Errors: 400 `UNIT_INVALID`, `SKILL_ID_INVALID`, `CATEGORY_UNKNOWN`, `CATEGORY_INVALID` (skill not in the category),
+`WORKER_ID_INVALID`, `TEXT_TOO_LONG`; 401; 403.
+
+### POST /api/prices/check (customer, worker) — the checks of a draft, nothing saved
+Body (all optional): `skillId`, `category`, `city`, `amount`, `unit`, `quantity`, `duration`, `materials`, `advance`,
+`paymentTiming`, `paymentMethod`, `visitCharge`. Answer: `{ checks: [{ id, severity, audience, params }], region,
+wageReference, platform }`. The saved booking detail computes the same checks with the same pure function.
+```json
+// {"skillId":"elec_wiring","city":"Islamabad","amount":1200,"unit":"day","quantity":1}
+{"checks":[{"id":"below_minimum_day","severity":"warning","audience":"both","params":{"region":"ICT","reference":1565,"amount":1200}},
+           {"id":"missing_condition","severity":"info","audience":"both","params":{"condition":"paymentTiming"}}, …],"region":"ICT",…}
+```
+
+### POST /api/bookings (customer) — changed
+Optional `offer { amount, unit, quantity?, duration? }` creates price terms version 1, proposed by the customer
+(accepting the request does not agree to it; audit `terms.proposed`; the `booking_requested` notification gains
+`amount` and `unit`). `region` is set from `city` (unknown city: `null`). Errors as before plus `NUMBER_TOO_SMALL`,
+`UNIT_INVALID`, `QUANTITY_INVALID`, `WHOLE_NUMBER`.
+
+### POST /api/bookings/:id/terms (customer or worker) — propose a version
+Body: `baseVersion` (the version the person looked at), `amount`, `unit`, `quantity?`, `duration?`, `materials?`,
+`advance?`, `paymentTiming?`, `paymentMethod?`, `visitCharge?`, `note?` (max 300, contact-info check). The server
+computes `quantity` (a whole job is 1) and `total`. Answers with the booking detail. Errors: 404 (not your booking);
+403 (admin); 400 `TERMS_NOT_ALLOWED` (a request for the worker, after "Work done", during a no-show report, a closed
+booking), `DISPUTE_OPEN`, `TERMS_LIMIT` (`params.max` 10), `ADVANCE_TOO_HIGH`, `TEXT_HAS_CONTACT_INFO`, `NOTE_HAS_CNIC`;
+409 `TERMS_CHANGED` (the version moved) or `BOOKING_CHANGED`. Notification `terms_proposed` to the other person.
+
+### POST /api/bookings/:id/terms/agree { version } (the person who did not propose it)
+409 `TERMS_CHANGED` if `version` is not the current one; 400 `TERMS_OWN_VERSION`, `TERMS_NOT_ALLOWED`,
+`DISPUTE_OPEN`. Sets `terms.agreed` (a copy with `version` and `agreedAt`) and `paymentState`; audit `terms.agreed`;
+notification `terms_agreed` to both.
+
+### POST /api/bookings/:id/payments { kind, amount, method, paidOn } (customer: "I paid"; worker: "I received")
+While accepted, or up to 30 days after completed / cancelled (only if ever accepted); at most 10 records; not during
+an open dispute. `paidOn` is the day in Pakistan, not in the future, not before the booking was created. 201 with the
+booking detail. Errors: 400 `PAYMENT_NOT_ALLOWED`, `PAYMENT_WINDOW_PASSED` (`params.days` 30), `PAYMENT_LIMIT`
+(`params.max` 10), `PAYMENT_DATE_FUTURE`, `PAYMENT_DATE_TOO_EARLY`, `PAYMENT_KIND_INVALID`, `DATE_NOT_REAL`,
+`DISPUTE_OPEN`. Audit `payment.recorded`; notification `payment_recorded` to the other person.
+
+### POST /api/bookings/:id/payments/:paymentId/confirm | /dispute (the other person)
+`/dispute` body: `reason` (`not_received`, `wrong_amount`, `other`), `note?` (max 200, contact-info check). Only the
+other person; once. Errors: 404 `PAYMENT_NOT_FOUND`; 400 `PAYMENT_OWN_RECORD`, `PAYMENT_REASON_INVALID`; 409
+`PAYMENT_CHANGED` (already answered) or `BOOKING_CHANGED`. Never edited, deleted or confirmed automatically. Audit
+`payment.confirmed` / `payment.disputed` (reason code only); notification to the person who recorded it.
+
+### GET /api/bookings/:id — changed (the two people, admin)
+Adds `region`, `regionNames`, `terms` `{ status, version, proposedBy, proposedAt, current, agreed }`, `termsHistory`
+`[{ version, by, action, at, snapshot }]`, `payments`, `paymentSummary` `{ agreedTotal, confirmedPaid, awaiting,
+disputed, balance, materials, records, state }`, `termsChecks`, `wageReference`, and the new buttons `termsActions`
+(`propose_terms`, `agree_terms`) and `paymentActions` `{ record, respond: [paymentId] }`. Module 4's `actions` is
+unchanged. Admins get empty buttons.
+
+### GET /api/bookings/mine — changed
+Adds only `terms` `{ status, version, proposedBy, agreedTotal, agreedUnit, offer }` (`offer` = the price of a waiting
+version, for the Requests card) and `paymentSummary` `{ state }`. Never conditions, notes or payment records.
+
+### GET /api/workers/me/earnings?year= (worker)
+`{ thisMonth: { month, confirmed }, months: [{ month, confirmed, awaiting, disputed, materials, jobs, agreedTotal,
+items: [{ bookingId, code, skillId, skillName, agreedTotal, state, confirmed, awaiting, disputed, materials }] }] }`.
+Months in Pakistan time (of `paidOn`); only confirmed money in `confirmed`.
+
+### Admin (admin only; others 403)
+- `GET /api/admin/price-guides?status=active|archived|all&category=` → `{ guides, history: { [id]: [{ action, at, by, before, after }] } }`.
+- `POST /api/admin/price-guides` `{ skillId?, category, unit, region (ICT…AJK or PK), low, high, sourceNote (10–300, required), note? }`
+  → 201. Errors: `SOURCE_NOTE_REQUIRED`, `PRICE_GUIDE_LOW_HIGH`, `REGION_INVALID`, `CATEGORY_INVALID`, 409 `PRICE_GUIDE_EXISTS`.
+  Audit `priceguide.created` with the numbers.
+- `PATCH /api/admin/price-guides/:id` `{ low, high, sourceNote, note? }` (new numbers need the source again) or
+  `{ status: "archived" }`. Errors: 404 `PRICE_GUIDE_NOT_FOUND`, 409 `PRICE_GUIDE_ARCHIVED`, `PRICE_GUIDE_CHANGED`.
+  Audit `priceguide.updated` / `priceguide.archived` with the old and new numbers.
+- `GET /api/admin/payments?state=all|has_dispute|no_price|paid|part_paid|not_paid&page=&limit=` → bookings (detail
+  views, read-only), disputed first, `counts.disputed`.
+- `GET /api/admin/exports/payments` (also `GET /api/admin/export/payments.csv`) `?status=<payment state>&from=&to=` →
+  CSV: booking_code, skill, category, region, booking_status, unit, agreed_total, confirmed_paid, awaiting, disputed,
+  payment_records, payment_state, created_at_utc, agreed_at_utc, completed_at_utc, last_paid_on, synthetic. No names,
+  phone numbers or notes. Audited (`export.payments`).
+
 ## Removed earlier
 Phase 3: `/auth/*` and `/worker/*` without `/api`, `/api/worker/profile`, `/api/worker/all`,
 `/api/worker/verify/:id`, `/api/worker/admin/users`. Batch 1: `/api/worker/ai-skill-profiler`,

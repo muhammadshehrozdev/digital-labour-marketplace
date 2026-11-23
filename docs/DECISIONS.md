@@ -1052,6 +1052,112 @@ the frozen parameters did not change. Also: the reputation rules are served by `
 worded by the website, so My reputation and the Help Centre always say what the live engine does; the Urdu answer
 "I did come" became gender-neutral ("میں نے حاضری دی تھی"), for team review.
 
+## D-067 — Module 5 price information: option C (team choice, 19 Nov 2026)
+
+**Team choice, 19 Nov 2026, not a supervisor approval.** The 6 Nov 2026 assessment recommended shrinking Module 5,
+because a "fair wage estimator" needs price data the platform does not have yet. Option C answers that in three
+layers: (1) the government minimum wage as a **reference** floor (config/wageReferences.js); (2) the platform's
+own completed-job prices, shown only as aggregates with minimums (services/wage/priceRange.js); (3) an admin price
+guide with a written source as the fallback (PriceGuide; empty in production). Nobody invents numbers. Module 5 is
+not the core research contribution (Modules 4 and 7 are); its measured part is a small simulation (D-070).
+
+## D-068 — The minimum wage is a reference, not a legal floor
+
+The federal and provincial notifications set a monthly minimum wage for adult unskilled workers in industrial and
+commercial establishments. A household hiring a plumber for a day may not be covered, and enforcement is weak
+(PIDE 2026, context only). So the app shows the figure as a reference ("a day's work should not be paid less than
+this"), always with the region, the status in words (notified / announced), the effective date and the sources,
+and the line "These laws are written for workers in shops and factories". It never says "illegal", never blocks a
+price, and is never legal advice. Day = round(monthly / 26), hour = round(monthly / 26 / 8), halves up, the
+notifications' own convention (FAFEN). The figures are the team's table of 19 Nov 2026; the team checks them against
+the official notifications before going live and every July; `referenceAge` makes their age visible (Help Centre
+date, admin Overview banner after 365 days).
+
+## D-069 — Regions from a city table; an unknown city means no reference
+
+`Booking.city` is free text, so `config/regions.js` maps the main cities (English, Roman Urdu and Urdu spellings) to
+ICT, PB, SD, KP, BA, GB or AJK after the skill extractor's normalisation (NFC, lower case, Urdu letter variants,
+spaces removed). An unknown city gives `null`: no minimum-wage check and no region level in the price range. The app
+never guesses. `region` is stored on a booking when it is created; old bookings had no agreed price, so no
+migration is needed. Region codes are object keys in config (the error-catalog test treats quoted UPPER_CASE words
+there as error codes).
+
+## D-070 — The platform price range rules
+
+Only completed bookings completed by **both** people or an admin decision (not `auto`), with **agreed** terms
+(`terms.agreed`) in the same unit, completed in the last 365 days; **one job per customer–worker pair** (the most
+recent); at least 5 jobs from 3 workers and 3 customers (privacy: no single price can be read; robustness: one
+person or one friendly pair cannot set it). Numbers: the 25th percentile, median and 75th percentile (the middle
+half), Hyndman & Fan (1996) definition 7, each rounded to the nearest Rs 50, halves up. The median, not the mean
+(breakdown point 50%, Hampel 1971). Output: aggregates only. Every number is provisional in config/wageRules.js.
+The simulation (evaluation/price-range, SIMULATION results) measures the cost of the minimums (availability) and
+the gain (smaller error and attack shift); no success criteria were fixed.
+
+## D-071 — Level order; category ranges only for a day or an hour
+
+Try the skill in the city, the region, then Pakistan. For `day` and `hour` only, then the trade category in the
+city, the region and Pakistan: a day of electrical work is comparable across electrical skills, a whole job is not
+(a fan fitting and a full rewiring are both "one job"). The first level that meets the minimums wins.
+
+## D-072 — The admin price guide: a required written source, an empty start
+
+Used only when no platform range exists (order: skill in the region, skill in Pakistan, category in the region,
+category in Pakistan). `sourceNote` is required (10–300 characters) and shown to users with the month; the page says
+"Type only numbers you can show a source for. Never guess." One active entry per skill, category, unit and region;
+changes of numbers need the source again; archive instead of delete; every change is audited with the old and new
+numbers. Production starts empty: no code or script creates production entries (the local demo seed creates one
+"[Demo]" entry with synthetic: true).
+
+## D-073 — Price terms with versions and `baseVersion`
+
+The terms live on the booking (`Booking.terms`, every version in `termsHistory`). The customer may offer a price
+with the request (version 1); after acceptance either person may propose a new version; only the person who did
+not propose the current version may agree. Every call sends the version it looked at (`baseVersion` / `version`) and
+the update is conditional on it and on `moneyVersion` (409 `TERMS_CHANGED` if it moved), so nobody agrees to a price
+that changed a second ago. A new proposal after an agreement leaves `terms.agreed` unchanged until the other person
+agrees again. Terms are frozen after "Work done" (by either person), during a no-show report, during an open
+dispute, and once the booking is closed; a change still waiting then stays "not agreed". At most 10 versions.
+`terms.agreed` is the only part the price statistics, the payment summary, the earnings, the CSV and later
+Module 8 read.
+
+## D-074 — The price is optional
+
+A booking without agreed terms works exactly as in Module 4 (no flow changes; the Module 4 `actions` are unchanged
+and the new buttons come in separate fields `termsActions` and `paymentActions`). The screens say "Price not agreed
+in the app yet" with a button.
+
+## D-075 — Checks warn, they never block
+
+The important conditions per trade category (config/workTerms.js) and seven rule-based checks
+(services/wage/termsChecks.js: below the minimum-wage reference for a day / an hour / a job of one or 2–3 days, a
+large advance, materials bought by the worker without an advance, a missing condition, below the platform's 25th
+percentile) are shown to both people while they choose and on the booking. They never block: a worker may still
+agree a low price; it is the worker's choice. A low-pay warning is never sent as a notification.
+
+## D-076 — Payment records: confirmed by the other person, never edited, never auto-confirmed
+
+Either person records a payment ("I paid" / "I received") while the booking is accepted or up to 30 days after it
+closed (only if it was ever accepted); only the other person confirms or disputes it (reason required); a record is
+never edited or deleted (a mistake is disputed and recorded again; a record that can be changed later can be
+bargained over) and never confirmed automatically. `materials` money pays for materials, not the work: it is never
+counted against the agreed price or in the worker's earnings (shown apart). `paymentState` is stored for admin
+filters and computed with the same pure `paymentSummary` in the same conditional update; the `moneyVersion` counter
+makes every terms or payment update conditional on the data it read. Earnings count only confirmed money, by the
+Pakistan month of `paidOn`.
+
+## D-077 — The app never moves money
+
+No online payments, wallets, escrow, commissions, invoices with tax or monthly employment contracts. The app keeps a
+record that both people confirm; every payment screen says "The app does not move money. It keeps a record you both
+confirm." The printable record says it is not a bank receipt. The payment method is a record only.
+
+## D-078 — Payment disputes are only marked until Module 9
+
+A disputed payment record is marked, shown to both people and on the admin Payments page (read-only, disputed
+first) and counted in `paymentState` (`has_dispute`). There is no admin decision step for payments in this batch:
+Module 9 (dispute resolution) will decide them. Payment records are refused while a Module 4 booking dispute is open,
+as `canDo` refuses most booking actions then.
+
 ## D-079 — `/api/health` proves the function starts; `/api/auth/session` is the database check (Batch 7, Part A, 19 Nov 2026)
 
 After a new deploy, `/api/health` can say `"db":"disconnected"` although the database works: the route is mounted

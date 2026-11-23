@@ -31,8 +31,8 @@ test.beforeAll(async ({ browser }) => {
 const MODES = ['light', 'dark'];
 for (const lang of LANGS) for (const mode of MODES) {
   test(`axe: no serious or critical problems on the main pages in ${lang}, ${mode} mode`, async ({ browser }) => {
-    // Batch 6 added ten Module 4 pages to this list (about 3 minutes per language and mode now)
-    test.setTimeout(360_000);
+    // Batch 6 added ten Module 4 pages to this list (about 3 minutes per language and mode now); Batch 7 five Module 5 pages
+    test.setTimeout(480_000);
     const problems = [];
     const visit = async (page, path, label) => {
       await page.goto(path);
@@ -66,7 +66,7 @@ for (const lang of LANGS) for (const mode of MODES) {
     await login(workerPage, worker.email);
     await skipTour(workerPage);
     await workerPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
-    for (const [path, label] of [['/notifications', 'notifications'], ['/worker', 'dashboard'], ['/worker/profile', 'profile view'], ['/worker/profile/edit', 'profile edit'], ['/worker/profile/edit?section=skills', 'edit skills'], ['/worker/profile/edit?section=proof', 'edit proof'], ['/onboarding/skills', 'onboarding step 3'], ['/worker/requests', 'requests'], ['/worker/jobs', 'my jobs'], ['/worker/reviews', 'my reviews'], ['/worker/reputation', 'my reputation']]) {
+    for (const [path, label] of [['/notifications', 'notifications'], ['/worker', 'dashboard'], ['/worker/profile', 'profile view'], ['/worker/profile/edit', 'profile edit'], ['/worker/profile/edit?section=skills', 'edit skills'], ['/worker/profile/edit?section=proof', 'edit proof'], ['/onboarding/skills', 'onboarding step 3'], ['/worker/requests', 'requests'], ['/worker/jobs', 'my jobs'], ['/worker/reviews', 'my reviews'], ['/worker/reputation', 'my reputation'], ['/worker/earnings', 'my earnings'], ['/prices', 'price information (worker)']]) {
       await visit(workerPage, path, label);
     }
     await workerContext.close();
@@ -92,6 +92,7 @@ for (const lang of LANGS) for (const mode of MODES) {
     await visit(customerPage, '/bookings', 'my bookings');
     await visit(customerPage, '/saved', 'saved workers');
     await visit(customerPage, '/help', 'help centre');
+    await visit(customerPage, '/prices', 'price information (customer)'); // Module 5
     await customerContext.close();
 
     // Admin pages
@@ -100,7 +101,7 @@ for (const lang of LANGS) for (const mode of MODES) {
     await setLanguage(adminPage, 'en');
     await login(adminPage, 'e2e.admin@example.com', 'local e2e admin pass phrase');
     await adminPage.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
-    for (const [path, label] of [['/admin', 'admin overview'], ['/admin/identity?status=All', 'identity review'], ['/admin/evidence?status=all', 'evidence review'], ['/admin/users', 'users'], ['/admin/audit', 'audit log'], ['/admin/templates', 'reason templates'], ['/admin/exports', 'exports'], ['/admin/bookings', 'bookings'], ['/admin/disputes', 'disputes'], ['/admin/reviews', 'review moderation'], ['/admin/flags', 'reputation flags']]) {
+    for (const [path, label] of [['/admin', 'admin overview'], ['/admin/identity?status=All', 'identity review'], ['/admin/evidence?status=all', 'evidence review'], ['/admin/users', 'users'], ['/admin/audit', 'audit log'], ['/admin/templates', 'reason templates'], ['/admin/exports', 'exports'], ['/admin/bookings', 'bookings'], ['/admin/disputes', 'disputes'], ['/admin/reviews', 'review moderation'], ['/admin/flags', 'reputation flags'], ['/admin/payments', 'payments'], ['/admin/price-guide', 'price guide']]) {
       await visit(adminPage, path, label);
     }
     await adminContext.close();
