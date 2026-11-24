@@ -239,7 +239,7 @@ must be treated as exposed, because the build logs contained them.
 - All Vercel tokens and deploy hooks deleted.
 - Passwords changed and two-factor authentication (2FA) enabled on GitHub, Vercel and Gmail.
 - MongoDB Atlas database password, `MONGO_URI` and `JWT_SECRET` rotated (replaced with new values).
-- An unused Gemini API key removed.
+- An unused third-party API key was removed.
 
 **Scope note:** the development container had no Vercel access.
 
