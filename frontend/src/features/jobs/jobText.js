@@ -155,3 +155,23 @@ export function requestDayOf(preferredDate, today) {
   if (preferredDate && preferredDate > today && preferredDate <= addDays(today, 30)) return { day: 'pick', date: preferredDate, moved: false };
   return { day: 'tomorrow', date: '', moved: true };
 }
+
+// The same rows as `npm run jobs:try` (backend/scripts/jobsTry.js): the suggestion and the words that led to it.
+export function tryRows(t, a, { categoryLabel, skillName }) {
+  const list = (xs) => (xs && xs.length ? xs.join(', ') : '—');
+  const category = a.category.suggested ? categoryLabel(a.category.suggested) : a.category.tie ? t('jobs.admin.try.tie', { trades: a.category.ranked.map(categoryLabel).join(', ') }) : '—';
+  const city = a.city.suggested ? a.city.suggested : a.city.conflict ? t('jobs.admin.try.twoCities') : '—';
+  const budget = a.budget.suggested ? `${a.budget.suggested.amount} / ${t(`wage.unit.${a.budget.suggested.unit}`)}` : '—';
+  return [
+    ['category', category, list(a.category.source === 'nb' ? a.category.words : a.category.matched)],
+    ['skills', list(a.skills.map((s) => skillName(s))), list([...new Set(a.skills.flatMap((s) => s.matched))])],
+    ['taskType', a.taskType.suggested ? `${t(`jobs.task.${a.taskType.suggested}`)}${a.taskType.fromCategory ? ` ${t('jobs.admin.try.fromTrade')}` : ''}` : '—', list(a.taskType.matched)],
+    ['city', city, list(a.city.matched)],
+    ['day', a.when.suggested ? `${t(`jobs.admin.try.day.${a.when.suggested}`)} (${a.when.date})` : '—', list(a.when.matched)],
+    ['timeSlot', a.timeSlot.suggested ? t(`booking.slot.${a.timeSlot.suggested}`) : '—', list(a.timeSlot.matched)],
+    ['urgent', a.urgent.suggested ? t('jobs.admin.try.yes') : '—', list(a.urgent.matched)],
+    ['budget', budget, list(a.budget.matched)],
+    ['notes', list(a.notes), ''],
+    ['missing', list(a.missing), ''],
+  ];
+}

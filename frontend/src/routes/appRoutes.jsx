@@ -55,6 +55,7 @@ const DescribeJob = lazyPage(() => import('../pages/jobs/DescribeJob'));
 const JobRequestPage = lazyPage(() => import('../pages/jobs/JobRequestPage'));
 const EditJobRequest = lazyPage(() => import('../pages/jobs/EditJobRequest'));
 const JobWorkers = lazyPage(() => import('../pages/jobs/JobWorkers'));
+const AdminJobRequests = lazyPage(() => import('../pages/admin/AdminJobRequests'));
 
 // Developer pages only in development builds (not shipped in production).
 const StyleGuide = import.meta.env.DEV ? lazy(() => import('../pages/dev/StyleGuide')) : null;
@@ -132,6 +133,8 @@ export const appRoutes = (
             <Route path="flags" element={<AdminFlags />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="price-guide" element={<AdminPriceGuide />} />
+            {/* Module 6 (Batch 8B): job requests, how suggestions were used, try the analyzer (read-only) */}
+            <Route path="job-requests" element={<AdminJobRequests />} />
           </Route>
         </Route>
 

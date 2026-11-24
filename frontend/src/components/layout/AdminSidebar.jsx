@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { ClipboardList, FileCheck2, FileDown, Flag, Gavel, HandCoins, LayoutDashboard, MessageSquareQuote, MessagesSquare, NotebookText, ScrollText, ShieldCheck, Users } from 'lucide-react';
+import { ClipboardList, ClipboardPen, FileCheck2, FileDown, Flag, Gavel, HandCoins, LayoutDashboard, MessageSquareQuote, MessagesSquare, NotebookText, ScrollText, ShieldCheck, Users } from 'lucide-react';
 import { useT } from '../../i18n';
 import styles from './AdminSidebar.module.css';
 
@@ -15,6 +15,8 @@ const LINKS = [
   // Module 5 (Batch 7)
   { to: '/admin/payments', label: 'wage.admin.nav.payments', icon: HandCoins },
   { to: '/admin/price-guide', label: 'wage.admin.nav.guide', icon: NotebookText },
+  // Module 6 (Batch 8B)
+  { to: '/admin/job-requests', label: 'jobs.admin.nav', icon: ClipboardPen },
   { to: '/admin/users', label: 'admin.nav.users', icon: Users },
   { to: '/admin/audit', label: 'admin.nav.audit', icon: ScrollText },
   { to: '/admin/templates', label: 'admin.nav.templates', icon: MessageSquareQuote },

@@ -59,6 +59,7 @@ const BY_ROLE = {
     { id: 'admin-flags', to: '/admin/flags', label: 'adminm4.nav.flags', icon: Flag },
     { id: 'admin-price-guide', to: '/admin/price-guide', label: 'wage.admin.nav.guide', icon: NotebookText },
     { id: 'admin-payments', to: '/admin/payments', label: 'wage.admin.nav.payments', icon: HandCoins },
+    { id: 'admin-job-requests', to: '/admin/job-requests', label: 'jobs.admin.nav', icon: ClipboardPen },
   ],
 };
 
