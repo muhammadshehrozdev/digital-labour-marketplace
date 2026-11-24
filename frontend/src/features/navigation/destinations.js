@@ -5,6 +5,7 @@ import {
   BadgeCheck, Bell, FileCheck2, FileDown, Hammer, Heart, History, Home, Languages, LayoutDashboard, LifeBuoy, LogIn, MessageSquareQuote,
   PencilLine, Scale, ScrollText, Search, ShieldCheck, Sparkles, UserPlus, UserRound, Users,
   Inbox, BriefcaseBusiness, Star, Award, CalendarCheck, Gavel, MessagesSquare, Flag, ClipboardList, Wallet, ChartNoAxesColumn, NotebookText, HandCoins,
+  MessageSquarePlus, ClipboardPen,
 } from 'lucide-react';
 
 const PUBLIC = [
@@ -35,6 +36,9 @@ const BY_ROLE = {
   ],
   customer: [
     { id: 'find', to: '/find', label: 'nav.findWorkers', icon: Search },
+    // Module 6 (Batch 8B)
+    { id: 'describe-job', to: '/job-requests/new', label: 'jobs.nav.describe', icon: MessageSquarePlus },
+    { id: 'job-requests', to: '/job-requests', label: 'jobs.nav.mine', icon: ClipboardPen },
     { id: 'saved', to: '/saved', label: 'nav.saved', icon: Heart },
     { id: 'compare', to: '/compare', label: 'nav.compare', icon: Scale },
     { id: 'bookings', to: '/bookings', label: 'booking.nav.bookings', icon: CalendarCheck },

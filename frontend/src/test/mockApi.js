@@ -3,6 +3,7 @@
 import { AxiosError } from 'axios';
 import API from '../api';
 import { resetTaxonomyCache } from '../hooks/useTaxonomy';
+import { resetJobOptionsCache } from '../features/jobs/useJobOptions';
 
 export const TAXONOMY = {
   version: 'test',
@@ -29,13 +30,25 @@ function defaultRoute(key, routes) {
     return me?.status === 200 ? { status: 200, data: { user: me.data } } : { status: 200, data: { user: null } };
   }
   if (key === 'PATCH /users/me/preferences') return (config, body) => ({ status: 200, data: body });
+  if (key === 'GET /meta/job-options') return { status: 200, data: JOB_OPTIONS };
   return { status: 404, data: { code: 'ROUTE_NOT_FOUND', message: 'Not found' } };
 }
+
+// GET /api/meta/job-options (Module 6) as the server sends it (backend/routes/meta.js).
+export const JOB_OPTIONS = {
+  taskTypes: ['install', 'repair', 'service', 'new_work', 'cleaning', 'moving', 'household_help'],
+  closeReasons: ['work_done', 'not_needed', 'found_elsewhere', 'other'],
+  inputModes: ['text', 'voice'],
+  budgetUnits: ['job', 'day', 'hour'],
+  limits: { descriptionMin: 3, descriptionMax: 500, areaMin: 2, areaMax: 80, maxSkills: 5, maxOpenPerCustomer: 10, maxNewPerDay: 10, openDays: 30, amountMin: 100, amountMax: 5000000 },
+  analyzer: { method: 'rules', methodName: 'rule-based word lists', versions: { analyzer: 'job-rules-1', taxonomy: '2026-11-09-v1', phrases: '2026-11-24-v3', model: null } },
+};
 
 // routes: { 'GET /auth/me': { status, data } | (config, body) => ({ status, data }) }
 export function mockApi(routes) {
   const calls = [];
   resetTaxonomyCache();
+  resetJobOptionsCache();
   API.defaults.adapter = async (config) => {
     const key = `${config.method.toUpperCase()} ${config.url}`;
     let body;

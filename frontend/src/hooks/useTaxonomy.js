@@ -30,6 +30,13 @@ export function skillNameIn(skill, lang) {
   return lang === 'en' ? known.name : known.i18n?.[lang] || known.name;
 }
 
+// Module 6 (Batch 8B): a trade's name in a SPOKEN language ('en' or 'ur'), like skillNameIn.
+export function categoryLabelIn(id, lang) {
+  const known = cache?.categories?.find((c) => c.id === id);
+  if (!known) return '';
+  return lang === 'en' ? known.label : known.i18n?.[lang]?.label || known.label;
+}
+
 export function resetTaxonomyCache() {
   cache = null;
 }

@@ -13,6 +13,7 @@ import ur from '../i18n/dictionaries/ur';
 import urLatn from '../i18n/dictionaries/ur-Latn';
 import { mockApi, me, onboarding, PROFILE, full } from './mockApi';
 import { renderAt } from './renderApp';
+import { ANALYSES, TAXONOMY_FULL } from './module6Fixtures';
 
 const DICTS = { en, ur, 'ur-Latn': urLatn };
 const missingIn = (key) => Object.entries(DICTS).filter(([, d]) => typeof lookup(d, key) !== 'string' && typeof lookup(d, key) !== 'object').map(([l]) => l);
@@ -93,7 +94,26 @@ const m4CustomerRoutes = (extra = {}) => ({
   ...extra,
 });
 
+// Module 6 (Batch 8B): the customer's job request screens
+const m6Routes = (extra = {}) => ({
+  'GET /auth/me': me('customer', { _id: 'c1' }),
+  'GET /meta/taxonomy': { status: 200, data: TAXONOMY_FULL },
+  'GET /notifications/unread-count': { status: 200, data: { unread: 0 } },
+  'POST /job-requests/analyze': { status: 200, data: ANALYSES.PINDI },
+  ...extra,
+});
+const describeStep2 = async (user) => {
+  await user.click(await screen.findByRole('textbox', { name: 'Describe the job in your own words' }));
+  await user.paste('Bathroom ka nalka tapak raha hai, Pindi mein, kal subah');
+  await user.click(screen.getByRole('button', { name: 'Next: check the details' }));
+  await user.click(await screen.findByRole('radio', { name: /^Pick a date/ })); // the date box appears
+  await user.click(screen.getByRole('radio', { name: /^Per day/ }));
+};
+
 const PAGES = [
+  // Module 6 (Batch 8B): Describe a job, step 1 and step 2 (every field shown)
+  { path: '/job-requests/new', routes: m6Routes() },
+  { path: '/job-requests/new', routes: m6Routes(), ready: describeStep2 },
   { path: '/register', routes: { 'GET /auth/me': { status: 401, data: {} } }, ready: async (user) => user.click(await screen.findByRole('radio', { name: /I want to find work/ })) },
   { path: '/login', routes: { 'GET /auth/me': { status: 401, data: {} } } },
   { path: '/onboarding/about', routes: workerRoutes({ about: false, work: false, skills: false }) },
@@ -206,6 +226,10 @@ describe('coverage guard: every help key in the code exists in en, ur and ur-Lat
       declineReason: ['busy', 'too_far', 'not_my_work', 'other'],
       disputeReason: ['work_was_done', 'work_not_done', 'i_did_come', 'not_my_fault', 'other'],
       reportReason: ['abusive', 'personal_information', 'not_about_my_work', 'job_did_not_happen', 'other'],
+      // Module 6 (Batch 8B)
+      jobTask: ['install', 'repair', 'service', 'new_work', 'cleaning', 'moving', 'household_help', 'none'],
+      jobDay: ['today', 'tomorrow', 'pick', 'none'],
+      jobTime: ['morning', 'afternoon', 'evening', 'any', 'none'],
     };
     for (const [group, values] of Object.entries(groups)) {
       for (const value of values) expect(missingIn(`help.option.${group}.${value}`), `${group}.${value}`).toEqual([]);

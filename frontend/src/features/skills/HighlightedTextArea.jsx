@@ -12,7 +12,8 @@ import { markMatches } from './skillsText';
 import styles from './SkillsEditor.module.css';
 
 // assist (Batch 5): Listen only here; the large "Use voice typing" button below is this box's Speak.
-export default function HighlightedTextArea({ label, hint, maxLength, value, onChange, words = [], rows = 5, assist }) {
+// error (Batch 8B): an error under the box (a dictionary key, a server error or text), like every other field.
+export default function HighlightedTextArea({ label, hint, maxLength, value, onChange, words = [], rows = 5, assist, error }) {
   const { t } = useT();
   const mirror = useRef(null);
   const parts = markMatches(value, words);
@@ -23,7 +24,7 @@ export default function HighlightedTextArea({ label, hint, maxLength, value, onC
   );
   const shared = [fieldStyles.control, fieldStyles.textarea, fieldStyles.urdu].join(' ');
   return (
-    <Field label={label} hint={marked ? `${hint} ${t('workerx.highlight.legend')}` : hint} counter={counter} assist={assist} assistControl={{ icon: PenLine }}>
+    <Field label={label} hint={marked ? `${hint} ${t('workerx.highlight.legend')}` : hint} counter={counter} error={error} assist={assist} assistControl={{ icon: PenLine }}>
       {(fieldProps) => (
         <div className={styles.highlightWrap} data-marked={marked || undefined}>
           {marked && (

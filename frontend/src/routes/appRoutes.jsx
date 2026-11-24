@@ -49,6 +49,9 @@ const PriceInfo = lazyPage(() => import('../pages/wage/PriceInfo'));
 const PaymentRecord = lazyPage(() => import('../pages/wage/PaymentRecord'));
 const AdminPriceGuide = lazyPage(() => import('../pages/admin/AdminPriceGuide'));
 const AdminPayments = lazyPage(() => import('../pages/admin/AdminPayments'));
+// Module 6 (Batch 8B): job requests
+const MyJobRequests = lazyPage(() => import('../pages/jobs/MyJobRequests'));
+const DescribeJob = lazyPage(() => import('../pages/jobs/DescribeJob'));
 
 // Developer pages only in development builds (not shipped in production).
 const StyleGuide = import.meta.env.DEV ? lazy(() => import('../pages/dev/StyleGuide')) : null;
@@ -103,6 +106,9 @@ export const appRoutes = (
           <Route path="bookings/:id" element={<BookingDetail />} />
           <Route path="bookings/:id/rate" element={<RateWork />} />
           <Route path="bookings/:id/payment-record" element={<PaymentRecord />} />
+          {/* Module 6: the customer's job requests (workers never see a list of jobs) */}
+          <Route path="job-requests" element={<MyJobRequests />} />
+          <Route path="job-requests/new" element={<DescribeJob />} />
         </Route>
 
         <Route element={<RequireRole role="admin" />}>

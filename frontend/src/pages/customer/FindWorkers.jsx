@@ -21,6 +21,7 @@ import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useDocumentTitle, useT } from '../../i18n';
 import styles from '../../features/customer/Customer.module.css';
+import DescribeJobCard from '../../features/jobs/DescribeJobCard';
 
 const PAGE_SIZE = 12;
 const SORTS = ['updated', 'experience', 'evidence', 'track_record']; // track_record: Module 4
@@ -153,6 +154,8 @@ export default function FindWorkers() {
   return (
     <div className={styles.page}>
       <PageHeader title={t('find.title')} description={t('find.lead')} />
+      {/* Module 6 (Batch 8B): describe the job in your own words instead of searching */}
+      <DescribeJobCard />
       <form role="search" className={styles.searchBar} onSubmit={(e) => { e.preventDefault(); set({ q: search.trim(), city: city.trim() }); }}>
         <div className={styles.searchField}>
           <TextField label={t('find.searchLabel')} type="search" icon={Search} placeholder={t('find.searchPlaceholder')} maxLength={50} value={search} onChange={(e) => setSearch(e.target.value)} hint={t('customerx.instant')} assist="find.search" />

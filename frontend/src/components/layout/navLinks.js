@@ -12,6 +12,8 @@ export const NAV_LINKS = {
   ],
   customer: [
     { to: '/find', label: 'nav.findWorkers' },
+    // Module 6 (Batch 8B): the customer's job requests ("Describe a job" is the first action there and on /find)
+    { to: '/job-requests', label: 'jobs.nav.mine' },
     { to: '/bookings', label: 'booking.nav.bookings' },
     { to: '/saved', label: 'nav.saved' },
     // Module 4: booking and review notifications, with the unread count (customers have no bell)

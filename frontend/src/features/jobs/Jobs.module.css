@@ -1,0 +1,101 @@
+/* Module 6 screens (Batch 8B). 360, 768 and 1280 px; logical properties for right to left; tokens only (both themes). */
+.page { display: grid; gap: var(--space-5); padding-block-end: var(--space-16); min-inline-size: 0; }
+.form { display: grid; gap: var(--space-5); max-inline-size: 48rem; min-inline-size: 0; }
+.section {
+  display: grid; gap: var(--space-4); padding: var(--space-5); background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl); min-inline-size: 0;
+}
+.sectionTitle { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-h3); line-height: var(--leading-h3); margin: 0; }
+.muted { margin: 0; font-size: var(--text-small); color: var(--color-text-secondary); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.between { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; }
+.notice { margin: 0; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-surface-subtle); }
+.description { margin: 0; padding: var(--space-3); background: var(--color-surface-subtle); border-radius: var(--radius-md); white-space: pre-wrap; overflow-wrap: anywhere; }
+.code { font-size: var(--text-small); color: var(--color-text-secondary); }
+
+/* the card on /find and the "next step" callout */
+.callout {
+  display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; padding: var(--space-5); border-radius: var(--radius-xl);
+  background: var(--color-primary-soft); border: 1px solid color-mix(in oklch, var(--color-primary) 35%, var(--color-border));
+}
+.calloutIcon { display: grid; place-items: center; flex: none; inline-size: 3rem; block-size: 3rem; border-radius: var(--radius-full); background: var(--color-surface); color: var(--color-primary-text); }
+.calloutText { flex: 1 1 16rem; min-inline-size: 0; display: grid; gap: var(--space-1); }
+.calloutText h2 { margin: 0; font-size: var(--text-h3); line-height: var(--leading-h3); }
+.calloutText p { margin: 0; }
+
+/* step 1 */
+.voiceRow { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.speak { min-block-size: 3.5rem; padding-inline: var(--space-6); font-size: var(--text-body); }
+.listening { box-shadow: 0 0 0 4px var(--color-focus-halo); }
+.words { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin: 0; }
+.word {
+  display: inline-block; padding: 2px var(--space-2); border-radius: var(--radius-sm); background: var(--color-accent-soft); color: var(--color-text);
+  font-weight: 700; overflow-wrap: anywhere;
+}
+.how { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); background: var(--color-surface); }
+.how summary { cursor: pointer; font-weight: 700; min-block-size: var(--touch-target); display: flex; align-items: center; gap: var(--space-2); }
+.how p { margin: var(--space-2) 0 0; }
+.status { margin: 0; font-size: var(--text-small); color: var(--color-text-secondary); min-block-size: 1.25rem; }
+
+/* step 2 */
+.suggested { display: inline-flex; flex-wrap: wrap; gap: var(--space-1); align-items: center; font-size: var(--text-small); color: var(--color-text-secondary); }
+.offer {
+  display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); align-items: center; padding: var(--space-3); border-radius: var(--radius-md);
+  background: var(--color-accent-soft); border: 1px dashed var(--color-border-strong);
+}
+.offer p { margin: 0; flex: 1 1 14rem; min-inline-size: 0; overflow-wrap: anywhere; }
+.skillGroup { display: grid; gap: var(--space-2); border: 0; margin: 0; padding: 0; min-inline-size: 0; }
+.skillGroup legend { font-weight: 700; padding: 0; margin-block-end: var(--space-2); }
+.cityChoice { display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-surface-subtle); }
+.cityChoice p { margin: 0; font-weight: 700; }
+.private { display: flex; align-items: center; gap: var(--space-1); font-size: var(--text-small); color: var(--color-text-secondary); margin: 0; }
+.privateBox { display: flex; gap: var(--space-2); align-items: flex-start; margin: 0; padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-surface-subtle); font-weight: 600; }
+.privateBox svg { flex: none; margin-block-start: 2px; }
+.switchRow { display: grid; gap: var(--space-2); }
+
+/* the summary */
+.summary { display: grid; gap: var(--space-3); min-inline-size: 0; }
+.facts { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.facts li { display: flex; gap: var(--space-3); align-items: center; min-inline-size: 0; }
+.facts li > span { display: grid; gap: 2px; min-inline-size: 0; overflow-wrap: anywhere; }
+.facts li > svg { flex: none; color: var(--color-primary-text); }
+.factLabel { font-size: var(--text-small); color: var(--color-text-secondary); }
+
+/* lists */
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+.card {
+  display: grid; gap: var(--space-3); align-content: start; padding: var(--space-5); background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); min-inline-size: 0;
+}
+.cardTop { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-start; }
+.cardMain { flex: 1 1 10rem; min-inline-size: 0; display: grid; gap: 2px; }
+.cardTitle { font-size: var(--text-body); line-height: var(--leading-body); margin: 0; }
+.cardLink { color: var(--color-text); text-decoration: none; }
+.cardLink:hover { text-decoration: underline; }
+.when { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+.when li { display: inline-flex; align-items: center; gap: var(--space-1); min-inline-size: 0; overflow-wrap: anywhere; }
+.meaning { margin: 0; font-weight: 600; }
+.bookings { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.booking {
+  display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; padding: var(--space-3); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); background: var(--color-surface);
+}
+.booking a { font-weight: 700; }
+.reasons { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); font-size: var(--text-small); }
+.reasons li { display: flex; gap: var(--space-1); align-items: flex-start; overflow-wrap: anywhere; }
+.reasons svg { flex: none; margin-block-start: 2px; color: var(--color-success); }
+.filters { display: grid; gap: var(--space-4); }
+.workersLayout { display: grid; gap: var(--space-5); min-inline-size: 0; }
+@media (min-width: 900px) { .workersLayout { grid-template-columns: minmax(16rem, 1fr) minmax(0, 3fr); align-items: start; } }
+
+/* "what the app understood" */
+.understood { border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface); padding: var(--space-4) var(--space-5); }
+.understood summary { cursor: pointer; font-weight: 700; font-size: var(--text-h3); min-block-size: var(--touch-target); display: flex; align-items: center; gap: var(--space-2); }
+.tableWrap { overflow-x: auto; max-inline-size: 100%; position: relative; }
+.table { inline-size: 100%; border-collapse: collapse; font-size: var(--text-small); }
+.table th, .table td { text-align: start; padding: var(--space-2) var(--space-3); border-block-end: 1px solid var(--color-border); vertical-align: top; overflow-wrap: anywhere; }
+.table th { color: var(--color-text-secondary); font-weight: 700; }
+
+/* a booking from a job (card and detail) */
+.fromJob { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); align-items: center; margin: 0; font-size: var(--text-small); }
+.fromJob svg { flex: none; }
