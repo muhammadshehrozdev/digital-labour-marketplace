@@ -3,6 +3,8 @@
 // customer's own words in their own script with Batch 5's read-back ("Written: ...").
 // Module 5 (Batch 7): when the request comes with a price offer, the sentence ends with it ("The customer offers
 // two thousand five hundred rupees for the whole job."); amounts are said as numbers, so the voice says them in words.
+// Module 6 (Batch 8B): a request sent from a job request also says the kind of work ("Kind of work: repair.").
+// Never a budget: the booking has none.
 import { useEffect, useId, useRef, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import { skillNameIn } from '../../hooks/useTaxonomy';
@@ -40,11 +42,16 @@ export default function HearRequest({ booking: b }) {
       city: b.city,
     };
     const offer = b.terms?.offer ?? (b.terms?.status === 'proposed' ? b.terms.current : null);
-    const how = offer
+    const kind = b.job?.taskType ?? null;
+    const how = offer || kind
       ? await say(id, 'help.wage.say', {
         say: (lang, spokenT) => {
           const values = Object.fromEntries(Object.entries(params).map(([k, v]) => [k, typeof v === 'function' ? v(lang, spokenT) : v]));
-          return `${spokenT('booking.hear.sentence', values)} ${spokenT('wage.spoken.offer', { price: priceLine(spokenT, spokenRupees(spokenT), offer, 'wage.spoken.price') })}`;
+          return [
+            spokenT('booking.hear.sentence', values),
+            kind ? spokenT('jobs.spoken.kind', { kind: spokenT(`jobs.task.${kind}`) }) : null,
+            offer ? spokenT('wage.spoken.offer', { price: priceLine(spokenT, spokenRupees(spokenT), offer, 'wage.spoken.price') }) : null,
+          ].filter(Boolean).join(' ');
         },
       })
       : await say(id, 'booking.hear.sentence', params);

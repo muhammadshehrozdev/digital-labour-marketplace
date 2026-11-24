@@ -6,7 +6,7 @@
 // wage reference, the worker's own rates) and an OPTIONAL "Offer a price" step (unit, amount, quantity or
 // duration) with the live checks; the offer becomes price version 1 (accepting it is not agreeing to it).
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, CalendarCheck, CalendarDays, CalendarPlus, HandCoins, MapPin, Send } from 'lucide-react';
 import API from '../../api';
 import { TradeArt } from '../../components/illustrations';
@@ -25,8 +25,18 @@ import { amountOf } from '../../features/wage/wageLogic';
 import PriceInfoCard from '../../features/wage/PriceInfoCard';
 import ProtectionCard from '../../features/wage/ProtectionCard';
 import wageStyles from '../../features/wage/Wage.module.css';
+import RequestWithJob from '../../features/jobs/RequestWithJob';
 
+// Module 6 (Batch 8B): /workers/:workerId/request?job=<id> sends the worker the customer's job request
+// (features/jobs/RequestWithJob.jsx). Without ?job this is exactly the page of Batches 6 and 7 (RequestWorkerPlain).
 export default function RequestWorker() {
+  const { workerId } = useParams();
+  const [params] = useSearchParams();
+  const jobId = params.get('job');
+  return jobId ? <RequestWithJob key={jobId} workerId={workerId} jobId={jobId} /> : <RequestWorkerPlain />;
+}
+
+function RequestWorkerPlain() {
   const { workerId } = useParams();
   const { t, te } = useT();
   const toast = useToast();

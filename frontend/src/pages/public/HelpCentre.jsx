@@ -15,9 +15,10 @@ import FairPayGuide from '../../features/wage/FairPayGuide';
 
 const GROUPS = [
   { role: 'worker', guides: [['profile', 'step-work'], ['proof', 'step-proof'], ['identity', 'step-about'], ['jobs', 'all-done', 'booking.guides'], ['reputation', 'step-done', 'booking.guides']] },
-  { role: 'customer', guides: [['find', 'empty-search'], ['badges', 'compare'], ['request', 'saved', 'booking.guides']] },
+  { role: 'customer', guides: [['find', 'empty-search'], ['badges', 'compare'], ['request', 'saved', 'booking.guides'], ['describeJob', 'step-skills', 'jobs.guides']] },
   // Batch 5: listen, speak, see (their texts are in help.centre.guides, the Batch 5 part of the dictionaries).
   // Module 4 guides (worker: jobs, reputation; customer: request) are in booking.guides.
+  // Module 6 (Batch 8B): "Describe a job" (customer) is in jobs.guides.
   { role: 'everyone', guides: [['sound', 'all-done', 'help.centre.guides'], ['voiceTyping', 'step-skills', 'help.centre.guides'], ['display', 'all-done'], ['install', 'offline']] },
 ];
 const DEFAULT_BASE = 'appx.help.guides';

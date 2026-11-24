@@ -10,6 +10,7 @@ import { DAY_ICON, SLOT_ICONS, bookingPath, dayWords } from './bookingText';
 import styles from './Booking.module.css';
 import { PaymentStateChip } from '../wage/PaymentsCard';
 import { priceLine, rupees } from '../wage/wageText';
+import JobFromLine from '../jobs/JobFromLine';
 
 export function WhenWhere({ booking: b }) {
   const { t, formatDate } = useT();
@@ -61,6 +62,8 @@ export default function BookingCard({ booking: b, viewer, children }) {
       </div>
       <WhenWhere booking={b} />
       <PriceState booking={b} />
+      {/* Module 6: only on a booking sent from a job request (the code and the kind of work; never a budget) */}
+      <JobFromLine job={b.job} viewer={viewer} />
       <p className={styles.code}>{t('booking.card.code')} <span dir="ltr" className="tabular">{b.code}</span></p>
       {children}
     </li>

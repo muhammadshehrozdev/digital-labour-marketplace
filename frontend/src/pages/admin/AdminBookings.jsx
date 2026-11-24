@@ -12,6 +12,7 @@ import { useApiQuery } from '../../hooks/useApiQuery';
 import { useTaxonomy } from '../../hooks/useTaxonomy';
 import { useDocumentTitle, useT } from '../../i18n';
 import styles from './Admin.module.css';
+import JobFromLine from '../../features/jobs/JobFromLine';
 import TermsSummary from '../../features/wage/TermsSummary';
 import PaymentsCard from '../../features/wage/PaymentsCard';
 
@@ -31,6 +32,7 @@ export function BookingDrawer({ id, onClose, children }) {
         <>
           <div className={styles.statusRow}><BookingStatusChip booking={b} />{b.outcome && <span className={styles.method}>{t(`booking.outcome.${b.outcome}`)}</span>}</div>
           <WhenWhere booking={b} />
+          <JobFromLine job={b.job} viewer="admin" />
           {b.description && <p className={styles.wrapAnywhere} dir="auto">{b.description}</p>}
           {b.dispute && (
             <section aria-labelledby="admin-dispute">

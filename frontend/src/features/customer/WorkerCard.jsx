@@ -13,7 +13,8 @@ import { Button } from '../../components/ui';
 import { CalendarPlus } from 'lucide-react';
 import styles from './Customer.module.css';
 
-export default function WorkerCard({ worker: w, index = 0, query = '', saved, onToggleSave, compare, onToggleCompare, compareDisabled, showRequest = false }) {
+// children (Batch 8B): extra content at the end of the card ("Workers for this job": the reasons and "Send this job").
+export default function WorkerCard({ worker: w, index = 0, query = '', saved, onToggleSave, compare, onToggleCompare, compareDisabled, showRequest = false, children }) {
   const { t, formatNumber } = useT();
   const { categoryLabel, categoryOccupation, skillName } = useTaxonomy();
   const name = w.user?.name ?? t('common.worker');
@@ -65,6 +66,7 @@ export default function WorkerCard({ worker: w, index = 0, query = '', saved, on
           <Button size="sm" icon={CalendarPlus} to={`/workers/${w.workerIdCode}/request`}>{t('booking.request.button')}<span className="visually-hidden">: {name}</span></Button>
         </span>
       )}
+      {children}
       {onToggleCompare && (
         <label className={styles.compareCheck}>
           <input type="checkbox" checked={compare} disabled={compareDisabled && !compare} onChange={onToggleCompare} aria-label={t(compare ? 'customerx.compare.remove' : 'customerx.compare.add', { name })} />

@@ -147,3 +147,11 @@ export function budgetLine(t, money, budget) {
 
 // The one waiting or accepted booking of a job (for "This job is already with a worker" and its link).
 export const openBookingOf = (job) => (job?.bookings ?? []).find((b) => b.status === 'requested' || b.status === 'accepted') ?? null;
+
+// The job's day for a request: today / tomorrow / a date within 30 days; a missing or past day -> tomorrow (noted).
+export function requestDayOf(preferredDate, today) {
+  if (preferredDate === today) return { day: 'today', date: '', moved: false };
+  if (preferredDate === addDays(today, 1)) return { day: 'tomorrow', date: '', moved: false };
+  if (preferredDate && preferredDate > today && preferredDate <= addDays(today, 30)) return { day: 'pick', date: preferredDate, moved: false };
+  return { day: 'tomorrow', date: '', moved: true };
+}

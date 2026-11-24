@@ -102,6 +102,13 @@ const m6Routes = (extra = {}) => ({
   'POST /job-requests/analyze': { status: 200, data: ANALYSES.PINDI },
   ...extra,
 });
+const M6_JOB = (extra = {}) => ({
+  _id: 'j1', code: 'JR-2026-000001', state: 'open', version: 1, actions: ['edit', 'find_workers', 'request', 'close', 'delete'], category: 'plumbing_sanitary',
+  skills: [{ skillId: 'plumb_leak', name: 'Water leak repair' }], taskType: 'repair', description: 'Nalka tapak raha hai [synthetic]', inputMode: 'text', city: 'Rawalpindi',
+  region: 'PB', area: 'Satellite Town', preferredDate: null, timeSlot: null, urgent: false, budget: null, openUntil: '2026-12-24T05:00:00.000Z', closedAt: null, closeReason: null,
+  bookingsCount: 0, bookings: [], analysis: null, ...extra,
+});
+const M6_WORKERS = { workers: [{ workerIdCode: 'DLM-2026-000012', user: { name: 'Pindi Plumber (synthetic)' }, occupation: 'Plumber', category: 'plumbing_sanitary', city: 'Pindi', skills: [], matchedSkills: [{ skillId: 'plumb_leak', name: 'Water leak repair' }], sameCity: true }], page: 1, limit: 20, total: 1, sort: 'updated', truncated: false, filter: { category: 'plumbing_sanitary', city: 'Rawalpindi', marketCity: 'Rawalpindi', cityKnown: true } };
 const describeStep2 = async (user) => {
   await user.click(await screen.findByRole('textbox', { name: 'Describe the job in your own words' }));
   await user.paste('Bathroom ka nalka tapak raha hai, Pindi mein, kal subah');
@@ -114,6 +121,20 @@ const PAGES = [
   // Module 6 (Batch 8B): Describe a job, step 1 and step 2 (every field shown)
   { path: '/job-requests/new', routes: m6Routes() },
   { path: '/job-requests/new', routes: m6Routes(), ready: describeStep2 },
+  // the edit page (the same details form), the filters of "Workers for this job", the request page in job mode
+  { path: '/job-requests/j1/edit', routes: m6Routes({ 'GET /job-requests/j1': { status: 200, data: { job: M6_JOB() } } }), ready: () => screen.findByRole('radio', { name: /Plumbing & Sanitary/ }) },
+  { path: '/job-requests/j1/workers', routes: m6Routes({ 'GET /job-requests/j1': { status: 200, data: { job: M6_JOB() } }, 'GET /job-requests/j1/workers': { status: 200, data: M6_WORKERS } }), ready: () => screen.findByTestId('worker-card') },
+  {
+    path: `/workers/DLM-2026-000077/request?job=j1`,
+    routes: m6Routes({
+      'GET /workers/DLM-2026-000077': { status: 200, data: { workerIdCode: 'DLM-2026-000077', user: { name: 'Bilal Ahmed' }, category: 'electrical_solar', city: 'Islamabad', availability: 'Available', skills: [{ skillId: 'elec_wiring', name: 'House wiring', category: 'electrical_solar' }] } },
+      'GET /job-requests/j1': { status: 200, data: { job: M6_JOB({ category: 'electrical_solar', skills: [{ skillId: 'elec_wiring', name: 'House wiring' }] }) } },
+    }),
+    ready: async (user) => {
+      await screen.findByTestId('your-job');
+      await user.click(screen.getByRole('radio', { name: /^Pick a date/ })); // the date box appears
+    },
+  },
   { path: '/register', routes: { 'GET /auth/me': { status: 401, data: {} } }, ready: async (user) => user.click(await screen.findByRole('radio', { name: /I want to find work/ })) },
   { path: '/login', routes: { 'GET /auth/me': { status: 401, data: {} } } },
   { path: '/onboarding/about', routes: workerRoutes({ about: false, work: false, skills: false }) },
@@ -205,6 +226,21 @@ describe('coverage guard: every help key in the code exists in en, ur and ur-Lat
       '/worker/requests': 'requests', '/worker/jobs': 'myJobs', '/worker/jobs/b1': 'bookingDetail', '/worker/reviews': 'myReviews', '/worker/reputation': 'myReputation',
     });
     expect(pageHelpName(`/workers/${M4_CODE}`)).toBe('workerProfile');
+  });
+
+  test('Module 6: the close dialog\'s reason picker has its help row and texts in all three languages', async () => {
+    mockApi(m6Routes({ 'GET /job-requests/j1': { status: 200, data: { job: M6_JOB() } } }));
+    const user = userEvent.setup();
+    renderAt('/job-requests/j1');
+    await user.click(await screen.findByRole('button', { name: 'Close the job request' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Close this job request?' });
+    const fieldset = dialog.querySelector('fieldset');
+    expect(fieldset.querySelector(':scope > [data-assist]')).toHaveAttribute('data-assist', 'jobs.closeReason');
+    expect(missingIn('help.field.jobs.closeReason')).toEqual([]);
+    for (const r of ['work_done', 'not_needed', 'found_elsewhere', 'other']) expect(missingIn(`help.option.jobClose.${r}`), r).toEqual([]);
+    for (const key of ['jobs.describe', 'jobs.trade', 'jobs.skills', 'jobs.kind', 'jobs.city', 'jobs.area', 'jobs.day', 'jobs.date', 'jobs.time', 'jobs.urgent', 'jobs.budgetAmount', 'jobs.budgetUnit', 'jobs.workersSort', 'jobs.workersAvailability']) {
+      expect(missingIn(`help.field.${key}`), key).toEqual([]);
+    }
   });
 
   test('page help of every in-scope page', () => {

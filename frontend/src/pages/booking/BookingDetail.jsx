@@ -25,6 +25,7 @@ import styles from '../../features/booking/Booking.module.css';
 import TermsSummary from '../../features/wage/TermsSummary';
 import PaymentsCard from '../../features/wage/PaymentsCard';
 import ProtectionCard from '../../features/wage/ProtectionCard';
+import JobFromLine from '../../features/jobs/JobFromLine';
 
 function DisputeBox({ dispute }) {
   const { t, formatDate } = useT();
@@ -73,6 +74,8 @@ export default function BookingDetail() {
           <section className={styles.section} aria-labelledby="what-title">
             <h2 id="what-title" className={styles.sectionTitle}><TradeArt category={b.category} size={32} /> {t('booking.detail.what')}</h2>
             <WhenWhere booking={b} />
+            {/* Module 6: "From job request JR-…" and the kind of work (the customer's line links to the job) */}
+            <JobFromLine job={b.job} viewer={viewer} />
             {b.description && <p className={styles.description} dir="auto">{b.description}</p>}
             {viewer === 'worker' && b.status === 'requested' && <HearRequest booking={b} />}
             <BookingActions booking={b} viewer={viewer} onChanged={setFresh} />
