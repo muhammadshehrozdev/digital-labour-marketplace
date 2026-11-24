@@ -428,3 +428,31 @@ describe('help', () => {
     expect(within(guide).getAllByRole('button', { name: /^Listen/ }).length).toBeGreaterThan(0);
   });
 });
+
+describe('review fixes on the edit page (Batch 8B, Stage 9)', () => {
+  test('finding 5: a job whose day has passed can still be edited (only the area changes)', async () => {
+    const calls = mockApi(customerRoutes({
+      'GET /job-requests/j1': { status: 200, data: { job: JOB({ preferredDate: addDays(TODAY, -3) }) } },
+      'PATCH /job-requests/j1': (config, body) => ({ status: 200, data: { job: JOB({ version: 3, area: body.area, preferredDate: addDays(TODAY, -3) }) } }),
+    }));
+    const user = userEvent.setup();
+    renderAt('/job-requests/j1/edit');
+    const area = await screen.findByRole('textbox', { name: /^Area/ });
+    await user.clear(area);
+    await user.type(area, 'G-10');
+    await user.click(screen.getByRole('button', { name: 'Save the changes' }));
+    await waitFor(() => expect(pathname()).toBe('/job-requests/j1'));
+    expect(calls.find((c) => c.key === 'PATCH /job-requests/j1').body).toEqual({ baseVersion: 2, area: 'G-10' });
+  });
+
+  test('finding 10: a microphone problem is said in words on the edit page', async () => {
+    installSpeech({ voices: [VOICES.en] });
+    mockApi(customerRoutes({ 'GET /job-requests/j1': { status: 200, data: { job: JOB() } } }));
+    const user = userEvent.setup();
+    renderAt('/job-requests/j1/edit');
+    await user.click(await screen.findByRole('button', { name: 'Speak' }));
+    (await import('./speechMocks')).lastRecognition().fail('not-allowed');
+    const en = (await import('../i18n/dictionaries/en.js')).default;
+    expect(await screen.findByText(en.voice.errors['not-allowed'])).toBeInTheDocument();
+  });
+});

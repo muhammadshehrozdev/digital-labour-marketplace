@@ -25,12 +25,13 @@ screens read its name from the API, so Batch 8C can switch the method without a 
   correctness) and "Try the analyzer" (D-098).
 - Easy mode on every new page: 🔊 help on every field and picture, 🎤 where allowed, page help, three languages, right
   to left, both themes; the Help Centre guide "Describe a job".
-- **Word lists `2026-11-24-v3`** (before any real description; no rule of the protocol changed, "Protocol changes" 3):
+- **Word lists `2026-11-24-v3`, then `v4`** (before any real description; no rule of the protocol changed, "Protocol changes" 3 and 5):
   a city spelling that is also an everyday word (`atak`, `اٹک`, `wah`, `mari`, `مری`) names the city only directly
   before a place word ("مری میں" = in Murree); a city spelling directly before `road`, `rd`, `روڈ`, `chowk` or `چوک` is a
   road, not the city ("Murree Road Rawalpindi" → Rawalpindi); new phrases `لیک`, `پائپ لیک`, `pipe leak`, `گٹر بند`,
   `سیم`, `دروازہ اٹک`, `darwaza atak`, `istari`, `بزرگوں کی دیکھ بھال`, `ماسی چاہیے`, `maasi chahiye`, `masi chahiye`; task
-  words `فٹ کرنا`, `فٹنگ` (install) and `ghar ke kaam`, `گھر کے کام` (household help, D-097). Module 2's output is unchanged.
+  words `فٹ کرنا`, `فٹنگ` (install) and, in v4 after the review, `ghar ke kaam + maasi` (household help only with a maid,
+  D-097). Module 2's output is unchanged.
 - `POST /api/job-requests/analyze` adds `city.candidates` for the "Which city?" buttons (D-095; the analyzer and the
   evaluation are unchanged). References corrected (Khan et al. 2022; McCallum & Nigam 1998; Manning et al. 2008 ch. 13;
   "Protocol changes" 4). The 14 Module 6 error texts in Urdu and Roman Urdu: second draft with the dictionary's words.

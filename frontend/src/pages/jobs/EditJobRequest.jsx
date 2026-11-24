@@ -68,7 +68,7 @@ function EditForm({ job, onReload }) {
   const save = async (e) => {
     e.preventDefault();
     setError(null);
-    const found = checkForm(form, today);
+    const found = checkForm(form, today, { savedDate: job.preferredDate, amountMin: limits.amountMin, amountMax: limits.amountMax });
     if ([...text.trim()].length < limits.descriptionMin) found.description = { key: 'jobs.describe.tooShort', params: { min: limits.descriptionMin } };
     setErrors(found);
     if (Object.keys(found).length) return;
@@ -100,8 +100,11 @@ function EditForm({ job, onReload }) {
         {voice.supported && (
           <div className={styles.voiceRow}>
             <Button variant="secondary" icon={voice.listening ? MicOff : Mic} onClick={voice.listening ? voice.stop : voice.start} aria-pressed={voice.listening}>{voice.listening ? t('voice.stop') : t('jobs.describe.speak')}</Button>
+            <span className={styles.muted} aria-live="polite">{voice.listening ? t('voice.listening') : t('voice.recognisedAs', { language: t(`voice.speechLanguages.${info.speech}`) })}</span>
           </div>
         )}
+        {/* review finding 10: a microphone problem is said in words, as on Describe a job */}
+        {voice.error && <Alert tone="warning">{t(voice.error.key, { language: t(`voice.speechLanguages.${voice.error.params?.speechLang}`) })}</Alert>}
       </section>
       <JobDetailsForm form={form} setField={setField} errors={errors} today={today} limits={limits} skillsNote={skillsNote} />
       {changed ? (

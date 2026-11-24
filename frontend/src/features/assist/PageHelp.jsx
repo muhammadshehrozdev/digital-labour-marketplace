@@ -18,8 +18,8 @@ import { useBottomLift } from '../app/useBottomLift';
 import styles from './PageHelp.module.css';
 
 export default function PageHelp() {
-  const { pathname } = useLocation();
-  const name = pageHelpName(pathname);
+  const { pathname, search } = useLocation();
+  const name = pageHelpName(pathname, search);
   if (!name) return null;
   return <PageHelpButton key={name} name={name} />;
 }

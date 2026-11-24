@@ -2,7 +2,7 @@
 
 Status (24 Nov 2026): **Batch 8A done** (the backend, the two analyzers, the evaluation harness and the documents) and
 **Batch 8B done** (the customer and admin screens, §14; the results of the check of Batch 8A, §14.8; word lists
-`2026-11-24-v3`; the final consent and form texts). The evaluation on real data is **Batch 8C** (no real data exists
+`2026-11-24-v4`; the final consent and form texts). The evaluation on real data is **Batch 8C** (no real data exists
 yet). Owner in the proposal's work split: Usama Asif. Decisions D-080 to D-091 and D-092 to D-101 (`docs/DECISIONS.md`).
 
 **Honest words.** The website never says "AI". The rule-based analyzer is "rule-based word lists". The classifier is
@@ -78,8 +78,9 @@ one source) and stores `jobRequest`, `jobCode`, `jobTaskType`. A booking without
 
 ## 3. The rule-based analyzer `job-rules-1` (live)
 
-`services/jobAnalyzer/rules.js` (pure); word lists in `config/jobPhrases.js` (version `2026-11-24-v3`: v1 plus two
-fixes from the independent review of Batch 8A (v2) and the results of the check of Batch 8A (v3, Batch 8B), all
+`services/jobAnalyzer/rules.js` (pure); word lists in `config/jobPhrases.js` (version `2026-11-24-v4`: v1 plus two
+fixes from the independent review of Batch 8A (v2), the results of the check of Batch 8A (v3, Batch 8B) and one fix
+from the independent review of Batch 8B (v4), all
 written before any real data, for team review; improved in Batch 8C on the development set only).
 
 - **Normalisation:** Module 2's `normalizeText` + a Roman Urdu spelling-variant map (`nhi/nahin/nai → nahi`,
@@ -380,8 +381,8 @@ job, no budget) and `admin.demo@example.com` → Job requests → "How suggestio
 - **A2** a city spelling directly before `road`, `rd`, `روڈ`, `chowk`, `چوک` is a road: "Murree Road Rawalpindi par
   plumber chahiye" → Rawalpindi, no conflict.
 - **A3** new phrases (`لیک`, `پائپ لیک`, `pipe leak`, `گٹر بند`, `سیم`, `دروازہ اٹک`, `darwaza atak`, `istari`,
-  `بزرگوں کی دیکھ بھال`, `ماسی چاہیے`, `maasi chahiye`, `masi chahiye`) and task words (`فٹ کرنا`, `فٹنگ`; and
-  `ghar ke kaam`, `گھر کے کام` for household help, D-097); words the taxonomy already had were not added again.
+  `بزرگوں کی دیکھ بھال`, `ماسی چاہیے`, `maasi chahiye`, `masi chahiye`) and task words (`فٹ کرنا`, `فٹنگ`; and, since
+  v4, `ghar ke kaam + maasi` for household help, D-097); words the taxonomy already had were not added again.
 - **A4** review finding 6: no code change; the frozen text decides (§4).
 - **A5** references corrected (Khan et al. 2022, McCallum & Nigam 1998, Manning et al. 2008 ch. 13); `PROTOCOL.md`
   "Protocol changes" 3 and 4. All in `tests/unit/jobAnalyzer.test.js`; the 13 required examples are unchanged.

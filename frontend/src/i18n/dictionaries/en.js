@@ -1719,6 +1719,7 @@ export default {
       myJobRequests: 'Your job requests. Open one to choose a worker, or to see the request you sent.',
       jobRequest: 'One job request: the details, what you can do now, and the requests you sent from it.',
       editJobRequest: 'Change the details of your job request, then press Save the changes.',
+      requestWithJob: 'Your job is shown at the top. Choose the work, the day and the time, then press Send. The worker answers yes or no.',
       jobWorkers: 'Workers of this trade in your city. Choose the order you like, open a worker, and press Send this job.',
       // ---- end of Batch 8B (help.screen) ----
       // ---- Batch 7 (help.screen): Module 5 texts, drafts until the team reviews them ----
@@ -3364,7 +3365,7 @@ export default {
       requested: 'Waiting for the worker\'s answer',
       accepted: 'A worker accepted this job',
       done: 'The work is done',
-      expired: 'Expired: no worker was asked in time',
+      expired: 'Expired: no worker took this job in time',
       closed: 'You closed this job request',
     },
     tabs: {
@@ -3400,6 +3401,8 @@ export default {
       unit: 'How is the budget counted?',
       remove: 'Remove the budget',
       none: 'No budget written',
+      tooSmall: 'The budget must be at least Rs {min}.',
+      tooLarge: 'The budget can be at most Rs {max}.',
       line: {
         job: 'Budget: {amount} for the whole job',
         day: 'Budget: {amount} a day',

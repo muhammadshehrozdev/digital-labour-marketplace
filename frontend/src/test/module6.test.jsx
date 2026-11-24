@@ -111,7 +111,7 @@ describe('the re-check rule (mergeSuggestions, pure)', () => {
     expect(suggestionWords('city', form, ANALYSES.PINDI).words).toEqual(['pindi']);
     expect(suggestionWords('category', { ...form, category: 'electrical_solar' }, ANALYSES.PINDI)).toBeNull();
     const painter = { category: { suggested: 'painting_renovation', matched: ['painter'] }, taskType: { suggested: 'new_work', matched: [], fromCategory: true } };
-    expect(suggestionWords('taskType', { ...EMPTY_FORM, taskType: 'new_work' }, painter)).toEqual({ fromCategory: true, words: [] });
+    expect(suggestionWords('taskType', { ...EMPTY_FORM, category: 'painting_renovation', taskType: 'new_work' }, painter)).toEqual({ fromCategory: true, words: [] });
     expect(wordsFound(ANALYSES.PINDI)).toEqual(['tapak', 'nalka', 'bathroom', 'pindi', 'kal', 'subah']);
   });
 });
@@ -397,5 +397,68 @@ describe('navigation, the /find card and page help', () => {
     });
     expect(PAGE_HELP_NAMES).toEqual(expect.arrayContaining(['myJobRequests', 'describeJob', 'jobRequest', 'editJobRequest', 'jobWorkers']));
     expect(pageHelpName('/workers/DLM-2026-000001/request')).toBe('requestWorker'); // also with ?job= (the path decides)
+  });
+});
+
+// Batch 8B independent review: a test for each fixed finding (REVIEW.md in the working notes)
+describe('review fixes (Batch 8B, Stage 9)', () => {
+  // a check that suggests AC and also finds an electrical skill (only the fields that matter here)
+  const AC_AND_WIRING = {
+    category: { suggested: 'ac_appliance_repair', tie: false, ranked: ['ac_appliance_repair'], matched: ['ac'] },
+    skills: [{ skillId: 'ac_general', category: 'ac_appliance_repair', matched: ['ac'] }, { skillId: 'elec_wiring', category: 'electrical_solar', matched: ['wiring'] }],
+    taskType: { suggested: 'repair', matched: ['kharab'], fromCategory: false }, city: { suggested: null, matched: [], conflict: false },
+    when: { suggested: null, matched: [] }, timeSlot: { suggested: null, matched: [] }, urgent: { suggested: false, matched: [] }, budget: { suggested: null, matched: [] },
+  };
+
+  test('finding 1: "Use it" on a trade makes the skills follow the new trade (untouched and touched skills)', () => {
+    const mine = { ...EMPTY_FORM, category: 'electrical_solar' };
+    const r = merge(mine, ['category'], AC_AND_WIRING);
+    expect(r.form).toMatchObject({ category: 'electrical_solar', skills: ['elec_wiring'] });
+    expect(r.offers.category).toBe('ac_appliance_repair');
+    const used = takeOffer(r.form, new Set(['category']), r.offers, 'category', { analysis: AC_AND_WIRING, skillCategory });
+    expect(used.form).toMatchObject({ category: 'ac_appliance_repair', skills: ['ac_general'] });
+    expect(used.removedSkills).toEqual(['elec_wiring']);
+    // touched skills keep only those of the new trade, and the suggested ones of that trade are offered
+    const touched = takeOffer({ ...r.form, skills: ['elec_wiring'] }, new Set(['category', 'skills']), { ...r.offers, skills: ['elec_fittings'] }, 'category', { analysis: AC_AND_WIRING, skillCategory });
+    expect(touched.form.skills).toEqual([]);
+    expect(touched.offers.skills).toEqual(['ac_general']);
+    expect(touched.form.skills.every((id) => skillCategory(id) === 'ac_appliance_repair')).toBe(true);
+  });
+
+  test('finding 4: "usual for this trade" only while the trade is still the suggested one', () => {
+    const painter = { category: { suggested: 'painting_renovation', matched: ['painter'] }, taskType: { suggested: 'new_work', matched: [], fromCategory: true } };
+    expect(suggestionWords('taskType', { ...EMPTY_FORM, category: 'painting_renovation', taskType: 'new_work' }, painter)).toEqual({ fromCategory: true, words: [] });
+    expect(suggestionWords('taskType', { ...EMPTY_FORM, category: 'electrical_solar', taskType: 'new_work' }, painter)).toBeNull();
+  });
+
+  test('finding 5: an unchanged saved day that has passed does not block saving; a changed day is checked', () => {
+    const past = addDays(TODAY, -3);
+    const old = { ...merge(EMPTY_FORM, [], ANALYSES.PINDI).form, area: 'G-9', day: 'pick', date: past };
+    expect(checkForm(old, TODAY, { savedDate: past }).date).toBeUndefined();
+    expect(checkForm({ ...old, date: addDays(TODAY, -2) }, TODAY, { savedDate: past }).date).toEqual({ code: 'BOOKING_DATE_RANGE', params: { max: 30 } });
+  });
+
+  test('finding 8: the budget limits are checked on the page and the message goes to the amount box', async () => {
+    const form = { ...merge(EMPTY_FORM, [], ANALYSES.PINDI).form, area: 'G-9' };
+    expect(checkForm({ ...form, budget: { amount: '50', unit: 'job' } }, TODAY)).toEqual({ budget: { key: 'jobs.budget.tooSmall', params: { min: '100' } } });
+    expect(checkForm({ ...form, budget: { amount: '6,000,000', unit: 'job' } }, TODAY, { amountMax: 5000000 }).budget).toEqual({ key: 'jobs.budget.tooLarge', params: { max: '5,000,000' } });
+    const user = userEvent.setup();
+    await describe1(user, 'Bathroom ka nalka tapak raha hai, Pindi mein, kal subah');
+    await user.click(screen.getByRole('button', { name: 'Next: check the details' }));
+    await user.type(await screen.findByRole('textbox', { name: /^Area/ }), 'G-9');
+    await user.type(screen.getByRole('textbox', { name: /Budget amount/ }), '50');
+    await user.click(screen.getByRole('radio', { name: /^Whole job/ }));
+    await user.click(screen.getByRole('button', { name: 'Next: save' }));
+    expect(await screen.findByText('The budget must be at least Rs 100.')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /Budget amount/ })).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  test('finding 6: the request page with a job has its own page help; finding 7: "Expired" does not claim nobody was asked', async () => {
+    expect(pageHelpName('/workers/DLM-2026-000001/request', '?job=j1')).toBe('requestWithJob');
+    expect(pageHelpName('/workers/DLM-2026-000001/request', '')).toBe('requestWorker');
+    expect(PAGE_HELP_NAMES).toContain('requestWithJob');
+    const en = (await import('../i18n/dictionaries/en.js')).default;
+    expect(en.help.screen.requestWithJob).not.toMatch(/area/i);
+    expect(en.jobs.meaning.expired).toBe('Expired: no worker took this job in time');
   });
 });

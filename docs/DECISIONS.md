@@ -1308,7 +1308,7 @@ and time, a missing or past day → Tomorrow with a note, a missing time → Any
 (a request is waiting or accepted; or the job is done, expired or closed) the page shows the plain message (with a link
 to the waiting request) instead of the form; a 409 while sending shows the same. Without `?job` the page is unchanged.
 
-## D-097 — "ghar ke kaam" is a household-help word (word lists v3, Batch 8B)
+## D-097 — "ghar ke kaam" with a maid is a household-help word (word lists v3, amended in v4, Batch 8B)
 
 The check of Batch 8A asked for `maasi chahiye` as a cleaning phrase. With it, the 8A example "maasi chahiye ghar ke kaam
 ke liye" would have become cleaning (the domestic trade default is cleaning when the cleaning skill is found). Instead of
@@ -1316,6 +1316,11 @@ changing the analyzer's rule, the plural `ghar ke kaam` / `گھر کے کام` (
 (task words come before the trade default), so the 8A example stays household help and "maasi chahiye" alone suggests
 cleaning. The singular "ghar ka kaam" is not a task word, because it can also mean building work. Before any real data;
 "Protocol changes" 3.
+
+**Amended in v4 (the independent review of Batch 8B, the same day):** "ghar ke kaam" alone also made building and
+painting texts household help ("Ghar ke kaam ke liye raj mistri chahiye, naya kamra banwana hai"). It now counts only
+together with "maasi" / "masi" / "ماسی" (co-occurrence terms), checked after the new-work words, so building texts keep
+their kind of work and the 8A example stays household help. "Protocol changes" 5.
 
 ## D-098 — One admin page for job requests, with three tabs (Batch 8B)
 

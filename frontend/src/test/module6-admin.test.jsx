@@ -115,7 +115,7 @@ describe('admin: job requests', () => {
     expect(row('taskType')).toHaveTextContent('Repair');
     expect(row('missing')).toHaveTextContent('area');
     expect(screen.getByText('Nothing was saved. These are suggestions; the customer confirms or changes every one.')).toBeInTheDocument();
-    expect(screen.getByText(/Method: rule-based word lists \(analyzer job-rules-1, word lists 2026-11-24-v3\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Method: rule-based word lists \(analyzer job-rules-1, word lists 2026-11-24-v4\)/)).toBeInTheDocument();
     expect(calls.filter((c) => c.key.startsWith('POST')).map((c) => c.key)).toEqual(['POST /job-requests/analyze']);
   });
 

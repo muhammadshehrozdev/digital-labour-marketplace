@@ -1,5 +1,6 @@
 // Documentation wording (Batch 8B, A8): three word patterns (built from parts below, so this file never trips its own
-// check) must not appear in the documents, the README, the backend source folders or frontend/src. Checked on every
+// check) must not appear in the documents, the README, the backend source folders, frontend/src or frontend/scripts
+// (the generators of tracked documents). Checked on every
 // file Git tracks (or will track: new files that are not ignored). Ignored working notes on disk (for example
 // docs/audit/) are not part of the repository.
 import { describe, test, expect } from 'vitest';
@@ -9,7 +10,8 @@ import { resolve, extname } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..', '..', '..');
 const BACKEND_DIRS = ['config', 'controllers', 'errors', 'evaluation', 'middleware', 'models', 'routes', 'scripts', 'services', 'utils', 'validators'];
-const PATHS = ['docs', 'README.md', ...BACKEND_DIRS.map((d) => `backend/${d}`), 'frontend/src'];
+// frontend/scripts and docs/tools too: they generate tracked documents (review finding 3 of Batch 8B)
+const PATHS = ['docs', 'README.md', ...BACKEND_DIRS.map((d) => `backend/${d}`), 'frontend/src', 'frontend/scripts'];
 const TEXT = new Set(['.md', '.js', '.mjs', '.cjs', '.jsx', '.json', '.csv', '.css', '.html', '.txt', '.yml', '.yaml', '.svg']);
 
 const BANNED = [
@@ -32,6 +34,7 @@ describe('documentation wording: none of the listed word patterns appears (A8)',
     expect(list).toContain('docs/modules/MODULE-6.md');
     expect(list).toContain('backend/config/jobPhrases.js');
     expect(list.some((f) => f.startsWith('frontend/src/'))).toBe(true);
+    expect(list).toContain('frontend/scripts/i18n-review.mjs'); // a generator of a tracked document
     expect(list.length).toBeGreaterThan(300);
   });
 

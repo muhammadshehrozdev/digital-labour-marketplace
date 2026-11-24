@@ -151,15 +151,20 @@ export default function DescribeJob() {
     if (field === 'skills') setSkillsNote(null);
     setForm(next);
     setTouched(nextTouched);
-    setOffers(({ [field]: _done, ...rest }) => rest);
+    // the person decided this field; a skills offer was for the old trade (review finding 1)
+    setOffers(({ [field]: _done, ...rest }) => {
+      if (field === 'category') delete rest.skills;
+      return rest;
+    });
     setErrors(({ [field === 'day' ? 'date' : field]: _fixed, ...rest }) => rest);
   };
 
   const onTakeOffer = (field) => {
-    const r = takeOffer(form, touched, offers, field);
+    const r = takeOffer(form, touched, offers, field, { analysis, skillCategory, maxSkills: limits.maxSkills });
     setForm(r.form);
     setTouched(r.touched);
     setOffers(r.offers);
+    if (r.removedSkills.length) setSkillsNote(t('jobs.form.skillsRemoved'));
   };
 
   const toDetails = async () => {
@@ -173,7 +178,7 @@ export default function DescribeJob() {
 
   const toSave = (e) => {
     e?.preventDefault();
-    const found = checkForm(form, today);
+    const found = checkForm(form, today, { amountMin: limits.amountMin, amountMax: limits.amountMax });
     setErrors(found);
     if (Object.keys(found).length) return;
     setStep('save');

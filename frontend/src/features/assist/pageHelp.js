@@ -48,10 +48,14 @@ const PATTERNS = [
   [/^\/worker\/jobs\/[^/]+$/, 'bookingDetail'],
 ];
 
-export const PAGE_HELP_NAMES = [...new Set([...Object.values(EXACT), ...PATTERNS.map(([, name]) => name)])];
+// Module 6 (Batch 8B): the request page with ?job=<id> has no area or description to write: its own page help.
+const WITH_JOB = 'requestWithJob';
 
-export function pageHelpName(pathname) {
+export const PAGE_HELP_NAMES = [...new Set([...Object.values(EXACT), ...PATTERNS.map(([, name]) => name), WITH_JOB])];
+
+export function pageHelpName(pathname, search = '') {
   const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
   if (EXACT[path]) return EXACT[path];
-  return PATTERNS.find(([pattern]) => pattern.test(path))?.[1] ?? null;
+  const name = PATTERNS.find(([pattern]) => pattern.test(path))?.[1] ?? null;
+  return name === 'requestWorker' && new URLSearchParams(search).has('job') ? WITH_JOB : name;
 }

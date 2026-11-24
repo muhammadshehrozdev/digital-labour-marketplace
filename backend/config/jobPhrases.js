@@ -21,12 +21,16 @@
 //   2026-11-24-v3  Batch 8B, still before any real data: a city spelling that is also an everyday word counts only
 //                  directly before a place word (CITY_PLACE_WORDS: "مری میں" = in Murree); a city spelling directly
 //                  before a road word is a road, not the city (CITY_ROAD_WORDS: "Murree Road"); new phrases from the
-//                  team's reading of the Urdu lists (لیک, pipe leak, گٹر بند, سیم, darwaza atak, istari,
+//                  check of Batch 8A (it read the Urdu lists) (لیک, pipe leak, گٹر بند, سیم, darwaza atak, istari,
 //                  بزرگوں کی دیکھ بھال, maasi chahiye), two install words (فٹ کرنا, فٹنگ) and one household-help
 //                  word (ghar ke kaam / گھر کے کام: keeps the 8A task-type example green). Words the taxonomy
 //                  already has (tooti / tonti / ٹونٹی, kundi / کنڈی, istri / استری, gutter band) were not added again.
+//   2026-11-24-v4  Batch 8B independent review, still before any real data: "ghar ke kaam" alone made building and
+//                  painting jobs household help ("ghar ke kaam ke liye raj mistri chahiye, kamra banwana hai"). It is
+//                  now household help only together with "maasi" (a co-occurrence term), and checked after the
+//                  new-work words; the 8A example "maasi chahiye ghar ke kaam ke liye" stays household help.
 
-export const JOB_PHRASES_VERSION = '2026-11-24-v3';
+export const JOB_PHRASES_VERSION = '2026-11-24-v4';
 
 // Roman Urdu spelling variants -> one spelling (Khan et al. 2022, Natural Language Engineering, describe why Roman
 // Urdu spelling varies).
@@ -183,11 +187,12 @@ export const TASK_TYPE_WORDS = Object.freeze([
   ['household_help', [
     'khana banana', 'khana pakana', 'kapray dhona', 'kapre dhona', 'bachon ki dekh bhaal', 'dekh bhaal',
     'کھانا پکانا', 'کھانا بنانا', 'کپڑے دھونا', 'دیکھ بھال',
-    // v3: "ghar ke kaam" (the housework; plural only, because "ghar ka kaam" can also be building work) is household
-    // help, so "maasi chahiye ghar ke kaam ke liye" stays household help now that "maasi chahiye" is a cleaning phrase
-    'ghar ke kaam', 'گھر کے کام',
   ]],
   ['new_work', ['banana', 'banwana', 'banani', 'banwani', 'tameer', 'construction', 'renovation', 'renovate', 'paint karwana', 'rang karwana', 'tiles lagwane', 'بنانا', 'بنوانا', 'تعمیر']],
+  // v4: the housework WITH a maid is household help ("maasi chahiye ghar ke kaam ke liye" stays household help now that
+  // "maasi chahiye" is a cleaning phrase). Both parts anywhere in the text; checked after the new-work words, and
+  // "ghar ke kaam" alone is no task word (it can be any work on a house).
+  ['household_help', ['ghar ke kaam + maasi', 'ghar ke kaam + masi', 'گھر کے کام + ماسی']],
 ]);
 
 // When no task word is found: the trade's usual kind of work (null = could be install or repair).

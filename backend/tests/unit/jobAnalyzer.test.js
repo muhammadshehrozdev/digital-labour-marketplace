@@ -402,7 +402,7 @@ describe('npm run jobs:try (no database, nothing saved)', () => {
 // Batch 8B (word lists 2026-11-24-v3, before any real description existed): the check of Batch 8A (A1–A3).
 describe('word lists v3: city spellings that are everyday words count only before a place word (A1)', () => {
   test('the version and the two new word lists are in config/jobPhrases.js', () => {
-    expect(JOB_PHRASES_VERSION).toBe('2026-11-24-v3');
+    expect(JOB_PHRASES_VERSION).toBe('2026-11-24-v4'); // v4: the review fix of "ghar ke kaam" (below)
     expect(CITY_PLACE_WORDS).toEqual(['میں', 'سے', 'کے', 'کی', 'کا', 'تک', 'mein', 'me', 'se', 'ke', 'ki', 'ka', 'tak']);
     expect(CITY_ROAD_WORDS).toEqual(['road', 'rd', 'روڈ', 'chowk', 'چوک']);
   });
@@ -494,12 +494,21 @@ describe('word lists v3: phrases added after reading the Urdu lists (A3)', () =>
   });
 });
 
-describe('word lists v3: "ghar ke kaam" is household help (keeps the 8A example green with the new maasi phrase)', () => {
+describe('word lists v4: "ghar ke kaam" with a maid is household help (the 8A example stays green with the new maasi phrase)', () => {
   test('"maasi chahiye" alone suggests cleaning; with "ghar ke kaam" it stays household help', () => {
     expect(run('maasi chahiye').taskType).toMatchObject({ suggested: 'cleaning', fromCategory: true });
-    expect(run('maasi chahiye ghar ke kaam ke liye').taskType).toMatchObject({ suggested: 'household_help', matched: ['ghar ke kaam'], fromCategory: false });
-    expect(run('گھر کے کام کے لیے ماسی چاہیے').taskType).toMatchObject({ suggested: 'household_help', matched: ['گھر کے کام'] });
+    expect(run('maasi chahiye ghar ke kaam ke liye').taskType).toMatchObject({ suggested: 'household_help', matched: ['ghar ke kaam + maasi'], fromCategory: false });
+    expect(run('گھر کے کام کے لیے ماسی چاہیے').taskType).toMatchObject({ suggested: 'household_help', matched: ['گھر کے کام + ماسی'] });
     // the singular "ghar ka kaam" can also be building work: not a task word
     expect(run('ghar ka kaam hai, raj mistri chahiye').taskType.suggested).toBe('new_work');
+  });
+  // Batch 8B review finding 2: in v3 "ghar ke kaam" alone made every one of these household help
+  test.each([
+    ['Ghar ke kaam ke liye raj mistri chahiye, naya kamra banwana hai', 'new_work'],
+    ['ghar ke kaam ke liye painter chahiye, rang karwana hai', 'new_work'],
+    ['گھر کے کام کے لیے مستری چاہیے، کمرہ بنوانا ہے', 'new_work'],
+    ['naye ghar ke kaam ke liye electrician chahiye wiring karwani hai', null],
+  ])('without a maid, "ghar ke kaam" is no task word: %s', (text, type) => {
+    expect(run(text).taskType.suggested).toBe(type);
   });
 });

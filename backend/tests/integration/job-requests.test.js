@@ -578,7 +578,7 @@ describe('GET /api/meta/job-options (public, no database)', () => {
       inputModes: ['text', 'voice'],
       budgetUnits: ['job', 'day', 'hour'],
       limits: { descriptionMin: 3, descriptionMax: 500, areaMin: 2, areaMax: 80, maxSkills: 5, maxOpenPerCustomer: 10, maxNewPerDay: 10, openDays: 30, amountMin: 100, amountMax: 5000000 },
-      analyzer: { method: 'rules', methodName: 'rule-based word lists', versions: { analyzer: 'job-rules-1', taxonomy: '2026-11-09-v1', phrases: '2026-11-24-v3', model: null } },
+      analyzer: { method: 'rules', methodName: 'rule-based word lists', versions: { analyzer: 'job-rules-1', taxonomy: '2026-11-09-v1', phrases: '2026-11-24-v4', model: null } },
     });
   });
 });

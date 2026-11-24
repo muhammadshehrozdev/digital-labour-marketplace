@@ -84,14 +84,31 @@ export function mergeSuggestions(form, touched, analysis, { maxSkills = 5, skill
 }
 
 // "Use it": the field takes the offered suggestion and follows the suggestions again (it counts as untouched).
-export function takeOffer(form, touched, offers, field) {
-  if (!(field in offers)) return { form, touched, offers };
+// Taking a TRADE keeps the rule that skills follow the trade (Batch 8B review finding 1): untouched skills become the
+// suggested skills of the new trade; touched skills keep only the ones of that trade (removedSkills says which went),
+// and an older skills offer is replaced by the suggested skills of the new trade.
+export function takeOffer(form, touched, offers, field, { analysis = null, skillCategory = () => null, maxSkills = 5 } = {}) {
+  if (!(field in offers)) return { form, touched, offers, removedSkills: [] };
   const value = offers[field];
-  const next = field === 'day' ? { ...form, ...value } : { ...form, [field]: value };
+  let next = field === 'day' ? { ...form, ...value } : { ...form, [field]: value };
   const nextTouched = new Set(touched);
   nextTouched.delete(field);
   const { [field]: _used, ...rest } = offers;
-  return { form: next, touched: nextTouched, offers: rest };
+  let removedSkills = [];
+  if (field === 'category' && value !== form.category) {
+    const suggested = suggestedSkills(analysis, value, maxSkills);
+    delete rest.skills;
+    if (!touched.has('skills')) {
+      next = { ...next, skills: suggested };
+      removedSkills = form.skills.filter((id) => !suggested.includes(id));
+    } else {
+      const kept = form.skills.filter((id) => skillCategory(id) === value);
+      removedSkills = form.skills.filter((id) => !kept.includes(id));
+      next = { ...next, skills: kept };
+      if (suggested.length && !sameSet(suggested, kept)) rest.skills = suggested;
+    }
+  }
+  return { form: next, touched: nextTouched, offers: rest, removedSkills };
 }
 
 // The words to show next to a field when its value IS the suggestion ("Suggested from your words: ac, service").
@@ -109,6 +126,9 @@ export function suggestionWords(field, form, analysis, { formatAmount = String }
     urgent: analysis.urgent?.matched,
     budget: analysis.budget?.matched,
   }[field] ?? [];
-  if (field === 'taskType' && analysis.taskType?.fromCategory) return { fromCategory: true, words: [] };
+  // "usual for this trade" is true only while the trade is still the suggested one (Batch 8B review finding 4)
+  if (field === 'taskType' && analysis.taskType?.fromCategory) {
+    return form.category && form.category === analysis.category?.suggested ? { fromCategory: true, words: [] } : null;
+  }
   return { fromCategory: false, words };
 }

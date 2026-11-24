@@ -1717,6 +1717,7 @@ export default {
       myJobRequests: 'Aap ki kaam ki darkhwastein. Karigar chunne ya bheji hui darkhwast dekhne ke liye aik kholein.',
       jobRequest: 'Aik kaam ki darkhwast: tafseel, aap abhi kya kar sakte hain, aur is se bheji gayi darkhwastein.',
       editJobRequest: 'Apni kaam ki darkhwast ki tafseel badlein, phir tabdeeliyan mehfooz karein dabayein.',
+      requestWithJob: 'Aap ka kaam upar dikhaya gaya hai. Kaam, din aur waqt chunein, phir bhejein dabayein. Karigar haan ya nahi mein jawab dega.',
       jobWorkers: 'Aap ke shehar mein is shobe ke karigar. Apni pasand ki tarteeb chunein, karigar kholein, aur yeh kaam bhejein dabayein.',
       // ---- end of Batch 8B (help.screen) ----
       // ---- Batch 7 (help.screen): Module 5 texts, drafts until the team reviews them ----
@@ -3362,7 +3363,7 @@ export default {
       requested: 'Karigar ke jawab ka intezar hai',
       accepted: 'Aik karigar ne yeh kaam qabool kar liya hai',
       done: 'Kaam ho gaya hai',
-      expired: 'Muddat khatam: waqt par kisi karigar se nahi poocha gaya',
+      expired: 'Muddat khatam: waqt par kisi karigar ne yeh kaam nahi liya',
       closed: 'Aap ne yeh kaam ki darkhwast band kar di',
     },
     tabs: {
@@ -3398,6 +3399,8 @@ export default {
       unit: 'Budget kis hisaab se hai?',
       remove: 'Budget hata dein',
       none: 'Koi budget nahi likha',
+      tooSmall: 'Budget kam az kam {min} rupay hona chahiye.',
+      tooLarge: 'Budget zyada se zyada {max} rupay ho sakta hai.',
       line: {
         job: 'Budget: poore kaam ke {amount}',
         day: 'Budget: rozana {amount}',

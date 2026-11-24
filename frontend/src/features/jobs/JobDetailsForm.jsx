@@ -61,6 +61,10 @@ export default function JobDetailsForm({ form, setField, analysis = null, offers
   const cityCandidates = analysis?.city?.conflict ? analysis.city.candidates ?? [] : [];
   const chosenSkill = form.skills[0] ?? null;
   const budgetFilled = Boolean(form.budget.amount || form.budget.unit);
+  // "both or neither" goes to the part that is missing; any other budget error (too small, too large) to the amount
+  const incomplete = errors.budget?.code === 'JOB_BUDGET_INCOMPLETE';
+  const amountError = errors.budget && (!incomplete || !form.budget.amount) ? errors.budget : undefined;
+  const unitError = errors.budget && incomplete && form.budget.amount ? errors.budget : undefined;
 
   // the words of an offered suggestion
   const offerText = (field, v) => {
@@ -206,7 +210,7 @@ export default function JobDetailsForm({ form, setField, analysis = null, offers
           inputMode="numeric"
           value={form.budget.amount}
           onChange={(e) => setField('budget', { ...form.budget, amount: e.target.value })}
-          error={errors.budget && !form.budget.amount ? errors.budget : undefined}
+          error={amountError}
           assist="jobs.budgetAmount"
         />
         <RadioCardGroup
@@ -215,7 +219,7 @@ export default function JobDetailsForm({ form, setField, analysis = null, offers
           layout="tiles"
           value={form.budget.unit}
           onChange={(unit) => setField('budget', { ...form.budget, unit })}
-          error={errors.budget && form.budget.amount ? errors.budget : undefined}
+          error={unitError}
           assist="jobs.budgetUnit"
           listen="wageUnit"
           options={BUDGET_UNITS.map((u) => ({ value: u, title: t(`wage.unit.${u}`), icon: UNIT_ICONS[u] }))}

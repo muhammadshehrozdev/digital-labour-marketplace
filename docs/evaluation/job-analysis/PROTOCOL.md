@@ -183,3 +183,9 @@ change any compared value).
    workshop volume (*Learning for Text Categorization: Papers from the 1998 AAAI Workshop*, Technical Report WS-98-05,
    AAAI Press); Manning, Raghavan & Schütze (2008) now gives the title of chapter 13 and the book's address. No other
    text changed.
+5. **24 Nov 2026 (Batch 8B independent review; before any real description exists).** Word lists changed before any
+   real data; no rule of the protocol changed. `backend/config/jobPhrases.js` is now version `2026-11-24-v4`: the
+   household-help task word `ghar ke kaam` / `گھر کے کام` of entry 3 is replaced by the co-occurrence terms
+   `ghar ke kaam + maasi`, `ghar ke kaam + masi`, `گھر کے کام + ماسی`, checked after the new-work words. Reason: the
+   review found that "ghar ke kaam" alone made building and painting texts household help ("Ghar ke kaam ke liye raj
+   mistri chahiye, naya kamra banwana hai"); synthetic sentences only, no real or test data was seen.

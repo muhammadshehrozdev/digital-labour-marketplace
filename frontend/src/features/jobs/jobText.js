@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { addDays } from '../booking/bookingText';
 import { amountOf } from '../wage/wageLogic';
+import { formatRupees } from '../../utils/masks';
 
 export const TASK_TYPES = Object.freeze(['install', 'repair', 'service', 'new_work', 'cleaning', 'moving', 'household_help']);
 // "none" is the screen's "Not sure" (taskType null)
@@ -126,17 +127,21 @@ export const EMPTY_FORM = Object.freeze({
 });
 
 // Client checks before saving (the server checks everything again). Keys are dictionary keys or server codes.
-export function checkForm(form, today, maxDays = 30) {
+// savedDate: the job's saved day (the edit page): an unchanged day is not checked again, so an open job whose day has
+// passed can still be edited (review finding 5). amountMin / amountMax: the budget's limits (review finding 8).
+export function checkForm(form, today, { maxDays = 30, savedDate = null, amountMin = 100, amountMax = 5000000 } = {}) {
   const errors = {};
   if (!form.category) errors.category = 'jobs.form.needTrade';
   if (form.city.trim().length < 2) errors.city = 'jobs.form.needCity';
   if (form.area.trim().length < 2) errors.area = 'jobs.form.needArea';
-  if (form.day === 'pick') {
+  if (form.day === 'pick' && !(savedDate && form.date === savedDate)) {
     if (!form.date) errors.date = 'jobs.form.needDate';
     else if (form.date < today || form.date > addDays(today, maxDays)) errors.date = { code: 'BOOKING_DATE_RANGE', params: { max: maxDays } };
   }
   const amount = amountOf(form.budget?.amount ?? '');
   if (Boolean(amount) !== Boolean(form.budget?.unit)) errors.budget = { code: 'JOB_BUDGET_INCOMPLETE' };
+  else if (amount && amount < amountMin) errors.budget = { key: 'jobs.budget.tooSmall', params: { min: formatRupees(String(amountMin)) } };
+  else if (amount && amount > amountMax) errors.budget = { key: 'jobs.budget.tooLarge', params: { max: formatRupees(String(amountMax)) } };
   return errors;
 }
 
