@@ -2,6 +2,15 @@
 
 What changed in each phase. Test results are copied from real runs only.
 
+## Batch 8 — Module 6: describe a job (Batch 8B, the screens; 24 Nov 2026)
+
+- **Word lists `2026-11-24-v3`** (before any real description; no rule of the protocol changed, "Protocol changes" 3):
+  a city spelling that is also an everyday word (`atak`, `اٹک`, `wah`, `mari`, `مری`) names the city only directly
+  before a place word ("مری میں" = in Murree); a city spelling directly before `road`, `rd`, `روڈ`, `chowk` or `چوک` is a
+  road, not the city ("Murree Road Rawalpindi" → Rawalpindi); new phrases `لیک`, `پائپ لیک`, `pipe leak`, `گٹر بند`,
+  `سیم`, `دروازہ اٹک`, `darwaza atak`, `istari`, `بزرگوں کی دیکھ بھال`, `ماسی چاہیے`, `maasi chahiye`, `masi chahiye`; task
+  words `فٹ کرنا`, `فٹنگ` (install) and `ghar ke kaam`, `گھر کے کام` (household help). Module 2's output is unchanged.
+
 ## Batch 8A — Module 6, Problem/Job Analyzer: backend, analyzers, evaluation harness (23–24 Nov 2026)
 
 Why: the proposal's Module 6, as the team decided on 23 Nov 2026 (D-080 to D-090): a rule-based analyzer **and** the

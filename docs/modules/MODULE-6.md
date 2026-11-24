@@ -77,8 +77,9 @@ one source) and stores `jobRequest`, `jobCode`, `jobTaskType`. A booking without
 
 ## 3. The rule-based analyzer `job-rules-1` (live)
 
-`services/jobAnalyzer/rules.js` (pure); word lists in `config/jobPhrases.js` (version `2026-11-24-v2`: v1 plus two fixes from the independent review, written by
-Claude Code before any real data, for team review; improved in Batch 8C on the development set only).
+`services/jobAnalyzer/rules.js` (pure); word lists in `config/jobPhrases.js` (version `2026-11-24-v3`: v1 plus two
+fixes from the independent review of Batch 8A (v2) and the results of the check of Batch 8A (v3, Batch 8B), all
+written before any real data, for team review; improved in Batch 8C on the development set only).
 
 - **Normalisation:** Module 2's `normalizeText` + a Roman Urdu spelling-variant map (`nhi/nahin/nai → nahi`,
   `kr → kar`, `gya → gaya`, …; 47 words, 90 variants), applied to the text **and** to every term. Module 2 is
@@ -92,8 +93,13 @@ Claude Code before any real data, for team review; improved in Batch 8C on the d
   household help, new work; else the trade's usual work (masonry, painting, carpentry → new work; moving → moving;
   domestic → cleaning when the cleaning skill was found, else household help; the others → none).
 - **City:** any spelling of the city table as a whole word sequence; two different cities → no suggestion and the
-  note `city_conflict`; a longer name wins ("Mirpur Khas" is not also "Mirpur"); five everyday words are not used
-  (`atak` / `اٹک` = stuck, `wah`, `mari`, `مری`); never a guess for an unknown place.
+  note `city_conflict`; a longer name wins ("Mirpur Khas" is not also "Mirpur"); never a guess for an unknown place.
+  Since v3 (Batch 8B, A1 and A2): the five spellings that are also everyday words (`atak` / `اٹک` = stuck, `wah`,
+  `mari`, `مری`) name the city **only directly before a place word** (`میں`, `سے`, `کے`, `کی`, `کا`, `تک`, `mein`,
+  `me`, `se`, `ke`, `ki`, `ka`, `tak`): "مری میں نلکا ٹپک رہا ہے" → Murree, "پائپ میں کچھ اٹک گیا ہے" → none; a city
+  spelling **directly before a road word** (`road`, `rd`, `روڈ`, `chowk`, `چوک`) is a road, not the city: "Murree Road
+  Rawalpindi par plumber chahiye" → Rawalpindi, no conflict. The longer name is chosen first ("Mirpur Khas Road" is
+  neither Mirpur Khas nor Mirpur). Known limit: "atak ke" (having got stuck) reads as "Attock ke".
 - **Day, time, urgency** (with `now`, Pakistan time): aaj / kal / parson → today / tomorrow / day after and a date;
   subah / dopahar / shaam → morning / afternoon / evening (night: no slot); jaldi, foran, urgent, emergency, abhi.
 - **Budget** (from the raw text): a number is money only next to a money word (Rs, rupay, budget, روپے, …), with a
@@ -162,6 +168,11 @@ its content, and keeps only the file **name** of its training data.
 **The hybrid (fixed in 8A):** the trade from the rules when they give one (not empty, no tie); otherwise the
 classifier's top label (`category.source` says which). Everything else always comes from the rules; when the trade came
 from the classifier, only the rules' skills of that trade are kept.
+
+When the hybrid's trade comes from the classifier, the task type's trade default (step 7 of the task-type rule) uses
+that trade: this behaviour **is** pre-registered, because the frozen `PROTOCOL.md` (at `81ba8f6`, "What is compared")
+says so, and the frozen text decides over the older wording of the Batch 8A plan (review finding 6; the code is
+unchanged).
 
 **Live use:** `config/jobAnalyzer.js` — `LIVE_METHOD = 'rules'`, `LIVE_MODEL = null` (D-085). A future model is an
 ES module (`config/jobModel.generated.js`, `jobs:train --format js`) imported statically so Vercel bundles it. In
@@ -246,16 +257,18 @@ reported (the same author wrote the word lists and the synthetic sentences).
 Neither rule-based extraction nor naive Bayes is new (Chiticariu, Li & Reiss 2013 on rule-based extraction in
 practice; McCallum & Nigam 1998; Wang & Manning 2012 on simple baselines). The contribution of Module 6 is: (1) a
 domain analyzer for short, code-mixed (Urdu / Roman Urdu / English) household job descriptions, with Roman Urdu
-spelling variants (Khan et al. 2020 describe why they are needed) and symptom phrases; (2) a newly collected,
+spelling variants (Khan et al. 2022 describe why they are needed) and symptom phrases; (2) a newly collected,
 consented, double-labelled dataset; (3) a **pre-registered** comparison of hand-written rules against a small
 self-trained classifier, with a decision rule and a claim rule fixed before the data was seen.
 
-## 11. Open questions for the supervisor
+## 11. Supervisor's guidance (24 Nov 2026, reported by the team)
 
-1. Is a small classifier the team trains itself (naive Bayes, plain JavaScript) acceptable as the module's "AI" part?
-2. Is ethics approval needed for collecting job descriptions from adults with consent (no names or numbers)?
-3. What use of AI tools (such as the coding assistant used to write code and drafts) is allowed, and how should the
-   report state it?
+1. A self-trained naive Bayes classifier, compared with the rule-based word lists, **is acceptable** as the module's
+   "AI" part.
+2. **No ethics approval** is needed for collecting the job descriptions. The form must say clearly that it collects
+   descriptions for the project (it does: `docs/evaluation/job-analysis/consent-text.md`, `FORM-DRAFT.md`).
+
+Decision D-091.
 
 ## 12. How to explain this in the viva
 
@@ -285,15 +298,16 @@ database) to build the `jobrequests` indexes and the new partial booking index `
 
 ## References
 
-- McCallum, A., & Nigam, K. (1998). A Comparison of Event Models for Naive Bayes Text Classification. *AAAI-98
-  Workshop on Learning for Text Categorization*, 41–48. http://www.kamalnigam.com/papers/multinomial-aaaiws98.pdf
-- Manning, C. D., Raghavan, P., & Schütze, H. (2008). *Introduction to Information Retrieval*, ch. 13. Cambridge
-  University Press. https://nlp.stanford.edu/IR-book/
+- McCallum, A., & Nigam, K. (1998). A Comparison of Event Models for Naive Bayes Text Classification. In *Learning
+  for Text Categorization: Papers from the 1998 AAAI Workshop* (Technical Report WS-98-05), 41–48. AAAI Press.
+- Manning, C. D., Raghavan, P., & Schütze, H. (2008). *Introduction to Information Retrieval*, ch. 13 "Text
+  classification and Naive Bayes". Cambridge University Press. https://nlp.stanford.edu/IR-book/
 - Wang, S., & Manning, C. (2012). Baselines and Bigrams: Simple, Good Sentiment and Topic Classification. *ACL 2012
   (Short Papers)*, 90–94. https://aclanthology.org/P12-2018/
 - Chiticariu, L., Li, Y., & Reiss, F. R. (2013). Rule-Based Information Extraction is Dead! Long Live Rule-Based
   Information Extraction Systems! *EMNLP 2013*, 827–832. https://aclanthology.org/D13-1079/
-- Khan, A. R., Karim, A., Sajjad, H., Kamiran, F., & Xu, J. (2020). A Clustering Framework for Lexical Normalization
-  of Roman Urdu. arXiv:2004.00088. https://doi.org/10.48550/arXiv.2004.00088
+- Khan, A. R., Karim, A., Sajjad, H., Kamiran, F., & Xu, J. (2022). A clustering framework for lexical normalization
+  of Roman Urdu. *Natural Language Engineering*, 28(1), 93–123. https://doi.org/10.1017/S1351324920000285 (published
+  online 10 June 2020; preprint arXiv:2004.00088).
 - McNemar (1947), Dietterich (1998), Fagerland et al. (2013), Wilson (1927), Cohen (1960): full entries in
   `docs/evaluation/job-analysis/PROTOCOL.md`.

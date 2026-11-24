@@ -146,10 +146,10 @@ change any compared value).
   https://doi.org/10.1186/1471-2288-13-91
 - Dietterich, T. G. (1998). Approximate Statistical Tests for Comparing Supervised Classification Learning Algorithms.
   *Neural Computation*, 10(7), 1895–1923. https://doi.org/10.1162/089976698300017197
-- McCallum, A., & Nigam, K. (1998). A Comparison of Event Models for Naive Bayes Text Classification. *AAAI-98
-  Workshop on Learning for Text Categorization*, 41–48.
-- Manning, C. D., Raghavan, P., & Schütze, H. (2008). *Introduction to Information Retrieval*, ch. 13. Cambridge
-  University Press.
+- McCallum, A., & Nigam, K. (1998). A Comparison of Event Models for Naive Bayes Text Classification. In *Learning
+  for Text Categorization: Papers from the 1998 AAAI Workshop* (Technical Report WS-98-05), 41–48. AAAI Press.
+- Manning, C. D., Raghavan, P., & Schütze, H. (2008). *Introduction to Information Retrieval*, ch. 13 "Text
+  classification and Naive Bayes". Cambridge University Press. https://nlp.stanford.edu/IR-book/
 - Wilson, E. B. (1927). Probable Inference, the Law of Succession, and Statistical Inference. *JASA*, 22(158), 209–212.
   https://doi.org/10.1080/01621459.1927.10502953
 - Cohen, J. (1960). A Coefficient of Agreement for Nominal Scales. *Educational and Psychological Measurement*, 20(1),
@@ -169,3 +169,17 @@ change any compared value).
    `2026-11-24-v2` (the Urdu spelling of "stuck", `اٹک`, is no longer read as the city Attock; a free-standing `k` is
    no longer a "thousand"; see `backend/config/jobPhrases.js`); the "kept skills" use statistic counts a full 5-skill
    save of more than 5 suggestions as kept.
+3. **24 Nov 2026 (Batch 8B; before any real description exists).** Word lists changed before any real data; no rule
+   of the protocol changed. `backend/config/jobPhrases.js` is now version `2026-11-24-v3`: a city spelling that is also
+   an everyday word (`atak`, `اٹک`, `wah`, `mari`, `مری`) names the city only directly before a place word; a city
+   spelling directly before a road word (`road`, `rd`, `روڈ`, `chowk`, `چوک`) is not the city; new problem phrases
+   (`لیک`, `پائپ لیک`, `pipe leak`, `گٹر بند`, `سیم`, `دروازہ اٹک`, `darwaza atak`, `istari`, `بزرگوں کی دیکھ بھال`,
+   `ماسی چاہیے`, `maasi chahiye`, `masi chahiye`) and task words (`فٹ کرنا`, `فٹنگ` for install; `ghar ke kaam`,
+   `گھر کے کام` for household help). Reason: the check of Batch 8A read the Urdu lists and tried example sentences; no
+   real or test data was seen. The split, the cross-validation grid, the metrics, the decision rule and the claim rule
+   are unchanged.
+4. **24 Nov 2026 (Batch 8B; a reference correction, not a protocol change).** Two entries of "References" were
+   corrected as the sources were checked on 24 Nov 2026 (reported by the team): McCallum & Nigam (1998) now names the
+   workshop volume (*Learning for Text Categorization: Papers from the 1998 AAAI Workshop*, Technical Report WS-98-05,
+   AAAI Press); Manning, Raghavan & Schütze (2008) now gives the title of chapter 13 and the book's address. No other
+   text changed.

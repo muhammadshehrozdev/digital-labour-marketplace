@@ -7,7 +7,7 @@ import { findBudget } from '../../services/jobAnalyzer/budget.js';
 import { findCity, looksLikeAddress } from '../../services/jobAnalyzer/fields.js';
 import { jobTokens, compileTerm, termMatches, VARIANT_MAP } from '../../services/jobAnalyzer/tokens.js';
 import { extractSkills } from '../../services/skillExtractor/extractor.js';
-import { SKILL_PHRASES, SPELLING_VARIANTS, TASK_TYPE_WORDS, JOB_PHRASES_VERSION } from '../../config/jobPhrases.js';
+import { SKILL_PHRASES, SPELLING_VARIANTS, TASK_TYPE_WORDS, JOB_PHRASES_VERSION, CITY_PLACE_WORDS, CITY_ROAD_WORDS } from '../../config/jobPhrases.js';
 import { SKILL_IDS, CATEGORY_IDS, skillById } from '../../config/skillTaxonomy.js';
 import { TASK_TYPES } from '../../config/jobRules.js';
 import { CITY_SPELLINGS, canonicalCity } from '../../config/regions.js';
@@ -396,5 +396,110 @@ describe('npm run jobs:try (no database, nothing saved)', () => {
     expect(r.status).toBe(1);
     expect(r.stderr).toMatch(/Usage: npm run jobs:try/);
     expect(spawnSync(process.execPath, ['scripts/jobsTry.js', 'AC', '--now', 'yesterday'], { encoding: 'utf8' }).status).toBe(1);
+  });
+});
+
+// Batch 8B (word lists 2026-11-24-v3, before any real description existed): the check of Batch 8A (A1–A3).
+describe('word lists v3: city spellings that are everyday words count only before a place word (A1)', () => {
+  test('the version and the two new word lists are in config/jobPhrases.js', () => {
+    expect(JOB_PHRASES_VERSION).toBe('2026-11-24-v3');
+    expect(CITY_PLACE_WORDS).toEqual(['میں', 'سے', 'کے', 'کی', 'کا', 'تک', 'mein', 'me', 'se', 'ke', 'ki', 'ka', 'tak']);
+    expect(CITY_ROAD_WORDS).toEqual(['road', 'rd', 'روڈ', 'chowk', 'چوک']);
+  });
+  test.each([
+    ['مری میں نلکا ٹپک رہا ہے', { suggested: 'Murree', region: 'PB', conflict: false }],
+    ['اٹک میں وائرنگ کا کام ہے', { suggested: 'Attock', region: 'PB', conflict: false }],
+    ['Mari se Islamabad samaan shift karna hai', { suggested: null, region: null, conflict: true, matched: ['mari', 'islamabad'] }],
+    ['پائپ میں کچھ اٹک گیا ہے', { suggested: null, conflict: false, matched: [] }],
+    ['Wah! kya baat hai, pankha theek karna hai Islamabad mein', { suggested: 'Islamabad', conflict: false, matched: ['islamabad'] }],
+    ['Wah Cantt mein AC ki service chahiye', { suggested: 'Wah Cantt', conflict: false }],
+    ['Murree mein geyser lagwana hai', { suggested: 'Murree', conflict: false }],
+  ])('%s', (text, city) => {
+    expect(run(text).city).toMatchObject(city);
+  });
+  test('the place word must come directly after the spelling', () => {
+    expect(run('mari kal mein aayega').city.suggested).toBeNull();
+    expect(run('mari tak jana hai').city.suggested).toBe('Murree');
+    expect(findCity(jobTokens('mari'))).toMatchObject({ suggested: null, conflict: false }); // the word alone
+  });
+});
+
+describe('word lists v3: a road or square named after a city is not that city (A2)', () => {
+  test('Murree Road in Rawalpindi: Rawalpindi, no conflict', () => {
+    const a = run('Murree Road Rawalpindi par plumber chahiye');
+    expect(a.city).toMatchObject({ suggested: 'Rawalpindi', region: 'PB', conflict: false, matched: ['rawalpindi'] });
+    expect(a.notes).not.toContain('city_conflict');
+  });
+  test('Jail Road in Lahore; "rd", "chowk" and the Urdu words too', () => {
+    expect(run('Lahore mein Jail Road par painter chahiye').city.suggested).toBe('Lahore');
+    expect(run('Lahore rd par kaam hai').city.suggested).toBeNull();
+    expect(run('Multan chowk ke paas, Lahore mein').city.suggested).toBe('Lahore');
+    expect(run('مری روڈ راولپنڈی میں پلمبر چاہیے').city).toMatchObject({ suggested: 'Rawalpindi', conflict: false });
+    expect(run('کراچی چوک کے پاس، لاہور').city.suggested).toBe('Lahore');
+  });
+  test('a road without a city spelling changes nothing; the longer name decides first', () => {
+    expect(run('GT Road par electrician chahiye').city).toMatchObject({ suggested: null, conflict: false, matched: [] });
+    expect(run('GT Road Rawalpindi par electrician chahiye').city.suggested).toBe('Rawalpindi');
+    // "Mirpur Khas Road" is a road: neither Mirpur Khas nor the shorter "Mirpur" inside it
+    expect(run('Mirpur Khas Road par plumber').city).toMatchObject({ suggested: null, conflict: false });
+  });
+});
+
+describe('word lists v3: phrases added after reading the Urdu lists (A3)', () => {
+  const has = (skill, text) => skillIds(run(text)).includes(skill);
+  test.each([
+    ['plumb_fixtures', 'ٹونٹی خراب ہے'],
+    ['plumb_fixtures', 'tonti kharab hai'], // the taxonomy's "tooti" through the spelling variant (not added again)
+    ['plumb_leak', 'پانی لیک ہو رہا ہے'],
+    ['plumb_leak', 'پائپ لیک ہے'],
+    ['plumb_leak', 'pipe leak ho raha hai'],
+    ['plumb_drain', 'گٹر بند ہے'],
+    ['plumb_drain', 'gutter band ho gaya'],
+    ['mason_waterproof', 'دیوار میں سیم ہے'],
+    ['carp_doors', 'دروازہ اٹک جاتا ہے'],
+    ['carp_doors', 'darwaza atak gaya hai'],
+    ['carp_locks', 'کنڈی ٹوٹ گئی ہے'],
+    ['carp_locks', 'kundi lagwani hai'],
+    ['dom_laundry', 'کپڑوں کی استری'],
+    ['dom_laundry', 'kapron ki istri'],
+    ['dom_laundry', 'kapron ki istari'],
+    ['dom_eldercare', 'بزرگوں کی دیکھ بھال کے لیے کوئی چاہیے'],
+    ['dom_cleaning', 'ماسی چاہیے'],
+    ['dom_cleaning', 'maasi chahiye'],
+    ['dom_cleaning', 'masi chahiye roz ke liye'],
+  ])('%s: %s', (skill, text) => {
+    expect(has(skill, text)).toBe(true);
+  });
+  test('"seem" in Roman letters is an English word, not damp; "maasi" alone is not a cleaning request', () => {
+    expect(skillIds(run('it does not seem right'))).not.toContain('mason_waterproof');
+    expect(skillIds(run('meri maasi aa rahi hain'))).not.toContain('dom_cleaning');
+  });
+  test('"darwaza atak" is a door, and "atak" there is not the city Attock', () => {
+    const a = run('darwaza atak gaya hai');
+    expect(a.category.suggested).toBe('carpentry_woodwork');
+    expect(a.city).toMatchObject({ suggested: null, matched: [] });
+  });
+  test('the install words فٹ کرنا and فٹنگ', () => {
+    expect(run('پنکھا فٹ کرنا ہے').taskType).toMatchObject({ suggested: 'install', matched: ['فٹ کرنا'] });
+    expect(run('گیزر کی فٹنگ کروانی ہے').taskType).toMatchObject({ suggested: 'install', matched: ['فٹنگ'] });
+  });
+  test('the new phrases are in config/jobPhrases.js once, and no taxonomy term was added again', () => {
+    for (const [skill, terms] of Object.entries({ plumb_leak: ['لیک', 'پائپ لیک', 'pipe leak'], plumb_drain: ['گٹر بند'], mason_waterproof: ['سیم'], carp_doors: ['دروازہ اٹک', 'darwaza atak'], dom_laundry: ['istari'], dom_eldercare: ['بزرگوں کی دیکھ بھال'], dom_cleaning: ['ماسی چاہیے', 'maasi chahiye', 'masi chahiye'] })) {
+      for (const term of terms) expect(SKILL_PHRASES[skill].filter((t) => t === term), `${skill}: ${term}`).toHaveLength(1);
+    }
+    for (const [skill, term] of [['plumb_fixtures', 'tonti'], ['plumb_fixtures', 'ٹونٹی'], ['carp_locks', 'kundi'], ['carp_locks', 'کنڈی'], ['dom_laundry', 'istri'], ['dom_laundry', 'استری']]) {
+      expect(SKILL_PHRASES[skill] ?? []).not.toContain(term);
+    }
+    expect(TASK_TYPE_WORDS.find(([type]) => type === 'install')[1]).toEqual(expect.arrayContaining(['فٹ کرنا', 'فٹنگ']));
+  });
+});
+
+describe('word lists v3: "ghar ke kaam" is household help (keeps the 8A example green with the new maasi phrase)', () => {
+  test('"maasi chahiye" alone suggests cleaning; with "ghar ke kaam" it stays household help', () => {
+    expect(run('maasi chahiye').taskType).toMatchObject({ suggested: 'cleaning', fromCategory: true });
+    expect(run('maasi chahiye ghar ke kaam ke liye').taskType).toMatchObject({ suggested: 'household_help', matched: ['ghar ke kaam'], fromCategory: false });
+    expect(run('گھر کے کام کے لیے ماسی چاہیے').taskType).toMatchObject({ suggested: 'household_help', matched: ['گھر کے کام'] });
+    // the singular "ghar ka kaam" can also be building work: not a task word
+    expect(run('ghar ka kaam hai, raj mistri chahiye').taskType.suggested).toBe('new_work');
   });
 });

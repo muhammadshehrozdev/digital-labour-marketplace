@@ -8,7 +8,7 @@ import JobRequest from '../models/JobRequest.js';
 import Booking from '../models/Booking.js';
 import { httpError } from '../utils/httpError.js';
 import { skillById } from '../config/skillTaxonomy.js';
-import { regionOf } from '../config/regions.js';
+import { canonicalCity, regionOf } from '../config/regions.js';
 import { BOOKING_RULES } from '../config/bookingRules.js';
 import { ACTIVE_JOB_STATES, JOB_RULES } from '../config/jobRules.js';
 import { isAllowedDate, addHours } from '../services/booking/schedule.js';
@@ -62,10 +62,14 @@ async function detail(job, now, { status = 200 } = {}, res) {
   });
 }
 
+// The screen's "Which city?" buttons need the city NAMES of the matched spellings ("mari" -> Murree), in text order.
+// Added by the route only (Batch 8B): the pure analyzer and the evaluation (which reads city.suggested) are unchanged.
+export const withCityCandidates = (a) => ({ ...a, city: { ...a.city, candidates: [...new Set(a.city.matched.map(canonicalCity).filter(Boolean))] } });
+
 // POST /api/job-requests/analyze  (customer, admin) — the live analyzer's suggestions. Saves NOTHING, logs no text.
 export const analyzeText = async (req, res) => {
   noStore(res);
-  res.json(analyzeLive(req.validated.body.text, new Date()));
+  res.json(withCityCandidates(analyzeLive(req.validated.body.text, new Date())));
 };
 
 // POST /api/job-requests  (customer)

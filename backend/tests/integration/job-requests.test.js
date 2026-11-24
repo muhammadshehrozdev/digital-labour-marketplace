@@ -98,6 +98,16 @@ describe('POST /api/job-requests/analyze: suggestions only, nothing saved', () =
     expect((await as(admin).post('/api/job-requests/analyze').send({ text: 'plumber chahiye' })).status).toBe(200);
   });
 
+  // Batch 8B: the screen's "Which city?" buttons need the names of the matched city spellings (added, nothing removed)
+  test('city.candidates: the English names of the matched city spellings, in text order', async () => {
+    const two = await as(customer).post('/api/job-requests/analyze').send({ text: 'Mari se Pindi samaan shift karna hai' });
+    expect(two.body.city).toEqual({ suggested: null, region: null, matched: ['mari', 'pindi'], conflict: true, candidates: ['Murree', 'Rawalpindi'] });
+    const one = await as(customer).post('/api/job-requests/analyze').send({ text: 'pindi mein plumber' });
+    expect(one.body.city).toMatchObject({ suggested: 'Rawalpindi', candidates: ['Rawalpindi'] });
+    const none = await as(customer).post('/api/job-requests/analyze').send({ text: 'plumber chahiye' });
+    expect(none.body.city).toMatchObject({ suggested: null, matched: [], candidates: [] });
+  });
+
   test('contact details and CNIC numbers are refused; strict body; length limits', async () => {
     const r1 = await as(customer).post('/api/job-requests/analyze').send({ text: 'Call 0300-1234567 for AC repair' });
     expect([r1.status, r1.body.code]).toEqual([400, 'TEXT_HAS_CONTACT_INFO']);
@@ -568,7 +578,7 @@ describe('GET /api/meta/job-options (public, no database)', () => {
       inputModes: ['text', 'voice'],
       budgetUnits: ['job', 'day', 'hour'],
       limits: { descriptionMin: 3, descriptionMax: 500, areaMin: 2, areaMax: 80, maxSkills: 5, maxOpenPerCustomer: 10, maxNewPerDay: 10, openDays: 30, amountMin: 100, amountMax: 5000000 },
-      analyzer: { method: 'rules', methodName: 'rule-based word lists', versions: { analyzer: 'job-rules-1', taxonomy: '2026-11-09-v1', phrases: '2026-11-24-v2', model: null } },
+      analyzer: { method: 'rules', methodName: 'rule-based word lists', versions: { analyzer: 'job-rules-1', taxonomy: '2026-11-09-v1', phrases: '2026-11-24-v3', model: null } },
     });
   });
 });

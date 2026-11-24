@@ -1,8 +1,8 @@
 // Module 6 (Batch 8A): the word and phrase lists of the rule-based job analyzer (services/jobAnalyzer).
 //
 // STATUS OF THESE LISTS (read this first)
-//   Version 1, written by Claude Code on 23-24 Nov 2026 from general knowledge of Pakistani household work, BEFORE
-//   any real job description was collected. The team reviews them (docs/i18n/REVIEW-BATCH-8A.md has the Urdu ones).
+//   Version 1, written on 23-24 Nov 2026 from general knowledge of Pakistani household work, BEFORE any real job
+//   description was collected. The team reviews them (docs/i18n/REVIEW-BATCH-8A.md has the Urdu ones).
 //   In Batch 8C they may be improved using the DEVELOPMENT set only; the test set is never used for that
 //   (docs/evaluation/job-analysis/PROTOCOL.md). Every change gets a dated line in the change log below and in
 //   docs/CHANGELOG.md, and a new JOB_PHRASES_VERSION.
@@ -18,10 +18,18 @@
 //   2026-11-24-v1  first version (Batch 8A)
 //   2026-11-24-v2  after the Batch 8A independent review, still before any real data: the Urdu spelling "اٹک" (also
 //                  "stuck") is not used alone as the city Attock; a free-standing "k" is not a thousand (budget.js)
+//   2026-11-24-v3  Batch 8B, still before any real data: a city spelling that is also an everyday word counts only
+//                  directly before a place word (CITY_PLACE_WORDS: "مری میں" = in Murree); a city spelling directly
+//                  before a road word is a road, not the city (CITY_ROAD_WORDS: "Murree Road"); new phrases from the
+//                  team's reading of the Urdu lists (لیک, pipe leak, گٹر بند, سیم, darwaza atak, istari,
+//                  بزرگوں کی دیکھ بھال, maasi chahiye), two install words (فٹ کرنا, فٹنگ) and one household-help
+//                  word (ghar ke kaam / گھر کے کام: keeps the 8A task-type example green). Words the taxonomy
+//                  already has (tooti / tonti / ٹونٹی, kundi / کنڈی, istri / استری, gutter band) were not added again.
 
-export const JOB_PHRASES_VERSION = '2026-11-24-v2';
+export const JOB_PHRASES_VERSION = '2026-11-24-v3';
 
-// Roman Urdu spelling variants -> one spelling (Khan et al. 2020 describe why Roman Urdu spelling varies).
+// Roman Urdu spelling variants -> one spelling (Khan et al. 2022, Natural Language Engineering, describe why Roman
+// Urdu spelling varies).
 // Spelling only: one word for one word. Inflected forms ("pankhay") are phrase terms below, not variants.
 // Known side effect: "nai" also means "new" in Roman Urdu; it only matters inside the fault phrases.
 export const SPELLING_VARIANTS = Object.freeze({
@@ -96,23 +104,24 @@ export const SKILL_PHRASES = Object.freeze({
 
   // ---- Plumbing & Sanitary
   plumb_fixtures: ['nalka', 'nalkay', 'nalke', 'nalkon', 'flush', 'flush tank', 'shower kharab', 'نلکا', 'نلکے', 'فلش'],
-  plumb_leak: ['tapak', 'tapakta', 'tapakti', 'tapakna', 'pani tapak', 'pani beh raha', 'ٹپک', 'ٹپکتا', 'ٹپک رہا'],
+  plumb_leak: ['tapak', 'tapakta', 'tapakti', 'tapakna', 'pani tapak', 'pani beh raha', 'ٹپک', 'ٹپکتا', 'ٹپک رہا', 'لیک', 'پائپ لیک', 'pipe leak'],
   plumb_pump: [
     'pani nahi aa raha', 'pani nahi aa rahi', 'pani nahi aata', 'pani nahi chadh raha', 'pani nahi charh raha',
     'motor nahi chal', 'motor kharab', 'پانی نہیں آ رہا', 'پانی نہیں آتا', 'موٹر خراب',
   ],
-  plumb_drain: ['gutter', 'gutter band', 'naali band', 'nali band', 'drain band', 'sink band', 'pani ruk gaya', 'نالی بند'],
+  plumb_drain: ['gutter', 'gutter band', 'naali band', 'nali band', 'drain band', 'sink band', 'pani ruk gaya', 'نالی بند', 'گٹر بند'],
   plumb_pipe: ['pipe phat gaya', 'pipe phat gayi', 'pipe toot gaya', 'pipe burst', 'پائپ پھٹ'],
 
   // ---- Construction & Masonry
-  mason_waterproof: ['seelan', 'seelan aa rahi', 'chhat tapak', 'chhat se pani', 'chhat leak', 'سیلن', 'چھت ٹپک'],
+  // سیم (damp) in Urdu script only: the Roman spelling "seem" is an English word
+  mason_waterproof: ['seelan', 'seelan aa rahi', 'chhat tapak', 'chhat se pani', 'chhat leak', 'سیلن', 'چھت ٹپک', 'سیم'],
   mason_plaster: ['darar + deewar', 'crack + deewar', 'crack + wall', 'دراڑ + دیوار', 'کریک + دیوار'],
   mason_general: ['chardiwari', 'char diwari', 'boundary wall', 'kamra banwana', 'kamra banana', 'چار دیواری'],
 
   // ---- Carpentry & Woodwork
   carp_doors: [
     'darwaza toot', 'darwaza kharab', 'darwaza band nahi', 'khirki toot', 'khirki kharab',
-    'دروازہ ٹوٹ', 'دروازہ خراب',
+    'دروازہ ٹوٹ', 'دروازہ خراب', 'دروازہ اٹک', 'darwaza atak',
   ],
   carp_locks: ['tala kharab', 'taala kharab', 'lock kharab', 'تالا خراب'],
   carp_furniture: ['kursi toot', 'bed toot', 'sofa repair', 'کرسی ٹوٹ'],
@@ -136,11 +145,12 @@ export const SKILL_PHRASES = Object.freeze({
   home_fixtures: ['parda lagana', 'parday lagane', 'tasveer lagani', 'drill karna', 'پردے لگانے'],
 
   // ---- Domestic Work
-  dom_cleaning: ['safai karwani', 'safai karwana', 'safai wali', 'deep cleaning', 'صفائی کروانی'],
+  // "maasi" alone is also an aunt: only with chahiye / چاہیے
+  dom_cleaning: ['safai karwani', 'safai karwana', 'safai wali', 'deep cleaning', 'صفائی کروانی', 'ماسی چاہیے', 'maasi chahiye', 'masi chahiye'],
   dom_cooking: ['khana banane wali', 'khana banane wala', 'khana pakane wali', 'cook chahiye', 'کھانا بنانے والی', 'کھانا پکانے والی'],
-  dom_laundry: ['kapre dhone', 'kapray dhone', 'kapde dhone', 'kapray istri', 'کپڑے دھونے'],
+  dom_laundry: ['kapre dhone', 'kapray dhone', 'kapde dhone', 'kapray istri', 'کپڑے دھونے', 'istari'],
   dom_childcare: ['bachon ko sambhalna', 'bache sambhalne', 'baby sitter', 'بچوں کی دیکھ بھال'],
-  dom_eldercare: ['mareez ki dekh bhaal', 'buzurg ki dekh bhaal', 'attendant', 'بزرگ کی دیکھ بھال'],
+  dom_eldercare: ['mareez ki dekh bhaal', 'buzurg ki dekh bhaal', 'attendant', 'بزرگ کی دیکھ بھال', 'بزرگوں کی دیکھ بھال'],
   dom_general: ['ghar ka kaam', 'ghar ke kaam'],
 
   // ---- Moving & Loading
@@ -160,7 +170,7 @@ export const JOB_NEGATIVE_PHRASES = Object.freeze([
 // Task type: the FIRST list (in this order) with a word in the text decides (5.4 of the batch plan).
 // household_help words come before new_work words, because "banana" (new work) is also in "khana banana" (cooking).
 export const TASK_TYPE_WORDS = Object.freeze([
-  ['install', ['lagana', 'lagwana', 'lagani', 'lagwani', 'install', 'installation', 'fitting', 'fit karna', 'fit karwana', 'لگانا', 'لگوانا', 'لگانی', 'لگوانی']],
+  ['install', ['lagana', 'lagwana', 'lagani', 'lagwani', 'install', 'installation', 'fitting', 'fit karna', 'fit karwana', 'لگانا', 'لگوانا', 'لگانی', 'لگوانی', 'فٹ کرنا', 'فٹنگ']],
   ['repair', [
     'kharab', 'kaam nahi kar', 'nahi kar raha', 'nahi kar rahi', 'nahi chal', 'nahi aa raha', 'nahi aa rahi',
     'thanda nahi', 'band ho gaya', 'band ho gayi', 'toot', 'tut gaya', 'jal gaya', 'jal gayi', 'phat gaya',
@@ -173,6 +183,9 @@ export const TASK_TYPE_WORDS = Object.freeze([
   ['household_help', [
     'khana banana', 'khana pakana', 'kapray dhona', 'kapre dhona', 'bachon ki dekh bhaal', 'dekh bhaal',
     'کھانا پکانا', 'کھانا بنانا', 'کپڑے دھونا', 'دیکھ بھال',
+    // v3: "ghar ke kaam" (the housework; plural only, because "ghar ka kaam" can also be building work) is household
+    // help, so "maasi chahiye ghar ke kaam ke liye" stays household help now that "maasi chahiye" is a cleaning phrase
+    'ghar ke kaam', 'گھر کے کام',
   ]],
   ['new_work', ['banana', 'banwana', 'banani', 'banwani', 'tameer', 'construction', 'renovation', 'renovate', 'paint karwana', 'rang karwana', 'tiles lagwane', 'بنانا', 'بنوانا', 'تعمیر']],
 ]);
@@ -228,7 +241,13 @@ export const ADDRESS_WORDS = Object.freeze([
   'gali', 'street no', 'street', 'st', 'plot no', 'plot', 'flat no', 'flat', 'مکان نمبر', 'گلی نمبر', 'مکان', 'گلی',
 ]);
 
-// City spellings from config/regions.js that are also everyday words; the analyzer does not suggest a city from
-// them alone ("atak" / "اٹک" = stuck, "wah" = an exclamation, "mari" / "مری" = died). "Attock", "Wah Cantt" and
-// "Murree" work. Kept on purpose: "قصور" (Kasur; also "fault"), because in a job text it nearly always names the city.
+// City spellings from config/regions.js that are also everyday words ("atak" / "اٹک" = stuck, "wah" = an
+// exclamation, "mari" / "مری" = died). Since v3 they name the city only when the NEXT word is a place word
+// (CITY_PLACE_WORDS): "مری میں نلکا ٹپک رہا ہے" = in Murree, but "پائپ میں کچھ اٹک گیا" = stuck. "Attock", "Wah Cantt"
+// and "Murree" always work. Kept on purpose: "قصور" (Kasur; also "fault"), because in a job text it nearly always
+// names the city. Known limit: "atak ke" (having got stuck) also reads as "Attock ke".
 export const CITY_SPELLINGS_SKIPPED = Object.freeze(['atak', 'اٹک', 'wah', 'mari', 'مری']);
+export const CITY_PLACE_WORDS = Object.freeze(['میں', 'سے', 'کے', 'کی', 'کا', 'تک', 'mein', 'me', 'se', 'ke', 'ki', 'ka', 'tak']);
+// A city spelling directly before one of these is a road or a square named after the city ("Murree Road" is in
+// Rawalpindi, "Lahore Chowk"), not a mention of the city itself (v3).
+export const CITY_ROAD_WORDS = Object.freeze(['road', 'rd', 'روڈ', 'chowk', 'چوک']);
