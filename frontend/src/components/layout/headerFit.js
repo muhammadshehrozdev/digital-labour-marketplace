@@ -8,7 +8,8 @@
 //   accountName off  the name next to the avatar (initials stay; screen readers still hear the name; it is in the menu)
 //   tools  menu  Sound and language move into the account menu (visitors: a "More" menu)
 //   nav    menu  the links and the account move into the existing mobile menu
-//   brand  mark  only the shield, without the words "Digital Labour Marketplace"
+//   brand  mark  only the shield, without the words "Digital Labour Marketplace" (signed in: first with the links
+//                still in the bar, Batch 8B; the mobile levels show the words again until mobileMark)
 //   create off   (visitors) "Create account" (the landing page and the login card have it too)
 //   theme  menu  the night-mode button moves into the menu too (the very last step)
 // The measuring code writes the attributes directly (before the browser paints); React state mirrors the
@@ -23,6 +24,9 @@ export const HEADER_LEVELS = Object.freeze({
     { name: 'noHint', hint: 'off' },
     { name: 'noName', hint: 'off', accountName: 'off' },
     { name: 'toolsInMenu', hint: 'off', accountName: 'off', tools: 'menu' },
+    // Batch 8B (D-101): before the links leave the bar, the logo keeps only its shield. With the customer's fifth link
+    // ("My job requests") the English row needs about 1240 px at toolsInMenu, more than the row ever gets (1200 px).
+    { name: 'toolsInMenuMark', hint: 'off', accountName: 'off', tools: 'menu', brand: 'mark' },
     { name: 'mobile', hint: 'off', accountName: 'off', nav: 'menu' },
     { name: 'mobileTools', hint: 'off', accountName: 'off', nav: 'menu', tools: 'menu' },
     { name: 'mobileMark', hint: 'off', accountName: 'off', nav: 'menu', tools: 'menu', brand: 'mark' },

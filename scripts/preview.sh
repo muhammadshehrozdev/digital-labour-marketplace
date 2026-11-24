@@ -3,7 +3,7 @@
 #
 #   bash scripts/preview.sh start        normal preview (database from backend/.env: dlm_local_preview)
 #   bash scripts/preview.sh demo         defence demo (separate database dlm_demo, synthetic accounts only)
-#   bash scripts/preview.sh reset-demo   wipe dlm_demo and put back the demo accounts and the synthetic Module 4 and 5 demo data
+#   bash scripts/preview.sh reset-demo   wipe dlm_demo and put back the demo accounts and the synthetic Module 4, 5 and 6 demo data
 #   bash scripts/preview.sh status       what is running
 #   bash scripts/preview.sh stop         stop everything
 #
@@ -104,8 +104,9 @@ demo_is_empty() {
 
 reset_demo() {
   # the three demo accounts, then the synthetic Module 4 bookings and reviews (Batch 6), then the synthetic
-  # Module 5 prices, payment records and one "[Demo]" price guide entry (Batch 7)
-  (cd "$ROOT/backend" && node scripts/resetDemo.js --yes && node scripts/seedModule4Demo.js && node scripts/seedModule5Demo.js)
+  # Module 5 prices, payment records and one "[Demo]" price guide entry (Batch 7), then the synthetic Module 6
+  # job requests in every state (Batch 8B)
+  (cd "$ROOT/backend" && node scripts/resetDemo.js --yes && node scripts/seedModule4Demo.js && node scripts/seedModule5Demo.js && node scripts/seedModule6Demo.js)
 }
 
 start_all() { # mode

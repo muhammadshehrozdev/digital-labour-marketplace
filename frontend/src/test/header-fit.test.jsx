@@ -10,7 +10,7 @@ import { mockApi, me } from './mockApi';
 import { renderAt } from './renderApp';
 
 // What each level needs (px, made up for the test); the row is `width` px wide.
-const NEEDS = { full: 1400, noHint: 1340, noName: 1150, toolsInMenu: 950, mobile: 700, mobileTools: 520, mobileMark: 330, mobileTight: 280,
+const NEEDS = { full: 1400, noHint: 1340, noName: 1150, toolsInMenu: 950, toolsInMenuMark: 760, mobile: 700, mobileTools: 520, mobileMark: 330, mobileTight: 280,
   guestMark: 600, noCreate: 450, guestTight: 300 };
 
 function fakeHeader(width) {
@@ -21,7 +21,7 @@ function fakeHeader(width) {
 
 describe('collapse order (headerFit.js)', () => {
   test.each([
-    [1500, 'full'], [1345, 'noHint'], [1200, 'noName'], [1000, 'toolsInMenu'], [800, 'mobile'], [600, 'mobileTools'], [400, 'mobileMark'], [300, 'mobileTight'],
+    [1500, 'full'], [1345, 'noHint'], [1200, 'noName'], [1000, 'toolsInMenu'], [800, 'toolsInMenuMark'], [720, 'mobile'], [600, 'mobileTools'], [400, 'mobileMark'], [300, 'mobileTight'],
     [100, 'mobileTight'], // nothing fits: the last level
   ])('logged in, row %i px -> %s', (width, want) => {
     const { header, row } = fakeHeader(width);
@@ -31,7 +31,8 @@ describe('collapse order (headerFit.js)', () => {
 
   test('the flags only ever add up: each level keeps what the one before it hid (except the mobile switch)', () => {
     const user = HEADER_LEVELS.user.map((l) => l.name);
-    expect(user).toEqual(['full', 'noHint', 'noName', 'toolsInMenu', 'mobile', 'mobileTools', 'mobileMark', 'mobileTight']);
+    // Batch 8B (D-101): toolsInMenuMark, the shield only while the links are still in the bar
+    expect(user).toEqual(['full', 'noHint', 'noName', 'toolsInMenu', 'toolsInMenuMark', 'mobile', 'mobileTools', 'mobileMark', 'mobileTight']);
     expect(HEADER_LEVELS.guest.map((l) => l.name)).toEqual(['full', 'noHint', 'toolsInMenu', 'guestMark', 'noCreate', 'guestTight']);
     // the night-mode button is the very last thing to leave the bar (Batch 4: on every page)
     for (const levels of Object.values(HEADER_LEVELS)) {
@@ -103,6 +104,24 @@ describe('the header in the app', () => {
     await user.click(within(languages).getByRole('radio', { name: 'Roman Urdu' }));
     await waitFor(() => expect(document.documentElement).toHaveAttribute('lang', 'ur-Latn'));
     await waitFor(() => expect(calls.some((c) => c.key === 'PATCH /users/me/preferences' && c.body.preferredLanguage === 'ur-Latn')).toBe(true));
+  });
+
+  // Batch 8B (D-101): with the customer's fifth link the row is too short for toolsInMenu in English; the words of the
+  // logo go first, so the links stay in the bar and the account menu still holds Sound and language
+  test('a little less room: only the shield stays, the links stay in the bar, Sound and language are in the account menu', async () => {
+    mockRowWidth(800);
+    mockApi(CUSTOMER);
+    const user = userEvent.setup();
+    renderAt('/find');
+    const header = await screen.findByRole('banner');
+    await waitFor(() => expect(header).toHaveAttribute('data-fit', 'toolsInMenuMark'));
+    expect(header).toHaveAttribute('data-fit-brand', 'mark');
+    expect(header).not.toHaveAttribute('data-fit-nav');
+    expect(within(header).getByRole('link', { name: 'My job requests' })).toBeInTheDocument(); // the CSS shows the bar's links (no nav flag)
+    await user.click(within(header).getByRole('button', { name: /Account menu/ }));
+    const menu = header.querySelector('#account-menu');
+    expect(within(menu).getByRole('radiogroup', { name: 'Language' })).toBeInTheDocument();
+    expect(within(menu).getByRole('group', { name: 'Sound and help' })).toBeInTheDocument();
   });
 
   test('phone width: the links, the account and (when needed) Sound and language are in the mobile menu', async () => {

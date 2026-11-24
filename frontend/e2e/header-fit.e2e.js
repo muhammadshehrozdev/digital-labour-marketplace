@@ -12,7 +12,7 @@ const WIDTHS = [360, 768, 1024, 1152, 1280, 1366, 1440, 1536, 1600, 1920];
 const SPOT_WIDTHS = [360, 1280, 1536]; // the other main pages of each role
 const PAGES = {
   visitor: ['/', '/login', '/register', '/help'],
-  customer: ['/find', '/bookings', '/saved', '/notifications'],
+  customer: ['/find', '/job-requests', '/bookings', '/saved', '/notifications'], // Module 6 (Batch 8B): My job requests
   worker: ['/worker', '/worker/requests', '/worker/jobs', '/worker/profile', '/worker/reputation'],
   admin: ['/admin', '/admin/bookings', '/admin/users', '/admin/identity'],
 };
