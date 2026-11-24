@@ -43,7 +43,17 @@ screens read its name from the API, so Batch 8C can switch the method without a 
   test list for testers `docs/MODULE-6-MANUAL-TEST.md`; new texts for review `docs/i18n/REVIEW-BATCH-8B.md`.
 - **Header** (the team's choice, D-101): one more step before the links leave the bar, the logo keeps only its shield;
   so English customers keep all five links on laptops.
-- Decisions D-091 to D-101. Tests: see the final line below.
+- Decisions D-091 to D-101.
+- **Independent review** (Stage 9, a separate review pass): 10 findings (3 medium, 7 low), all fixed with tests — the
+  main ones: "Use it" on a trade suggestion now keeps the skills of that trade; "ghar ke kaam" counts as household help
+  only together with "maasi" (word lists `2026-11-24-v4`, "Protocol changes" 5); the generators of two review documents
+  use the neutral wording too (the wording test now reads `frontend/scripts`). Found in the full runs and fixed: an
+  older bug where a toast's close timer outlived the toast area (it broke a test run after a test file had ended), and
+  the new e2e test now gives the shared e2e admin back its English, light settings.
+- Tests (real runs, 24 Nov 2026 PKT, final code): backend **1317/1317** in 57 files (baseline 1270 in 55; line coverage
+  98.83%, services 98.84%, controllers 98.83%, middleware 100%); frontend **1376/1376** in 33 files (baseline 1282 in
+  30); e2e **80/80** in 13 files (8A: 71/71 in 12); lint and build clean; Module 2's `evaluate:skills` output identical
+  to the reference run (without the date field).
 
 ## Batch 8A — Module 6, Problem/Job Analyzer: backend, analyzers, evaluation harness (23–24 Nov 2026)
 
