@@ -40,7 +40,7 @@ Module 7); section 6 lists the help texts that would need one.
 | `jobs.meaning.requested` | Waiting for the worker's answer | کاریگر کے جواب کا انتظار ہے | Karigar ke jawab ka intezar hai |
 | `jobs.meaning.accepted` | A worker accepted this job | ایک کاریگر نے یہ کام قبول کر لیا ہے | Aik karigar ne yeh kaam qabool kar liya hai |
 | `jobs.meaning.done` | The work is done | کام ہو گیا ہے | Kaam ho gaya hai |
-| `jobs.meaning.expired` | Expired: no worker was asked in time | مدت ختم: وقت پر کسی کاریگر سے نہیں پوچھا گیا | Muddat khatam: waqt par kisi karigar se nahi poocha gaya |
+| `jobs.meaning.expired` | Expired: no worker took this job in time | مدت ختم: وقت پر کسی کاریگر نے یہ کام نہیں لیا | Muddat khatam: waqt par kisi karigar ne yeh kaam nahi liya |
 | `jobs.meaning.closed` | You closed this job request | آپ نے یہ کام کی درخواست بند کر دی | Aap ne yeh kaam ki darkhwast band kar di |
 | `jobs.tabs.active` | Active | جاری | Jaari |
 | `jobs.tabs.open` | Open | کھلی | Khuli |
@@ -66,6 +66,8 @@ Module 7); section 6 lists the help texts that would need one.
 | `jobs.budget.unit` | How is the budget counted? | بجٹ کس حساب سے ہے؟ | Budget kis hisaab se hai? |
 | `jobs.budget.remove` | Remove the budget | بجٹ ہٹا دیں | Budget hata dein |
 | `jobs.budget.none` | No budget written | کوئی بجٹ نہیں لکھا | Koi budget nahi likha |
+| `jobs.budget.tooSmall` | The budget must be at least Rs {min}. | بجٹ کم از کم {min} روپے ہونا چاہیے۔ | Budget kam az kam {min} rupay hona chahiye. |
+| `jobs.budget.tooLarge` | The budget can be at most Rs {max}. | بجٹ زیادہ سے زیادہ {max} روپے ہو سکتا ہے۔ | Budget zyada se zyada {max} rupay ho sakta hai. |
 | `jobs.budget.line.job` | Budget: {amount} for the whole job | بجٹ: پورے کام کے {amount} | Budget: poore kaam ke {amount} |
 | `jobs.budget.line.day` | Budget: {amount} a day | بجٹ: روزانہ {amount} | Budget: rozana {amount} |
 | `jobs.budget.line.hour` | Budget: {amount} an hour | بجٹ: فی گھنٹہ {amount} | Budget: fi ghanta {amount} |
@@ -343,6 +345,7 @@ Module 7); section 6 lists the help texts that would need one.
 | `help.screen.myJobRequests` | Your job requests. Open one to choose a worker, or to see the request you sent. | آپ کی کام کی درخواستیں۔ کاریگر چننے یا بھیجی ہوئی درخواست دیکھنے کے لیے ایک کھولیں۔ | Aap ki kaam ki darkhwastein. Karigar chunne ya bheji hui darkhwast dekhne ke liye aik kholein. |
 | `help.screen.jobRequest` | One job request: the details, what you can do now, and the requests you sent from it. | ایک کام کی درخواست: تفصیل، آپ ابھی کیا کر سکتے ہیں، اور اس سے بھیجی گئی درخواستیں۔ | Aik kaam ki darkhwast: tafseel, aap abhi kya kar sakte hain, aur is se bheji gayi darkhwastein. |
 | `help.screen.editJobRequest` | Change the details of your job request, then press Save the changes. | اپنی کام کی درخواست کی تفصیل بدلیں، پھر تبدیلیاں محفوظ کریں دبائیں۔ | Apni kaam ki darkhwast ki tafseel badlein, phir tabdeeliyan mehfooz karein dabayein. |
+| `help.screen.requestWithJob` | Your job is shown at the top. Choose the work, the day and the time, then press Send. The worker answers yes or no. | آپ کا کام اوپر دکھایا گیا ہے۔ کام، دن اور وقت چنیں، پھر بھیجیں دبائیں۔ کاریگر ہاں یا نہیں میں جواب دے گا۔ | Aap ka kaam upar dikhaya gaya hai. Kaam, din aur waqt chunein, phir bhejein dabayein. Karigar haan ya nahi mein jawab dega. |
 | `help.screen.jobWorkers` | Workers of this trade in your city. Choose the order you like, open a worker, and press Send this job. | آپ کے شہر میں اس شعبے کے کاریگر۔ اپنی پسند کی ترتیب چنیں، کاریگر کھولیں، اور یہ کام بھیجیں دبائیں۔ | Aap ke shehar mein is shobe ke karigar. Apni pasand ki tarteeb chunein, karigar kholein, aur yeh kaam bhejein dabayein. |
 
 ## 4. Picture-choice help (`help.option.*`, the small 🔊 on each picture)
@@ -400,6 +403,7 @@ reads them, or the text is shown.
 - `help.screen.myJobRequests`
 - `help.screen.jobRequest`
 - `help.screen.editJobRequest`
+- `help.screen.requestWithJob`
 - `help.screen.jobWorkers`
 - `help.option.jobTask.install`
 - `help.option.jobTask.repair`
@@ -424,4 +428,4 @@ reads them, or the text is shown.
 - `help.option.jobClose.other`
 - the Help Centre guide `jobs.guides.describeJob` (read with `help.centre.read`)
 
-Counts: 342 texts in three languages; 42 help texts that would need a clip.
+Counts: 345 texts in three languages; 43 help texts that would need a clip.

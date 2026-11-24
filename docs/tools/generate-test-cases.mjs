@@ -53,6 +53,9 @@ const MODULE = {
   // Batch 8A: Module 6
   'jobAnalyzer.test.js': 'Module 6', 'naiveBayes.test.js': 'Module 6', 'jobState.test.js': 'Module 6', 'job-requests.test.js': 'Module 6',
   'jobEvaluation.test.js': 'Module 6 (evaluation)',
+  // Batch 8B: Module 6 screens
+  'module6.test.jsx': 'Module 6 (UI)', 'module6-pages.test.jsx': 'Module 6 (UI)', 'module6-admin.test.jsx': 'Admin (Module 6, UI)',
+  'demo-module6.test.js': 'Infrastructure', 'docsWording.test.js': 'Infrastructure (documentation wording)',
 };
 
 const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ').trim();
