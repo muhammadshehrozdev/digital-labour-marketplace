@@ -134,8 +134,13 @@ test('describe by typing -> check -> save (Open) -> workers for this job -> send
   await p.goto(`/bookings/${bookingId}`);
   await p.getByRole('button', { name: t('booking.action.workDone') }).click();
   await p.getByRole('dialog').getByRole('button', { name: t('booking.action.workDone') }).click();
-  await expect(p.getByText(t('booking.status.completed')).first()).toBeVisible();
+  // the server's state, not a word on the page ("completed" also appears in help sentences): leaving the page before
+  // the request finished would cancel it (the final run of 24 Nov 2026 failed this way)
+  const statusOf = async () => (await (await p.request.get(`/api/bookings/${bookingId}`)).json()).booking.status;
+  await expect.poll(statusOf, { timeout: 15_000 }).toBe('completed');
+  await expect(p.getByRole('dialog')).toHaveCount(0);
   await p.goto(`/job-requests/${jobId}`);
+  await expect.poll(async () => (await (await p.request.get(`/api/job-requests/${jobId}`)).json()).job.state, { timeout: 15_000 }).toBe('done');
   await expect(p.getByText(t('jobs.state.done'), { exact: true }).first()).toBeVisible();
   await p.getByRole('button', { name: t('jobs.detail.close') }).click();
   const dialog = p.getByRole('dialog', { name: t('jobs.close.title') });
