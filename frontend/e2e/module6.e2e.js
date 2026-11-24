@@ -280,13 +280,19 @@ for (const lang of LANGS) for (const mode of ['light', 'dark']) {
     await setLanguage(admin, lang);
     await setMode(admin, mode);
     await login(admin, E2E_ADMIN.email, E2E_ADMIN.password, lang);
-    await admin.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
-    for (const tab of ['list', 'stats', 'try']) {
-      await admin.goto('/admin/job-requests');
-      await admin.getByRole('tab', { name: T(lang)(`jobs.admin.tabs.${tab}`) }).click();
-      await admin.waitForLoadState('networkidle');
-      const result = await new AxeBuilder({ page: admin }).withTags(WCAG).analyze();
-      problems.push(...result.violations.filter((v) => ['serious', 'critical'].includes(v.impact)).map((v) => `${lang} ${mode} admin ${tab}: ${v.id} ${v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | ')}`));
+    // The e2e admin account is shared by every test file: its saved language and theme go back to English and light
+    // afterwards, even when this test fails (a later file's admin test once met the Roman Urdu admin page).
+    try {
+      await admin.request.patch('/api/users/me/preferences', { data: { preferredLanguage: lang, preferredTheme: mode } });
+      for (const tab of ['list', 'stats', 'try']) {
+        await admin.goto('/admin/job-requests');
+        await admin.getByRole('tab', { name: T(lang)(`jobs.admin.tabs.${tab}`) }).click();
+        await admin.waitForLoadState('networkidle');
+        const result = await new AxeBuilder({ page: admin }).withTags(WCAG).analyze();
+        problems.push(...result.violations.filter((v) => ['serious', 'critical'].includes(v.impact)).map((v) => `${lang} ${mode} admin ${tab}: ${v.id} ${v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | ')}`));
+      }
+    } finally {
+      await admin.request.patch('/api/users/me/preferences', { data: { preferredLanguage: 'en', preferredTheme: 'light' } });
     }
     expect(problems).toEqual([]);
     await context.close();

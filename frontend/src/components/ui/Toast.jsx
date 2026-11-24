@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CircleCheck, CircleAlert, Info, X } from 'lucide-react';
 import { ToastContext } from './toastContext';
 import { useT } from '../../i18n/context';
@@ -19,6 +19,16 @@ export function ToastProvider({ children }) {
     setToasts((list) => list.filter((t) => t.id !== id));
     clearTimeout(timers.current.get(id));
     timers.current.delete(id);
+  }, []);
+
+  // When the toast area goes away (a page or a test ends), its close timers go too: a timer must never change
+  // state after the area is gone (Batch 8B, Stage 10: such a late timer broke a test run after the test had ended).
+  useEffect(() => {
+    const pending = timers.current;
+    return () => {
+      for (const timer of pending.values()) clearTimeout(timer);
+      pending.clear();
+    };
   }, []);
 
   const schedule = useCallback((id, ms = DURATION) => {

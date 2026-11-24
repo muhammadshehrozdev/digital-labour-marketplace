@@ -127,6 +127,22 @@ describe('Toast', () => {
     await user.click(screen.getByRole('button', { name: 'Dismiss message' }));
     expect(screen.queryByText('Saved')).toBeNull();
   });
+
+  // Batch 8B, Stage 10: a toast's close timer must not outlive the toast area (it fired after a test file had ended)
+  test('its close timer is cleared when the toast area goes away', () => {
+    vi.useFakeTimers();
+    try {
+      const { unmount } = render(<ToastProvider><ToastDemo /></ToastProvider>);
+      const before = vi.getTimerCount();
+      screen.getByRole('button', { name: 'Save' }).click();
+      expect(vi.getTimerCount()).toBe(before + 1); // the 4-second close timer
+      unmount();
+      expect(vi.getTimerCount()).toBe(before);
+      vi.advanceTimersByTime(10_000); // nothing left to fire
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe('avatar initials', () => {
