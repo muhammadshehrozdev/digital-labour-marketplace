@@ -226,19 +226,19 @@ Owner in the proposal: Shahzaib Khan. Team choice of 19 Nov 2026: option C (D-06
 | D-079 runbook health check (Part A) | `docs/DEPLOY-RUNBOOK.md` 4.8, 8.1, 8.3, 9, rollback; `docs/API.md`; `app.js` comment | `foundation.test.js`, `db-down.test.js`, `health-client-ip.test.js` (behaviour unchanged) |
 
 
-## Proposal: Module 6 — Problem/Job Analyzer (Batch 8A, 23–24 Nov 2026)
+## Proposal: Module 6 — Problem/Job Analyzer (Batch 8A, 23–24 Nov 2026; screens Batch 8B, 24 Nov 2026)
 
 Owner in the proposal: Usama Asif. Team decisions of 23 Nov 2026 (`docs/modules/MODULE-6.md` §1). Honest status: the
-**backend** is done; the **screens** are Batch 8B; the **evaluation on real data** is Batch 8C (no real data yet; the
-protocol is frozen at `81ba8f6`).
+**backend** (8A) and the **screens** (8B, `MODULE-6.md` §14) are done; the **evaluation on real data** is Batch 8C (no
+real data yet; the protocol is frozen at `81ba8f6`).
 
 | # | Proposal bullet | Where (code) | Checked by (tests) | State |
 |---|---|---|---|---|
-| M6.a | Submission of a new job or work requirement by the customer | `models/JobRequest.js`, `controllers/jobRequestsController.js`, `routes/jobRequests.js`, `validators/jobRequests.js`, `services/jobs/{state,load,views}.js` (D-080, D-081, D-082) | `integration/job-requests.test.js` (create, limits, states, edit with versions, close, delete, request with the job, the reservation); `unit/jobState.test.js` (state table, actions, reservation) | Backend done; screens in 8B |
-| M6.b | Text-based analysis of customer job descriptions | `services/jobAnalyzer/{tokens,rules,fields,budget,naiveBayes,index,live}.js`, `config/jobPhrases.js`, `config/jobAnalyzer.js`, `POST /api/job-requests/analyze` (D-085, D-087, D-090) | `unit/jobAnalyzer.test.js` (the 13 required examples, ablation options, property tests); `unit/naiveBayes.test.js` (hand-worked numbers, properties, hybrid, production check); `job-requests.test.js` "analyze … nothing saved" | Backend done; screens in 8B; real evaluation in 8C |
-| M6.c | Identification of required skills, task type, location and work requirements | `rules.js` (trade, skills, task type), `fields.js` (city, day, time, urgency, address hint), `budget.js` | `jobAnalyzer.test.js` "task type", "city, day, time, urgency", "budget (raw text)", "address hint" | Backend done; measured in 8C |
-| M6.d | Extraction of important job attributes for matching | `services/jobs/matchingQuery.js` (`docs/contracts/JOB-PROFILE.md`), `services/jobs/workersForJob.js` (D-084: a filter, not a ranking) | `jobState.test.js` "the documented fields only"; `job-requests.test.js` "workers for this job …" | Contract done; ranking is Module 7 |
-| M6.e | Generation of a structured job profile for the marketplace | the confirmed `JobRequest` with `analysis { suggested, changed }` (`services/jobs/analysis.js`), admin views and use statistics (D-088) | `jobState.test.js` "the stored analysis", "use statistics"; `job-requests.test.js` "admin: read-only views and the use statistics" | Backend done; screens in 8B |
+| M6.a | Submission of a new job or work requirement by the customer | `models/JobRequest.js`, `controllers/jobRequestsController.js`, `routes/jobRequests.js`, `validators/jobRequests.js`, `services/jobs/{state,load,views}.js` (D-080, D-081, D-082) | `integration/job-requests.test.js` (create, limits, states, edit with versions, close, delete, request with the job, the reservation); `unit/jobState.test.js` (state table, actions, reservation) | Backend and screens done (8B: Describe a job, My job requests, the job page, edit, close, delete; `frontend/src/test/module6.test.jsx`, `module6-pages.test.jsx`, e2e `module6.e2e.js`) |
+| M6.b | Text-based analysis of customer job descriptions | `services/jobAnalyzer/{tokens,rules,fields,budget,naiveBayes,index,live}.js`, `config/jobPhrases.js`, `config/jobAnalyzer.js`, `POST /api/job-requests/analyze` (D-085, D-087, D-090) | `unit/jobAnalyzer.test.js` (the 13 required examples, ablation options, property tests); `unit/naiveBayes.test.js` (hand-worked numbers, properties, hybrid, production check); `job-requests.test.js` "analyze … nothing saved" | Backend and screens done (8B: "Check my words", the words marked, "How does this work?"; `module6.test.jsx`); real evaluation in 8C |
+| M6.c | Identification of required skills, task type, location and work requirements | `rules.js` (trade, skills, task type), `fields.js` (city, day, time, urgency, address hint), `budget.js` | `jobAnalyzer.test.js` "task type", "city, day, time, urgency", "budget (raw text)", "address hint" | Done and shown in step 2 (8B; the re-check rule `mergeSuggestions.js`, D-093); measured in 8C |
+| M6.d | Extraction of important job attributes for matching | `services/jobs/matchingQuery.js` (`docs/contracts/JOB-PROFILE.md`), `services/jobs/workersForJob.js` (D-084: a filter, not a ranking) | `jobState.test.js` "the documented fields only"; `job-requests.test.js` "workers for this job …" | Contract done; screen "Workers for this job" (8B, `module6-pages.test.jsx`); ranking is Module 7 |
+| M6.e | Generation of a structured job profile for the marketplace | the confirmed `JobRequest` with `analysis { suggested, changed }` (`services/jobs/analysis.js`), admin views and use statistics (D-088) | `jobState.test.js` "the stored analysis", "use statistics"; `job-requests.test.js` "admin: read-only views and the use statistics" | Done: the confirmed job; the admin list, drawer, use statistics and try box (8B, `module6-admin.test.jsx`) |
 | — | Evaluation harness and the pre-registered protocol | `backend/evaluation/job-analysis/`, `docs/evaluation/job-analysis/PROTOCOL.md` (D-086), data-collection documents | `unit/jobEvaluation.test.js` (every hand-worked metric of 7.3, split and CV determinism, no leakage, decision and claim rules, a synthetic run) | Harness done; synthetic only; real run in 8C |
 
 ### Batch 8A decisions
@@ -256,3 +256,19 @@ protocol is frozen at `81ba8f6`).
 | D-088 "kept" is not accuracy | `services/jobs/stats.js`, `GET /api/admin/job-requests/stats` | `jobState.test.js`, `job-requests.test.js` "stats …" |
 | D-089 `maxWorkers` from measurement | `frontend/vite.config.js` | the measured table in its comment |
 | D-090 the word lists, version 1 | `config/jobPhrases.js` | `jobAnalyzer.test.js` "the word lists themselves" |
+
+### Batch 8B decisions
+
+| Decision | Where | Checked by |
+|---|---|---|
+| D-091 the supervisor's guidance | `docs/modules/MODULE-6.md` §11, `docs/evaluation/job-analysis/consent-text.md`, `FORM-DRAFT.md` | the documents (no code) |
+| D-092 the screen words | `frontend/src/i18n/dictionaries/*` (group `jobs`), `pages/jobs/*` | `module6.test.jsx`; `i18n.test.jsx` (three languages) |
+| D-093 the re-check rule | `frontend/src/features/jobs/mergeSuggestions.js` | `module6.test.jsx` "the re-check rule", "checking again keeps what the person changed" |
+| D-094 the card on /find | `features/jobs/DescribeJobCard.jsx`, `pages/customer/FindWorkers.jsx` | `module6.test.jsx` "/find: Not sure whom to call?" |
+| D-095 `city.candidates` | `controllers/jobRequestsController.js` (`withCityCandidates`) | `job-requests.test.js` "city.candidates"; `module6.test.jsx` "Which city?" |
+| D-096 the request page in job mode | `features/jobs/RequestWithJob.jsx`, `pages/customer/RequestWorker.jsx` | `module6-pages.test.jsx` "request this worker with the job"; e2e `module6.e2e.js` |
+| D-097 "ghar ke kaam" (word lists v3) | `config/jobPhrases.js` | `jobAnalyzer.test.js` "word lists v3" |
+| D-098 one admin page, three tabs | `pages/admin/AdminJobRequests.jsx` | `module6-admin.test.jsx` |
+| D-099 the demo data keeps the booking rules | `scripts/seedModule6Demo.js`, `scripts/preview.sh` | `integration/demo-module6.test.js` |
+| D-101 one more header step (the shield only) | `components/layout/headerFit.js` | `header-fit.test.jsx` "a little less room", "collapse order"; e2e `header-fit.e2e.js` |
+| D-100 the budget in the screens | `features/jobs/JobSummary.jsx` (`showBudget`), the job pages | `module6-pages.test.jsx` "never a budget"; `module6-admin.test.jsx` "NO budget"; e2e `module6.e2e.js` |

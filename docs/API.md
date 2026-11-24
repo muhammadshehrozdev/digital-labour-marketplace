@@ -543,7 +543,7 @@ Months in Pakistan time (of `paidOn`); only confirmed money in `confirmed`.
   payment_records, payment_state, created_at_utc, agreed_at_utc, completed_at_utc, last_paid_on, synthetic. No names,
   phone numbers or notes. Audited (`export.payments`).
 
-## Module 6: job requests and the job analyzer (Batch 8A)
+## Module 6: job requests and the job analyzer (Batch 8A; screens Batch 8B)
 
 All behind the login. **Workers get 403 on every route here**: a worker sees a job only through a booking request
 sent to that worker. Strict zod schemas (unknown keys → 400 `UNKNOWN_FIELD`; `analysis`, `customer`, `code` or
@@ -557,11 +557,11 @@ holds a score, a probability or a percentage. Decisions D-080 to D-090; `docs/mo
 logged. No extra rate limiter (`docs/SECURITY.md`).
 ```json
 {"method":"rules","methodName":"rule-based word lists",
- "versions":{"analyzer":"job-rules-1","taxonomy":"2026-11-09-v1","phrases":"2026-11-24-v2","model":null},
+ "versions":{"analyzer":"job-rules-1","taxonomy":"2026-11-09-v1","phrases":"2026-11-24-v3","model":null},
  "category":{"suggested":"ac_appliance_repair","tie":false,"ranked":["ac_appliance_repair"],"matched":["ac","service"],"source":"rules","words":[]},
  "skills":[{"skillId":"ac_general","name":"AC repair (general)","category":"ac_appliance_repair","matched":["ac"]}, …],
  "taskType":{"suggested":"service","tie":false,"matched":["service"],"fromCategory":false},
- "city":{"suggested":"Rawalpindi","region":"PB","matched":["rawalpindi"],"conflict":false},
+ "city":{"suggested":"Rawalpindi","region":"PB","matched":["rawalpindi"],"conflict":false,"candidates":["Rawalpindi"]},
  "when":{"suggested":"tomorrow","date":"2026-11-25","matched":["kal"]},
  "timeSlot":{"suggested":"morning","matched":["subah"]},
  "urgent":{"suggested":false,"matched":[]},
@@ -571,6 +571,9 @@ logged. No extra rate limiter (`docs/SECURITY.md`).
 `notes`: `no_trade_words`, `negative_phrase`, `category_tie`, `city_conflict`, `budget_out_of_range`,
 `address_in_text`. `missing`: always `area`; `category` and `city` when not suggested. On a tie `suggested` is `null`,
 `tie` is `true` and `ranked` holds the tied trades. `urgent.suggested: false` means "no urgency word found".
+`city.candidates` (Batch 8B, D-095, added by the route): the English names of the matched city spellings in text order
+(`["Murree", "Islamabad"]` for "Mari se Islamabad …"), so the screen can ask "Which city?"; the analyzer's own output
+(and the evaluation) is unchanged.
 
 ### POST /api/job-requests (customer)
 `{ description (3–500), inputMode: text|voice, category, skills: [skillId] (0–5, all of the category), taskType: install|repair|service|new_work|cleaning|moving|household_help|null, city (2–50), area (2–80), preferredDate?: YYYY-MM-DD|null, timeSlot?: morning|afternoon|evening|any|null, urgent?: boolean, budget?: { amount, unit: job|day|hour } | null }`

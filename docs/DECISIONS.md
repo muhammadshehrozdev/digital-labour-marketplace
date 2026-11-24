@@ -1271,3 +1271,81 @@ lists on the development set only.
    **[last date]** until the team fills them in the Google Form.
 
 Written in `docs/modules/MODULE-6.md` §11. The evaluation protocol is unchanged.
+
+## D-092 — The words of the Module 6 screens (Batch 8B)
+
+The customer's start page is **"Describe a job"**, the list **"My job requests"**, one item a **"job request"**
+(`JR-…`), its details the **"job details"**, the worker list **"Workers for this job"**. Never "post a job": workers see
+no board (D-081). Urdu and Roman Urdu use the existing dictionary words (ہنر / hunar, شعبہ / shoba, کاریگر / karigar,
+حذف / hazf, منسوخ / mansookh) and کام کی نوعیت / kaam ki nauiyat for the kind of work, because کام کی قسم is already the
+label of the trade field. All new Urdu and Roman Urdu texts are drafts (`docs/i18n/REVIEW-BATCH-8B.md`).
+
+## D-093 — Checking the words again never overwrites the customer's choice (Batch 8B)
+
+`frontend/src/features/jobs/mergeSuggestions.js` (pure): a field the customer has not touched always shows the newest
+suggestion, also "nothing"; a touched field keeps the customer's value and the new suggestion is only offered ("New
+suggestion: X — use it?"); skills follow the final trade (skills of another trade are removed and the screen says so).
+Using an offer makes the field follow the suggestions again. Reason: a re-check must never silently undo a correction.
+
+## D-094 — "Describe a job" on /find, the search unchanged (Batch 8B)
+
+The customer's home (`/find`) gets one card above the search ("Not sure whom to call? Describe the job in your own
+words", with a 🎤 hint) and "My job requests" is the second customer link. The directory search works exactly as before:
+a customer who knows whom to call is not slowed down.
+
+## D-095 — `city.candidates` on the analyze route (Batch 8B)
+
+`POST /api/job-requests/analyze` adds `city.candidates` (the English names of the matched city spellings, in text order;
+`canonicalCity`), so the screen can ask "Which city?" with two buttons on a conflict (`city.matched` holds spellings
+such as "pindi"). Added only, nothing renamed or removed; computed in the route, so the pure analyzer, its tests and the
+evaluation (which reads `city.suggested`) are unchanged. `docs/API.md`.
+
+## D-096 — The request page in job mode (Batch 8B)
+
+`/workers/:id/request?job=<id>` (`features/jobs/RequestWithJob.jsx`): a read-only "Your job" card replaces the city,
+area and description (the server copies them from the job); only the worker's skills of the job's trade; the job's day
+and time, a missing or past day → Tomorrow with a note, a missing time → Any time. When `job.actions` has no `request`
+(a request is waiting or accepted; or the job is done, expired or closed) the page shows the plain message (with a link
+to the waiting request) instead of the form; a 409 while sending shows the same. Without `?job` the page is unchanged.
+
+## D-097 — "ghar ke kaam" is a household-help word (word lists v3, Batch 8B)
+
+The check of Batch 8A asked for `maasi chahiye` as a cleaning phrase. With it, the 8A example "maasi chahiye ghar ke kaam
+ke liye" would have become cleaning (the domestic trade default is cleaning when the cleaning skill is found). Instead of
+changing the analyzer's rule, the plural `ghar ke kaam` / `گھر کے کام` (the housework) became a household-help task word
+(task words come before the trade default), so the 8A example stays household help and "maasi chahiye" alone suggests
+cleaning. The singular "ghar ka kaam" is not a task word, because it can also mean building work. Before any real data;
+"Protocol changes" 3.
+
+## D-098 — One admin page for job requests, with three tabs (Batch 8B)
+
+`/admin/job-requests` (read-only): the list with a drawer, "How suggestions were used" (D-088: use, not correctness,
+said on the page) and "Try the analyzer" (POST analyze, nothing saved; the same rows as `npm run jobs:try`, useful for
+the viva). One page keeps the admin sidebar short.
+
+## D-099 — The Module 6 demo data keeps the booking rules (Batch 8B)
+
+The batch plan asked for a "requested" job with a booking to Demo Plumber. The demo customer already has an accepted
+booking with Demo Plumber and two more open bookings (Module 4 seed), and a customer may have one open booking per
+worker and five in all. So `scripts/seedModule6Demo.js` links the customer's two existing open requests (to Demo Worker:
+requested; to Demo Plumber: accepted) to two new job requests, exactly as the request with a job would have made them
+(the booking keeps the job's words, city and area), adds a completed booking with Demo Carpenter for the "done" job, and
+leaves room for one more request: the open job can be sent to Demo Electrician 1–3 in the preview.
+
+## D-100 — Where the budget appears in the screens (Batch 8B)
+
+The customer's budget is shown only on the customer's own job pages (step 3 of "Describe a job", the job request page,
+the edit page) and on the admin drawer, always with "Only you and the admins see this". It is never in a list (My job
+requests, the admin list), a booking card or page, a notification, a 🔊 text for a worker, or "Workers for this job"
+(the server never sends it there either; `docs/SECURITY.md`).
+
+## D-101 — One more header step: the shield only, before the links leave the bar (Batch 8B; the team's choice)
+
+With "My job requests" as the customer's fifth link (D-094), the English customer header needed about 1240 px at the
+`toolsInMenu` step of D-059, but the header row is never wider than 1200 px. So English customers would have seen only
+"Open menu" on every laptop. Of three options (accept the menu button; shorter link labels; one more step), the team chose
+one more step (24 Nov 2026): `toolsInMenuMark` (hint off, account name off, Sound and language in the account menu,
+**the logo's shield only**) comes between `toolsInMenu` and `mobile` (`components/layout/headerFit.js`). Measured in the
+local preview (customer, `/find`): English 1024–1536 px → `toolsInMenuMark` (the five links stay in the bar); Urdu
+1100–1536 px → `toolsInMenu`, 1024 px → `toolsInMenuMark`. The mobile steps are unchanged; nothing is cut off and the
+page never scrolls sideways (`e2e/header-fit.e2e.js`, now also on `/job-requests`).

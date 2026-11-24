@@ -2,6 +2,32 @@
   "generatedFrom": "docs/CHANGELOG.md",
   "sections": [
     {
+      "title": "Batch 8 — Module 6: describe a job (Batch 8B, the screens; 24 Nov 2026)",
+      "points": [
+        "Describe a job (customers; the card on Find workers and the menu): type or speak (🎤) the job in your own words, press Check my words, and the words the app used are marked. Step 2 shows every suggested detail as a picture choice with the words that led to it; you change anything. Step 3 saves the job request (JR-…).",
+        "Checking again never overwrites what you changed: a changed detail keeps your choice and the new suggestion is only offered (\"New suggestion: X — use it?\"); a tie or no trade words chooses nothing (D-093).",
+        "My job requests: tabs by state with counts; the job request page: the details, only the allowed buttons (change, choose a worker, close with a reason, delete), the requests sent, and \"What the app understood from your words\" (kept / changed / nothing suggested; never a score).",
+        "Workers for this job: workers of the trade in your city, in the order you choose (not a ranking), each with its reasons; Send this job opens the request page with a read-only \"Your job\" card; one request at a time, refused in plain words (D-096).",
+        "Workers see \"From job request JR-…\" and the kind of work on the request (also spoken by 🔊), never the budget; the budget is shown only on the customer's own job pages and to admins (D-100).",
+        "Admins: Job requests (list without budget, the detail drawer), \"How suggestions were used\" (use, not correctness) and \"Try the analyzer\" (D-098).",
+        "Easy mode on every new page: 🔊 help on every field and picture, 🎤 where allowed, page help, three languages, right to left, both themes; the Help Centre guide \"Describe a job\".",
+        "Word lists 2026-11-24-v3 (before any real description; no rule of the protocol changed, \"Protocol changes\" 3): a city spelling that is also an everyday word (atak, اٹک, wah, mari, مری) names the city only directly before a place word (\"مری میں\" = in Murree); a city spelling directly before road, rd, روڈ, chowk or چوک is a road, not the city (\"Murree Road Rawalpindi\" → Rawalpindi); new phrases لیک, پائپ لیک, pipe leak, گٹر بند, سیم, دروازہ اٹک, darwaza atak, istari, بزرگوں کی دیکھ بھال, ماسی چاہیے, maasi chahiye, masi chahiye; task words فٹ کرنا, فٹنگ (install) and ghar ke kaam, گھر کے کام (household help, D-097). Module 2's output is unchanged."
+      ]
+    },
+    {
+      "title": "Batch 8A — Module 6, Problem/Job Analyzer: backend, analyzers, evaluation harness (23–24 Nov 2026)",
+      "points": [
+        "Job requests (/api/job-requests): analyze a text (nothing saved), save the confirmed job (JR-2026-000001), list, read, edit with versions (only while open), close, delete (never after a booking); derived states open, requested, accepted, done, expired (30 days), closed; limits 10 open and 10 new per day.",
+        "Workers for this job: a filter (same trade, same city — \"Pindi\" = \"Rawalpindi\" —, listed, not suspended) in the customer's directory sort, with the reasons; never a phone number, WhatsApp, CNIC, email or address.",
+        "The request with the job: the same checks as a normal request (one shared code path) plus \"a skill of the job's trade\"; one open request per job by a reservation (two taps: one 201, one 409); the booking copies the job's city, area and description; the worker sees the job code and the kind of work, never the budget.",
+        "The rule-based analyzer job-rules-1: Module 2's normalisation plus Roman Urdu spelling variants, 188 problem phrases (44 in Urdu script), task-type words, city, day, time, urgency, budget and an address hint, with the words that led to each suggestion and no score. npm run jobs:try -- \"<text>\". Module 2's output is unchanged.",
+        "The team's naive Bayes classifier (plain JavaScript) and the hybrid: hand-worked numbers as unit tests; the production server refuses a model trained on synthetic data; live method: rules until Batch 8C.",
+        "Evaluation harness (backend/evaluation/job-analysis/): split, cross-validation, the compared systems, McNemar exact and mid-p, Holm, bootstrap intervals, agreement; tested on SYNTHETIC data only (no number from it is a result). The protocol is pre-registered and frozen at 81ba8f6 (docs/evaluation/job-analysis/PROTOCOL.md).",
+        "Documents for real data: consent text (three languages, drafts), form draft, collection plan, annotation guide, data-handling note. Questions for the supervisor in docs/modules/MODULE-6.md §11.",
+        "Admins: a read-only job list (no budget), the detail (budget, analysis, bookings, the customer's name only) and use statistics \"kept / changed / not suggested\" (use, not accuracy)."
+      ]
+    },
+    {
       "title": "Batch 7 — Module 5, fair wage and work protection (19–23 Nov 2026)",
       "points": [
         "Price information: under the chosen skill on \"Request this worker\" and on a new Price information page: the typical price on this platform (the middle half of agreed prices, only from at least 5 jobs by 3 workers for 3 customers, one job per pair, both-confirmed, last 12 months), else the admin team's price guide with its source and month, the government minimum wage reference for the region (with its status, date and sources), and the worker's own rates. 🔊 reads it all, amounts in words.",
@@ -12,31 +38,6 @@
         "Admins: Price guide (only with a written source; edit, archive, history), Payments (read-only, disputed first; Module 9 will decide), a payments CSV, an Overview banner when a wage figure is more than a year old.",
         "SIMULATION (30 seeds per scenario; docs/modules/MODULE-5.md §8; not real prices): the rules make the range appear in fewer markets (availability 0.348 against 0.887 for a plain average in base), with a slightly smaller error (0.097 against 0.108) and a much smaller shift from one dishonest worker (0.086 against 0.600 in inflator) or pair (0.039 against 0.469 in pair_flood). Attacks can still make a range appear in a market with too few jobs.",
         "Part A, docs only (D-079): the deploy runbook's health check corrected: /api/health proves the function starts; /api/auth/session (200 / 503) is the database check."
-      ]
-    },
-    {
-      "title": "Batch 6B — header fix, \"Install this app\", reputation engine v2 (17 Nov 2026)",
-      "points": [
-        "Header (D-059): measured, never cut off: it hides the \"Ctrl K\" hint, then the name next to the avatar, then moves Sound and language into the account menu (visitors: \"More\"), then switches to the mobile menu. Every menu stays inside the window (8 px margin); a long email ends with \"…\". Checked in the browser for every role, English and Urdu, at 10 widths from 360 to 1920 px.",
-        "Install this app (D-060): an invitation on the second page (or after 30 s) for everyone, once per 14 days, with 🔊; a permanent \"Install this app\" button at the bottom of every page. The browser's own question where it exists; otherwise steps with pictures (Chrome/Edge menu, iPhone Safari Share → Add to Home Screen, \"open in Safari\", \"use Chrome or Edge\"). No website can install itself: the person always presses \"Install\".",
-        "Reputation engine v2, rep-2 (D-061 to D-066): recency off for reviews; reviews from brand-new customer accounts count, but all together at most one review; many reviews in a few days count half; the platform's typical rating as the starting point; \"Best track record\" orders by the middle estimate. Chosen and tested with a pre-registered protocol: candidates, rule and success criteria fixed first; selection on the Batch 6 seeds; the choice frozen in a commit; one run on 30 new seeds.",
-        "SIMULATION result (test seeds, not a real-world result): S1, S2 and S3 met — as good as the plain Beta without attacks (NDCG@10 0.936), much better under naive fake accounts and collusion (sybil_k10 0.934 against 0.758 for the plain average), better than rep-1 in 97–100% of seeds. rep-2 is live. Not solved: an attacker who first hires other workers (worse than the plain average there); a young platform with mostly first-time customers is slightly below the plain Beta.",
-        "What people see: \"My reputation\" and the Help Centre guide list the live rules from the server (GET /api/meta/reputation-rules); new per-review reasons; the public depth word follows the visible reviews; \"Best track record\" explains that new workers start in the middle. Urdu \"I did come\" is gender-neutral.",
-        "Texts: new and changed texts in English, Urdu and Roman Urdu (docs/i18n/REVIEW-BATCH-6B.md).",
-        "Tests (real runs, 17 Nov 2026): backend 823/823 (43 files; coverage lines 98.6%, reputation services 99.24%); frontend 1211/1211 (29 files; coverage lines 90.99%); lint 0; build OK; e2e (full run, 18 Nov 2026, 15:24–15:46 UTC, 10 files): 56/57 passed, 1 failed — the defence demo (demo-script.e2e.js): after \"Create account\" in Urdu the page was still on /register after 10 s, although the worker was logged in; run alone right after, it passed (1/1). Five more runs (19 Nov) failed once, at the photo upload (still uploading after 10 s). Cause: on an overloaded machine (the full suite next to the preview and the editor; minutes after a restart) a server write such as registration or the photo upload took longer than the 10 s the test allowed; measured otherwise at 0.5–3.5 s, also under heavy CPU and disk load (15 instrumented runs, none failed). Fix, test only, no check removed: those two steps wait for the server's answer as long as the app does (20 s), check that it is 201, then give the screen the usual 10 s. Then 5/5 runs passed. Baseline before the batch: backend 754/754, frontend 1161/1162 (one timing flake, passes alone), Batch 6 e2e 50/50. Existing tests changed: listed in docs/DECISIONS.md D-065 and the Batch 6B report."
-      ]
-    },
-    {
-      "title": "Batch 6 — Module 4: bookings, reviews and the reputation engine (16–17 Nov 2026)",
-      "points": [
-        "Work Booking: a customer requests one worker (picture choices for work, day and time; area; description), the worker hears the request (🔊) and accepts or declines; both press \"Work done\", or one side and 72 hours pass; cancellations with reasons (a worker's late cancellation counts double); \"Worker did not come\" from the start + 2 hours; one small dispute step decided by an admin (D-039 to D-042, D-049, D-050, D-053, D-054).",
-        "Phone numbers (D-002 delivered, D-052): only inside GET /api/bookings/:id, only to the two people and admins, only while accepted and for 7 days after the close; never in lists, the directory, profiles, notifications or CSV files. Free texts are refused when they contain a phone number, email, link or CNIC-like number.",
-        "Reviews: after completed work only, once, never edited (1–5 stars, four quick thumbs, would hire again, optional comment with voice typing, read-back before sending); the worker replies once and can report; admins hide with a reason (never for being negative) or restore (D-041, D-051).",
-        "Reputation engine: a weighted Beta reputation model (Jøsang & Ismail 2002) with provenance, recency, reviewer-trust and repeat-customer weights; expected value, uncertainty, a cautious lower estimate and a depth word; a reliability record from booking outcomes; a snapshot on the worker profile rebuilt after every change and daily (D-043 to D-048). Pure functions, unit tested with hand-worked examples.",
-        "Display: public profile (stars with the count, depth in words, star bars, \"x of y\" quick answers, reliability counts, reviews with replies, \"Done through this platform\"), directory and compare lines, \"Best track record\" sort with an honest note, \"Has done jobs on this platform\" filter; the worker's \"My reputation\" page in plain words with 🔊 (D-045, D-047).",
-        "Admin: Bookings, Disputes, Reviews and Reputation flags pages, a Reputation tab per worker, Overview charts of bookings and stars, bookings and reviews CSV exports (no phone numbers).",
-        "Notifications: 16 new booking and review types; customers get a \"Notifications\" menu link with the unread count (D-057).",
-        "Evaluation by SIMULATION (backend/evaluation/reputation/, 30 seeds, 11 scenarios, four baselines, ablations). Finding: with the provisional parameters the model is not better than the plain average overall, and recent fake reviews still buy places; the individual defences reduce the attacks they target. Parameters were not changed (D-048, D-058). Simulation results only, not real-world results."
       ]
     }
   ]

@@ -1,8 +1,9 @@
-# Module 6 — Problem/Job Analyzer (Batch 8A: backend, analyzers, evaluation harness)
+# Module 6 — Problem/Job Analyzer (Batch 8A: backend, analyzers, evaluation harness; Batch 8B: the screens)
 
-Status (24 Nov 2026): **Batch 8A done — the backend, the two analyzers, the evaluation harness and the documents.**
-The customer and admin screens are **Batch 8B**. The evaluation on real data is **Batch 8C** (no real data exists yet).
-Owner in the proposal's work split: Usama Asif. Decisions D-080 to D-090 (`docs/DECISIONS.md`).
+Status (24 Nov 2026): **Batch 8A done** (the backend, the two analyzers, the evaluation harness and the documents) and
+**Batch 8B done** (the customer and admin screens, §14; the results of the check of Batch 8A, §14.8; word lists
+`2026-11-24-v3`; the final consent and form texts). The evaluation on real data is **Batch 8C** (no real data exists
+yet). Owner in the proposal's work split: Usama Asif. Decisions D-080 to D-091 and D-092 to D-101 (`docs/DECISIONS.md`).
 
 **Honest words.** The website never says "AI". The rule-based analyzer is "rule-based word lists". The classifier is
 "a naive Bayes classifier: a simple word-count model trained on the team's labelled examples". No suggestion ever
@@ -288,6 +289,9 @@ Decision D-091.
 - **"Why one request at a time?"** — If one job went to several workers, those who accept second and third would be
   dropped: their time wasted and nobody at fault. A request expires after 48 hours, and the customer may cancel it and
   ask someone else.
+- **"Show me how a customer uses it."** — The demo path of §14.6: describe the job in their own words (typed or
+  spoken), see the words the app used, check and change every detail, save, choose a worker from "Workers for this
+  job" and send the job. The worker sees the job code and the kind of work, never the budget.
 - **"What does 'kept a suggestion' prove?"** — Only how the suggestions were used. A customer may keep a wrong one or
   change a right one; accuracy comes only from the labelled test set.
 
@@ -295,6 +299,92 @@ Decision D-091.
 
 No new environment variable. After the deploy, run `npm run db:indexes` once (in `./backend`, against the production
 database) to build the `jobrequests` indexes and the new partial booking index `{ jobRequest: 1, createdAt: -1 }`.
+
+## 14. The screens (Batch 8B)
+
+Words on the screens (D-092): the start page is **"Describe a job"**, the list **"My job requests"**, one item a
+**"job request"** (`JR-…`), its details the **"job details"**, the worker list **"Workers for this job"**; never "post a
+job" (workers do not see a board). Urdu and Roman Urdu use the dictionary's words: کام کی درخواست / kaam ki darkhwast,
+ہنر / hunar (skill), شعبہ / shoba (trade), کام کی نوعیت / kaam ki nauiyat (kind of work), کاریگر / karigar.
+
+### 14.1 The customer's flow
+
+| Page | What the customer does | API |
+|---|---|---|
+| `/find` | A card at the top: "Not sure whom to call? Describe the job in your own words" (🎤 hint) → Describe a job. The search below is unchanged (D-094). | — |
+| `/job-requests/new`, step 1 "What do you need?" | Types or speaks (🎤, `inputMode: voice`) the job, 500 characters, 🔊 Listen, the hint "Write it as you would tell a worker…". **Check my words** marks the matched words inside the text and lists "Words we found"; it also runs when the microphone stops and before step 2 when the words changed. "How does this work?" names the live method from the API. Contact details or a CNIC → the server's message under the box; a house number → a friendly warning that never blocks. | `POST /api/job-requests/analyze` (nothing saved); `GET /api/meta/job-options` |
+| step 2 "Check the details" | Every suggestion is pre-selected and says which words led to it ("Suggested from your words: ac, service"; "usual for this trade" for a trade default). Trade tiles (a tie: the tied trades first, nothing selected; no trade words: nothing selected), skills (at most 5), kind of work (7 tiles + "Not sure"), city ("Which city?" with two buttons on a conflict, from `city.candidates`, D-095), area (required, no house number), day, time, urgent, and the **private budget** with the Module 5 price information under it. | — |
+| step 3 "Save" | A summary with pictures (🔊), "Your words are used for this request only", **Save** → the job page with "Now choose a worker for this job". Leaving with unsaved words asks first. | `POST /api/job-requests` (exactly the documented fields) |
+| `/job-requests` | Tabs Active, Open, Waiting for a worker, Accepted, Done, Expired, Closed with the server's counts; each card: trade picture, code, kind of work, city, day and time, the state with its meaning, the main action. | `GET /api/job-requests/mine` |
+| `/job-requests/:id` | The details with pictures (and the budget), the state and its meaning, only the buttons of `actions` (edit, find workers, close, delete), the requests sent from the job, and "What the app understood from your words" (collapsed: suggestion, choice, kept / changed / nothing suggested). Close: four reasons as pictures; delete: a confirmation. | `GET /api/job-requests/:id`, `POST …/close`, `DELETE …` |
+| `/job-requests/:id/edit` | The same details form and the words; only changed fields are sent with `baseVersion`; `JOB_CHANGED` → "This job request was changed just now" + Reload; a changed description is analysed again by the server. | `PATCH /api/job-requests/:id` |
+| `/job-requests/:id/workers` | Workers of the trade in the job's city, in the order the customer chooses (the directory's sorts) with the filters; each card says why it is listed ("Offers: Water leak repair", "Same city: Rawalpindi") and has **Send this job**. The line "The app does not rank them." Empty, truncated (500) and not-open states in plain words. | `GET /api/job-requests/:id/workers` |
+| `/workers/:id/request?job=<id>` | The request page in **job mode** (D-096): a read-only "Your job" card instead of the city, area and description; only the worker's skills of the job's trade; the day and time from the job (a past or missing day → Tomorrow, with a note); the price information and the optional offer as before. Every 409/400 in plain words; a job that already waits for a worker shows the message and a link to that request. Without `?job` the page is the old one. | `POST /api/job-requests/:id/request` |
+
+### 14.2 Honest words
+
+No "AI", "smart", "intelligent" or "confidence" on any screen, and no percentage or score next to a suggestion (the
+frontend honesty tests). A suggestion always shows the customer's own words that led to it; the method's name comes
+from the API (`analyzer.methodName`, translated for Urdu and Roman Urdu), so Batch 8C can switch the method without a
+screen change. The admin statistics say "This shows how customers used the suggestions, not whether they were correct."
+
+### 14.3 The re-check rule (D-093)
+
+`frontend/src/features/jobs/mergeSuggestions.js` (pure, unit tested): when the words are checked again, a field the
+customer has **not** touched shows the newest suggestion (also "nothing"); a field the customer **has** changed keeps
+the customer's value and offers "New suggestion: X — use it?"; skills follow the final trade (touched skills of another
+trade are removed, and the screen says so). Using an offer makes the field follow the suggestions again.
+
+### 14.4 What workers see
+
+A worker never opens a job page (403 on every job route). On a request sent from a job, the booking card, the booking
+page and 🔊 "Hear this request" add only "From job request JR-…" and "Kind of work: …" (text, no link). The budget and
+the analysis are never in a booking, a card, a notification or a spoken text (tested on the worker's request and job
+pages, and in the e2e test).
+
+### 14.5 The admin page
+
+`/admin/job-requests` (read-only, three tabs, D-098): the list (state, trade and code search; the customer's name, the
+requests sent, the method; **no budget**) with a drawer (everything, including the budget, suggested vs chosen and the
+requests sent; the customer's name only); "How suggestions were used" (kept / changed / not suggested per detail, by
+method and input mode, with the fixed note); "Try the analyzer" (the rows of `npm run jobs:try`; nothing saved).
+
+### 14.6 Demo data (synthetic) and the demo path
+
+`npm run demo:module6` (run by `bash scripts/preview.sh demo` and `reset-demo` after the Module 5 seed; local `_demo`
+database only) gives `customer.demo@example.com` one job request in every state, in English, Roman Urdu and Urdu, each
+analysed by the real analyzer at seed time. The booking rules stay true (D-099): the "requested" and "accepted" jobs are
+the customer's two open Module 4 requests (to Demo Worker and to Demo Plumber) linked to a job; the "done" job has a new
+completed booking with Demo Carpenter; the open job can be sent to Demo Electrician 1–3.
+
+Demo path (viva): log in as `customer.demo@example.com` → **Find workers** → "Describe a job" → type "Bathroom ka nalka
+tapak raha hai, Pindi mein, kal subah" → **Check my words** (the words are marked) → **Next** (plumbing, water leak
+repair, repair, Rawalpindi, tomorrow, morning are chosen; change one) → write the area → **Save** → **Choose a
+worker** … or open **My job requests** to see every state. Then `worker.demo@example.com` → Requests (the request from a
+job, no budget) and `admin.demo@example.com` → Job requests → "How suggestions were used" and "Try the analyzer".
+
+### 14.7 Limits of the screens
+
+- 🎤 uses the browser's own speech service (Chrome: online); typing always works. The text is only checked when the
+  customer presses Check my words, when the microphone stops, or before step 2.
+- The found words are shown in the analyzer's spelling (lower case, one spelling per Roman Urdu variant: "tonti" is
+  shown as "tooti"), so a variant is not marked inside the text box although it was used.
+- The edit page shows no suggestion marks (the stored analysis keeps ids, not words); the server checks changed words
+  again and the job page shows the new suggestions.
+- One request at a time per job (D-081): the next worker can be asked only after the answer, a decline or a cancel.
+
+### 14.8 Results of the check of Batch 8A (A1–A5)
+
+- **A1** a city spelling that is also an everyday word (`atak`, `اٹک`, `wah`, `mari`, `مری`) names the city only
+  directly before a place word: "مری میں نلکا ٹپک رہا ہے" → Murree; "پائپ میں کچھ اٹک گیا ہے" → none.
+- **A2** a city spelling directly before `road`, `rd`, `روڈ`, `chowk`, `چوک` is a road: "Murree Road Rawalpindi par
+  plumber chahiye" → Rawalpindi, no conflict.
+- **A3** new phrases (`لیک`, `پائپ لیک`, `pipe leak`, `گٹر بند`, `سیم`, `دروازہ اٹک`, `darwaza atak`, `istari`,
+  `بزرگوں کی دیکھ بھال`, `ماسی چاہیے`, `maasi chahiye`, `masi chahiye`) and task words (`فٹ کرنا`, `فٹنگ`; and
+  `ghar ke kaam`, `گھر کے کام` for household help, D-097); words the taxonomy already had were not added again.
+- **A4** review finding 6: no code change; the frozen text decides (§4).
+- **A5** references corrected (Khan et al. 2022, McCallum & Nigam 1998, Manning et al. 2008 ch. 13); `PROTOCOL.md`
+  "Protocol changes" 3 and 4. All in `tests/unit/jobAnalyzer.test.js`; the 13 required examples are unchanged.
 
 ## References
 

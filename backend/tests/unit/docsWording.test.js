@@ -1,8 +1,7 @@
-// Documentation wording (Batch 8B, A8; the supervisor's instruction of 24 Nov 2026): the project's documentation,
-// README, source code and data-file headers name no AI tool or its maker and no batch instruction file. Checked on
-// every file Git tracks (or will track: new files that are not ignored) in docs/, README.md, the backend source folders
-// and frontend/src. Ignored working notes on disk (for example docs/audit/) are not part of the repository.
-// The banned words are built from parts, so this file never trips its own check.
+// Documentation wording (Batch 8B, A8): three word patterns (built from parts below, so this file never trips its own
+// check) must not appear in the documents, the README, the backend source folders or frontend/src. Checked on every
+// file Git tracks (or will track: new files that are not ignored). Ignored working notes on disk (for example
+// docs/audit/) are not part of the repository.
 import { describe, test, expect } from 'vitest';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
@@ -24,7 +23,7 @@ function files() {
   return [...new Set(out.split('\0').filter(Boolean))].filter((f) => TEXT.has(extname(f).toLowerCase()) && existsSync(resolve(ROOT, f)));
 }
 
-describe('documentation wording: no AI tool, maker or batch instruction file is named (A8)', () => {
+describe('documentation wording: none of the listed word patterns appears (A8)', () => {
   const list = files();
 
   test('the check reads the documentation, the README and the source (so a pass means something)', () => {
@@ -36,7 +35,7 @@ describe('documentation wording: no AI tool, maker or batch instruction file is 
     expect(list.length).toBeGreaterThan(300);
   });
 
-  test('the banned words are found when they are there', () => {
+  test('the patterns are found when they are there', () => {
     const sample = ['Written by ', 'Cla', 'ude', ' Code; see ', 'BATCH_', '5_PRO', 'MPT.md (', 'Anth', 'ropic)'].join('');
     expect(BANNED.every((re) => re.test(sample))).toBe(true);
     expect(BANNED.some((re) => re.test('the team wrote the Batch 5 plan, section 8'))).toBe(false);

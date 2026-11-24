@@ -64,6 +64,15 @@ Batch 8A (**Module 6**, backend only, 23–24 Nov 2026) adds job requests, the r
 hybrid (not live), the evaluation harness tested on synthetic data only, the pre-registered protocol (frozen at
 `81ba8f6`) and the documents for collecting real descriptions with consent. Details: `docs/modules/MODULE-6.md`.
 
+Batch 8B (**Module 6, the screens**, 24 Nov 2026) adds what people see: a customer opens **Describe a job** (from the
+card on Find workers or the menu), types or speaks the job in their own words, presses **Check my words** (the words the
+app used are marked), checks every suggested detail as picture choices, saves the job request (`JR-…`), sees **Workers
+for this job** (a filter in the customer's chosen order, not a ranking) and sends the job to one worker at a time. The
+worker sees "From job request JR-…" and the kind of work, never the budget. Admins get **Job requests** (the list, "How
+suggestions were used" and "Try the analyzer"). Word lists `2026-11-24-v3`; final consent and form texts; the
+supervisor's guidance (D-091). Synthetic demo data: `npm run demo:module6` (`preview.sh` runs it). Manual checks for
+testers: `docs/MODULE-6-MANUAL-TEST.md`.
+
 The website has been live since 12 Nov 2026 (Vercel). New batches are deployed by the team after review.
 
 ## Folders
@@ -237,6 +246,7 @@ line); set `CHROMIUM_PATH` to use another Chromium-based browser instead.
 | `npm run reputation:recompute -- --worker <workerIdCode>` / `-- --all` | Rebuilds reputation snapshots; local database only unless `--allow-remote` **and** you type `yes` |
 | `npm run demo:module4` | Adds the synthetic Module 4 demo data to the demo database (`preview.sh demo` and `reset-demo` run it for you) |
 | `npm run demo:module5` | Adds the synthetic Module 5 demo data (prices, payments, one "[Demo]" guide entry) after the Module 4 demo data (`preview.sh` runs it for you) |
+| `npm run demo:module6` | Adds the synthetic Module 6 demo data (one job request of the demo customer in every state) after the Module 5 demo data (`preview.sh` runs it for you) |
 | `npm run evaluate:price-range -- --scenario all --seeds 30` | Module 5 evaluation **by simulation**; writes `evaluation/price-range/results/SIMULATION-price-*.json` |
 | `npm run evaluate:skills -- --file <dataset.csv>` | Module 2 evaluation on a labelled dataset (`docs/evaluation/README.md`) |
 | `npm run jobs:try -- "<text>"` | Module 6: the job analyzer's suggestions for one text, in a table (no database, nothing saved) |
@@ -288,7 +298,9 @@ The clip recorder is a development page: `http://127.0.0.1:5173/dev/recorder` (n
 | `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format); the easy-mode usability test **plan** (`EASY-MODE-USABILITY-PLAN.md`, no results yet) |
 | `docs/modules/MODULE-6.md` | Module 6: the job request and its states, the request flow, the analyzer's rules with the 13 examples, the naive Bayes formulas and hand-worked numbers, the hybrid, who sees what, limitations, the honest statement of novelty, the supervisor's guidance, viva answers, deployment notes |
 | `docs/evaluation/job-analysis/` | Module 6 evaluation: the frozen protocol, dataset format, annotation guide, collection plan, consent text, form draft, data handling |
-| `docs/i18n/REVIEW-BATCH-8A.md` | The new Module 6 texts (errors, Urdu word lists, consent and form), **waiting for the team's review** |
+| `docs/i18n/REVIEW-BATCH-8A.md` | The new Module 6 texts (errors: second draft; Urdu word lists), **waiting for the team's review** |
+| `docs/i18n/REVIEW-BATCH-8B.md` | Every new Module 6 screen text in three languages (drafts) and the help texts that would need recorded clips |
+| `docs/MODULE-6-MANUAL-TEST.md` | Module 6 manual checks for testers (three windows, an Android phone, 🎤, the budget privacy check) |
 | `docs/modules/MODULE-5.md` | Module 5: what it does, diagrams, formulas with worked examples, the minimum wage table with sources and the yearly update, the **simulation** results, limitations, extension points, viva answers, deployment notes |
 | `docs/MODULE-5-MANUAL-TEST.md` | Module 5 manual checklist: **check the wage figures first**, then three browser windows and an Android phone |
 | `docs/i18n/REVIEW-BATCH-7.md` | The new Module 5 texts side by side, **waiting for the team's review**, with the clips to record |

@@ -4,12 +4,45 @@ What changed in each phase. Test results are copied from real runs only.
 
 ## Batch 8 — Module 6: describe a job (Batch 8B, the screens; 24 Nov 2026)
 
+Why: Batch 8A built the backend of Module 6; this batch builds what people see, with the results of the check of 8A,
+the supervisor's guidance and the final consent texts. The live analyzer is still the rule-based word lists; the
+screens read its name from the API, so Batch 8C can switch the method without a screen change. No new package.
+
+- **Describe a job** (customers; the card on Find workers and the menu): type or speak (🎤) the job in your own words,
+  press **Check my words**, and the words the app used are marked. Step 2 shows every suggested detail as a picture
+  choice with the words that led to it; you change anything. Step 3 saves the job request (`JR-…`).
+- **Checking again never overwrites what you changed**: a changed detail keeps your choice and the new suggestion is
+  only offered ("New suggestion: X — use it?"); a tie or no trade words chooses nothing (D-093).
+- **My job requests**: tabs by state with counts; **the job request page**: the details, only the allowed buttons
+  (change, choose a worker, close with a reason, delete), the requests sent, and "What the app understood from your
+  words" (kept / changed / nothing suggested; never a score).
+- **Workers for this job**: workers of the trade in your city, in the order you choose (not a ranking), each with its
+  reasons; **Send this job** opens the request page with a read-only "Your job" card; one request at a time, refused
+  in plain words (D-096).
+- **Workers** see "From job request JR-…" and the kind of work on the request (also spoken by 🔊), **never the budget**;
+  the budget is shown only on the customer's own job pages and to admins (D-100).
+- **Admins**: Job requests (list without budget, the detail drawer), "How suggestions were used" (use, not
+  correctness) and "Try the analyzer" (D-098).
+- Easy mode on every new page: 🔊 help on every field and picture, 🎤 where allowed, page help, three languages, right
+  to left, both themes; the Help Centre guide "Describe a job".
 - **Word lists `2026-11-24-v3`** (before any real description; no rule of the protocol changed, "Protocol changes" 3):
   a city spelling that is also an everyday word (`atak`, `اٹک`, `wah`, `mari`, `مری`) names the city only directly
   before a place word ("مری میں" = in Murree); a city spelling directly before `road`, `rd`, `روڈ`, `chowk` or `چوک` is a
   road, not the city ("Murree Road Rawalpindi" → Rawalpindi); new phrases `لیک`, `پائپ لیک`, `pipe leak`, `گٹر بند`,
   `سیم`, `دروازہ اٹک`, `darwaza atak`, `istari`, `بزرگوں کی دیکھ بھال`, `ماسی چاہیے`, `maasi chahiye`, `masi chahiye`; task
-  words `فٹ کرنا`, `فٹنگ` (install) and `ghar ke kaam`, `گھر کے کام` (household help). Module 2's output is unchanged.
+  words `فٹ کرنا`, `فٹنگ` (install) and `ghar ke kaam`, `گھر کے کام` (household help, D-097). Module 2's output is unchanged.
+- `POST /api/job-requests/analyze` adds `city.candidates` for the "Which city?" buttons (D-095; the analyzer and the
+  evaluation are unchanged). References corrected (Khan et al. 2022; McCallum & Nigam 1998; Manning et al. 2008 ch. 13;
+  "Protocol changes" 4). The 14 Module 6 error texts in Urdu and Roman Urdu: second draft with the dictionary's words.
+- The supervisor's guidance (D-091): the self-trained naive Bayes classifier compared with the word lists is acceptable;
+  no ethics approval is needed. The consent and form texts are final (no example job); the team runs the Google Form.
+- Documentation wording: neutral wording in the documents, the README, comments and data-file headers, kept by
+  `backend/tests/unit/docsWording.test.js`.
+- Synthetic demo data `npm run demo:module6` (one job request in every state; `preview.sh` runs it; D-099); the manual
+  test list for testers `docs/MODULE-6-MANUAL-TEST.md`; new texts for review `docs/i18n/REVIEW-BATCH-8B.md`.
+- **Header** (the team's choice, D-101): one more step before the links leave the bar, the logo keeps only its shield;
+  so English customers keep all five links on laptops.
+- Decisions D-091 to D-101. Tests: see the final line below.
 
 ## Batch 8A — Module 6, Problem/Job Analyzer: backend, analyzers, evaluation harness (23–24 Nov 2026)
 
