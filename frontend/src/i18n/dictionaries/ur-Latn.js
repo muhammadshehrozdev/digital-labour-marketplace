@@ -276,20 +276,20 @@ export default {
     PRICE_GUIDE_ARCHIVED: 'Qeemat guide ka yeh indiraj archive ho chuka hai aur badla nahin ja sakta.',
     PRICE_GUIDE_CHANGED: 'Kisi aur admin ne abhi yeh indiraj badla hai. Barah-e-karam safha dobara kholein.',
     // ---- end of Batch 7 (errors) ----
-    // ---- Batch 8A (errors): Module 6 job requests, drafts until the team reviews them ----
+    // ---- Batch 8A (errors): Module 6 job requests (second draft, 24 Nov 2026, consistent with the dictionary words; a native reader may still adjust) ----
     JOB_NOT_FOUND: 'Kaam ki darkhwast nahi mili',
-    JOB_LIMIT_OPEN: 'Aap ki pehle hi {max} khuli kaam ki darkhwastein hain. Pehle koi ek band karein.',
-    JOB_LIMIT_DAY: 'Aap ne pichhle 24 ghanton mein {max} kaam ki darkhwastein save kin. Meharbani karke kal dobara koshish karein.',
-    JOB_SKILL_CATEGORY: 'Sirf chune hue kaam ki maharatein chunein.',
-    JOB_BUDGET_INCOMPLETE: 'Budget ki raqam aur yeh kaise gini jayegi (poora kaam, rozana ya fi ghanta) dono likhein, ya dono khali chhor dein.',
-    JOB_CHANGED: 'Yeh kaam ki darkhwast abhi badli gayi hai. Meharbani karke safha dobara kholein.',
-    JOB_NOT_EDITABLE: 'Yeh kaam ki darkhwast ab badli nahi ja sakti. Sirf woh khula kaam badla ja sakta hai jis ki koi darkhwast intezar mein ya qabool shuda na ho.',
-    JOB_NOT_OPEN: 'Yeh kaam ki darkhwast band, mukammal ya khatam ho chuki hai.',
-    JOB_HAS_OPEN_REQUEST: 'Is kaam ki ek darkhwast pehle hi ek karigar ke paas hai. Jawab ka intezar karein, ya pehle woh darkhwast cancel karein.',
-    JOB_HAS_BOOKINGS: 'Yeh kaam pehle hi ek karigar ko bheja ja chuka hai, is liye mitaya nahi ja sakta. Is ke bajaye ise band karein.',
-    JOB_EDIT_EMPTY: 'Save karne se pehle kam az kam ek cheez badlein.',
-    BOOKING_JOB_MISMATCH: 'Yeh maharat is kaam ke shobe ki nahi. Is kaam ke shobe ki koi maharat chunein.',
-    TASK_TYPE_INVALID: 'Kaam ki qism chunein: lagana, marammat, service, naya kaam, safai, shifting ya gharelu madad.',
+    JOB_LIMIT_OPEN: 'Aap ki {max} kaam ki darkhwastein pehle hi khuli hain. Pehle koi aik band karein.',
+    JOB_LIMIT_DAY: 'Aap pichhle 24 ghanton mein {max} kaam ki darkhwastein mehfooz kar chuke hain. Barah-e-karam kal dobara koshish karein.',
+    JOB_SKILL_CATEGORY: 'Sirf usi shobe ke hunar chunein jo aap ne chuna hai.',
+    JOB_BUDGET_INCOMPLETE: 'Budget ki raqam likhein aur batayein ke yeh poore kaam ki hai, rozana ki ya fi ghanta; ya dono khali chhor dein.',
+    JOB_CHANGED: 'Yeh kaam ki darkhwast abhi abhi badli gayi hai. Barah-e-karam safha dobara kholein.',
+    JOB_NOT_EDITABLE: 'Yeh kaam ki darkhwast abhi nahi badli ja sakti. Jab yeh kisi karigar ke paas jawab ki muntazir ho, qabool ho chuki ho ya band ho, to badli nahi ja sakti.',
+    JOB_NOT_OPEN: 'Yeh kaam ki darkhwast band ho chuki hai, mukammal ho chuki hai ya is ki muddat khatam ho gayi hai.',
+    JOB_HAS_OPEN_REQUEST: 'Is kaam ki aik darkhwast pehle hi aik karigar ke paas hai. Jawab ka intezar karein ya pehle woh darkhwast mansookh karein.',
+    JOB_HAS_BOOKINGS: 'Yeh kaam pehle hi aik karigar ko bheja ja chuka hai, is liye hazf nahi ho sakta. Is ke bajaye ise band kar dein.',
+    JOB_EDIT_EMPTY: 'Mehfooz karne se pehle kam az kam aik cheez badlein.',
+    BOOKING_JOB_MISMATCH: 'Yeh hunar is kaam ke shobe mein nahi aata. Is kaam ke shobe ka koi hunar chunein.',
+    TASK_TYPE_INVALID: 'Kaam ki nauiyat chunein: lagwana, marammat, service, naya kaam, safai, saman ki shifting ya gharelu madad.',
     CLOSE_REASON_INVALID: 'Kaam band karne ki wajah chunein: kaam ho gaya, zaroorat nahi rahi, kahin aur se karwa liya, ya koi aur wajah.',
     // ---- end of Batch 8A (errors) ----
     // ---- Batch 6 (errors): Module 4 texts, drafts until the team reviews them ----

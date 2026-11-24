@@ -1,7 +1,7 @@
 // A starter set of reason templates (Batch 4, feature 29). An admin can add them with one click
 // ("Add the starter set") and then edit or delete each one. They are ordinary sentences an admin
 // would otherwise type again and again; they are not facts about any person.
-// The Urdu and Roman Urdu lines were written by Claude Code and must be reviewed by the team.
+// The Urdu and Roman Urdu lines are drafts and must be reviewed by the team.
 export const STARTER_TEMPLATES = Object.freeze([
   { kind: 'identity_verify', text: { en: 'Original CNIC card seen in person. Name and photo match the account.', ur: 'اصل شناختی کارڈ سامنے دیکھا گیا۔ نام اور تصویر اکاؤنٹ سے ملتے ہیں۔', 'ur-Latn': 'Asal shanakhti card samne dekha gaya. Naam aur tasveer account se milte hain.' } },
   { kind: 'identity_verify', text: { en: 'CNIC card checked on a video call. Name and photo match the account.', ur: 'شناختی کارڈ ویڈیو کال پر چیک کیا گیا۔ نام اور تصویر اکاؤنٹ سے ملتے ہیں۔', 'ur-Latn': 'Shanakhti card video call par check kiya gaya. Naam aur tasveer account se milte hain.' } },

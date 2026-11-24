@@ -21,5 +21,6 @@ and the pre-registered comparison (`docs/modules/MODULE-6.md`).
 | [`data-handling.md`](data-handling.md) | what never goes into the dataset; storage; deletion |
 | `backend/evaluation/job-analysis/README.md` | the scripts (split, train, evaluate, agreement) |
 
-Next steps for the team: review the word lists and the consent text (`docs/i18n/REVIEW-BATCH-8A.md`), ask the
-supervisor the three open questions (`MODULE-6.md`), then build the Google Form with the user from `FORM-DRAFT.md`.
+Next steps for the team: review the word lists (`docs/i18n/REVIEW-BATCH-8A.md`); the consent and form texts are final
+(Batch 8B) and the supervisor's guidance is in `MODULE-6.md` §11; then the team builds the Google Form from
+`FORM-DRAFT.md` (owner: Usama Asif; `COLLECTION-PLAN.md`).

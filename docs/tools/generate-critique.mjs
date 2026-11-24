@@ -26,12 +26,12 @@ let md = `# Design critique v2 (Batch 4, Part 2)
 and refine it a lot."* Before changing anything, every one of the 28 screens from \`npm run screenshots\`
 was looked at in light mode at 1280 px and 360 px (English) and scored from 1 to 10 on ten criteria.
 
-**Honest limits.** The scores are Claude Code's own judgement of the screenshots against the rubric
+**Honest limits.** The scores are one internal judgement of the screenshots against the rubric
 below. They are not a user test and not an expert panel; the team should look at the before/after pairs
 in \`docs/design/screenshots/v3/\` and disagree where they see it differently. "Motion" cannot be seen in
 a still image: it is scored from how the screen behaves in the browser (hover, focus, transitions,
 loading), with reduced motion respected. "Layout" is the layout at that width; in the 360 px row it is the
-"mobile layout" criterion of the prompt.
+"mobile layout" criterion of the Batch 4 plan.
 
 ## Rubric
 

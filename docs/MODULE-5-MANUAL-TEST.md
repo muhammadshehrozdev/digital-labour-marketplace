@@ -1,6 +1,6 @@
 # Module 5 — manual test checklist (Batch 7)
 
-Claude Code cannot press buttons on a phone or hear sound in the container. The automated tests (unit, integration,
+The automated tests cannot press buttons on a phone or hear sound in the container. They (unit, integration,
 component, end-to-end with axe) are listed in `docs/TEST-CASES.md`. This checklist is for the team, on a laptop with
 three browser windows and later an Android phone. Write the result and the date in the last column.
 

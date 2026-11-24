@@ -1,7 +1,7 @@
 # Easy mode: manual test checklist (sound and microphone)
 
 The automated tests use fake speech features, because the build container has **no sound card and no
-microphone**. Nothing in Batch 5 has been heard or spoken into by Claude Code. Please run these checks
+microphone**. The automated tests have not heard or spoken into anything in Batch 5. Please run these checks
 yourself: first on your laptop in **Chrome** and **Edge**, later on an **Android phone** in Chrome.
 
 Start the local preview first (container terminal): `bash scripts/preview.sh demo`, then open

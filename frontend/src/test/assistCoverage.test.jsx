@@ -1,4 +1,4 @@
-// Batch 5 coverage guard (prompt section 8): every field of every in-scope form has a help row, and
+// Batch 5 coverage guard (Batch 5 plan, section 8): every field of every in-scope form has a help row, and
 // every help key that is used exists in all three dictionaries. Fails when a new field is added
 // without help, or when a help text is missing in one language.
 import { describe, test, expect } from 'vitest';

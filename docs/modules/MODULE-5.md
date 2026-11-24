@@ -123,7 +123,7 @@ notification for Islamabad, updates `monthly`, `effectiveFrom`, `status`, `statu
 shows "checked on …" under the table and the admin Overview shows a banner when any figure was checked more than
 365 days ago (`referenceAge`, unit-tested with an injected date). **Before going live** the team checks every figure
 against the official notification (docs/MODULE-5-MANUAL-TEST.md, first section); if a figure differs, the team
-changes it, not Claude.
+itself changes it.
 
 ## 6. Who sees what (privacy)
 

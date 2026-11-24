@@ -6,7 +6,7 @@ status. Test names are the real `test(...)` / `describe(...)` titles; files are 
 limitation, **Partial**, **Not done** (with the reason). The test results behind every "Done" are in the
 Batch 4 report and `docs/TEST-CASES.md`.
 
-> **Doc A is not in the repository.** The Batch 4 prompt asks for "the assessment document (Doc A) Section 7,
+> **Doc A is not in the repository.** The Batch 4 plan asks for "the assessment document (Doc A) Section 7,
 > rows 1 to 3". No such file exists in this repository or the dev container (searched on 11 Nov 2026), so
 > those three rows **cannot be traced here**. The team should add Doc A (or paste rows 1–3 into this file),
 > and the rows will be mapped in the same way. Nothing below is guessed from it.

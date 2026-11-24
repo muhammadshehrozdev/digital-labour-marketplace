@@ -286,7 +286,7 @@ The clip recorder is a development page: `http://127.0.0.1:5173/dev/recorder` (n
 | `docs/audio/RECORDING-GUIDE.md` | How the team records the spoken help (recorder page, file names, tips) |
 | `docs/EASY-MODE-MANUAL-TEST.md` | Checklist to test sound and microphone by hand (Chrome, Edge, Android) |
 | `docs/evaluation/` | How Module 2 is evaluated (consent, annotation, dataset format); the easy-mode usability test **plan** (`EASY-MODE-USABILITY-PLAN.md`, no results yet) |
-| `docs/modules/MODULE-6.md` | Module 6: the job request and its states, the request flow, the analyzer's rules with the 13 examples, the naive Bayes formulas and hand-worked numbers, the hybrid, who sees what, limitations, the honest statement of novelty, open questions for the supervisor, viva answers, deployment notes |
+| `docs/modules/MODULE-6.md` | Module 6: the job request and its states, the request flow, the analyzer's rules with the 13 examples, the naive Bayes formulas and hand-worked numbers, the hybrid, who sees what, limitations, the honest statement of novelty, the supervisor's guidance, viva answers, deployment notes |
 | `docs/evaluation/job-analysis/` | Module 6 evaluation: the frozen protocol, dataset format, annotation guide, collection plan, consent text, form draft, data handling |
 | `docs/i18n/REVIEW-BATCH-8A.md` | The new Module 6 texts (errors, Urdu word lists, consent and form), **waiting for the team's review** |
 | `docs/modules/MODULE-5.md` | Module 5: what it does, diagrams, formulas with worked examples, the minimum wage table with sources and the yearly update, the **simulation** results, limitations, extension points, viva answers, deployment notes |

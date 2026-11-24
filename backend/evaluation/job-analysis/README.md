@@ -4,8 +4,8 @@ This folder measures how well the **job analyzers** read a customer's job descri
 (`services/jobAnalyzer/rules.js`), the team's own naive Bayes classifier (`services/jobAnalyzer/naiveBayes.js`) and
 the hybrid. The scripts import the **same** files as the live API.
 
-> **No real data exists yet (24 Nov 2026).** The only data here is `dataset.synthetic.*.csv`, written by Claude Code
-> to test the scripts. The same author wrote the word lists and these sentences, so the rules' numbers on it mean
+> **No real data exists yet (24 Nov 2026).** The only data here is `dataset.synthetic.*.csv`, written to test the
+> scripts. The word lists and these sentences were written by the same author, so the rules' numbers on it mean
 > **nothing**. Synthetic numbers are never reported anywhere. The real evaluation follows the frozen protocol
 > [`docs/evaluation/job-analysis/PROTOCOL.md`](../../../docs/evaluation/job-analysis/PROTOCOL.md) once, in Batch 8C.
 

@@ -1,6 +1,6 @@
 # Urdu and Roman Urdu texts: review list
 
-**Status: reviewed by the team on 11 Nov 2026 (decision D-031).** The texts were first written by Claude Code
+**Status: reviewed by the team on 11 Nov 2026 (decision D-031).** The texts were first written as drafts
 (Batch 3, 10 Nov 2026). Texts added or changed after that review must be checked the same way: read the
 row, write your name in "Checked by" when it is right, and correct the text in the file named in the section title
 (`frontend/src/i18n/dictionaries/ur.js`, `ur-Latn.js`, `frontend/src/i18n/languages.js`, or

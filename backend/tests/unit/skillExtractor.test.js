@@ -1,5 +1,5 @@
 // Module 2: rule-based skill extractor. Every case in "Phase 4 required regression tests"
-// (project brief) is here, with the audit ID it covers.
+// (project plan) is here, with the audit ID it covers.
 import { describe, test, expect } from 'vitest';
 import { extractSkills } from '../../services/skillExtractor/extractor.js';
 import { extractExperience } from '../../services/skillExtractor/experience.js';

@@ -1,7 +1,7 @@
 # Batch 7 texts for team review (Module 5: fair wage and work protection)
 
 512 new texts, each in English, Urdu and Roman Urdu; no existing text was changed. Date: 2026-11-23.
-Every Urdu and Roman Urdu text below is a **draft** written by Claude Code until a team member who reads Urdu has
+Every Urdu and Roman Urdu text below is a **draft** until a team member who reads Urdu has
 checked it (D-031). 57 of them are fixed help texts that can be recorded as clips (Clip = yes).
 
 Please check that each text is everyday Urdu, short enough to be spoken (about 20 words), says the same thing in
@@ -12,7 +12,7 @@ Points that need the team:
   Check every tip, and the helpline numbers 1122, 15 and 1314 with their sources (docs/MODULE-5-MANUAL-TEST.md).
 - **Words for money:** "اجرت / ujrat" (wage), "قیمت / qeemat" (price), "ادائیگی / adaigi" (payment), "ایڈوانس" (advance),
   "منظور کریں / manzoor karein" (Agree), "تصدیق / tasdeeq" (confirm). Choose the everyday words people use.
-- The guide title "Fair pay and safe work" is the name the prompt gave; the platform range itself is never called a
+- The guide title "Fair pay and safe work" is the name the Batch 7 plan gave; the platform range itself is never called a
   "fair price" (tested).
 - Amounts are placeholders everywhere ({amount}, {low}, …): no price or wage figure is written in a text (tested).
 

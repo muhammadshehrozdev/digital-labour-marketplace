@@ -1,7 +1,7 @@
 # Batch 6 texts for team review (Module 4)
 
 619 new texts, each in English, Urdu and Roman Urdu. Date: 2026-11-17. Every Urdu and Roman Urdu text
-below is a **draft** written by Claude Code until a team member who reads Urdu has checked it (D-031).
+below is a **draft** until a team member who reads Urdu has checked it (D-031).
 63 of them are help texts that can be recorded as clips (Clip = yes).
 Changed existing texts: `profile.contactNote` (all three languages; the old text said contacts come "in a later
 module"), `errors.SORT_INVALID` and `errors.EXPORT_KIND_UNKNOWN` (they list the new values).

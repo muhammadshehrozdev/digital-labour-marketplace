@@ -1,5 +1,5 @@
 // Design critique v2 (Batch 4, Part 2.1 and 2.3). One entry per screen of `npm run screenshots`.
-// Scores are Claude Code's own judgement of the screenshots against the rubric written in
+// Scores are one internal judgement of the screenshots against the rubric written in
 // docs/design/07-critique-v2.md (1-10 per criterion); they are not a user study.
 // Order of the ten numbers: hierarchy, typography, spacing, colour, imagery, depth, consistency,
 // motion, microcopy, layout at this width (at 360 px this is the "mobile layout" criterion).

@@ -145,7 +145,7 @@ need to read them back. Option 1 (hash only, nothing to read back) was not chose
 
 ## D-008 — Provisional trade category list (9 Nov 2026)
 
-**Decision (Claude Code, provisional — team approval needed in Phase 4):** one list in
+**Decision (provisional — team approval needed in Phase 4):** one list in
 `backend/config/skillTaxonomy.js`, served by `GET /api/meta/taxonomy`. It is the 8
 categories the UI already had, plus **Domestic Work**:
 Electrical & Solar, Plumbing & Sanitary, Construction & Masonry, Carpentry & Woodwork,
@@ -166,7 +166,7 @@ into Domestic Work and **Moving & Loading** became its own category. Final list:
 
 ## D-009 — Identity verification rules (9 Nov 2026)
 
-**Decision (Claude Code, following the project brief):**
+**Decision (following the project plan):**
 - `verificationStatus` = identity only: `Unverified` (new) → `Pending` (CNIC saved) →
   `Verified` or `Rejected` by an admin. Skill verification is Module 3.
 - An admin decision always needs a note (5–500 characters, e.g. how the CNIC was checked);
@@ -178,15 +178,15 @@ into Domestic Work and **Moving & Loading** became its own category. Final list:
 
 ## D-010 — Design system (Batch 1, 9 Nov 2026)
 
-**Decision (team's Batch 1 brief; implemented by Claude Code):** one design
+**Decision (Batch 1 plan):** one design
 system for the whole frontend: tokens in `frontend/src/styles/tokens.css` (Trust Green primary,
 Saffron accent, warm stone neutrals, semantic roles), Manrope self-hosted
 (`@fontsource-variable/manrope`, no Google request), lucide-react icons, CSS Modules, a component
 library in `frontend/src/components/ui/`, light theme only (semantic role tokens ready for a
 dark theme later). Mobile first (360 px). Details: `docs/design/03-design-system.md`.
 
-**Two measured deviations from the brief** (`frontend/src/styles/contrast.test.js` enforces both):
-1. Focus ring: the brief's 3 px primary-300 measures **2.15:1** on white, below its own 3:1 rule.
+**Two measured deviations from the Batch 1 plan** (`frontend/src/styles/contrast.test.js` enforces both):
+1. Focus ring: the plan's 3 px primary-300 measures **2.15:1** on white, below its own 3:1 rule.
    The focus indicator is a **2 px primary-600 outline (6.46:1)** with a 2 px offset **plus** the
    primary-300 halo.
 2. Saffron-700 on saffron-100 measures **3.53:1** (needs 4.5:1 for small text). Accent badges
@@ -194,7 +194,7 @@ dark theme later). Mobile first (360 px). Details: `docs/design/03-design-system
 Also: input borders use stone-500 (4.62:1) because input borders must reach 3:1; card borders
 (decorative) keep stone-200.
 
-**Packages (approved in the brief):** lucide-react **1.61.0** (ISC licence, released 21 Oct 2026 —
+**Packages (approved in the Batch 1 plan):** lucide-react **1.61.0** (ISC licence, released 21 Oct 2026 —
 the newest release at least two weeks old; the project publishes almost daily) and
 @fontsource-variable/manrope **5.3.0** (OFL-1.1, released 19 Jul 2026). `npm audit`: 0 vulnerabilities.
 
@@ -202,7 +202,7 @@ the newest release at least two weeks old; the project publishes almost daily) a
 
 ## D-011 — Guided worker onboarding (Batch 1, 9 Nov 2026)
 
-**Decision (team brief, Part 5.2):** after registering, or logging in with onboarding unfinished,
+**Decision (Batch 1 plan, Part 5.2):** after registering, or logging in with onboarding unfinished,
 a worker goes to a step-by-step wizard: 1 About you → 2 Your work → 3 Your skills (Module 2;
 opens by itself after step 2 is saved) → 4 Proof of skills (Module 3, "coming next", Skip) →
 5 All set. Module 2 is **not** in the top menu; skills are edited from the dashboard and profile.
@@ -228,7 +228,7 @@ stable slugs (`domestic_work`, `moving_loading`, …) so labels can change witho
 Old values "Cleaning & Shifting" / `cleaning_shifting` map to `domestic_work`; the migration
 counts them separately so an admin can check those profiles by hand.
 
-**Skills v1 (Claude Code, for the team to review with real data):** 50 skills
+**Skills v1 (for the team to review with real data):** 50 skills
 (electrical 9, plumbing 7, masonry 6, carpentry 6, painting 5, AC & appliance 6, home
 maintenance 2, domestic work 6, moving & loading 3), taken from the old profiler's rules (the
 team's earlier work) plus domestic work and moving. Each skill has **strong** terms (clear trade
@@ -237,7 +237,7 @@ Urdu and Urdu script. A weak term counts only with a strong term of the same cat
 words that are also everyday words were left out or made weak ("aaya" = came; "masi" = aunt).
 
 **ISCO-08 codes:** still `null`. They are filled in only after a team member checks each code
-against the official ILO ISCO-08 list (rule in the brief); that list could not be opened from the
+against the official ILO ISCO-08 list (rule in the Batch 1 plan); that list could not be opened from the
 dev container.
 
 **Not changed by this decision:** the rule-based extractor is evaluated only on real data
@@ -248,7 +248,7 @@ and the test set must be frozen before that.
 
 ## D-013 — Evidence files are stored in MongoDB (Batch 2, 9 Nov 2026)
 
-**Decision (team's Batch 2 brief):** an `Evidence` document holds metadata only; a separate
+**Decision (team's Batch 2 plan):** an `Evidence` document holds metadata only; a separate
 `EvidenceFile` document holds the processed image bytes (BinData). List endpoints never load bytes.
 Not GridFS and not Vercel Blob in this version.
 
@@ -278,7 +278,7 @@ the picture; for a paper or PDF document, take a photo of it. A PDF is refused w
 
 ## D-014 — Skill confidence method, provisional weights and strength labels (Batch 2, 9 Nov 2026)
 
-**Decision (team, Part 1; built by Claude Code):** `backend/services/trust/skillConfidence.js`, a pure
+**Decision (team, Part 1):** `backend/services/trust/skillConfidence.js`, a pure
 function. Beta-style evidence counting in subjective-logic form with W = 2 and base rate a = 0.5:
 b = r/(r+s+W), d = s/(r+s+W), u = W/(r+s+W), E = b + a·u (equal to the Beta expectation (r+1)/(r+s+2)).
 Reference as given in the audit report: Jøsang & Ismail 2002, "The Beta Reputation System"
@@ -294,7 +294,7 @@ photos give 0.857 > one certificate's 0.75).
 **Status rule:** Disputed if any suspected fake exists; else Verified by evidence if ≥ 1 approved item;
 else Evidence pending if an item waits; else Self-declared. (Property and invariant tests.)
 
-**Strength labels (Claude Code's provisional thresholds):** none = no counted evidence; strong
+**Strength labels (provisional thresholds):** none = no counted evidence; strong
 E ≥ 0.80 (e.g. certificate + work photo); moderate 0.65 ≤ E < 0.80 (e.g. one certificate, one or two
 work photos); weak E < 0.65 (e.g. certificate + suspected fake, or a fake alone).
 
@@ -306,7 +306,7 @@ never a percentage and never b, d, u, E. Admins see b, d, u, E with a method not
 
 ## D-015 — Evidence review states and deletion rules (Batch 2, 9 Nov 2026)
 
-**Decision (team, Part 1; details by Claude Code):**
+**Decision (team, Part 1; details for the team to confirm):**
 - States: `pending → approved`; `pending → rejected` (reason code `unclear | not_relevant | wrong_skill |
   other`, "other" needs words); `pending or approved → suspected_fake` (written reason); `approved →
   revoked` (written reason, to correct a mistaken approval). Every other transition → 400.
@@ -324,7 +324,7 @@ never a percentage and never b, d, u, E. Admins see b, d, u, E with a method not
 
 ## D-016 — Upload processing and duplicate detection (Batch 2, 9 Nov 2026)
 
-**Decision (team, Part 1; details by Claude Code):**
+**Decision (team, Part 1; details for the team to confirm):**
 - Images only (JPEG, PNG, WebP), detected from the bytes with `file-type`; HEIC → "Please upload a JPG
   or PNG photo."; PDF → 400; the browser's type and the file name are ignored.
 - `sharp`: `autoOrient()`, fit inside 2000 × 2000 without enlarging, WebP quality 80, input limit
@@ -348,7 +348,7 @@ never a percentage and never b, d, u, E. Admins see b, d, u, E with a method not
 
 ## D-017 — Design v2 colour theme: "Emerald Night" (Batch 3, 10 Nov 2026)
 
-**Decision (Claude Code, for the team to confirm; Batch 3 Part 4.2):** three complete OKLCH theme
+**Decision (for the team to confirm; Batch 3 Part 4.2):** three complete OKLCH theme
 token sets were built (`frontend/src/styles/themes.css`): **Emerald Night** (deep green-black dark
 sections, vivid emerald primary, saffron highlights), **Ink & Marigold** (deep ink-navy, marigold and
 coral), **Terracotta Craft** (warm clay, cream surfaces, deep teal). The landing page, onboarding Step 3,
@@ -376,7 +376,7 @@ live at `/dev/themes` and `/dev/styleguide` (development builds only).
 > Rejected by the team after Batch 3; see D-021. The text below is kept as a record. The file names it
 > mentions have changed: the concepts are now `docs/design/logo-concepts/*` (see the README there).
 
-**Decision (Claude Code, for the team to confirm; Part 4.3):** three logomark concepts were drawn on a
+**Decision (for the team to confirm; Part 4.3):** three logomark concepts were drawn on a
 32 × 32 grid (`frontend/src/components/brand/logoMarks.jsx`, SVG copies in
 `docs/design/logo-concepts/`): **A Shield & Spanner**, **B Hard-hat Check**, **C Stitched Nut**. They were
 screenshotted at 16/24/32/64 px, in one colour and full colour, on light and dark, and in the header at
@@ -397,7 +397,7 @@ the theme. The tab title is translated (`useDocumentTitle`).
 
 ## D-019 — Three languages without a library (Batch 3, 10 Nov 2026)
 
-**Decision (Batch 3 Part 3; details by Claude Code):** English (`en`), Urdu (`ur`, right to left) and
+**Decision (Batch 3 Part 3; details for the team to confirm):** English (`en`), Urdu (`ur`, right to left) and
 Roman Urdu (`ur-Latn`, left to right).
 - Own small system in `frontend/src/i18n/` (no i18n package): `LanguageProvider`, `useT()` with
   `t(key, params)`, plurals with `Intl.PluralRules`, dates with `Intl.DateTimeFormat` (`en-PK`/`ur-PK`)
@@ -472,7 +472,7 @@ in the header at 360 and 1280 px, and as true 16/32 px favicons (`v3-compare-*.p
 | **B** | **Two-tone: the wrench head in saffron, set into the shield's shoulder** | **Chosen.** |
 | C | Outline: stroked shield | Elegant when large; at 16 px the lines clog and it looks weak next to the bold wordmark. |
 
-**Why B (decision by Claude Code from the screenshots, for the team to confirm):** it is the only one
+**Why B (a provisional decision from the screenshots, for the team to confirm):** it is the only one
 where the *tool* survives at 16 px (the saffron "C" is still visible in a browser tab); it uses both
 brand colours, so the mark belongs to the same palette as the interface (emerald for trust, one saffron
 accent); the cut-out around the head gives it a recognisable outline; and it is still exactly the Batch 1
@@ -609,7 +609,7 @@ to see or save data; offline, the offline banner says so and retries by itself.
   spreadsheet formulas are neutralised (OWASP "CSV injection"); at most 5,000 rows per file; UTF-8 with a
   byte-order mark so Excel shows Urdu correctly.
 - **Reason templates:** reusable sentences per decision kind, in three languages (English required), with a
-  starter set (the Urdu and Roman Urdu lines were drafted by Claude Code and reviewed by the team on
+  starter set (the Urdu and Roman Urdu lines were drafts, reviewed by the team on
   11 Nov 2026, D-031). Inserting a
   template only fills the note; the admin can change the words before saving.
 
@@ -655,8 +655,8 @@ instruction (D-001, D-030). There is no written copy of the instruction in this 
 
 ## D-031 — Urdu and Roman Urdu texts reviewed by the team (11 Nov 2026)
 
-**What happened:** the team reviewed the Urdu and Roman Urdu texts (reported to Claude Code by the team on
-11 Nov 2026). Until then they were Claude Code's drafts (D-019: "drafts that need a native reviewer").
+**What happened:** the team reviewed the Urdu and Roman Urdu texts (reported by the team on
+11 Nov 2026). Until then they were drafts (D-019: "drafts that need a native reviewer").
 
 **Effect:** the texts are no longer marked as drafts (`docs/i18n/REVIEW.md`, the dictionary files, the
 README and the admin guide). The review list in `docs/i18n/REVIEW.md` was generated on 11 Nov 2026 with
@@ -669,7 +669,7 @@ message). Any text added or changed after this date needs the same check before 
 
 ## D-032 — Go-live setup: two Vercel projects, a same-origin rewrite, a fresh Atlas database (11 Nov 2026)
 
-**Decision (Claude Code, for the team to apply with `docs/DEPLOY-RUNBOOK.md`):**
+**Decision (for the team to apply with `docs/DEPLOY-RUNBOOK.md`):**
 
 - **Two Vercel projects from the same repository:** `backend` (root directory `backend`) and `frontend`
   (root directory `frontend`). The frontend sends `/api/:path*` to the backend with a rewrite, and every
@@ -702,7 +702,7 @@ message). Any text added or changed after this date needs the same check before 
 **Why:** at the mid defence (13 Nov) the panel asked how labourers who cannot read or write will use the
 website. Until now every label had to be read and every answer typed.
 
-**Decision (from `BATCH_5_PROMPT.md`, built by Claude Code):** three helpers on the worker and customer
+**Decision (Batch 5 plan):** three helpers on the worker and customer
 screens, on top of the normal text input, which stays the main way and works fully with the keyboard:
 
 - **Listen (🔊):** under every field of the in-scope forms a Listen button says what to do here, in
@@ -1260,3 +1260,14 @@ spellings that are everyday words (`atak`, `اٹک`, `wah`, `mari`, `مری`) ar
 when joined to the digits ("5k"); a longer city name wins; a budget
 unit counts only within 3 words of the amount. Module 2's taxonomy terms are not changed. Batch 8C may improve the
 lists on the development set only.
+
+## D-091 — The supervisor's guidance for Module 6 (24 Nov 2026, reported by the team)
+
+1. A self-trained naive Bayes classifier, compared with the rule-based word lists, **is acceptable** as the module's
+   "AI" part. The website still never uses that word for either method (the honesty tests).
+2. **No ethics approval** is needed for collecting the job descriptions. The form must say clearly that it collects
+   descriptions for the project: the final consent and form texts (`docs/evaluation/job-analysis/consent-text.md`,
+   `FORM-DRAFT.md`) say so in their first sentences, show no example job, and keep the placeholders **[team email]** and
+   **[last date]** until the team fills them in the Google Form.
+
+Written in `docs/modules/MODULE-6.md` §11. The evaluation protocol is unchanged.

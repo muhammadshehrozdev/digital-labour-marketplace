@@ -41,7 +41,7 @@ describe('regionOf: a city to its region (never a guess)', () => {
     expect(regionOf('كراچی')).toBe('SD');
   });
 
-  test('every city of the prompt list is in the table, and every region has names in three languages', () => {
+  test('every city of the Batch 7 plan\'s list is in the table, and every region has names in three languages', () => {
     const needed = ['Islamabad', 'Rawalpindi', 'Lahore', 'Faisalabad', 'Multan', 'Gujranwala', 'Sialkot', 'Bahawalpur', 'Sargodha', 'Sheikhupura', 'Gujrat', 'Jhelum',
       'Sahiwal', 'Okara', 'Kasur', 'Rahim Yar Khan', 'Dera Ghazi Khan', 'Attock', 'Chakwal', 'Wah Cantt', 'Taxila', 'Murree', 'Karachi', 'Hyderabad', 'Sukkur', 'Larkana',
       'Nawabshah', 'Mirpur Khas', 'Peshawar', 'Mardan', 'Abbottabad', 'Mingora', 'Kohat', 'Dera Ismail Khan', 'Nowshera', 'Mansehra', 'Haripur', 'Bannu', 'Quetta', 'Gwadar',

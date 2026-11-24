@@ -238,7 +238,7 @@ must be treated as exposed, because the build logs contained them.
 - MongoDB Atlas database password, `MONGO_URI` and `JWT_SECRET` rotated (replaced with new values).
 - An unused Gemini API key removed.
 
-**Scope note:** the dev container and Claude Code had no Vercel access.
+**Scope note:** the development container had no Vercel access.
 
 **Side effect of the response:** rotating `JWT_SECRET` makes every existing login token invalid, so all users must log in again.
 

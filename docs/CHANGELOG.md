@@ -45,7 +45,7 @@ website never says "AI".
   and two Module 5 phone-number checks that a random hash could trip; both keep every check.
 - Decisions D-080 to D-090. Texts: 14 new error codes in three languages, the Urdu word lists, the consent and form
   texts for team review (`docs/i18n/REVIEW-BATCH-8A.md`; no clips in this batch).
-- **Independent review** (one fresh review agent, Stage 9): 8 findings; 7 fixed with tests (the main one: an edit could
+- **Independent review** (Stage 9, a separate review pass): 8 findings; 7 fixed with tests (the main one: an edit could
   slip in while a request's booking was being written), 1 kept as a documented decision. Word lists `2026-11-24-v2`.
   The per-script report gap is entry 1 of the protocol's "Protocol changes" (the protocol text is unchanged).
 - Tests (real runs, 24 Nov 2026 PKT): backend **1270/1270** in 55 files (baseline 1018 in 50; line coverage 98.83%,
@@ -231,8 +231,8 @@ before: 945 in 16 files); end-to-end 45/45 in 11.1 minutes (before: 35/35); lint
 
 - Wordmark: "Digital Labour Marketplace" is one element, weight 700, in the logo's colour, the full name at
   every width (before: two weights, the second word grey and hidden on phones).
-- Internal working notes (`CLAUDE.md`, the batch briefs, `docs/audit/`) are no longer tracked (kept on disk,
-  in `.gitignore`); every reference now points to a tracked document. `docs/SECURITY.md` lists the project
+- Internal working notes (the instructions file in the root folder, the batch plans, `docs/audit/`) are no longer
+  tracked (kept on disk, in `.gitignore`); every reference now points to a tracked document. `docs/SECURITY.md` lists the project
   security rules.
 - Go-live (D-032, `docs/DEPLOY-RUNBOOK.md`): `backend/api/index.js` as the one Vercel function, a modern
   `backend/vercel.json` (no legacy `builds`; only `public/` served), `frontend/vercel.json` passes
@@ -268,7 +268,7 @@ before: 945 in 16 files); end-to-end 45/45 in 11.1 minutes (before: 35/35); lint
 
 ## Batch 4 — logo v3, dark mode, design v3, 50+ features, admin tools, full review (11 Nov 2026)
 
-Instructions: the team's Batch 4 brief (internal note, not in the repository). Decisions recorded: D-021 logo, D-022 dark mode, D-023 design v3,
+Instructions: the team's Batch 4 plan (internal note, not in the repository). Decisions recorded: D-021 logo, D-022 dark mode, D-023 design v3,
 D-024 suspension, D-025 notifications, D-026 potential skills / strength / sort, D-027 installable app,
 D-028 exports and reason templates. Review: `docs/REVIEW-2026-11.md`. Traceability: `docs/TRACEABILITY.md`.
 
@@ -319,7 +319,7 @@ D-028 exports and reason templates. Review: `docs/REVIEW-2026-11.md`. Traceabili
 
 ## Batch 3 — browser tooling, Step 3 and voice fixes, three languages, design v2, profile view/edit (10 Nov 2026)
 
-Instructions: the team's Batch 3 brief (internal note). Decisions recorded: D-017 theme (Emerald Night), D-018 logo (Stitched
+Instructions: the team's Batch 3 plan (internal note). Decisions recorded: D-017 theme (Emerald Night), D-018 logo (Stitched
 Nut), D-019 languages, D-020 profile view/edit.
 
 **Browser tooling**
@@ -391,7 +391,7 @@ Nut), D-019 languages, D-020 profile view/edit.
 
 ## Batch 2 — Module 3 (Phase 5), integration tests (Phase 6), documentation (Phase 7) (9 Nov 2026)
 
-Instructions: the team's Batch 2 brief (internal note). Decisions recorded: D-013 evidence storage, D-014 skill confidence
+Instructions: the team's Batch 2 plan (internal note). Decisions recorded: D-013 evidence storage, D-014 skill confidence
 method and provisional weights, D-015 review states and deletion rules, D-016 upload processing and
 duplicates. The team's working rules gained "Reporting to the user".
 
@@ -455,7 +455,7 @@ unknown bytes; test flakiness (router path probe, 5 s timeout, race test assumin
 
 ## Batch 1 — UI/UX redesign, guided onboarding, Module 2 / Phase 4 (9 Nov 2026)
 
-Instructions: the team's Batch 1 brief (internal note). Decisions recorded: D-008 (reason for the category split),
+Instructions: the team's Batch 1 plan (internal note). Decisions recorded: D-008 (reason for the category split),
 D-010 design system, D-011 guided onboarding, D-012 final categories + skill list v1.
 
 **Stages (docs/design/):** 01 UX requirements (personas, FR/NFR, acceptance criteria), 02 analysis

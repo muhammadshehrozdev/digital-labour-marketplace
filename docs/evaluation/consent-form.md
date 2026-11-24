@@ -39,4 +39,4 @@ Team member who explained this: ________
 
 میں سمجھ گیا/گئی ہوں اور متفق ہوں: ☐ ہاں ☐ نہیں  تاریخ: ________  دستخط یا انگوٹھا: ________
 
-*The Urdu text was written by Claude Code; a team member who reads Urdu must check it before use.*
+*The Urdu text is a draft; a team member who reads Urdu must check it before use.*

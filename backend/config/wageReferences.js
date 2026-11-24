@@ -14,7 +14,7 @@
 // team checks every figure against the official notification (docs/MODULE-5-MANUAL-TEST.md, first section).
 // If a figure differs, the TEAM changes it here.
 //
-// Figures as given by the team (BATCH_7_PROMPT.md §4.6), checked on 19 Nov 2026. The team checked Balochistan and
+// Figures as given by the team (Batch 7 plan, §4.6), checked on 19 Nov 2026. The team checked Balochistan and
 // Khyber Pakhtunkhwa again on 23 Nov 2026 and corrected them to the NOTIFIED figures (data correction; those two
 // entries carry their own `checkedOn`). Region codes are object keys (see config/regions.js for why).
 

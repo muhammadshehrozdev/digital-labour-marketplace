@@ -1,4 +1,4 @@
-# SYNTHETIC — written by Claude Code to test the scripts only. Not real people. Never report numbers from this file.
+# SYNTHETIC — written to test the scripts only. Not real people. Never report numbers from this file.
 # Annotator A (synthetic). 120 items: all 9 trades, 10 "none", four scripts. The same author wrote the word lists, so the rules' numbers on this file mean nothing.
 id,source,prompt,script,text,gold_category,gold_skills,gold_task_type,gold_city,gold_when,gold_time_slot,gold_budget_amount,gold_budget_unit,gold_urgent
 j-0001,form,general,roman_urdu,"Ghar ki wiring purani ho gayi hai, nayi wiring karwani hai",electrical_solar,elec_wiring,install,,,,,,no

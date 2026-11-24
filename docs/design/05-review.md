@@ -1,13 +1,13 @@
 # 05 — Self-review against the Batch 1 quality gates (9 Nov 2026)
 
-Method: every gate in the team's Batch 1 brief (Part 9) was checked with an automated test where one is
+Method: every gate in the team's Batch 1 plan (Part 9) was checked with an automated test where one is
 possible, otherwise by reading the code. "Not checked" is written where no check was possible.
 
 ## Problems found during the review and fixed
 
 | # | Found | Fix |
 |---|---|---|
-| R1 | Brief's focus ring (primary-300) is 2.15:1 on white, below its own 3:1 rule | 2 px primary-600 outline + primary-300 halo (D-010); contrast test |
+| R1 | The plan's focus ring (primary-300) is 2.15:1 on white, below its own 3:1 rule | 2 px primary-600 outline + primary-300 halo (D-010); contrast test |
 | R2 | Saffron-700 on saffron-100 is 3.53:1 for small badge text | stone-900 on saffron-100 (D-010) |
 | R3 | Input borders at stone-200 would be 1.63:1 (inputs need 3:1) | stone-500 for input/checkbox borders |
 | R4 | A hard-coded hover colour in the danger button | colour-mix of the danger token |
@@ -38,7 +38,7 @@ possible, otherwise by reading the code. "Not checked" is written where no check
 ## Known gaps (honest)
 - Responsive layout and the real browser console were not seen in a browser (see gates 4 and 5).
 - `lucide-react` is pinned to 1.61.0 (the newest release older than two weeks on 9 Nov 2026).
-- The Urdu consent-form text was written by Claude Code and must be checked by a team member who reads Urdu.
+- The Urdu consent-form text is a draft and must be checked by a team member who reads Urdu.
 - Skill list v1 has not met real data yet; its quality is unknown until the evaluation runs.
 
 ## Batch 2 review (Module 3, 9 Nov 2026)

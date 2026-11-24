@@ -1,7 +1,7 @@
 # Batch 6B texts for team review (header, install, rep-2)
 
 52 new texts and 6 changed existing texts, each in English, Urdu and Roman Urdu. Date: 2026-11-17.
-Every Urdu and Roman Urdu text below is a **draft** written by Claude Code until a team member who reads Urdu has
+Every Urdu and Roman Urdu text below is a **draft** until a team member who reads Urdu has
 checked it (D-031). 11 of them are help texts that can be recorded as clips (Clip = yes).
 
 Please check that each text is everyday Urdu, short enough to be spoken, says the same thing in Urdu and Roman
